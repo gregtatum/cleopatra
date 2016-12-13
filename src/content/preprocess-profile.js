@@ -63,6 +63,7 @@ function preprocessThreadStageTwo(thread, libs) {
     resource: [],
     address: [],
     isJS: [],
+    location: [],
   };
   function addFunc(name, resource, address, isJS) {
     const index = funcTable.length++;
@@ -78,6 +79,7 @@ function preprocessThreadStageTwo(thread, libs) {
     lib: [],
     icon: [],
     addonId: [],
+    host: [],
   };
   function addLibResource(name, lib) {
     const index = resourceTable.length++;
@@ -85,10 +87,11 @@ function preprocessThreadStageTwo(thread, libs) {
     resourceTable.name[index] = name;
     resourceTable.lib[index] = lib;
   }
-  function addURLResource(url) {
+  function addURLResource(url, host) {
     const index = resourceTable.length++;
     resourceTable.type[index] = resourceTypes.url;
     resourceTable.name[index] = url;
+    resourceTable.host[index] = host;
   }
 
   const { stringTable, frameTable, stackTable, samples, markers } = thread;
@@ -124,7 +127,7 @@ function preprocessThreadStageTwo(thread, libs) {
         }
       }
     } else {
-      const cppMatch = 
+      const cppMatch =
         /^(.*) \(in ([^)]*)\) (\+ [0-9]+)$/.exec(locationString) ||
         /^(.*) \(in ([^)]*)\) (\(.*:.*\))$/.exec(locationString) ||
         /^(.*) \(in ([^)]*)\)$/.exec(locationString);
@@ -155,7 +158,13 @@ function preprocessThreadStageTwo(thread, libs) {
             resourceIndex = resourceTable.length;
             urlToResourceIndex.set(scriptURI, resourceIndex);
             const urlStringIndex = stringTable.indexForString(scriptURI);
-            addURLResource(urlStringIndex);
+            const hostMatch = /https?:\/\/([^\/]*)/.exec(scriptURI);
+            let hostIndex;
+            if (hostMatch) {
+              const host = hostMatch[1];
+              hostIndex = stringTable.indexForString(host);
+            }
+            addURLResource(urlStringIndex, hostIndex);
           }
         }
       }
@@ -550,7 +559,7 @@ function preprocessThreadFromProfileJSONWithSymbolicationTable(thread, symbolica
   }
 
   let threadName = thread.name;
-  let processType = thread.processType || (threadName === 'Content' ? 'tab' : (threadName === 'Plugin' ? 'plugin' : 'default'));
+  const processType = thread.processType || (threadName === 'Content' ? 'tab' : (threadName === 'Plugin' ? 'plugin' : 'default'));
 
   if (threadName === 'Content') {
     threadName = 'GeckoMain';

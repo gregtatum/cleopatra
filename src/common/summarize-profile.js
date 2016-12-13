@@ -72,9 +72,11 @@ const categories = [
 export function summarizeProfile(profile) {
   return timeCode('summarizeProfile', () => {
     const categories = categorizeThreadSamples(profile);
+    const hosts = hostThreadSamples(profile);
+    console.log(hosts.map(h => h.filter(_ => _)));
     const rollingSummaries = calculateRollingSummaries(profile, categories);
     const summaries = summarizeCategories(profile, categories);
-
+    const rollingHostSummaries = calculateRollingHostSummaries(profile, categories);
     return profile.threads.map((thread, i) => ({
       thread: thread.name,
       rollingSummary: rollingSummaries[i],
@@ -109,7 +111,7 @@ function functionNameCategorizer() {
 }
 
 /**
- * Given a profile, return a function that categorizes a sample.
+ * Given a thread, return a function that categorizes a sample.
  * @param {object} thread Thread from a profile.
  * @return {function} Sample stack categorizer.
  */
@@ -131,6 +133,7 @@ function sampleCategorizer(thread) {
     const funcIndex = thread.frameTable.func[frameIndex];
     const name = thread.stringTable._array[thread.funcTable.name[funcIndex]];
     category = categorizeFuncName(name);
+
     if (category !== false) {
       stackCategoryCache.set(stackIndex, category);
       return category;
@@ -139,6 +142,59 @@ function sampleCategorizer(thread) {
     category = categorizeSampleStack(thread.stackTable.prefix[stackIndex]);
     stackCategoryCache.set(stackIndex, category);
     return category;
+  };
+}
+
+/**
+ * Given a thread, return a function that determines the host of each JS sample. It walks
+ * up the call stack and attempts to label each sample by its calling function.
+ * @param {object} thread Thread from a profile.
+ * @return {function} Sample host classifier.
+ */
+function sampleHostClassifier(thread) {
+  const stackHostCache = new Map();
+
+  return function classifyHost(topStackIndex) {
+    let stackIndex = topStackIndex;
+    // Attempt to classify the host by looping through the call stack.
+    while (true) {
+      if (stackIndex === null) {
+        stackHostCache.set(topStackIndex, null);
+        stackHostCache.set(stackIndex, null);
+        return null;
+      }
+
+      const host = stackHostCache.get(stackIndex);
+      if (host !== undefined) {
+        return host;
+      }
+
+      const frameIndex = thread.stackTable.frame[stackIndex];
+      const funcIndex = thread.frameTable.func[frameIndex];
+      const isJS = thread.funcTable.isJS[funcIndex];
+
+      if (isJS) {
+        debugger;
+        // Match that a URL exists in the name.
+        const name = thread.stringTable._array[thread.funcTable.name[funcIndex]];
+        // XXX - Use the first regex with the URL parser
+        // const regexResult = name.match(/\((.*)(:\d+\)?)$/);
+        const regexResult = name.match(/\(https?:\/\/(.*)(:\d+\)?)$/);
+
+        if (regexResult && regexResult[1]) {
+          // XXX - window.URL doesn't exist for mocha tests.
+          //  const host = new window.URL(regexResult[1]).host;
+          const host = regexResult[1].split('/')[0];
+          stackHostCache.set(topStackIndex, host);
+          stackHostCache.set(stackIndex, host);
+          return host;
+        }
+      }
+
+      // Walk up the stack to see if any calling function is JS and has a host.
+      stackIndex = thread.stackTable.prefix[stackIndex];
+    }
+    return null;
   };
 }
 
@@ -198,7 +254,7 @@ function logUncategorizedSamples(uncategorized, maxLogLength = 10) {
   /* eslint-enable no-console */
 }
 
-function stackToString(stackIndex, thread) {
+function stackIndexToString(stackIndex, thread) {
   const { stackTable, frameTable, funcTable, stringTable } = thread;
   const stack = [];
   let nextStackIndex = stackIndex;
@@ -212,14 +268,14 @@ function stackToString(stackIndex, thread) {
   return stack.join('\n');
 }
 
-function countUncategorizedStacks(profile, summaries) {
+function countUncategorizedStacks(profile, categories) {
   const uncategorized = {};
   profile.threads.forEach((thread, i) => {
-    const threadSummary = summaries[i];
+    const category = categories[i];
     const { samples } = thread;
     for (let sampleIndex = 0; sampleIndex < samples.length; sampleIndex++) {
-      if (threadSummary[sampleIndex] === 'uncategorized') {
-        const stringCallStack = stackToString(samples.stack[sampleIndex], thread);
+      if (category[sampleIndex] === 'uncategorized') {
+        const stringCallStack = stackIndexToString(samples.stack[sampleIndex], thread);
         uncategorized[stringCallStack] = (uncategorized[stringCallStack] || 0) + 1;
       }
     }
@@ -235,17 +291,31 @@ function countUncategorizedStacks(profile, summaries) {
  */
 export function categorizeThreadSamples(profile) {
   return timeCode('categorizeThreadSamples', () => {
-    const summaries = profile.threads.map(thread => {
+    const categories = profile.threads.map(thread => {
       const categorizer = sampleCategorizer(thread);
       return thread.samples.stack.map(categorizer);
     });
 
     if (process.env.NODE_ENV === 'development') {
-      const uncategorized = countUncategorizedStacks(profile, summaries);
+      const uncategorized = countUncategorizedStacks(profile, categories);
       logUncategorizedSamples(uncategorized);
     }
 
-    return summaries;
+    return categories;
+  });
+}
+
+/**
+ * Determine a host for each JavaScript sample.
+ * @param {array} profile - The current profile.
+ * @returns {array} Stacks mapped to hosts.
+ */
+export function hostThreadSamples(profile) {
+  return timeCode('hostThreadSamples', () => {
+    const hosts = profile.threads.map(thread => {
+      return thread.samples.stack.map(sampleHostClassifier(thread));
+    });
+    return hosts;
   });
 }
 
@@ -273,6 +343,51 @@ export function calculateRollingSummaries(profile, threadCategories, segmentCoun
     Math.min(a[0], b[0]),
     Math.max(a[1], b[1]),
   ]));
+  const totalTime = maxTime - minTime;
+  const segmentLength = totalTime / segmentCount;
+  const segmentHalfLength = segmentLength / 2;
+  const rollingLength = segmentLength * rolling;
+  const rollingHalfLength = segmentLength * rolling / 2;
+
+  return profile.threads.map((thread, threadIndex) => {
+    const categories = threadCategories[threadIndex];
+
+    return times(segmentCount, segmentIndex => {
+      let samplesInRange = 0;
+      const samples = {};
+
+      const rollingMinTime = minTime + (segmentIndex * segmentLength) + segmentHalfLength - rollingHalfLength;
+      const rollingMaxTime = rollingMinTime + rollingLength;
+
+      for (let sampleIndex = 0; sampleIndex < thread.samples.time.length; sampleIndex++) {
+        const time = thread.samples.time[sampleIndex];
+        const category = categories[sampleIndex];
+        if (time > rollingMinTime) {
+          if (time > rollingMaxTime) {
+            break;
+          }
+          samples[category] = (samples[category] || 0) + 1;
+          samplesInRange++;
+        }
+      }
+
+      return {
+        samples,
+        percentage: mapObj(samples, count => count / samplesInRange),
+      };
+    });
+  });
+}
+
+export function calculateRollingHostSummaries(profile, threadCategories, segmentCount = 40, rolling = 4) {
+  const [minTime, maxTime] = profile.threads.map(thread => {
+    return [thread.samples.time[0], thread.samples.time[thread.samples.time.length - 1]];
+  })
+  .reduce((a, b) => ([
+    Math.min(a[0], b[0]),
+    Math.max(a[1], b[1]),
+  ]));
+
   const totalTime = maxTime - minTime;
   const segmentLength = totalTime / segmentCount;
   const segmentHalfLength = segmentLength / 2;
