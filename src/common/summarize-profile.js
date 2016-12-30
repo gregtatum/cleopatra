@@ -1,4 +1,5 @@
 import { timeCode } from './time-code';
+import {inflateFrame} from '../common/inflate-profile';
 
 /**
  * A list of strategies for matching sample names to patterns.
@@ -69,12 +70,30 @@ const categories = [
   // [match.prefix, 'Interpret(', 'script.interpreter',
 ];
 
+function getCategoryNames() {
+  const categoryNames = categories
+    .map(tuple => tuple[2])
+    .filter(unique)
+    .reduce((result, fullCategoryName) => {
+      const categories = fullCategoryName.split('.');
+      while (categories.length > 0) {
+        result.push(categories.join('.'));
+        categories.pop();
+      }
+      return result;
+    }, []);
+  categoryNames.push('uncategorized');
+  return categoryNames;
+}
+
 export function summarizeProfile(profile) {
   return timeCode('summarizeProfile', () => {
     const categories = categorizeThreadSamples(profile);
     const hosts = hostThreadSamples(profile);
-    console.log(hosts.map(h => h.filter(_ => _)));
     const rollingSummaries = calculateRollingSummaries(profile, categories);
+    debugger;
+    const accumulations = accumulateSummaries(profile, categories);
+    debugger;
     const summaries = summarizeCategories(profile, categories);
     const rollingHostSummaries = calculateRollingHostSummaries(profile, categories);
     return profile.threads.map((thread, i) => ({
@@ -156,11 +175,10 @@ function sampleHostClassifier(thread) {
 
   return function classifyHost(topStackIndex) {
     let stackIndex = topStackIndex;
+    let unclassifiedStacks;
     // Attempt to classify the host by looping through the call stack.
     while (true) {
       if (stackIndex === null) {
-        stackHostCache.set(topStackIndex, null);
-        stackHostCache.set(stackIndex, null);
         return null;
       }
 
@@ -168,28 +186,24 @@ function sampleHostClassifier(thread) {
       if (host !== undefined) {
         return host;
       }
+      // Lazily create this array.
+      unclassifiedStacks = unclassifiedStacks || [];
+      unclassifiedStacks.push(stackIndex);
 
       const frameIndex = thread.stackTable.frame[stackIndex];
       const funcIndex = thread.frameTable.func[frameIndex];
       const isJS = thread.funcTable.isJS[funcIndex];
 
       if (isJS) {
-        debugger;
-        // Match that a URL exists in the name.
-        const name = thread.stringTable._array[thread.funcTable.name[funcIndex]];
-        // XXX - Use the first regex with the URL parser
-        // const regexResult = name.match(/\((.*)(:\d+\)?)$/);
-        const regexResult = name.match(/\(https?:\/\/(.*)(:\d+\)?)$/);
+        const resourceIndex = thread.funcTable.resource[funcIndex];
+        const host = thread.resourceTable.host[resourceIndex];
 
-        if (regexResult && regexResult[1]) {
-          // XXX - window.URL doesn't exist for mocha tests.
-          //  const host = new window.URL(regexResult[1]).host;
-          const host = regexResult[1].split('/')[0];
-          stackHostCache.set(topStackIndex, host);
-          stackHostCache.set(stackIndex, host);
+        if (host) {
+          unclassifiedStacks.forEach(index => stackHostCache.set(index, host));
           return host;
         }
       }
+
 
       // Walk up the stack to see if any calling function is JS and has a host.
       stackIndex = thread.stackTable.prefix[stackIndex];
@@ -335,6 +349,34 @@ export function summarizeCategories(profile, threadCategories) {
     // .sort((a, b) => Object.keys(b.summary).length - Object.keys(a.summary).length);
 }
 
+export function accumulateSummaries(profile, threadCategories) {
+  const categoryNames = getCategoryNames();
+
+  return threadCategories.map(categories => {
+    const accumulation = categoryNames.reduce((object, name) => {
+      object[name] = [];
+      return object;
+    }, {});
+
+    categories.forEach((fullCategoryName, i) => {
+      const categories = fullCategoryName.split('.');
+
+      categoryNames.forEach(category => {
+        const previousValue = accumulation[category][i - 1] || 0;
+        accumulation[category][i] = previousValue;
+      });
+
+        // Increment the categories.
+      while (categories.length > 0) {
+        accumulation[categories.join('.')][i]++;
+        categories.pop();
+      }
+    });
+
+    return accumulation;
+  });
+}
+
 export function calculateRollingSummaries(profile, threadCategories, segmentCount = 40, rolling = 4) {
   const [minTime, maxTime] = profile.threads.map(thread => {
     return [thread.samples.time[0], thread.samples.time[thread.samples.time.length - 1]];
@@ -442,4 +484,8 @@ function mapObj(object, fn) {
     }
   }
   return mappedObj;
+}
+
+function unique(value, index, array) {
+  return array.indexOf(value) === index;
 }
