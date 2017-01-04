@@ -1,0 +1,15 @@
+.flameChartView {
+  border-top: 1px solid #d6d6d6;
+  flex: 1;
+  overflow: auto;
+  position: relative;
+  margin-left: 149px;
+}
+
+.flameChartView canvas {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
