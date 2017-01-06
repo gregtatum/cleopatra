@@ -50,7 +50,7 @@ class ProfileViewer extends Component {
       },
       {
         name: 'flameChart',
-        title: 'Flame Chart',
+        title: 'Timeline',
       },
     ];
   }

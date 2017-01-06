@@ -187,6 +187,104 @@ export const selectorsForThread = threadIndex => {
         return funcArrays.map(funcArray => ProfileData.getFuncStackFromFuncArray(funcArray, funcStackInfo.funcStackTable));
       }
     );
+    const getFuncStackMaxDepth = createSelector(
+      getFuncStackInfo,
+      ({funcStackTable}) => {
+        let maxDepth = 0;
+        for (let i = 0; i < funcStackTable.depth.length; i++) {
+          if (funcStackTable.depth[i] > maxDepth) {
+            maxDepth = funcStackTable.depth[i];
+          }
+        }
+        return maxDepth;
+      }
+    );
+    /**
+     * Build a sample timing table that lists all of the sample's timing information
+     * by call stack depth. This optimizes sample data for Flame Chart timeline views. It
+     * makes it really easy to draw a large amount of boxes at once based on where the
+     * viewport is in the stack frame data. Plus the end timings for frames need to be
+     * reconstructed from the smaple data, as the samples only contain start timings.
+     *
+     * This format allows for specifically selecting certain rows of stack frames by using
+     * the stack depth information. In addition, the start and end times of samples can be
+     * found through binary searches, allowing for selecting the proper subsets of frames
+     * to be drawn. Each row's sample length is different, but it can still be efficient
+     * to find subsets of the data.
+     *
+     * [
+     *   [ {start, end, stack} ]
+     *   [ {start, end, stack}, {start, end, stack} ]
+     *   [ {start, end, stack}, {start, end, stack}, {start, end, stack} ]
+     *   [ {start, end, stack}, {start, end, stack}, {start, end, stack} ]
+     *   [ {start, end, stack}, {start, end, stack}, ..., {start, end, stack} ]
+     *   ...
+     *   [ {start, end, stack}, {start, end, stack} ]
+     * ]
+     */
+    const getStackTimingByDepth = createSelector(
+      getThread,
+      getFuncStackInfo,
+      getFuncStackMaxDepth,
+      getProfileInterval,
+      (thread, {funcStackTable, stackIndexToFuncStackIndex}, maxDepth, interval) => {
+        const stackTimingByDepth = Array.from({length: maxDepth + 1}, () => ({
+          start: [],
+          end: [],
+          stack: [],
+          length: 0,
+        }));
+        const lastSeenStartTimeByDepth = [];
+        const lastSeenStackIndexByDepth = [];
+
+        function popStacks(depth, previousDepth, sampleTime) {
+          // "Pop" off the stack, and commit the timing of the frames
+          for (let stackDepth = depth + 1; stackDepth <= previousDepth; stackDepth++) {
+            // Push on the new information.
+            stackTimingByDepth[stackDepth].start.push(lastSeenStartTimeByDepth[stackDepth]);
+            stackTimingByDepth[stackDepth].end.push(sampleTime);
+            stackTimingByDepth[stackDepth].stack.push(lastSeenStackIndexByDepth[stackDepth]);
+            stackTimingByDepth[stackDepth].length++;
+
+            // Delete that this stack frame has been seen.
+            lastSeenStackIndexByDepth[stackDepth] = null;
+            lastSeenStartTimeByDepth[stackDepth] = null;
+          }
+        }
+
+        function pushStacks(depth, stackIndex, sampleTime) {
+          // "Push" onto the stack with new frames
+          for (let parentDepth = depth; parentDepth >= 0; parentDepth--) {
+            if (lastSeenStackIndexByDepth[parentDepth] === stackIndex) {
+              break;
+            }
+            lastSeenStackIndexByDepth[parentDepth] = stackIndex;
+            lastSeenStartTimeByDepth[parentDepth] = sampleTime;
+            stackIndex = thread.stackTable.prefix[stackIndex];
+          }
+        }
+
+        let previousDepth = 0;
+
+        for (let i = 0; i < thread.samples.length; i++) {
+          const stackIndex = thread.samples.stack[i];
+          const sampleTime = thread.samples.time[i];
+          const funcStackIndex = stackIndexToFuncStackIndex[stackIndex];
+          const depth = funcStackTable.depth[funcStackIndex];
+
+          // If the two samples at the top of the stack are different, pop the last stack frame.
+          const depthToPop = lastSeenStackIndexByDepth[depth] === stackIndex ? depth : depth - 1;
+          popStacks(depthToPop, previousDepth, sampleTime);
+          pushStacks(depth, stackIndex, sampleTime);
+          previousDepth = depth;
+        }
+        // Pop the remaining stacks
+        const endingTime = thread.samples.time[thread.samples.time.length - 1] + interval;
+        popStacks(-1, previousDepth, endingTime);
+
+        return stackTimingByDepth;
+      }
+    );
     const getCallTree = createSelector(
       getRangeSelectionFilteredThread,
       getProfileInterval,
@@ -204,6 +302,8 @@ export const selectorsForThread = threadIndex => {
       getFuncStackInfo,
       getSelectedFuncStack,
       getExpandedFuncStacks,
+      getFuncStackMaxDepth,
+      getStackTimingByDepth,
       getCallTree,
     };
   }
