@@ -3,7 +3,9 @@ import shallowCompare from 'react-addons-shallow-compare';
 import { timeCode } from '../../common/time-code';
 import { getSampleFuncStacks } from '../profile-data';
 
-class FlameChart extends Component {
+const ROW_HEIGHT = 16;
+
+class FlameChartCanvas extends Component {
 
   constructor(props) {
     super(props);
@@ -16,7 +18,7 @@ class FlameChart extends Component {
       window.requestAnimationFrame(() => {
         this._requestedAnimationFrame = false;
         if (this.refs.canvas) {
-          timeCode('FlameChart render', () => {
+          timeCode('FlameChartCanvas render', () => {
             this.drawCanvas(this.refs.canvas);
           });
         }
@@ -39,7 +41,7 @@ class FlameChart extends Component {
    */
   drawCanvas(canvas) {
     const { thread, interval, rangeStart, rangeEnd, funcStackInfo,
-            containerWidth, containerHeight, boundsLeft, boundsRight, maxStackDepth,
+            containerWidth, containerHeight, viewportLeft, viewportRight, maxStackDepth,
             stackTimingByDepth } = this.props;
     const { funcStackTable, stackIndexToFuncStackIndex } = funcStackInfo;
     const sampleFuncStacks = getSampleFuncStacks(thread.samples, stackIndexToFuncStackIndex);
@@ -49,11 +51,10 @@ class FlameChart extends Component {
     const rangeLength = range[1] - range[0];
     const yPixelsPerDepth = canvas.height / maxStackDepth;
     const unitInterval = interval / rangeLength;
-    const boundsUnitLength = boundsRight - boundsLeft;
+    const boundsUnitLength = viewportRight - viewportLeft;
 
     // TODO - Go through the prefixes of the leaf frames, and draw the parent frames.
     const visitedFrames = [];
-    const ROW_HEIGHT = 3;
     for (let depth = 0; depth < stackTimingByDepth.length; depth++) {
       const stackTiming = stackTimingByDepth[depth];
       for (let i = 0; i < stackTiming.length; i++) {
@@ -62,10 +63,10 @@ class FlameChart extends Component {
         const stackIndex = stackTiming.stack[i];
         const funcStack = stackIndexToFuncStackIndex[stackIndex];
         // Only draw samples that are in bounds.
-        // if (boundsLeft < unitEndTime && boundsRight > unitStartTime)
+        // if (viewportLeft < unitEndTime && viewportRight > unitStartTime)
         {
           const funcStack = sampleFuncStacks[i];
-          const x = Math.floor((unitStartTime - boundsLeft) * containerWidth / boundsUnitLength);
+          const x = Math.floor((unitStartTime - viewportLeft) * containerWidth / boundsUnitLength);
           const y = depth * ROW_HEIGHT;
           const w = Math.ceil((unitEndTime - unitStartTime) * containerWidth / boundsUnitLength);
           const h = ROW_HEIGHT - 1;
@@ -74,41 +75,15 @@ class FlameChart extends Component {
         }
       }
     }
-/*
-    ctx.fillStyle = 'rgba(100, 128, 150, 0.1)';
-    // ctx.fillStyle = '#7990c8';
-    // Draw frames
-    for (let i = 0; i < sampleFuncStacks.length; i++) {
-      // Unit time is relative to a sample's time in the profile current range, and is
-      // independent from the viewport and total profile time.
-      const unitSampleStartTime = (thread.samples.time[i] - range[0]) / rangeLength;
-
-      // The ending sample time should be the next sample's start time, but fallback
-      // to the unitInterval if it's the last sample.
-      const nextSample = thread.samples.time[i + 1];
-      const unitSampleEndTime = nextSample
-        ? (nextSample - range[0]) / rangeLength
-        : unitSampleStartTime + unitInterval;
-
-      // Only draw samples that are in bounds.
-      if (boundsLeft < unitSampleEndTime && boundsRight > unitSampleStartTime) {
-        const funcStack = sampleFuncStacks[i];
-        const x = Math.floor((unitSampleStartTime - boundsLeft) * containerWidth / boundsUnitLength);
-        const y = 0;
-        const w = Math.ceil((unitSampleEndTime - unitSampleStartTime) * containerWidth / boundsUnitLength);
-        const h = funcStackTable.depth[funcStack] * yPixelsPerDepth;
-        ctx.fillRect(x, y, w, h);
-      }
-    }*/
   }
 
   render() {
     this._scheduleDraw();
-    return <canvas className={this.props.className} ref='canvas'/>;
+    return <canvas className='flameChartCanvas' ref='canvas'/>;
   }
 }
 
-FlameChart.propTypes = {
+FlameChartCanvas.propTypes = {
   thread: PropTypes.shape({
     samples: PropTypes.object.isRequired,
   }).isRequired,
@@ -122,13 +97,13 @@ FlameChart.propTypes = {
   className: PropTypes.string,
   containerWidth: PropTypes.number,
   containerHeight: PropTypes.number,
-  boundsLeft: PropTypes.number,
-  boundsRight: PropTypes.number,
+  viewportLeft: PropTypes.number,
+  viewportRight: PropTypes.number,
   maxStackDepth: PropTypes.number,
   stackTimingByDepth: PropTypes.array,
 };
 
-export default FlameChart;
+export default FlameChartCanvas;
 
 function prepCanvas(canvas, width, height) {
   canvas.width = width * window.devicePixelRatio;
