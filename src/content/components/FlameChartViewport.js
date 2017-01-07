@@ -46,14 +46,15 @@ class FlameChartViewport extends Component {
     /**
      * TODO - Evaluate whether this state should stay in the component, or go out to
      * the redux stores. This state information potentially gets changed very frequently
-     * with mouse events. This information is analagous to scrolling viewport information
-     * and is probably OK to stay local to a component.
+     * with mouse events.
      */
     this.state = {
       containerWidth: 0,
       containerHeight: 0,
+      // Unit interval of the profile range.
       viewportLeft: 0,
       viewportRight: 1,
+      // Positioning in pixels.
       viewportTop: 0,
       viewportBottom: 0,
     };
@@ -108,13 +109,15 @@ class FlameChartViewport extends Component {
   _mouseMoveListener(event) {
     if (this.state.isDragging) {
       event.preventDefault();
+      const { maxViewportHeight } = this.props;
       const { dragX, dragY, containerWidth, containerHeight, viewportLeft, viewportRight,
               viewportTop } = this.state;
+
+      // Calculate left and right in terms of the unit interval of the profile range.
       const viewportLength = viewportRight - viewportLeft;
-      const offsetX = viewportLength * (event.clientX - dragX) / containerWidth;
-      const offsetY = (event.clientY - dragY) / containerHeight;
-      let newViewportLeft = viewportLeft - offsetX;
-      let newViewportRight = viewportRight - offsetX;
+      const unitOffsetX = viewportLength * (event.clientX - dragX) / containerWidth;
+      let newViewportLeft = viewportLeft - unitOffsetX;
+      let newViewportRight = viewportRight - unitOffsetX;
       if (newViewportLeft < 0) {
         newViewportLeft = 0;
         newViewportRight = viewportLength;
@@ -123,13 +126,26 @@ class FlameChartViewport extends Component {
         newViewportLeft = 1 - viewportLength;
         newViewportRight = 1;
       }
+
+      // Calculate top and bottom in terms of pixels.
+      let newViewportTop = viewportTop - (event.clientY - dragY);
+      let newViewportBottom = newViewportTop + containerHeight;
+      if (newViewportTop < 0) {
+        newViewportTop = 0;
+        newViewportBottom = containerHeight;
+      }
+      if (newViewportBottom > maxViewportHeight) {
+        newViewportTop = maxViewportHeight - containerHeight;
+        newViewportBottom = maxViewportHeight;
+      }
+
       this.setState({
-        viewportLeft: newViewportLeft,
-        viewportRight: newViewportRight,
-        viewportTop: viewportTop - offsetY,
-        viewportBottom: viewportTop - offsetY + 1,
         dragX: event.clientX,
         dragY: event.clientY,
+        viewportLeft: newViewportLeft,
+        viewportRight: newViewportRight,
+        viewportTop: newViewportTop,
+        viewportBottom: newViewportBottom,
       });
     }
   }
@@ -157,29 +173,35 @@ class FlameChartViewport extends Component {
   }
 
   render() {
-    const { thread, interval, timeRange, funcStackInfo, maxStackDepth,
-            stackTimingByDepth } = this.props.connectedProps;
+    const {
+      connectedProps: { thread, interval, timeRange, funcStackInfo, maxStackDepth, stackTimingByDepth },
+      maxViewportHeight,
+      rowHeight,
+    } = this.props;
+
     const { containerWidth, containerHeight, viewportLeft, viewportRight, viewportTop,
             viewportBottom, isDragging } = this.state;
+
     return (
       <div className={'flameChartViewport ' + (isDragging ? 'dragging' : '')}
            onWheel={this._mouseWheelListener}
            onMouseDown={this._mouseDownListener}
            ref='container'>
         <FlameChartCanvas interval={interval}
-                    thread={thread}
-                    className='flameChart'
-                    rangeStart={timeRange.start}
-                    rangeEnd={timeRange.end}
-                    stackTimingByDepth={stackTimingByDepth}
-                    funcStackInfo={funcStackInfo}
-                    containerWidth={containerWidth}
-                    containerHeight={containerHeight}
-                    viewportLeft={viewportLeft}
-                    viewportRight={viewportRight}
-                    viewportTop={viewportTop}
-                    viewportBottom={viewportBottom}
-                    maxStackDepth={maxStackDepth} />
+                          thread={thread}
+                          className='flameChart'
+                          rangeStart={timeRange.start}
+                          rangeEnd={timeRange.end}
+                          stackTimingByDepth={stackTimingByDepth}
+                          funcStackInfo={funcStackInfo}
+                          containerWidth={containerWidth}
+                          containerHeight={containerHeight}
+                          viewportLeft={viewportLeft}
+                          viewportRight={viewportRight}
+                          viewportTop={viewportTop}
+                          viewportBottom={viewportBottom}
+                          maxStackDepth={maxStackDepth}
+                          rowHeight={rowHeight} />
       </div>
     );
   }
@@ -187,6 +209,8 @@ class FlameChartViewport extends Component {
 
 FlameChartViewport.propTypes = {
   connectedProps: PropTypes.object.isRequired,
+  maxViewportHeight: PropTypes.number.isRequired,
+  rowHeight: PropTypes.number.isRequired,
 };
 
 export default FlameChartViewport;
