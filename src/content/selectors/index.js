@@ -247,15 +247,15 @@ export const selectorsForThread = threadIndex => {
             stackTimingByDepth[stackDepth].length++;
 
             // Delete that this stack frame has been seen.
-            lastSeenStackIndexByDepth[stackDepth] = null;
-            lastSeenStartTimeByDepth[stackDepth] = null;
+            lastSeenStackIndexByDepth[stackDepth] = undefined;
+            lastSeenStartTimeByDepth[stackDepth] = undefined;
           }
         }
 
         function pushStacks(depth, stackIndex, sampleTime) {
           // "Push" onto the stack with new frames
           for (let parentDepth = depth; parentDepth >= 0; parentDepth--) {
-            if (lastSeenStackIndexByDepth[parentDepth] === stackIndex) {
+            if (lastSeenStackIndexByDepth[parentDepth] !== undefined) {
               break;
             }
             lastSeenStackIndexByDepth[parentDepth] = stackIndex;

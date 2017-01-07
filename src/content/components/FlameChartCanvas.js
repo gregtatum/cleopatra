@@ -10,6 +10,7 @@ class FlameChartCanvas extends Component {
   constructor(props) {
     super(props);
     this._requestedAnimationFrame = false;
+    this._devicePixelRatio = 1;
   }
 
   _scheduleDraw() {
@@ -30,51 +31,94 @@ class FlameChartCanvas extends Component {
     return shallowCompare(this, nextProps, nextState);
   }
 
+  _prepCanvas() {
+    const {canvas} = this.refs;
+    const {containerWidth, containerHeight} = this.props;
+    const {devicePixelRatio} = window;
+    const pixelWidth = containerWidth * devicePixelRatio;
+    const pixelHeight = containerHeight * devicePixelRatio;
+    if (!this._ctx) {
+      this._ctx = canvas.getContext('2d');
+    }
+    if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
+      canvas.width = pixelWidth;
+      canvas.height = pixelHeight;
+      this._ctx.scale(this._devicePixelRatio, this._devicePixelRatio);
+    }
+    if (this._devicePixelRatio !== devicePixelRatio) {
+      // Make sure and multiply by the inverse of the previous ratio, as the scaling
+      // operates off of the previous set scale.
+      const scale = (1 / this._devicePixelRatio) * devicePixelRatio;
+      this._ctx.scale(scale, scale);
+      console.log('setting scale to ' + scale);
+      this._devicePixelRatio = devicePixelRatio;
+    }
+    return this._ctx;
+  }
+
   /**
    * Draw the canvas.
    *
    * Note that most of the units are not absolute values, but unit intervals ranged from
    * 0 - 1. This was done to make the calculations easier for computing various zoomed
-   * and translated views independent of any particular scale. See FlameChartView.js
+   * and translated views independent of any particular scale. See FlameChartViewport.js
    * for a diagram detailing the various components of this set-up.
-   * @param {HTMLCanvasElement} canvas
+   * @param {HTMLCanvasElement} canvas - The current canvas.
+   * @returns {undefined}
    */
   drawCanvas(canvas) {
-    const { thread, interval, rangeStart, rangeEnd, funcStackInfo,
-            containerWidth, containerHeight, viewportLeft, viewportRight, maxStackDepth,
-            stackTimingByDepth } = this.props;
+    const { thread, interval, rangeStart, rangeEnd, funcStackInfo, containerWidth,
+            containerHeight, maxStackDepth, stackTimingByDepth, rowHeight,
+            viewportLeft, viewportRight, viewportTop, viewportBottom } = this.props;
     const { funcStackTable, stackIndexToFuncStackIndex } = funcStackInfo;
     const sampleFuncStacks = getSampleFuncStacks(thread.samples, stackIndexToFuncStackIndex);
 
-    const ctx = prepCanvas(canvas, containerWidth, containerHeight);
-    const range = [rangeStart, rangeEnd];
-    const rangeLength = range[1] - range[0];
-    const yPixelsPerDepth = canvas.height / maxStackDepth;
-    const unitInterval = interval / rangeLength;
-    const boundsUnitLength = viewportRight - viewportLeft;
+    const ctx = this._prepCanvas();
+    ctx.clearRect(0, 0, containerWidth, containerHeight);
 
-    // TODO - Go through the prefixes of the leaf frames, and draw the parent frames.
-    const visitedFrames = [];
-    for (let depth = 0; depth < stackTimingByDepth.length; depth++) {
+    const rangeLength = rangeEnd - rangeStart;
+    const viewportLength = viewportRight - viewportLeft;
+    let drawCount = 0;
+
+    // Only draw the stack frames that are vertically within view.
+    const startDepth = Math.floor(viewportTop / rowHeight);
+    const endDepth = Math.ceil(viewportBottom / rowHeight);
+    for (let depth = startDepth; depth < endDepth; depth++) {
+      // Get the timing information for a row of stack frames.
       const stackTiming = stackTimingByDepth[depth];
+
+      /*
+       * TODO - Do an O(log n) binary search to find the only samples in range rather than
+       * linear O(n) search for loops. Profile the results to see if this helps at all.
+       *
+       * const startSampleIndex = binarySearch(stackTiming.start, rangeStart + rangeLength * viewportLeft);
+       * const endSampleIndex = binarySearch(stackTiming.end, rangeStart + rangeLength * viewportRight);
+       */
+
+      // Decide which samples to actually draw
+      const timeAtViewportLeft = rangeStart + rangeLength * viewportLeft;
+      const timeAtViewportRight = rangeStart + rangeLength * viewportRight;
+
       for (let i = 0; i < stackTiming.length; i++) {
-        const unitStartTime = (stackTiming.start[i] - range[0]) / rangeLength;
-        const unitEndTime = (stackTiming.end[i] - range[0]) / rangeLength;
-        const stackIndex = stackTiming.stack[i];
-        const funcStack = stackIndexToFuncStackIndex[stackIndex];
         // Only draw samples that are in bounds.
-        // if (viewportLeft < unitEndTime && viewportRight > unitStartTime)
-        {
-          const funcStack = sampleFuncStacks[i];
-          const x = Math.floor((unitStartTime - viewportLeft) * containerWidth / boundsUnitLength);
-          const y = depth * ROW_HEIGHT;
-          const w = Math.ceil((unitEndTime - unitStartTime) * containerWidth / boundsUnitLength);
+        if (stackTiming.end[i] > timeAtViewportLeft && stackTiming.start[i] < timeAtViewportRight) {
+          drawCount++;
+          // const stackIndex = stackTiming.stack[i];
+          // const funcStack = stackIndexToFuncStackIndex[stackIndex];
+          // const funcStack = sampleFuncStacks[i];
+          const unitStartTime = (stackTiming.start[i] - rangeStart) / rangeLength;
+          const unitEndTime = (stackTiming.end[i] - rangeStart) / rangeLength;
+
+          const x = ((unitStartTime - viewportLeft) * containerWidth / viewportLength);
+          const y = depth * ROW_HEIGHT - viewportTop;
+          const w = ((unitEndTime - unitStartTime) * containerWidth / viewportLength);
           const h = ROW_HEIGHT - 1;
           ctx.fillStyle = 'rgb(255, 128, 150)';
           ctx.fillRect(x, y, w, h);
         }
       }
     }
+    console.log(`Drew ${drawCount} samples`);
   }
 
   render() {
@@ -101,14 +145,7 @@ FlameChartCanvas.propTypes = {
   viewportRight: PropTypes.number,
   maxStackDepth: PropTypes.number,
   stackTimingByDepth: PropTypes.array,
+  rowHeight: PropTypes.number.isRequired,
 };
 
 export default FlameChartCanvas;
-
-function prepCanvas(canvas, width, height) {
-  canvas.width = width * window.devicePixelRatio;
-  canvas.height = height * window.devicePixelRatio;
-  const ctx = canvas.getContext('2d');
-  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-  return ctx;
-}

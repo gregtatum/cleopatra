@@ -6,10 +6,19 @@ import * as actions from '../actions';
 
 require('./FlameChartView.css');
 
+const ROW_HEIGHT = 16;
+
 class FlameChartView extends Component {
 
   render() {
-    return <FlameChartViewport connectedProps={this.props} />;
+    // The viewport needs to know about the height of what it's drawing, calculate
+    // that here at the top level component.
+    const {maxStackDepth} = this.props;
+    const maxViewportHeight = (maxStackDepth + 1) * ROW_HEIGHT;
+
+    return <FlameChartViewport connectedProps={this.props}
+                               maxViewportHeight={maxViewportHeight}
+                               rowHeight={ROW_HEIGHT} />;
   }
 }
 
