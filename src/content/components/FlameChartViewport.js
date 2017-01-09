@@ -160,7 +160,7 @@ class FlameChartViewport extends Component {
     window.addEventListener('resize', this._setSize, false);
     window.addEventListener('mousedown', this._mouseDownListener, false);
     window.addEventListener('mousemove', this._mouseMoveListener, false);
-    window.addEventListener('mouseup', this._mouseUpListener, false);
+    window.addEventListener('mouseup', this._mouseUpListener, true);
 
     this._setSize();
   }
@@ -169,12 +169,12 @@ class FlameChartViewport extends Component {
     window.removeEventListener('resize', this._setSize, false);
     window.removeEventListener('mousedown', this._mouseDownListener, false);
     window.removeEventListener('mousemove', this._mouseMoveListener, false);
-    window.removeEventListener('mouseup', this._mouseUpListener, false);
+    window.removeEventListener('mouseup', this._mouseUpListener, true);
   }
 
   render() {
     const {
-      connectedProps: { thread, interval, timeRange, funcStackInfo, maxStackDepth, stackTimingByDepth },
+      connectedProps: { thread, interval, timeRange, maxStackDepth, stackTimingByDepth },
       maxViewportHeight,
       rowHeight,
     } = this.props;
@@ -193,7 +193,6 @@ class FlameChartViewport extends Component {
                           rangeStart={timeRange.start}
                           rangeEnd={timeRange.end}
                           stackTimingByDepth={stackTimingByDepth}
-                          funcStackInfo={funcStackInfo}
                           containerWidth={containerWidth}
                           containerHeight={containerHeight}
                           viewportLeft={viewportLeft}

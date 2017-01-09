@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import shallowCompare from 'react-addons-shallow-compare';
 import { timeCode } from '../../common/time-code';
 import { getSampleFuncStacks } from '../profile-data';
+import TextMeasurement from '../../common/text-measurement';
 
 const ROW_HEIGHT = 16;
 
@@ -11,6 +12,7 @@ class FlameChartCanvas extends Component {
     super(props);
     this._requestedAnimationFrame = false;
     this._devicePixelRatio = 1;
+    this._textWidthsCache = {};
   }
 
   _scheduleDraw() {
@@ -29,6 +31,10 @@ class FlameChartCanvas extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     return shallowCompare(this, nextProps, nextState);
+  }
+
+  componentDidMount() {
+    this._textMeasurement = new TextMeasurement(this.refs.canvas.getContext('2d'));
   }
 
   _prepCanvas() {
@@ -67,11 +73,9 @@ class FlameChartCanvas extends Component {
    * @returns {undefined}
    */
   drawCanvas(canvas) {
-    const { thread, interval, rangeStart, rangeEnd, funcStackInfo, containerWidth,
+    const { thread, interval, rangeStart, rangeEnd, containerWidth,
             containerHeight, maxStackDepth, stackTimingByDepth, rowHeight,
             viewportLeft, viewportRight, viewportTop, viewportBottom } = this.props;
-    const { funcStackTable, stackIndexToFuncStackIndex } = funcStackInfo;
-    const sampleFuncStacks = getSampleFuncStacks(thread.samples, stackIndexToFuncStackIndex);
 
     const ctx = this._prepCanvas();
     ctx.clearRect(0, 0, containerWidth, containerHeight);
@@ -103,9 +107,18 @@ class FlameChartCanvas extends Component {
         // Only draw samples that are in bounds.
         if (stackTiming.end[i] > timeAtViewportLeft && stackTiming.start[i] < timeAtViewportRight) {
           drawCount++;
-          // const stackIndex = stackTiming.stack[i];
-          // const funcStack = stackIndexToFuncStackIndex[stackIndex];
-          // const funcStack = sampleFuncStacks[i];
+          const stackIndex = stackTiming.stack[i];
+          const frameIndex = thread.stackTable.frame[stackIndex];
+          const implementationIndex = thread.frameTable.implementation[frameIndex];
+          const implementation = implementationIndex ? thread.stringTable.getString(implementationIndex) : null;
+          const funcIndex = thread.frameTable.func[frameIndex];
+          const name = thread.stringTable.getString(thread.funcTable.name[funcIndex]);
+          const isJS = thread.funcTable.isJS[funcIndex];
+          if (implementation) {
+            ctx.fillStyle = implementation === 'baseline' ? 'rgb(255, 128, 150)' : 'rgb(128, 255, 150)';
+          } else {
+            ctx.fillStyle = isJS ? 'rgb(100, 100, 100)' : 'rgb(240, 240, 240)';
+          }
           const unitStartTime = (stackTiming.start[i] - rangeStart) / rangeLength;
           const unitEndTime = (stackTiming.end[i] - rangeStart) / rangeLength;
 
@@ -113,8 +126,14 @@ class FlameChartCanvas extends Component {
           const y = depth * ROW_HEIGHT - viewportTop;
           const w = ((unitEndTime - unitStartTime) * containerWidth / viewportLength);
           const h = ROW_HEIGHT - 1;
-          ctx.fillStyle = 'rgb(255, 128, 150)';
+
           ctx.fillRect(x, y, w, h);
+
+          const text = this._textMeasurement.getFittedText(name, w);
+          if (text) {
+            ctx.fillStyle = 'rgb(0, 0, 0)';
+            ctx.fillText(text, x, y + 11);
+          }
         }
       }
     }
@@ -134,10 +153,6 @@ FlameChartCanvas.propTypes = {
   interval: PropTypes.number.isRequired,
   rangeStart: PropTypes.number.isRequired,
   rangeEnd: PropTypes.number.isRequired,
-  funcStackInfo: PropTypes.shape({
-    funcStackTable: PropTypes.object.isRequired,
-    stackIndexToFuncStackIndex: PropTypes.any.isRequired,
-  }).isRequired,
   className: PropTypes.string,
   containerWidth: PropTypes.number,
   containerHeight: PropTypes.number,
