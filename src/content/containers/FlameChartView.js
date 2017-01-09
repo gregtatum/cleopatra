@@ -25,7 +25,6 @@ class FlameChartView extends Component {
 FlameChartView.propTypes = {
   threadIndex: PropTypes.number.isRequired,
   thread: PropTypes.object.isRequired,
-  funcStackInfo: PropTypes.object.isRequired,
   interval: PropTypes.number.isRequired,
   timeRange: PropTypes.object.isRequired,
   isSelected: PropTypes.bool.isRequired,
@@ -35,7 +34,6 @@ FlameChartView.propTypes = {
 export default connect((state, props) => {
   return {
     thread: selectedThreadSelectors.getFilteredThread(state),
-    funcStackInfo: selectedThreadSelectors.getFuncStackInfo(state),
     maxStackDepth: selectedThreadSelectors.getFuncStackMaxDepth(state),
     stackTimingByDepth: selectedThreadSelectors.getStackTimingByDepth(state),
     isSelected: true,
