@@ -129,10 +129,14 @@ class FlameChartCanvas extends Component {
 
           ctx.fillRect(x, y, w, h);
 
-          const text = this._textMeasurement.getFittedText(name, w);
+          // Constrain the x coordinate to the leftmost area.
+          const x2 = Math.max(x, 0);
+          const w2 = w - (x2 - x);
+
+          const text = this._textMeasurement.getFittedText(name, w2);
           if (text) {
             ctx.fillStyle = 'rgb(0, 0, 0)';
-            ctx.fillText(text, x, y + 11);
+            ctx.fillText(text, x2, y + 11);
           }
         }
       }
