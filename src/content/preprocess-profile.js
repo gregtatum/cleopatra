@@ -2,7 +2,7 @@ import { getContainingLibrary, getClosestLibrary } from './symbolication';
 import { UniqueStringArray } from './unique-string-array';
 import { resourceTypes } from './profile-data';
 import { provideHostSide } from './promise-worker';
-
+import { attemptToUnserializeChromeProfileFormat } from '../common/process-chrome-profile';
 /**
  * Module for converting a profile into the 'preprocessed' format.
  * @module preprocess-profile
@@ -124,7 +124,7 @@ function preprocessThreadStageTwo(thread, libs) {
         }
       }
     } else {
-      const cppMatch = 
+      const cppMatch =
         /^(.*) \(in ([^)]*)\) (\+ [0-9]+)$/.exec(locationString) ||
         /^(.*) \(in ([^)]*)\) (\(.*:.*\))$/.exec(locationString) ||
         /^(.*) \(in ([^)]*)\)$/.exec(locationString);
@@ -557,7 +557,7 @@ function preprocessThreadFromProfileJSONWithSymbolicationTable(thread, symbolica
   }
 
   let threadName = thread.name;
-  let processType = thread.processType || (threadName === 'Content' ? 'tab' : (threadName === 'Plugin' ? 'plugin' : 'default'));
+  const processType = thread.processType || (threadName === 'Content' ? 'tab' : (threadName === 'Plugin' ? 'plugin' : 'default'));
 
   if (threadName === 'Content') {
     threadName = 'GeckoMain';
@@ -611,7 +611,8 @@ export function unserializeProfile(jsonString) {
   const profile = JSON.parse(jsonString);
   return attemptToUnserializePreprocessedProfileFormat(profile) ||
          attemptToUnserializeRawProfileFormat(profile) ||
-         attemptToUnserializeProfileJSONWithSymbolicationTableProfileFormat(profile);
+         attemptToUnserializeProfileJSONWithSymbolicationTableProfileFormat(profile) ||
+         attemptToUnserializeChromeProfileFormat(profile);
 }
 
 export class ProfilePreprocessor {
