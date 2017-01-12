@@ -108,7 +108,7 @@ class FlameChartViewport extends Component {
 
   _mouseMoveListener(event) {
     if (this.state.isDragging) {
-      event.preventDefault();
+      event.stopPropagation();
       const { maxViewportHeight } = this.props;
       const { dragX, dragY, containerWidth, containerHeight, viewportLeft, viewportRight,
               viewportTop } = this.state;
@@ -150,16 +150,18 @@ class FlameChartViewport extends Component {
     }
   }
 
-  _mouseUpListener() {
-    this.setState({
-      isDragging: false,
-    });
+  _mouseUpListener(event) {
+    if (this.state.isDragging) {
+      event.stopPropagation();
+      this.setState({
+        isDragging: false,
+      });
+    }
   }
 
   componentDidMount() {
     window.addEventListener('resize', this._setSize, false);
-    window.addEventListener('mousedown', this._mouseDownListener, false);
-    window.addEventListener('mousemove', this._mouseMoveListener, false);
+    window.addEventListener('mousemove', this._mouseMoveListener, true);
     window.addEventListener('mouseup', this._mouseUpListener, true);
 
     this._setSize();
@@ -167,8 +169,7 @@ class FlameChartViewport extends Component {
 
   componentWillUnmount() {
     window.removeEventListener('resize', this._setSize, false);
-    window.removeEventListener('mousedown', this._mouseDownListener, false);
-    window.removeEventListener('mousemove', this._mouseMoveListener, false);
+    window.removeEventListener('mousemove', this._mouseMoveListener, true);
     window.removeEventListener('mouseup', this._mouseUpListener, true);
   }
 
