@@ -5,6 +5,7 @@ if (process.env.NODE_ENV === 'test') {
 } else {
   zeeWorker = new window.Worker('/zee-worker.js');
 }
+
 const zeeCallbacks = [];
 
 zeeWorker.onmessage = function (msg) {
