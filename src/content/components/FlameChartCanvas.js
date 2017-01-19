@@ -91,6 +91,9 @@ class FlameChartCanvas extends Component {
       // Get the timing information for a row of stack frames.
       const stackTiming = stackTimingByDepth[depth];
 
+      if (!stackTiming) {
+        continue;
+      }
       /*
        * TODO - Do an O(log n) binary search to find the only samples in range rather than
        * linear O(n) search for loops. Profile the results to see if this helps at all.
@@ -114,6 +117,9 @@ class FlameChartCanvas extends Component {
           const funcIndex = thread.frameTable.func[frameIndex];
           const name = thread.stringTable.getString(thread.funcTable.name[funcIndex]);
           const isJS = thread.funcTable.isJS[funcIndex];
+          if (name === 'EnterBaseline') {
+            debugger;
+          }
           if (implementation) {
             ctx.fillStyle = implementation === 'baseline' ? 'rgb(255, 128, 150)' : 'rgb(128, 255, 150)';
           } else {
