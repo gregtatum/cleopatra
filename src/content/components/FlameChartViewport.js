@@ -66,7 +66,7 @@ class FlameChartViewport extends Component {
       this.setState({
         containerWidth: rect.width,
         containerHeight: rect.height,
-        containerLeft: rect.x,
+        containerLeft: rect.left,
         viewportBottom: this.state.viewportTop + rect.height,
       });
     }
