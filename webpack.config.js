@@ -2,6 +2,8 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const OfflinePlugin = require('offline-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+
 
 const baseConfig = {
   plugins: [
@@ -23,6 +25,9 @@ const baseConfig = {
       template: 'res/index.html',
       favicon: 'res/favicon.png',
     }),
+    new CopyWebpackPlugin([
+      { from: 'src/content/zee-worker.js', to: 'dist/zee-worker.js' },
+    ]),
   ],
   resolve: {
     alias: {
@@ -36,23 +41,29 @@ const baseConfig = {
     rules: [{
       test: /\.js$/,
       loaders: ['babel-loader'],
+      exclude: /node_modules/,
       include: __dirname,
     }, {
       test: /\.json$/,
       loaders: ['json-loader'],
+      exclude: /node_modules/,
       include: __dirname,
     }, {
       test: /\.css?$/,
       loaders: ['style-loader', 'css-loader?minimize'],
+      exclude: /node_modules/,
       include: __dirname,
     }, {
       test: /\.jpg$/,
+      exclude: /node_modules/,
       loader: 'file-loader',
     }, {
       test: /\.png$/,
+      exclude: /node_modules/,
       loader: 'file-loader',
     }, {
       test: /\.svg$/,
+      exclude: /node_modules/,
       loader: 'file-loader',
     }],
   },

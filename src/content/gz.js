@@ -1,9 +1,9 @@
 let Worker, workerPath;
 if (process.env.NODE_ENV === 'test') {
-  workerPath = __dirname + '/../../res/zee-worker.js';
+  workerPath = __dirname + '/../../src/content/zee-worker.js';
   Worker = require('workerjs');
 } else {
-  workerPath = '/res/zee-worker.js';
+  workerPath = '/zee-worker.js';
   Worker = window.Worker;
 }
 const zeeWorker = new Worker(workerPath);

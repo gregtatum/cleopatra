@@ -14,7 +14,7 @@ import handleMessages from '../common/message-handler';
 export default function initializeStore() {
   let Worker, workerPath;
   if (process.env.NODE_ENV === 'test') {
-    workerPath = __dirname + '/../../res/worker.js';
+    workerPath = __dirname + '/../../dist/worker.js';
     Worker = require('workerjs');
   } else {
     workerPath = '/worker.js';
