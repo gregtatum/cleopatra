@@ -527,3 +527,264 @@ export function getTracingMarkers(thread, markers) {
   }
   return tracingMarkers;
 }
+
+export function computeFuncStackMaxDepth({funcStackTable}) {
+  let maxDepth = 0;
+  for (let i = 0; i < funcStackTable.depth.length; i++) {
+    if (funcStackTable.depth[i] > maxDepth) {
+      maxDepth = funcStackTable.depth[i];
+    }
+  }
+  return maxDepth;
+}
+
+export function stackTimingByDepth(thread, funcStackInfo, maxDepth, interval, jsOnly) {
+  const {funcStackTable, stackIndexToFuncStackIndex} = funcStackInfo;
+  const stackTimingByDepth = Array.from({length: maxDepth + 1}, () => ({
+    start: [],
+    end: [],
+    stack: [],
+    length: 0,
+  }));
+  const lastSeenStartTimeByDepth = [];
+  const lastSeenStackIndexByDepth = [];
+
+  function popStacks(depth, previousDepth, sampleTime) {
+    // "Pop" off the stack, and commit the timing of the frames
+    for (let stackDepth = depth + 1; stackDepth <= previousDepth; stackDepth++) {
+      // Push on the new information.
+      stackTimingByDepth[stackDepth].start.push(lastSeenStartTimeByDepth[stackDepth]);
+      stackTimingByDepth[stackDepth].end.push(sampleTime);
+      stackTimingByDepth[stackDepth].stack.push(lastSeenStackIndexByDepth[stackDepth]);
+      stackTimingByDepth[stackDepth].length++;
+
+      if (lastSeenStackIndexByDepth[stackDepth] > thread.stackTable.frame.length) {
+        debugger;
+      }
+      // Delete that this stack frame has been seen.
+      lastSeenStackIndexByDepth[stackDepth] = undefined;
+      lastSeenStartTimeByDepth[stackDepth] = undefined;
+    }
+  }
+
+  function pushStacks(depth, startingIndex, sampleTime) {
+    let stackIndex = startingIndex;
+    // "Push" onto the stack with new frames
+    for (let parentDepth = depth; parentDepth >= 0; parentDepth--) {
+      if (lastSeenStackIndexByDepth[parentDepth] !== undefined) {
+        break;
+      }
+      lastSeenStackIndexByDepth[parentDepth] = stackIndex;
+      lastSeenStartTimeByDepth[parentDepth] = sampleTime;
+      stackIndex = thread.stackTable.prefix[stackIndex];
+    }
+  }
+
+  // Go through each sample, and push/pop it on the stack to build up
+  // the stackTimingByDepth.
+  let previousDepth = 0;
+  let maxStackIndex = 0;
+  for (let i = 0; i < thread.samples.length; i++) {
+    const stackIndex = thread.samples.stack[i];
+    const sampleTime = thread.samples.time[i];
+    const funcStackIndex = stackIndexToFuncStackIndex[stackIndex];
+    const depth = funcStackTable.depth[funcStackIndex];
+
+    if (stackIndex > thread.stackTable.frame.length) {
+      maxStackIndex = Math.max(maxStackIndex, 0);
+      debugger;
+    }
+    // If the two samples at the top of the stack are different, pop the last stack frame.
+    const depthToPop = lastSeenStackIndexByDepth[depth] === stackIndex ? depth : depth - 1;
+    popStacks(depthToPop, previousDepth, sampleTime);
+    pushStacks(depth, stackIndex, sampleTime);
+    previousDepth = depth;
+  }
+  console.log('maxStackIndex after initial computation', maxStackIndex, thread.stackTable.frame.length);
+
+  // Pop the remaining stacks
+  const endingTime = thread.samples.time[thread.samples.time.length - 1] + interval;
+  popStacks(-1, previousDepth, endingTime);
+
+  // Collapse platform code into single rows if JS only.
+  if (jsOnly) {
+    collapsePlatformStacks(stackTimingByDepth, thread, funcStackInfo);
+  }
+
+  return stackTimingByDepth;
+}
+
+/**
+ * Given timing information like below, collapse out the platform stacks. In the diagram
+ * "J" represents JavaScript stack frame timing, and "P" Platform stack frame timing.
+ * The timing stack index gets changed to -1 for collapsed platform code.
+ *
+ * JJJJJJJJJJJJJJJJ  --->  JJJJJJJJJJJJJJJJ
+ * PPPPPPPPPPPPPPPP        PPPPPPPPPPPPPPPP
+ *     PPPPPPPPPPPP            JJJJJJJJ
+ *     PPPPPPPP                JJJ  JJJ
+ *     JJJJJJJJ
+ *     JJJ  JJJ
+ *
+ * @param {Object} stackTimingByDepth - Table of stack timings.
+ * @param {Object} thread - The current thread.
+ * @param {Object} funcStackInfo - Info about funcStacks.
+ * @returns {Object} The mutated and collapsed timing information.
+ */
+function collapsePlatformStacks(stackTimingByDepth, thread, funcStackInfo) {
+  const {funcStackTable, stackIndexToFuncStackIndex} = funcStackInfo;
+  function findParentTimingIndex(timingRow, start, end) {
+    for (let i = 0; i < timingRow.length; i++) {
+      if (timingRow.start[i] <= start && timingRow.end[i] >= end) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  function findChildTimingIndicesInRange(timingRow, start, end) {
+    const inRange = {
+      index: [],
+      stack: [],
+      start: [],
+      end: [],
+    };
+
+    for (let i = 0; i < timingRow.length; i++) {
+      if (timingRow.start[i] >= start) {
+        if (timingRow.end[i] <= end) {
+          inRange.index.push(i);
+          inRange.stack.push(timingRow.stack[i]);
+          inRange.start.push(timingRow.start[i]);
+          inRange.end.push(timingRow.end[i]);
+        } else {
+          break;
+        }
+      }
+    }
+    return inRange;
+  }
+
+  function timingIsPlatform(timingRow, timingIndex) {
+    const stackIndex = timingRow.stack[timingIndex];
+    const funcStackIndex = stackIndexToFuncStackIndex[stackIndex];
+    const funcIndex = funcStackTable.func[funcStackIndex];
+    return !thread.funcTable.isJS[funcIndex];
+  }
+
+  /**
+   * Walk from the parent to the leaf of the stack, collapsing the stack down one level.
+   *
+   * JJJJJJJJJJJJJJJJ
+   * PPPPPPPPPPPPPPPP
+   *     PPPPPPPPPPPP   <- parent
+   *     [ collapse ]   <- empty (the platform timing that was removed)
+   *     JJJJJJJJ       <- child
+   *  ^  JJJ  JJJ
+   *  |
+   *  collapse down
+   *
+   * @param {Integer} depth - The depth of the empty row.
+   * @param {Integer} timingIndex - The timingIndex of the removed timing.
+   * @param {Number} start - The starting time of the removed timing.
+   * @param {Number} end - The ending time of the removed timing.
+   * @return {undefined}
+   */
+  function collapseStackDownOneLevel(depth, timingIndex, start, end) {
+    let emptyTimingIndex = timingIndex;
+    for (let emptyDepth = depth; emptyDepth < stackTimingByDepth.length - 1; emptyDepth++) {
+      const childDepth = emptyDepth + 1;
+      const emptyTimingRow = stackTimingByDepth[emptyDepth];
+      const childTimingRow = stackTimingByDepth[childDepth];
+      const inRangeTimings = findChildTimingIndicesInRange(childTimingRow, start, end);
+      const childTimingIndex = inRangeTimings.index[0];
+
+      // If all of the samples were found, then bail out.
+      if (inRangeTimings.index.length === 0) {
+        break;
+      }
+
+      // Splice out all of the children timings.
+      childTimingRow.stack.splice(childTimingIndex, inRangeTimings.index.length);
+      childTimingRow.start.splice(childTimingIndex, inRangeTimings.index.length);
+      childTimingRow.end.splice(childTimingIndex, inRangeTimings.index.length);
+
+      // Insert them all into the empty row.
+      emptyTimingRow.stack.splice(emptyTimingIndex, 0, ...inRangeTimings.stack);
+      emptyTimingRow.start.splice(emptyTimingIndex, 0, ...inRangeTimings.start);
+      emptyTimingRow.end.splice(emptyTimingIndex, 0, ...inRangeTimings.end);
+
+      emptyTimingIndex = childTimingIndex;
+    }
+  }
+
+  function transform(stackTimingByDepth) {
+    return stackTimingByDepth.map(({stack, start, end}) => {
+      return stack.map((_, i) => ({
+        stack: stack[i],
+        start: start[i],
+        end: end[i],
+      }));
+    });
+  }
+
+  // Compare neighboring stacks (a child, and parent). If both child and parent are
+  // platform code, then pop off the child, and shift the rest of the children stacks
+  // up.
+  for (let childDepth = stackTimingByDepth.length - 1; childDepth > 0; childDepth--) {
+    const parentDepth = childDepth - 1;
+    const parentTimingRow = stackTimingByDepth[parentDepth];
+    const childTimingRow = stackTimingByDepth[childDepth];
+
+    // Go through each stack frame at this depth.
+    for (let childTimingIndex = 0; childTimingIndex < childTimingRow.start.length; childTimingIndex++) {
+      // Find the parent frame.
+      const childStart = childTimingRow.start[childTimingIndex];
+      const childEnd = childTimingRow.end[childTimingIndex];
+      const parentTimingIndex = findParentTimingIndex(parentTimingRow, childStart, childEnd);
+      const childTimingRowLengthBefore = childTimingRow.start.length;
+
+      if (timingIsPlatform(childTimingRow, childTimingIndex) &&
+          timingIsPlatform(parentTimingRow, parentTimingIndex)) {
+
+        childTimingRow.start.splice(childTimingIndex, 1);
+        childTimingRow.end.splice(childTimingIndex, 1);
+        childTimingRow.stack.splice(childTimingIndex, 1);
+
+        collapseStackDownOneLevel(childDepth, childTimingIndex, childStart, childEnd);
+
+        // If a sample was deleted, make sure and adjust the index to go back a sample.
+        if (childTimingRowLengthBefore - childTimingRow.start.length === 1) {
+          childTimingIndex--;
+        }
+      }
+    }
+  }
+
+  // Perform some final updates based on the final computed timing.
+  let maxStackIndex = 0;
+  for (let depth = 0; depth < stackTimingByDepth.length; depth++) {
+    // Update row lengths.
+    const timingRow = stackTimingByDepth[depth];
+    timingRow.length = timingRow.stack.length;
+
+    // Set the stack to -1 for platform code.
+    for (let i = 0; i < timingRow.length; i++) {
+      maxStackIndex = Math.max(timingRow.stack[i], maxStackIndex);
+      if (timingRow.stack[i] > thread.stackTable.frame.length) {
+        debugger;
+      }
+      if (timingIsPlatform(timingRow, i)) {
+        timingRow.stack[i] = -1;
+      }
+    }
+
+    // If a row is empty from shifting samples, then drop the rest of the rows.
+    if (timingRow.length === 0) {
+      stackTimingByDepth.length = depth;
+    }
+  }
+  console.log('stackTimingByDepth:', stackTimingByDepth);
+  console.log('maxStackIndex after collapse', maxStackIndex, thread.stackTable.frame.length);
+  return stackTimingByDepth;
+}

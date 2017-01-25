@@ -1,19 +1,53 @@
 import exampleProfile from './example-profile';
 
+/**
+ * This table shows off how a flame chart gets collapsed, where the number is the stack
+ * index, and P is platform code, and J javascript.
+ *
+ *          Unfiltered             ->             JS Only
+ *  =============================      =============================
+ *  0P 0P 0P 0P 0P 0P 0P 0P 0P 0P      -P -P -P -P -P -P -P -P -P -P
+ *  1P 1P 1P 1P    1P 1P 1P 1P 1P                        4j 4J 4J 4J
+ *     2P 2P 3P       4J 4J 4J 4J                           5J 5J
+ *                       5J 5J                                 -P
+ *                          6P                                 8J
+ *                          7P
+ *                          8J
+ *
+ *        Unfiltered Timing
+ *  =============================
+ *  {stack: 0, start: 0, end: 91}
+ *  {stack: 1, start: 0, end 40}, {stack: 1, start: 50, end: 91},
+ *  {stack: 2, start: 10, end: 30}, {stack: 3, start:30, end: 40}, {stack: 4, start: 60, end: 91}
+ *  {stack: 5, start: 70, end: 90}
+ *  {stack: 6, start: 80, end: 90}
+ *  {stack: 7, start: 80, end: 90}
+ *  {stack: 8, start: 80, end: 90}
+ *
+ *          JS Only Timing
+ *  ==============================
+ *  {stack: -1, start: 0, end: 91}
+ *  {stack: 4, start: 60, end: 91}
+ *  {stack: 5, start: 70: end: 90}
+ *  {stack: -1, start: 80, end: 90}
+ *  {stack: 8, start: 80: end: 90}
+ *
+ */
+
 const thread = {
   samples: {
     schema: { stack: 0, time: 1, responsiveness: 2, rss: 3, uss: 4, frameNumber: 5, power: 6 },
     data: [
       [1, 0, 0], // (root), 0x100000f84
-      [2, 1, 0], // (root), 0x100000f84, 0x100001a45
-      [2, 2, 0], // (root), 0x100000f84, 0x100001a45
-      [3, 3, 0], // (root), 0x100000f84, Startup::XRE_Main
-      [0, 4, 0], // (root)
-      [1, 5, 0], // (root), 0x100000f84
-      [4, 6, 0], // (root), 0x100000f84, jsOne
-      [5, 7, 0], // (root), 0x100000f84, jsOne, jsTwo
-      [8, 8, 0], // (root), 0x100000f84, jsOne, jsTwo, 0x10000f0f0, 0x100fefefe, jsThree
-      [4, 9, 0], // (root)
+      [2, 10, 0], // (root), 0x100000f84, 0x100001a45
+      [2, 20, 0], // (root), 0x100000f84, 0x100001a45
+      [3, 30, 0], // (root), 0x100000f84, Startup::XRE_Main
+      [0, 40, 0], // (root)
+      [1, 50, 0], // (root), 0x100000f84
+      [4, 60, 0], // (root), 0x100000f84, jsOne
+      [5, 70, 0], // (root), 0x100000f84, jsOne, jsTwo
+      [8, 80, 0], // (root), 0x100000f84, jsOne, jsTwo, 0x10000f0f0, 0x100fefefe, jsThree
+      [4, 90, 0], // (root), 0x100000f84, jsOne
     ],
   },
   stackTable: {
@@ -23,11 +57,11 @@ const thread = {
       [0, 1],    // 1: (root), 0x100000f84
       [1, 2],    // 2: (root), 0x100000f84, 0x100001a45
       [1, 3],    // 3: (root), 0x100000f84, Startup::XRE_Main
-      [1, 7],    // 4: (root), 0x100000f84, jsOne
-      [4, 8],    // 5: (root), 0x100000f84, jsOne, jsTwo
-      [5, 9],    // 6: (root), 0x100000f84, jsOne, jsTwo, 0x10000f0f0
-      [6, 10],   // 7: (root), 0x100000f84, jsOne, jsTwo, 0x10000f0f0, 0x100fefefe
-      [7, 11],   // 8: (root), 0x100000f84, jsOne, jsTwo, 0x10000f0f0, 0x100fefefe, jsThree
+      [1, 4],    // 4: (root), 0x100000f84, jsOne
+      [4, 5],    // 5: (root), 0x100000f84, jsOne, jsTwo
+      [5, 6],    // 6: (root), 0x100000f84, jsOne, jsTwo, 0x10000f0f0
+      [6, 7],    // 7: (root), 0x100000f84, jsOne, jsTwo, 0x10000f0f0, 0x100fefefe
+      [7, 8],    // 8: (root), 0x100000f84, jsOne, jsTwo, 0x10000f0f0, 0x100fefefe, jsThree
     ],
   },
   frameTable: {
@@ -39,9 +73,9 @@ const thread = {
       [3, null, null, 4391, 16], // 3: Startup::XRE_Main, line 4391, category 16
       [7, 6, null, 1],           // 4: jsOne, implementation 'baseline', line 1
       [8, 6, null, 2],           // 5: jsTwo, implementation 'baseline', line 2
-      [9],                       // 1: 0x10000f0f0
-      [10],                      // 2: 0x100fefefe
-      [11, 6, null, 3],          // 4: jsThree, implementation 'baseline', line 3
+      [9],                       // 6: 0x10000f0f0
+      [10],                      // 7: 0x100fefefe
+      [11, 6, null, 3],          // 8: jsThree, implementation 'baseline', line 3
     ],
   },
   markers: {

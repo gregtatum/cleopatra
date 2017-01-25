@@ -33,8 +33,8 @@ FlameChartView.propTypes = {
 
 export default connect((state, props) => {
   return {
-    thread: selectedThreadSelectors.getFilteredThread(state),
-    maxStackDepth: selectedThreadSelectors.getFuncStackMaxDepth(state),
+    thread: selectedThreadSelectors.getRangeFilteredThread(state),
+    maxStackDepth: selectedThreadSelectors.getRangedOnlyFuncStackMaxDepth(state),
     stackTimingByDepth: selectedThreadSelectors.getStackTimingByDepth(state),
     isSelected: true,
     timeRange: getDisplayRange(state),

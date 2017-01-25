@@ -111,14 +111,17 @@ class FlameChartCanvas extends Component {
         if (stackTiming.end[i] > timeAtViewportLeft && stackTiming.start[i] < timeAtViewportRight) {
           drawCount++;
           const stackIndex = stackTiming.stack[i];
-          const frameIndex = thread.stackTable.frame[stackIndex];
-          const implementationIndex = thread.frameTable.implementation[frameIndex];
-          const implementation = implementationIndex ? thread.stringTable.getString(implementationIndex) : null;
-          const funcIndex = thread.frameTable.func[frameIndex];
-          const name = thread.stringTable.getString(thread.funcTable.name[funcIndex]);
-          const isJS = thread.funcTable.isJS[funcIndex];
-          if (name === 'EnterBaseline') {
-            debugger;
+          let name, isJS, implementation;
+          if (stackIndex === -1) {
+            name = 'Gecko';
+            isJS = false;
+          } else {
+            const frameIndex = thread.stackTable.frame[stackIndex];
+            const funcIndex = thread.frameTable.func[frameIndex];
+            const implementationIndex = thread.frameTable.implementation[frameIndex];
+            implementation = implementationIndex ? thread.stringTable.getString(implementationIndex) : null;
+            name = thread.stringTable.getString(thread.funcTable.name[funcIndex]);
+            isJS = thread.funcTable.isJS[funcIndex];
           }
           if (implementation) {
             ctx.fillStyle = implementation === 'baseline' ? 'rgb(255, 128, 150)' : 'rgb(128, 255, 150)';
