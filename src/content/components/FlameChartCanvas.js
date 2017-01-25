@@ -56,7 +56,6 @@ class FlameChartCanvas extends Component {
       // operates off of the previous set scale.
       const scale = (1 / this._devicePixelRatio) * devicePixelRatio;
       this._ctx.scale(scale, scale);
-      console.log('setting scale to ' + scale);
       this._devicePixelRatio = devicePixelRatio;
     }
     return this._ctx;
@@ -113,7 +112,7 @@ class FlameChartCanvas extends Component {
           const stackIndex = stackTiming.stack[i];
           let name, isJS, implementation;
           if (stackIndex === -1) {
-            name = 'Gecko';
+            name = 'Platform';
             isJS = false;
           } else {
             const frameIndex = thread.stackTable.frame[stackIndex];
@@ -150,7 +149,6 @@ class FlameChartCanvas extends Component {
         }
       }
     }
-    console.log(`Drew ${drawCount} samples`);
   }
 
   render() {

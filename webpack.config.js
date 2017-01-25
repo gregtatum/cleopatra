@@ -2,8 +2,6 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const OfflinePlugin = require('offline-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-
 
 const baseConfig = {
   plugins: [
@@ -25,9 +23,6 @@ const baseConfig = {
       template: 'res/index.html',
       favicon: 'res/favicon.png',
     }),
-    new CopyWebpackPlugin([
-      { from: 'src/content/zee-worker.js', to: 'dist/zee-worker.js' },
-    ]),
   ],
   resolve: {
     alias: {
