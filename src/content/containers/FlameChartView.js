@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import FlameChartViewport from '../components/FlameChartViewport';
-import { selectorsForThread, getSelectedThreadIndex, selectedThreadSelectors, getDisplayRange, getProfileInterval } from '../selectors/';
+import { getSelectedThreadIndex, selectedThreadSelectors, getDisplayRange, getProfileInterval } from '../selectors/';
 import * as actions from '../actions';
 
 require('./FlameChartView.css');
@@ -28,10 +28,10 @@ FlameChartView.propTypes = {
   interval: PropTypes.number.isRequired,
   timeRange: PropTypes.object.isRequired,
   isSelected: PropTypes.bool.isRequired,
-  style: PropTypes.object,
+  maxStackDepth: PropTypes.number.isRequired,
 };
 
-export default connect((state, props) => {
+export default connect(state => {
   return {
     thread: selectedThreadSelectors.getRangeFilteredThread(state),
     maxStackDepth: selectedThreadSelectors.getRangedOnlyFuncStackMaxDepth(state),

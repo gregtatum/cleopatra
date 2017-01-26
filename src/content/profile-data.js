@@ -538,7 +538,35 @@ export function computeFuncStackMaxDepth({funcStackTable}) {
   return maxDepth;
 }
 
-export function stackTimingByDepth(thread, funcStackInfo, maxDepth, interval, jsOnly) {
+/**
+ * Build a sample timing table that lists all of the sample's timing information
+ * by call stack depth. This optimizes sample data for Flame Chart timeline views. It
+ * makes it really easy to draw a large amount of boxes at once based on where the
+ * viewport is in the stack frame data. Plus the end timings for frames need to be
+ * reconstructed from the sample data, as the samples only contain start timings.
+ *
+ * This format allows for specifically selecting certain rows of stack frames by using
+ * the stack depth information. In addition, the start and end times of samples can be
+ * found through binary searches, allowing for selecting the proper subsets of frames
+ * to be drawn. Each row's sample length is different, but it can still be efficient
+ * to find subsets of the data.
+ *
+ * @param {object} thread - The profile thread.
+ * @param {object} funcStackInfo - from the funcStackInfo selector.
+ * @param {integer} maxDepth - The max depth of the all the stacks.
+ * @param {number} interval - The interval of how long the profile was recorded.
+ * @param {boolean} jsOnly - Whether or not to collapse platform stacks.
+ * @return {array} stackTimingByDepth - for example:
+ *
+ * [
+ *   {start: [10], end: [100], stack: [0]}
+ *   {start: [20, 40, 60], end: [40, 60, 80], stack: [1, 2, 3]}
+ *   {start: [20, 40, 60], end: [40, 60, 80], stack: [34, 59, 72]}
+ *   ...
+ *   {start: [25, 45], end: [35, 55], stack: [123, 159, 160]}
+ * ]
+ */
+export function getStackTimingByDepth(thread, funcStackInfo, maxDepth, interval, jsOnly) {
   const {funcStackTable, stackIndexToFuncStackIndex} = funcStackInfo;
   const stackTimingByDepth = Array.from({length: maxDepth + 1}, () => ({
     start: [],

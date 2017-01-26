@@ -7,11 +7,11 @@ class TextMeasurement {
   constructor(ctx) {
     this._ctx = ctx;
     this._cache = {};
-    this._overflowCharWidth = this.getTextWidth(this.overflowChar);
     this._averageCharWidth = this._calcAverageCharWidth();
 
     // TODO - L10N
     this.overflowChar = '…';
+    this.minWidth = this.getTextWidth(this.overflowChar);
   }
 
   /**
@@ -19,8 +19,7 @@ class TextMeasurement {
    * context state (font size, family etc.). This provides a close enough
    * value to use in `getTextWidthApprox`.
    *
-   * @return number
-   *         The average letter width.
+   * @return {number} The average letter width.
    */
   _calcAverageCharWidth() {
     let letterWidthsSum = 0;
@@ -41,10 +40,8 @@ class TextMeasurement {
    * Gets the width of the specified text, for the current context state
    * (font size, family etc.).
    *
-   * @param string text
-   *        The text to analyze.
-   * @return number
-   *         The text width.
+   * @param {string} text - The text to analyze.
+   * @return {number} The text width.
    */
   getTextWidth(text) {
     const cachedWidth = this._cache[text];
@@ -52,17 +49,16 @@ class TextMeasurement {
       return cachedWidth;
     }
     const metrics = this._ctx.measureText(text);
-    return this._cache[text] = metrics.width;
+    this._cache[text] = metrics.width;
+    return metrics.width;
   }
 
   /**
    * Gets an approximate width of the specified text. This is much faster
    * than `_getTextWidth`, but inexact.
    *
-   * @param string text
-   *        The text to analyze.
-   * @return number
-   *         The approximate text width.
+   * @param {string} text - The text to analyze.
+   * @return {number} The approximate text width.
    */
   getTextWidthApprox(text) {
     return text.length * this._averageCharWidth;
@@ -72,15 +68,12 @@ class TextMeasurement {
    * Massage a text to fit inside a given width. This clamps the string
    * at the end to avoid overflowing.
    *
-   * @param string text
-   *        The text to fit inside the given width.
-   * @param number maxWidth
-   *        The available width for the given text.
-   * @return string
-   *         The fitted text.
+   * @param {string} text -The text to fit inside the given width.
+   * @param {number} maxWidth - The available width for the given text.
+   * @return {string} The fitted text.
    */
   getFittedText(text, maxWidth) {
-    if (this._overflowCharWidth > maxWidth) {
+    if (this.minWidth > maxWidth) {
       return '';
     }
     const textWidth = this.getTextWidth(text);
@@ -89,7 +82,7 @@ class TextMeasurement {
     }
     for (let i = 1, len = text.length; i <= len; i++) {
       const trimmedText = text.substring(0, len - i);
-      const trimmedWidth = this.getTextWidthApprox(trimmedText) + this._overflowCharWidth;
+      const trimmedWidth = this.getTextWidthApprox(trimmedText) + this.minWidth;
       if (trimmedWidth < maxWidth) {
         return trimmedText + this.overflowChar;
       }

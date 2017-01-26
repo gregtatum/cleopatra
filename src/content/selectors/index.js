@@ -197,36 +197,14 @@ export const selectorsForThread = threadIndex => {
       getRangedOnlyFuncStackInfo,
       ProfileData.computeFuncStackMaxDepth
     );
-    /**
-     * Build a sample timing table that lists all of the sample's timing information
-     * by call stack depth. This optimizes sample data for Flame Chart timeline views. It
-     * makes it really easy to draw a large amount of boxes at once based on where the
-     * viewport is in the stack frame data. Plus the end timings for frames need to be
-     * reconstructed from the smaple data, as the samples only contain start timings.
-     *
-     * This format allows for specifically selecting certain rows of stack frames by using
-     * the stack depth information. In addition, the start and end times of samples can be
-     * found through binary searches, allowing for selecting the proper subsets of frames
-     * to be drawn. Each row's sample length is different, but it can still be efficient
-     * to find subsets of the data.
-     *
-     * [
-     *   [ {start, end, stack} ]
-     *   [ {start, end, stack}, {start, end, stack} ]
-     *   [ {start, end, stack}, {start, end, stack}, {start, end, stack} ]
-     *   [ {start, end, stack}, {start, end, stack}, {start, end, stack} ]
-     *   [ {start, end, stack}, {start, end, stack}, ..., {start, end, stack} ]
-     *   ...
-     *   [ {start, end, stack}, {start, end, stack} ]
-     * ]
-     */
+    // TODO - Memoize off of the intial profile.
     const getStackTimingByDepth = createSelector(
       getRangeFilteredThread,
       getRangedOnlyFuncStackInfo,
       getRangedOnlyFuncStackMaxDepth,
       getProfileInterval,
       getJSOnly,
-      ProfileData.stackTimingByDepth
+      ProfileData.getStackTimingByDepth
     );
     const getCallTree = createSelector(
       getRangeSelectionFilteredThread,
