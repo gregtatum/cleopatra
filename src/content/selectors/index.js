@@ -1,5 +1,6 @@
 import { createSelector } from 'reselect';
 import * as ProfileData from '../profile-data';
+import * as StackTiming from '../stack-timing';
 import * as ProfileTree from '../profile-tree';
 import * as TaskTracer from '../task-tracer';
 import * as reducers from '../reducers';
@@ -195,7 +196,7 @@ export const selectorsForThread = threadIndex => {
     );
     const getRangedOnlyFuncStackMaxDepth = createSelector(
       getRangedOnlyFuncStackInfo,
-      ProfileData.computeFuncStackMaxDepth
+      StackTiming.computeFuncStackMaxDepth
     );
     // TODO - Memoize off of the intial profile.
     const getStackTimingByDepth = createSelector(
@@ -204,7 +205,7 @@ export const selectorsForThread = threadIndex => {
       getRangedOnlyFuncStackMaxDepth,
       getProfileInterval,
       getJSOnly,
-      ProfileData.getStackTimingByDepth
+      StackTiming.getStackTimingByDepth
     );
     const getCallTree = createSelector(
       getRangeSelectionFilteredThread,
