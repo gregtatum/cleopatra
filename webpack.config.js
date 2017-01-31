@@ -50,12 +50,15 @@ const baseConfig = {
       include: includes,
     }, {
       test: /\.jpg$/,
+      exclude: /node_modules/,
       loader: 'file-loader',
     }, {
       test: /\.png$/,
+      exclude: /node_modules/,
       loader: 'file-loader',
     }, {
       test: /\.svg$/,
+      exclude: /node_modules/,
       loader: 'file-loader',
     }],
   },

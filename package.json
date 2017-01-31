@@ -43,6 +43,7 @@
     "chai": "^3.5.0",
     "clamp": "^1.0.1",
     "classnames": "^2.2.5",
+    "copy-webpack-plugin": "^4.0.1",
     "css-loader": "^0.26.0",
     "documentation": "^4.0.0-beta2",
     "eslint": "^3.10.2",
