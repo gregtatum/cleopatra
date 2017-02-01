@@ -101,53 +101,130 @@ export function defaultThreadOrder(threads) {
   return threadOrder;
 }
 
+/**
+ * Given a thread with stacks like below, collapse together the platform stack frames into
+ * a single pseudo platform stack frame. In the diagram "J" represents JavaScript stack
+ * frame timing, and "P" Platform stack frame timing. New psuedo-stack frames are created
+ * for the platform stacks.
+ *
+ * JJJJJJJJJJJJJJJJ  --->  JJJJJJJJJJJJJJJJ
+ * PPPPPPPPPPPPPPPP        PPPPPPPPPPPPPPPP
+ *     PPPPPPPPPPPP            JJJJJJJJ
+ *     PPPPPPPP                JJJ  PPP
+ *     JJJJJJJJ                     JJJ
+ *     JJJ  PPP
+ *          JJJ
+ *
+ * @param {Object} stackTimingByDepth - Table of stack timings.
+ * @param {Object} thread - The current thread.
+ * @param {Object} funcStackInfo - Info about funcStacks.
+ * @returns {Object} The mutated and collapsed timing information.
+ */
 export function filterThreadToJSOnly(thread) {
   return timeCode('filterThreadToJSOnly', () => {
-    const { stackTable, funcTable, frameTable, samples } = thread;
+    const { stackTable, funcTable, frameTable, samples, stringTable } = thread;
 
+    // Create new tables for the data.
     const newStackTable = {
       length: 0,
       frame: [],
       prefix: [],
     };
+    const newFrameTable = {
+      length: frameTable.length,
+      implementation: frameTable.implementation.slice(),
+      optimizations: frameTable.optimizations.slice(),
+      line: frameTable.line.slice(),
+      category: frameTable.category.slice(),
+      func: frameTable.func.slice(),
+      address: frameTable.address.slice(),
+    };
+    const newFuncTable = {
+      length: funcTable.length,
+      name: funcTable.name.slice(),
+      resource: funcTable.resource.slice(),
+      address: funcTable.address.slice(),
+      isJS: funcTable.isJS.slice(),
+    };
 
+    // Create a Map that takes a prefix and frame as input, and maps it to the new stack
+    // index. Since Maps can't be keyed off of two values, do a little math to key off
+    // of both values: newStackPrefix * potentialFrameCount + frame => newStackIndex
+    const prefixStackAndFrameToStack = new Map();
+    const potentialFrameCount = newFrameTable.length * 2;
     const oldStackToNewStack = new Map();
-    const frameCount = frameTable.length;
-    const prefixStackAndFrameToStack = new Map(); // prefixNewStack * frameCount + frame => newStackIndex
 
-    function convertStack(stackIndex) {
-      if (stackIndex === null) {
+    function convertStack(oldStack) {
+      if (oldStack === null) {
         return null;
       }
-      let newStack = oldStackToNewStack.get(stackIndex);
+      let newStack = oldStackToNewStack.get(oldStack);
       if (newStack === undefined) {
-        const prefixNewStack = convertStack(stackTable.prefix[stackIndex]);
-        const frameIndex = stackTable.frame[stackIndex];
-        const funcIndex = frameTable.func[frameIndex];
-        if (!funcTable.isJS[funcIndex]) {
-          newStack = prefixNewStack;
-        } else {
-          const prefixStackAndFrameIndex = (prefixNewStack === null ? -1 : prefixNewStack) * frameCount + frameIndex;
+        // No stack was found, generate a new one.
+        const oldStackPrefix = stackTable.prefix[oldStack];
+        const newStackPrefix = convertStack(oldStackPrefix);
+        const frameIndex = stackTable.frame[oldStack];
+        const funcIndex = newFrameTable.func[frameIndex];
+        const oldStackIsPlatform = !newFuncTable.isJS[funcIndex];
+        let keepStackFrame = true;
+
+        if (oldStackIsPlatform) {
+          if (oldStackPrefix !== null) {
+            // Only keep the platform stack frame if the prefix is JS.
+            const prefixFrameIndex = stackTable.frame[oldStackPrefix];
+            const prefixFuncIndex = newFrameTable.func[prefixFrameIndex];
+            keepStackFrame = newFuncTable.isJS[prefixFuncIndex];
+          }
+        }
+
+        if (keepStackFrame) {
+          // Convert the old JS stack to a new JS stack.
+          const prefixStackAndFrameIndex = (newStackPrefix === null ? -1 : newStackPrefix) * potentialFrameCount + frameIndex;
           newStack = prefixStackAndFrameToStack.get(prefixStackAndFrameIndex);
           if (newStack === undefined) {
             newStack = newStackTable.length++;
-            newStackTable.prefix[newStack] = prefixNewStack;
-            newStackTable.frame[newStack] = frameIndex;
+            newStackTable.prefix[newStack] = newStackPrefix;
+            if (oldStackIsPlatform) {
+              // Create a new platform frame
+              const newFuncIndex = newFuncTable.length++;
+              newFuncTable.name.push(stringTable.indexForString('Platform'));
+              newFuncTable.resource.push(null);
+              newFuncTable.address.push(null);
+              newFuncTable.isJS.push(false);
+
+              newFrameTable.implementation.push(null);
+              newFrameTable.optimizations.push(null);
+              newFrameTable.line.push(null);
+              newFrameTable.category.push(null);
+              newFrameTable.func.push(newFuncIndex);
+              newFrameTable.address.push(-1);
+
+              newStackTable.frame[newStack] = newFrameTable.length++;
+            } else {
+              newStackTable.frame[newStack] = frameIndex;
+            }
           }
-          oldStackToNewStack.set(stackIndex, newStack);
+          oldStackToNewStack.set(oldStack, newStack);
           prefixStackAndFrameToStack.set(prefixStackAndFrameIndex, newStack);
+        }
+
+        // If the the stack frame was not kept, use the prefix.
+        if (newStack === undefined) {
+          newStack = newStackPrefix;
         }
       }
       return newStack;
     }
 
     const newSamples = Object.assign({}, samples, {
-      stack: samples.stack.map(oldStack => convertStack(oldStack)),
+      stack: samples.stack.map(oldStack => convertStack(oldStack, true)),
     });
 
     return Object.assign({}, thread, {
       samples: newSamples,
       stackTable: newStackTable,
+      frameTable: newFrameTable,
+      funcTable: newFuncTable,
     });
   });
 }

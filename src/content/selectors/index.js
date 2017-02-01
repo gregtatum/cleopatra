@@ -166,12 +166,6 @@ export const selectorsForThread = threadIndex => {
         return ProfileData.getFuncStackInfo(stackTable, frameTable, funcTable);
       }
     );
-    const getRangedOnlyFuncStackInfo = createSelector(
-      getRangeFilteredThread,
-      ({stackTable, frameTable, funcTable}) => {
-        return ProfileData.getFuncStackInfo(stackTable, frameTable, funcTable);
-      }
-    );
     const getSelectedFuncStackAsFuncArray = createSelector(
       getViewOptions,
       threadViewOptions => threadViewOptions.selectedFuncStack
@@ -194,23 +188,24 @@ export const selectorsForThread = threadIndex => {
         return funcArrays.map(funcArray => ProfileData.getFuncStackFromFuncArray(funcArray, funcStackInfo.funcStackTable));
       }
     );
-    const getRangedOnlyFuncStackMaxDepth = createSelector(
-      getRangedOnlyFuncStackInfo,
+    const getFuncStackMaxDepth = createSelector(
+      getFilteredThread,
+      getFuncStackInfo,
       StackTiming.computeFuncStackMaxDepth
     );
-    // TODO - Memoize off of the intial profile.
+    // TODO - Memoize off of the initial profile, ignore changes to the symbol information.
     const getStackTimingByDepth = createSelector(
-      getRangeFilteredThread,
-      getRangedOnlyFuncStackInfo,
-      getRangedOnlyFuncStackMaxDepth,
+      getFilteredThread,
+      getFuncStackInfo,
+      getFuncStackMaxDepth,
       getProfileInterval,
-      getJSOnly,
       StackTiming.getStackTimingByDepth
     );
     const getCallTree = createSelector(
       getRangeSelectionFilteredThread,
       getProfileInterval,
       getFuncStackInfo,
+      getJSOnly,
       ProfileTree.getCallTree
     );
     selectorsForThreads[threadIndex] = {
@@ -225,7 +220,7 @@ export const selectorsForThread = threadIndex => {
       getFuncStackInfo,
       getSelectedFuncStack,
       getExpandedFuncStacks,
-      getRangedOnlyFuncStackMaxDepth,
+      getFuncStackMaxDepth,
       getStackTimingByDepth,
       getCallTree,
     };
