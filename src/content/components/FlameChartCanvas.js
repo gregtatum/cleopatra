@@ -77,6 +77,7 @@ class FlameChartCanvas extends Component {
             containerHeight, stackTimingByDepth, rowHeight,
             viewportLeft, viewportRight, viewportTop, viewportBottom } = this.props;
 
+    console.log('!!! Drawn on AnimationFrame #', window.frameCount, 'with the time delta', window.frameDelta);
     const ctx = this._prepCanvas();
     ctx.clearRect(0, 0, containerWidth, containerHeight);
 
@@ -86,6 +87,7 @@ class FlameChartCanvas extends Component {
     // Only draw the stack frames that are vertically within view.
     const startDepth = Math.floor(viewportTop / rowHeight);
     const endDepth = Math.ceil(viewportBottom / rowHeight);
+    let ctxCount = 0;
     for (let depth = startDepth; depth < endDepth; depth++) {
       // Get the timing information for a row of stack frames.
       const stackTiming = stackTimingByDepth[depth];
@@ -104,36 +106,10 @@ class FlameChartCanvas extends Component {
       // Decide which samples to actually draw
       const timeAtViewportLeft = rangeStart + rangeLength * viewportLeft;
       const timeAtViewportRight = rangeStart + rangeLength * viewportRight;
-
       for (let i = 0; i < stackTiming.length; i++) {
         // Only draw samples that are in bounds.
         if (stackTiming.end[i] > timeAtViewportLeft && stackTiming.start[i] < timeAtViewportRight) {
           const stackIndex = stackTiming.stack[i];
-          let name, isJS, implementation;
-          if (stackIndex === -1) {
-            name = 'Platform';
-            isJS = false;
-          } else {
-            const frameIndex = thread.stackTable.frame[stackIndex];
-            const funcIndex = thread.frameTable.func[frameIndex];
-            const implementationIndex = thread.frameTable.implementation[frameIndex];
-            implementation = implementationIndex ? thread.stringTable.getString(implementationIndex) : null;
-            name = thread.stringTable.getString(thread.funcTable.name[funcIndex]);
-            isJS = thread.funcTable.isJS[funcIndex];
-          }
-          if (implementation) {
-            ctx.fillStyle = implementation === 'baseline'
-              // Baseline
-              ? '#B5ECA8'
-              // Ion (JIT)
-              : '#3CCF55';
-          } else {
-            ctx.fillStyle = isJS
-              // JS code
-              ? 'rgb(200, 200, 200)'
-              // Platform code
-              : 'rgb(240, 240, 240)';
-          }
           const unitStartTime = (stackTiming.start[i] - rangeStart) / rangeLength;
           const unitEndTime = (stackTiming.end[i] - rangeStart) / rangeLength;
 
@@ -146,6 +122,10 @@ class FlameChartCanvas extends Component {
             // Skip sending draw calls for sufficiently small boxes.
             continue;
           }
+
+          ctx.fillStyle = getStackColor(thread, stackIndex);
+          ctxCount++;
+
           ctx.fillRect(x, y, w, h);
           // Ensure spacing between blocks.
           ctx.clearRect(x, y, 1, h);
@@ -156,8 +136,19 @@ class FlameChartCanvas extends Component {
           const w2 = Math.max(0, w - (x2 - x));
 
           if (w2 > this._textMeasurement.minWidth) {
+            let name;
+            if (stackIndex === -1) {
+              name = 'Platform';
+            } else {
+              const frameIndex = thread.stackTable.frame[stackIndex];
+              const funcIndex = thread.frameTable.func[frameIndex];
+              name = thread.stringTable.getString(thread.funcTable.name[funcIndex]);
+            }
+
             const text = this._textMeasurement.getFittedText(name, w2);
+
             if (text) {
+              ctxCount++;
               ctx.fillStyle = 'rgb(0, 0, 0)';
               ctx.fillText(text, x2, y + TEXT_OFFSET_TOP);
             }
@@ -165,6 +156,7 @@ class FlameChartCanvas extends Component {
         }
       }
     }
+    console.log('Updated the ctx.fillStyle this many times:', ctxCount);
   }
 
   render() {
@@ -192,3 +184,40 @@ FlameChartCanvas.propTypes = {
 };
 
 export default FlameChartCanvas;
+
+function getStackColor(thread, stackIndex) {
+  let isJS, implementation;
+  if (stackIndex === -1) {
+    isJS = false;
+  } else {
+    const frameIndex = thread.stackTable.frame[stackIndex];
+    const funcIndex = thread.frameTable.func[frameIndex];
+    const implementationIndex = thread.frameTable.implementation[frameIndex];
+    implementation = implementationIndex ? thread.stringTable.getString(implementationIndex) : null;
+    isJS = thread.funcTable.isJS[funcIndex];
+  }
+  if (implementation) {
+    return implementation === 'baseline'
+      // Baseline
+      ? '#B5ECA8'
+      // Ion (JIT)
+      : '#3CCF55';
+  }
+  return isJS
+      // JS code
+      ? 'rgb(200, 200, 200)'
+      // Platform code
+      : 'rgb(240, 240, 240)';
+}
+
+window.frameCount = 0;
+window.frameDelta = 0;
+window.framePreviousTime = performance.now();
+function frameCounter() {
+  window.frameCount++;
+  const now = performance.now();
+  window.frameDelta = now - window.framePreviousTime;
+  window.framePreviousTime = now;
+  window.requestAnimationFrame(frameCounter);
+}
+frameCounter();
