@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import { applyFunctionMerging, setFuncNames, setTaskTracerNames } from '../symbolication';
 import { defaultThreadOrder, getTimeRangeIncludingAllThreads } from '../profile-data';
+import { getCategoryByImplementation } from '../color-categories';
 
 function status(state = 'INITIALIZING', action) {
   switch (action.type) {
@@ -405,4 +406,13 @@ function isUrlSetupDone(state = false, action) {
   }
 }
 
-export default { status, view, profileView, summaryView, urlState, isUrlSetupDone };
+function categoryColorStrategy(state = getCategoryByImplementation, action) {
+  switch (action.type) {
+    case 'CHANGE_CATEGORY_COLOR_STRATEGY':
+      return action.getCategory;
+    default:
+      return state;
+  }
+}
+
+export default { status, view, profileView, summaryView, urlState, isUrlSetupDone, categoryColorStrategy };

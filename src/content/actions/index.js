@@ -455,3 +455,10 @@ export function popCallTreeFilters(threadIndex, firstRemovedFilterIndex) {
     firstRemovedFilterIndex,
   };
 }
+
+export function changeCategoryColorStrategy(getCategory) {
+  return {
+    type: 'CHANGE_CATEGORY_COLOR_STRATEGY',
+    getCategory,
+  };
+}

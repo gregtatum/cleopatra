@@ -1,7 +1,7 @@
 // @flow
 import type { IndexIntoStackTable, Thread, StackTable } from '../common/types/profile';
 import type { FuncStackInfo } from '../common/types/profile-derived';
-
+import type { GetCategory } from './color-categories';
 /**
  * The StackTimingByDepth data structure organizes stack frames by their depth, and start
  * and end times. This optimizes sample data for Flame Chart timeline views. It
@@ -168,4 +168,49 @@ export function computeFuncStackMaxDepth(rangedThread: Thread, funcStackInfo: Fu
     }
   }
   return maxDepth;
+}
+
+export function getLeafCategoryStackTiming(
+  thread: Thread, interval: number, getCategory: GetCategory
+) {
+  const stackTiming = {
+    start: [],
+    end: [],
+    stack: [],
+    length: 0,
+  };
+
+  let previousName = null;
+  let previousSampleTime = null;
+  for (let i = 0; i < thread.samples.length; i++) {
+    const stackIndex = thread.samples.stack[i];
+    if (stackIndex === null) {
+      if (previousSampleTime !== null) {
+        stackTiming.end.push(previousSampleTime);
+      }
+      previousName == null;
+    } else {
+      const frameIndex = thread.stackTable.frame[stackIndex];
+      const {name} = getCategory(thread, frameIndex);
+
+      if (name !== previousName) {
+        const sampleTime = thread.samples.time[i];
+        stackTiming.start.push(sampleTime);
+        stackTiming.stack.push(stackIndex);
+        stackTiming.length++;
+        if (previousName !== null) {
+          stackTiming.end.push(sampleTime);
+        }
+        previousName = name;
+        previousSampleTime = sampleTime;
+      }
+    }
+  }
+  
+  if (stackTiming.end.length !== stackTiming.start.length) {
+    // Calculate the final end time.
+    stackTiming.end.push(thread.samples.time[thread.samples.length - 1] + interval);
+  }
+
+  return [stackTiming];
 }

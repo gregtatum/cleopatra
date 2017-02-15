@@ -6,6 +6,7 @@ import { resourceTypes, getFuncStackInfo } from '../src/content/profile-data';
 import exampleProfile from './example-profile';
 import { UniqueStringArray } from '../src/content/unique-string-array';
 import { FakeSymbolStore } from './fake-symbol-store';
+import { getImplementationColor, getCategoryByImplementation, implementationCategoryMap } from '../src/content/color-categories';
 
 describe('unique-string-array', function () {
   const u = new UniqueStringArray(['foo', 'bar', 'baz']);
@@ -85,7 +86,7 @@ describe('preprocess-profile', function () {
     it('should shift the content process by 1 second', function () {
       // Should be Content, but modified by workaround for bug 1322471.
       assert.equal(profile.threads[2].name, 'GeckoMain');
-      
+
       assert.equal(profile.threads[0].samples.time[0], 0);
       assert.equal(profile.threads[0].samples.time[1], 1);
       assert.equal(profile.threads[2].samples.time[0], 1000);
@@ -129,7 +130,7 @@ describe('preprocess-profile', function () {
       assert.equal(thread.resourceTable.length, 2);
       assert.equal(thread.resourceTable.type[0], resourceTypes.library);
       assert.equal(thread.resourceTable.type[1], resourceTypes.url);
-      const [ name0, name1 ] = thread.resourceTable.name;
+      const [name0, name1] = thread.resourceTable.name;
       assert.equal(thread.stringTable.getString(name0), 'firefox');
       assert.equal(thread.stringTable.getString(name1), 'chrome://blargh');
     });
@@ -230,4 +231,24 @@ describe('symbolication', function () {
     });
   });
   // TODO: check that functions are collapsed correctly
+});
+
+describe('color-categories', function () {
+  const profile = preprocessProfile(exampleProfile);
+  const [thread] = profile.threads;
+  it('calculates the category for each frame', function () {
+    const categories = thread.samples.stack.map(stackIndex => {
+      return getCategoryByImplementation(thread, thread.stackTable.frame[stackIndex]);
+    });
+    for (let i = 0; i < 6; i++) {
+      assert.equal(categories[i].name, 'Platform',
+        'The platform frames are labeled platform');
+      assert.equal(categories[i].color, implementationCategoryMap.Platform,
+        'The platform frames are colored according to the color definition');
+    }
+    assert.equal(categories[6].name, 'JS Baseline',
+      'The JS Baseline frame is labeled as as JS Baseline.');
+    assert.equal(categories[6].color, implementationCategoryMap['JS Baseline'],
+      'The platform frames are colored according to the color definition');
+  });
 });

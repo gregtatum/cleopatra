@@ -24,6 +24,7 @@ export const getInvertCallstack = state => getURLState(state).invertCallstack;
 export const getSearchString = state => getURLState(state).callTreeSearchString;
 export const getSelectedTab = state => getURLState(state).selectedTab;
 export const getSelectedThreadIndex = state => getURLState(state).selectedThread;
+export const getCategoryColorStrategy = state => state.categoryColorStrategy;
 
 export const getURLPredictor = createSelector(
   getURLState,
@@ -201,6 +202,12 @@ export const selectorsForThread = threadIndex => {
       getProfileInterval,
       StackTiming.getStackTimingByDepth
     );
+    const getLeafCategoryStackTiming = createSelector(
+      getFilteredThread,
+      getProfileInterval,
+      getCategoryColorStrategy,
+      StackTiming.getLeafCategoryStackTiming
+    );
     const getCallTree = createSelector(
       getRangeSelectionFilteredThread,
       getProfileInterval,
@@ -222,6 +229,7 @@ export const selectorsForThread = threadIndex => {
       getExpandedFuncStacks,
       getFuncStackMaxDepth,
       getStackTimingByDepth,
+      getLeafCategoryStackTiming,
       getCallTree,
     };
   }

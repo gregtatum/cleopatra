@@ -180,7 +180,7 @@ class FlameChartViewport extends Component {
 
   render() {
     const {
-      connectedProps: { thread, interval, timeRange, maxStackDepth, stackTimingByDepth },
+      connectedProps: { thread, interval, timeRange, maxStackDepth, stackTimingByDepth, getCategory },
       rowHeight,
     } = this.props;
 
@@ -200,6 +200,7 @@ class FlameChartViewport extends Component {
                           stackTimingByDepth={stackTimingByDepth}
                           containerWidth={containerWidth}
                           containerHeight={containerHeight}
+                          getCategory={getCategory}
                           viewportLeft={viewportLeft}
                           viewportRight={viewportRight}
                           viewportTop={viewportTop}

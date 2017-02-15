@@ -74,7 +74,7 @@ class FlameChartCanvas extends Component {
    */
   drawCanvas() {
     const { thread, rangeStart, rangeEnd, containerWidth,
-            containerHeight, stackTimingByDepth, rowHeight,
+            containerHeight, stackTimingByDepth, rowHeight, getCategory,
             viewportLeft, viewportRight, viewportTop, viewportBottom } = this.props;
 
     const ctx = this._prepCanvas();
@@ -108,32 +108,6 @@ class FlameChartCanvas extends Component {
       for (let i = 0; i < stackTiming.length; i++) {
         // Only draw samples that are in bounds.
         if (stackTiming.end[i] > timeAtViewportLeft && stackTiming.start[i] < timeAtViewportRight) {
-          const stackIndex = stackTiming.stack[i];
-          let name, isJS, implementation;
-          if (stackIndex === -1) {
-            name = 'Platform';
-            isJS = false;
-          } else {
-            const frameIndex = thread.stackTable.frame[stackIndex];
-            const funcIndex = thread.frameTable.func[frameIndex];
-            const implementationIndex = thread.frameTable.implementation[frameIndex];
-            implementation = implementationIndex ? thread.stringTable.getString(implementationIndex) : null;
-            name = thread.stringTable.getString(thread.funcTable.name[funcIndex]);
-            isJS = thread.funcTable.isJS[funcIndex];
-          }
-          if (implementation) {
-            ctx.fillStyle = implementation === 'baseline'
-              // Baseline
-              ? '#B5ECA8'
-              // Ion (JIT)
-              : '#3CCF55';
-          } else {
-            ctx.fillStyle = isJS
-              // JS code
-              ? 'rgb(200, 200, 200)'
-              // Platform code
-              : 'rgb(240, 240, 240)';
-          }
           const unitStartTime = (stackTiming.start[i] - rangeStart) / rangeLength;
           const unitEndTime = (stackTiming.end[i] - rangeStart) / rangeLength;
 
@@ -146,6 +120,12 @@ class FlameChartCanvas extends Component {
             // Skip sending draw calls for sufficiently small boxes.
             continue;
           }
+          const stackIndex = stackTiming.stack[i];
+          const frameIndex = thread.stackTable.frame[stackIndex];
+          const funcIndex = thread.frameTable.func[frameIndex];
+          const name = thread.stringTable.getString(thread.funcTable.name[funcIndex]);
+
+          ctx.fillStyle = getCategory(thread, frameIndex).color;
           ctx.fillRect(x, y, w, h);
           // Ensure spacing between blocks.
           ctx.clearRect(x, y, 1, h);
@@ -183,6 +163,7 @@ FlameChartCanvas.propTypes = {
   className: PropTypes.string,
   containerWidth: PropTypes.number,
   containerHeight: PropTypes.number,
+  getCategory: PropTypes.func.isRequired,
   viewportLeft: PropTypes.number,
   viewportRight: PropTypes.number,
   stackTimingByDepth: PropTypes.array,
