@@ -63,3 +63,9 @@ function _categoriesMapToList(object) {
   }
   return list;
 }
+
+export function getFunctionName(thread: Thread, stackIndex: IndexIntoStackTable) {
+  const frameIndex = thread.stackTable.frame[stackIndex];
+  const funcIndex = thread.frameTable.func[frameIndex];
+  return thread.stringTable.getString(thread.funcTable.name[funcIndex]);
+}

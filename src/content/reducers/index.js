@@ -406,13 +406,4 @@ function isUrlSetupDone(state = false, action) {
   }
 }
 
-function categoryColorStrategy(state = getCategoryByImplementation, action) {
-  switch (action.type) {
-    case 'CHANGE_CATEGORY_COLOR_STRATEGY':
-      return action.getCategory;
-    default:
-      return state;
-  }
-}
-
 export default { status, view, profileView, summaryView, urlState, isUrlSetupDone, categoryColorStrategy };

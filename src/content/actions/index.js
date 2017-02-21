@@ -456,9 +456,9 @@ export function popCallTreeFilters(threadIndex, firstRemovedFilterIndex) {
   };
 }
 
-export function changeCategoryColorStrategy(getCategory) {
+export function changeFlameChartColorStrategy(getCategory) {
   return {
-    type: 'CHANGE_CATEGORY_COLOR_STRATEGY',
+    type: 'CHANGE_FLAME_CHART_COLOR_STRATEGY',
     getCategory,
   };
 }

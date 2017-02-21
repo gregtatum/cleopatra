@@ -1,7 +1,14 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import FlameChartViewport from '../components/FlameChartViewport';
-import { getSelectedThreadIndex, selectedThreadSelectors, getDisplayRange, getProfileInterval, getCategoryColorStrategy } from '../selectors/';
+import {
+  getSelectedThreadIndex,
+  selectedThreadSelectors,
+  getDisplayRange,
+  getProfileInterval,
+  getCategoryColorStrategy,
+  getStackTextStrategy,
+} from '../selectors/';
 import * as actions from '../actions';
 import ProfileCallTreeSettings from '../components/ProfileCallTreeSettings';
 
@@ -41,11 +48,13 @@ export default connect(state => {
   return {
     thread: selectedThreadSelectors.getFilteredThread(state),
     maxStackDepth: selectedThreadSelectors.getFuncStackMaxDepth(state),
-    stackTimingByDepth: selectedThreadSelectors.getStackTimingByDepth(state),
+    // stackTimingByDepth: selectedThreadSelectors.getStackTimingByDepth(state),
+    stackTimingByDepth: selectedThreadSelectors.getLeafCategoryStackTiming(state),
     isSelected: true,
     timeRange: getDisplayRange(state),
     threadIndex: getSelectedThreadIndex(state),
     interval: getProfileInterval(state),
     getCategory: getCategoryColorStrategy(state),
+    getStackText: getStackTextStrategy(state),
   };
 }, actions)(FlameChartView);

@@ -3,7 +3,7 @@ import { describe, it } from 'mocha';
 import { assert } from 'chai';
 import { blankStore, storeWithProfile } from './fixtures/stores';
 import * as selectors from '../../selectors';
-import { changeCallTreeSearchString, receiveProfileFromAddon, changeJSOnly, addRangeFilter, changeInvertCallstack, changeCategoryColorStrategy } from '../';
+import { changeCallTreeSearchString, receiveProfileFromAddon, changeJSOnly, addRangeFilter, changeInvertCallstack, changeFlameChartColorStrategy } from '../';
 import { getCategoryByImplementation } from '../../color-categories';
 const { selectedThreadSelectors } = selectors;
 
@@ -171,7 +171,7 @@ describe('selectors/getLeafCategoryStackTiming', function () {
    */
   it('gets the unfiltered leaf stack timing by implementation', function () {
     const store = storeWithProfile();
-    store.dispatch(changeCategoryColorStrategy(getCategoryByImplementation));
+    store.dispatch(changeFlameChartColorStrategy(getCategoryByImplementation));
     const leafStackTiming = selectedThreadSelectors.getLeafCategoryStackTiming(store.getState());
 
     assert.deepEqual(leafStackTiming, [

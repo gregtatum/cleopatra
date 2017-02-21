@@ -73,7 +73,7 @@ class FlameChartCanvas extends Component {
    * @returns {undefined}
    */
   drawCanvas() {
-    const { thread, rangeStart, rangeEnd, containerWidth,
+    const { thread, rangeStart, rangeEnd, containerWidth, getStackText,
             containerHeight, stackTimingByDepth, rowHeight, getCategory,
             viewportLeft, viewportRight, viewportTop, viewportBottom } = this.props;
 
@@ -120,12 +120,12 @@ class FlameChartCanvas extends Component {
             // Skip sending draw calls for sufficiently small boxes.
             continue;
           }
-          const stackIndex = stackTiming.stack[i];
-          const frameIndex = thread.stackTable.frame[stackIndex];
-          const funcIndex = thread.frameTable.func[frameIndex];
-          const name = thread.stringTable.getString(thread.funcTable.name[funcIndex]);
 
-          ctx.fillStyle = getCategory(thread, frameIndex).color;
+          const stackIndex = stackTiming.stack[i];
+          const text = getStackText(thread, stackIndex);
+          const category = getCategory(thread, frameIndex);
+
+          ctx.fillStyle = category.color;
           ctx.fillRect(x, y, w, h);
           // Ensure spacing between blocks.
           ctx.clearRect(x, y, 1, h);
@@ -136,10 +136,10 @@ class FlameChartCanvas extends Component {
           const w2 = Math.max(0, w - (x2 - x));
 
           if (w2 > this._textMeasurement.minWidth) {
-            const text = this._textMeasurement.getFittedText(name, w2);
-            if (text) {
+            const fittedText = this._textMeasurement.getFittedText(text, w2);
+            if (fittedText) {
               ctx.fillStyle = 'rgb(0, 0, 0)';
-              ctx.fillText(text, x2, y + TEXT_OFFSET_TOP);
+              ctx.fillText(fittedText, x2, y + TEXT_OFFSET_TOP);
             }
           }
         }
