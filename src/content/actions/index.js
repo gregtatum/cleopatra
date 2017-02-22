@@ -462,3 +462,10 @@ export function changeFlameChartColorStrategy(getCategory) {
     getCategory,
   };
 }
+
+export function changeFlameChartColorStrategy(getLabel) {
+  return {
+    type: 'CHANGE_FLAME_CHART_LABELING_STRATEGY',
+    getLabel,
+  };
+}
