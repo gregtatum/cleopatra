@@ -73,7 +73,7 @@ class FlameChartCanvas extends Component {
    * @returns {undefined}
    */
   drawCanvas() {
-    const { thread, rangeStart, rangeEnd, containerWidth, getStackText,
+    const { thread, rangeStart, rangeEnd, containerWidth, getLabel,
             containerHeight, stackTimingByDepth, rowHeight, getCategory,
             viewportLeft, viewportRight, viewportTop, viewportBottom } = this.props;
 
@@ -122,7 +122,8 @@ class FlameChartCanvas extends Component {
           }
 
           const stackIndex = stackTiming.stack[i];
-          const text = getStackText(thread, stackIndex);
+          const frameIndex = thread.stackTable.frame[stackIndex];
+          const text = getLabel(thread, stackIndex);
           const category = getCategory(thread, frameIndex);
 
           ctx.fillStyle = category.color;
@@ -163,13 +164,14 @@ FlameChartCanvas.propTypes = {
   className: PropTypes.string,
   containerWidth: PropTypes.number,
   containerHeight: PropTypes.number,
-  getCategory: PropTypes.func.isRequired,
   viewportLeft: PropTypes.number,
   viewportRight: PropTypes.number,
   stackTimingByDepth: PropTypes.array,
   rowHeight: PropTypes.number.isRequired,
   viewportTop: PropTypes.number.isRequired,
   viewportBottom: PropTypes.number.isRequired,
+  getCategory: PropTypes.func.isRequired,
+  getLabel: PropTypes.func.isRequired,
 };
 
 export default FlameChartCanvas;

@@ -1,5 +1,5 @@
 // @flow
-import type { Thread, IndexIntoFrameTable } from '../common/types/profile';
+import type { Thread, IndexIntoFrameTable, IndexIntoStackTable } from '../common/types/profile';
 
 type CategoryName = string;
 type CssParseableColor = string;

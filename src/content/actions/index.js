@@ -463,7 +463,7 @@ export function changeFlameChartColorStrategy(getCategory) {
   };
 }
 
-export function changeFlameChartColorStrategy(getLabel) {
+export function changeFlameChartLabelingStrategy(getLabel) {
   return {
     type: 'CHANGE_FLAME_CHART_LABELING_STRATEGY',
     getLabel,

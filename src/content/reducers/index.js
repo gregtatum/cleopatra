@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import { applyFunctionMerging, setFuncNames, setTaskTracerNames } from '../symbolication';
 import { defaultThreadOrder, getTimeRangeIncludingAllThreads } from '../profile-data';
+import flameChart from './flame-chart';
 
 function status(state = 'INITIALIZING', action) {
   switch (action.type) {
@@ -405,4 +406,4 @@ function isUrlSetupDone(state = false, action) {
   }
 }
 
-export default { status, view, profileView, summaryView, urlState, isUrlSetupDone };
+export default { status, view, profileView, summaryView, urlState, isUrlSetupDone, flameChart };

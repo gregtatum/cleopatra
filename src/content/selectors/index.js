@@ -5,6 +5,7 @@ import * as ProfileTree from '../profile-tree';
 import * as TaskTracer from '../task-tracer';
 import * as reducers from '../reducers';
 import { urlFromState } from '../url-handling';
+import { getCategoryColorStrategy } from '../reducers/flame-chart';
 
 export const getView = state => state.view;
 export const getProfileView = state => state.profileView;
@@ -24,7 +25,6 @@ export const getInvertCallstack = state => getURLState(state).invertCallstack;
 export const getSearchString = state => getURLState(state).callTreeSearchString;
 export const getSelectedTab = state => getURLState(state).selectedTab;
 export const getSelectedThreadIndex = state => getURLState(state).selectedThread;
-export const getCategoryColorStrategy = state => state.categoryColorStrategy;
 
 export const getURLPredictor = createSelector(
   getURLState,

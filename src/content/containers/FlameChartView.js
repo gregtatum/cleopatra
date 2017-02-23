@@ -6,9 +6,8 @@ import {
   selectedThreadSelectors,
   getDisplayRange,
   getProfileInterval,
-  getCategoryColorStrategy,
-  getStackTextStrategy,
 } from '../selectors/';
+import { getCategoryColorStrategy, getLabelingStrategy } from '../reducers/flame-chart';
 import * as actions from '../actions';
 import ProfileCallTreeSettings from '../components/ProfileCallTreeSettings';
 
@@ -55,6 +54,6 @@ export default connect(state => {
     threadIndex: getSelectedThreadIndex(state),
     interval: getProfileInterval(state),
     getCategory: getCategoryColorStrategy(state),
-    getStackText: getStackTextStrategy(state),
+    getLabel: getLabelingStrategy(state),
   };
 }, actions)(FlameChartView);
