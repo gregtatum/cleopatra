@@ -43,12 +43,12 @@ export type StackTimingByDepth = Array<{
   end: number[],
   stack: IndexIntoStackTable[],
   length: number,
-}>
+}>;
 
 type LastSeen = {
   startTimeByDepth: number[],
   stackIndexByDepth: IndexIntoStackTable[],
-}
+};
 
 /**
  * Build a StackTimingByDepth table from a given thread.

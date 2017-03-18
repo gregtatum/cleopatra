@@ -41,7 +41,7 @@ export type URLState = {
   jsOnly: boolean,
   invertCallstack: boolean,
   hidePlatformDetails: boolean,
-}
+};
 
 export type State = {
   app: AppState,

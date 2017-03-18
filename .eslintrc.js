@@ -26,6 +26,7 @@ module.exports = {
         "flowtype/space-before-type-colon": [ 2, "never" ],
         "flowtype/space-after-type-colon": [ 2, "always" ],
         "flowtype/delimiter-dangle": [ 2, "always-multiline" ],
+        "flowtype/semi": 2,
 
         // ES6 Import rules:
         "import/no-duplicates": "error",

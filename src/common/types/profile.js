@@ -76,7 +76,7 @@ export type FuncTable = {
   length: number,
   name: IndexIntoStringTable[],
   resource: Array<IndexIntoResourceTable|-1>,
-}
+};
 
 export type ResourceTable = {
   addonId: [any],
@@ -85,7 +85,7 @@ export type ResourceTable = {
   lib: IndexIntoLibs[],
   name: IndexIntoStringTable[],
   type: resourceTypeEnum,
-}
+};
 
 export type Thread = {
   processType: string,

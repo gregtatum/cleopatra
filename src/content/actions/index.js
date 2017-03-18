@@ -487,7 +487,7 @@ export function changeTimelineExpandedThread(threadIndex: ThreadIndex, isExpande
   return { type, threadIndex, isExpanded };
 }
 
-export type ChangeTimelineHorizontalViewport = (number, number) => Action
+export type ChangeTimelineHorizontalViewport = (number, number) => Action;
 
 export function changeTimelineHorizontalViewport(left: number, right: number): Action {
   return {

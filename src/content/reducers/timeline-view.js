@@ -8,7 +8,7 @@ type IsThreadExpandedMap = Map<ThreadIndex, boolean>;
 type TimelineViewState = {
   isThreadExpanded: IsThreadExpandedMap,
   timelineHorizontalViewport: HorizontalViewport,
-}
+};
 
 function isThreadExpanded(state: IsThreadExpandedMap = new Map(), action: Action) {
   switch (action.type) {

@@ -29,7 +29,7 @@ type ThreadViewOptions = {
   selectedFuncStack: IndexIntoFuncTable[],
   expandedFuncStacks: Array<IndexIntoFuncTable[]>,
   selectedMarker: IndexIntoMarkersTable | -1,
-}
+};
 
 function profile(state: Profile | null = null, action: Action) {
   switch (action.type) {

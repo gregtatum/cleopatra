@@ -4,11 +4,11 @@ import type { Profile, Thread, IndexIntoStackTable } from './types/profile';
 
 export type Summary = { [id: string]: number };
 type MatchingFunction = (string, string) => boolean;
-type StacksInCategory = { [id: string]: { [id: string]: number } }
+type StacksInCategory = { [id: string]: { [id: string]: number } };
 type SummarySegment = {
   percentage: {[id: string]: number},
   samples: {[id: string]: number},
-}
+};
 type RollingSummary = SummarySegment[];
 type Categories = Array<(string|null)>;
 type ThreadCategories = Categories[];
