@@ -29,12 +29,13 @@ type Props = {
   maximumZoom: UnitIntervalOfProfileRange,
   updateProfileSelection: UpdateProfileSelection,
   selection: ProfileSelection,
+  getScrollElement: () => ?HTMLElement,
 };
 
 require('./FlameChartViewport.css');
 
-const LINE_SCROLL_MODE = 1;
-const SCROLL_LINE_SIZE = 15;
+// This is a little hacky, but saves from having to dynamically look up some properties.
+const COLLAPSED_ROW_HEIGHT = 34;
 
 /**
  * Viewport terminology:
@@ -146,32 +147,73 @@ class FlameChartViewport extends PureComponent {
   }
 
   _setSize() {
-    const rect = this.refs.container.getBoundingClientRect();
-    if (this.state.containerWidth !== rect.width || this.state.containerHeight !== rect.height) {
-      const style = window.getComputedStyle(this.refs.container);
+    requestAnimationFrame(() => {
+      const rect = this.refs.container.getBoundingClientRect();
+      if (this.state.containerWidth !== rect.width || this.state.containerHeight !== rect.height) {
+        const style = window.getComputedStyle(this.refs.container);
 
-      // Obey margins of the containing element.
-      const containerWidth = rect.width - parseFloat(style.marginLeft) - parseFloat(style.marginRight);
-      const containerHeight = rect.height - parseFloat(style.marginTop) - parseFloat(style.marginBottom);
-      const containerLeft = rect.left + parseFloat(style.marginLeft);
-      const viewportBottom = this.state.viewportTop + containerHeight;
+        // Obey margins of the containing element.
+        const containerWidth = rect.width - parseFloat(style.marginLeft) - parseFloat(style.marginRight);
+        const containerHeight = rect.height - parseFloat(style.marginTop) - parseFloat(style.marginBottom);
+        const containerLeft = rect.left + parseFloat(style.marginLeft);
+        const viewportBottom = this.state.viewportTop + containerHeight;
 
-      this.setState({ containerWidth, containerHeight, containerLeft, viewportBottom });
-    }
+        this.setState({ containerWidth, containerHeight, containerLeft, viewportBottom });
+      }
+    });
   }
 
   _mouseWheelListener(event: SyntheticWheelEvent) {
+    if (event.shiftKey) {
+      this.zoomSelection(event);
+      return;
+    }
+
+    // Only move the viewport if the entire canvas is in frame, otherwise let the
+    // TimelineView scrolling element scroll.
+    const maybeScrollElement = this.props.getScrollElement();
+    const viewScrollTop = maybeScrollElement ? maybeScrollElement.scrollTop : 0;
+    const offsetTopAndCollapsedRow = Math.max(0, this.refs.container.offsetTop - COLLAPSED_ROW_HEIGHT);
+    // Do not move the contents if the chart is not fully within view.
+    if (event.deltaY < 0) {
+      // Scrolling up.
+      if (viewScrollTop > offsetTopAndCollapsedRow) {
+        return;
+      }
+    } else {
+      // Scrolling down.
+      if (viewScrollTop < offsetTopAndCollapsedRow) {
+        return;
+      }
+    }
+
+    // Do the work to move the viewport.
+    const { containerHeight } = this.state;
+    const didMove = this.moveViewport(
+      -getNormalizedScrollDelta(event, containerHeight, 'deltaX'),
+      -getNormalizedScrollDelta(event, containerHeight, 'deltaY')
+    );
+    if (didMove) {
+      event.preventDefault();
+    }
+  }
+
+  zoomSelection(event: SyntheticWheelEvent) {
     if (!this.props.isThreadExpanded) {
       // Maybe this should only be listening when expanded.
       return;
     }
     event.preventDefault();
     const { maximumZoom } = this.props;
-    const { containerLeft, containerWidth, viewportLeft, viewportRight } = this.state;
+    const {
+      containerLeft,
+      containerWidth,
+      containerHeight,
+      viewportLeft,
+      viewportRight,
+    } = this.state;
     const mouseCenter = (event.clientX - containerLeft) / containerWidth;
-    const deltaY = event.deltaMode === LINE_SCROLL_MODE
-      ? event.deltaY * SCROLL_LINE_SIZE
-      : event.deltaY;
+    const deltaY = getNormalizedScrollDelta(event, containerHeight, 'deltaY');
 
     const viewportLength: CssPixels = viewportRight - viewportLeft;
     const scale = viewportLength - viewportLength / (1 + deltaY * 0.001);
@@ -221,12 +263,26 @@ class FlameChartViewport extends PureComponent {
   _mouseMoveListener(event: SyntheticMouseEvent) {
     event.stopPropagation();
     event.preventDefault();
+
+    const { dragX, dragY } = this.state;
+    const offsetX = event.clientX - dragX;
+    const offsetY = event.clientY - dragY;
+
+    this.setState({
+      dragX: event.clientX,
+      dragY: event.clientY,
+    });
+
+    this.moveViewport(offsetX, offsetY);
+  }
+
+  moveViewport(offsetX: CssPixels, offsetY: CssPixels): boolean {
     const { maxViewportHeight, timeRange, updateProfileSelection } = this.props;
-    const { dragX, dragY, containerWidth, containerHeight, viewportTop, viewportLeft, viewportRight } = this.state;
+    const { containerWidth, containerHeight, viewportTop, viewportLeft, viewportRight } = this.state;
 
     // Calculate left and right in terms of the unit interval of the profile range.
     const viewportLength: CssPixels = viewportRight - viewportLeft;
-    const unitOffsetX: UnitIntervalOfProfileRange = viewportLength * (event.clientX - dragX) / containerWidth;
+    const unitOffsetX: UnitIntervalOfProfileRange = viewportLength * offsetX / containerWidth;
     let newViewportLeft: CssPixels = viewportLeft - unitOffsetX;
     let newViewportRight: CssPixels = viewportRight - unitOffsetX;
     if (newViewportLeft < 0) {
@@ -239,7 +295,7 @@ class FlameChartViewport extends PureComponent {
     }
 
     // Calculate top and bottom in terms of pixels.
-    let newViewportTop: CssPixels = viewportTop - (event.clientY - dragY);
+    let newViewportTop: CssPixels = viewportTop - offsetY;
     let newViewportBottom: CssPixels = newViewportTop + containerHeight;
 
     // Constrain the viewport to the bottom.
@@ -256,19 +312,26 @@ class FlameChartViewport extends PureComponent {
     }
 
     const timeRangeLength = timeRange.end - timeRange.start;
-    updateProfileSelection({
-      hasSelection: true,
-      isModifying: false,
-      selectionStart: timeRange.start + timeRangeLength * newViewportLeft,
-      selectionEnd: timeRange.start + timeRangeLength * newViewportRight,
-    });
+    const viewportHorizontalChanged = newViewportLeft !== viewportLeft;
+    const viewportVerticalChanged = newViewportTop !== viewportTop;
 
-    this.setState({
-      dragX: event.clientX,
-      dragY: event.clientY,
-      viewportTop: newViewportTop,
-      viewportBottom: newViewportBottom,
-    });
+    if (viewportHorizontalChanged) {
+      updateProfileSelection({
+        hasSelection: true,
+        isModifying: false,
+        selectionStart: timeRange.start + timeRangeLength * newViewportLeft,
+        selectionEnd: timeRange.start + timeRangeLength * newViewportRight,
+      });
+    }
+
+    if (viewportVerticalChanged) {
+      this.setState({
+        viewportTop: newViewportTop,
+        viewportBottom: newViewportBottom,
+      });
+    }
+
+    return viewportVerticalChanged || viewportHorizontalChanged;
   }
 
   _mouseUpListener(event: SyntheticMouseEvent) {
@@ -336,4 +399,26 @@ export default FlameChartViewport;
 
 function clamp(min, max, value) {
   return Math.max(min, Math.min(max, value));
+}
+
+const SCROLL_LINE_SIZE = 15;
+
+/**
+ * Scroll wheel events can by of various types. Do the right thing by converting these
+ * into CssPixels. https://developer.mozilla.org/en-US/docs/Web/API/WheelEvent/deltaMode
+ */
+function getNormalizedScrollDelta(
+  event: SyntheticWheelEvent,
+  pageHeight: number,
+  key: 'deltaY' | 'deltaX'
+): CssPixels {
+  const delta = key === 'deltaY' ? event.deltaY : event.deltaX;
+  switch (event.deltaMode) {
+    case 0x02: // Scroll by page.
+      return delta * pageHeight;
+    case 0x01: // Scroll by line.
+      return delta * SCROLL_LINE_SIZE;
+  }
+  // Scroll by pixel.
+  return delta;
 }

@@ -37,6 +37,7 @@ type Props = {
   updateProfileSelection: UpdateProfileSelection,
   horizontalViewport: HorizontalViewport,
   viewHeight: CssPixels,
+  getScrollElement: () => HTMLElement,
   selection: ProfileSelection,
 };
 
@@ -86,7 +87,7 @@ class TimelineFlameChart extends Component {
     const {
       thread, isThreadExpanded, maxStackDepth, stackTimingByDepth, isSelected, timeRange,
       threadIndex, interval, getCategory, getLabel, horizontalViewport,
-      updateProfileSelection, selection,
+      updateProfileSelection, selection, getScrollElement,
     } = this.props;
 
     // The viewport needs to know about the height of what it's drawing, calculate
@@ -115,6 +116,7 @@ class TimelineFlameChart extends Component {
                             threadIndex={threadIndex}
                             interval={interval}
                             maxViewportHeight={maxViewportHeight}
+                            getScrollElement={getScrollElement}
                             stackFrameHeight={STACK_FRAME_HEIGHT}
                             getCategory={getCategory}
                             getLabel={getLabel}
