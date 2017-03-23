@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import shallowCompare from 'react-addons-shallow-compare';
 import { timeCode } from '../../common/time-code';
 import TextMeasurement from '../../common/text-measurement';
+import withTimelineViewport from './TimelineViewport';
 
 import type { Thread } from '../../common/types/profile';
 import type { Milliseconds, CssPixels, UnitIntervalOfProfileRange, DevicePixels } from '../../common/types/units';
@@ -191,4 +192,4 @@ class FlameChartCanvas extends Component {
   }
 }
 
-export default FlameChartCanvas;
+export default withTimelineViewport(FlameChartCanvas);
