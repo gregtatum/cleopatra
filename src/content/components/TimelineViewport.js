@@ -1,5 +1,10 @@
 // @flow
 import React, { PureComponent } from 'react';
+import classNames from 'classnames';
+import { connect } from 'react-redux';
+import { getHasZoomedViaMousewheel } from '../reducers/timeline-view';
+import actions from '../actions';
+
 import type {
   CssPixels,
   UnitIntervalOfProfileRange,
@@ -17,6 +22,9 @@ type Props = {
   updateProfileSelection: UpdateProfileSelection,
   selection: ProfileSelection,
   getScrollElement: () => ?HTMLElement,
+  hasZoomedViaMousewheel: () => void,
+  setHasZoomedViaMousewheel: () => void,
+  hasZoomedViaMousewheel: boolean,
 };
 
 require('./TimelineViewport.css');
@@ -52,7 +60,7 @@ const COLLAPSED_ROW_HEIGHT = 34;
  * viewportLeft += mouseMoveDelta * unitPixel
  **/
 export default function withTimelineViewport<T>(WrappedComponent: ReactClass<T>) {
-  return class TimelineViewport extends PureComponent {
+  class TimelineViewport extends PureComponent {
 
     props: Props
 
@@ -67,7 +75,10 @@ export default function withTimelineViewport<T>(WrappedComponent: ReactClass<T>)
       dragX: CssPixels,
       dragY: CssPixels,
       isDragging: boolean,
+      isScrolling: boolean,
     }
+
+    scrollId: number
 
     constructor(props: Props) {
       super(props);
@@ -78,6 +89,8 @@ export default function withTimelineViewport<T>(WrappedComponent: ReactClass<T>)
       (this: any)._mouseUpListener = this._mouseUpListener.bind(this);
 
       (this: any)._setSize = this._setSize.bind(this);
+
+      this.scrollId = 0;
 
       /**
        * TODO - Evaluate whether this state should stay in the component, or go out to
@@ -115,7 +128,28 @@ export default function withTimelineViewport<T>(WrappedComponent: ReactClass<T>)
         dragX: 0,
         dragY: 0,
         isDragging: false,
+        isScrolling: false,
       };
+    }
+
+    /**
+     * Let the viewport know when we are actively scrolling.
+     */
+    showShiftScrollingHint() {
+      // Only show this message if we haven't shift zoomed yet.
+      if (this.props.hasZoomedViaMousewheel) {
+        return;
+      }
+
+      const scollId = ++this.scrollId;
+      if (!this.state.isScrolling) {
+        this.setState({ isScrolling: true });
+      }
+      setTimeout(() => {
+        if (scollId === this.scrollId) {
+          this.setState({ isScrolling: false });
+        }
+      }, 1000);
     }
 
     componentDidUpdate(prevProps: Props) {
@@ -126,6 +160,10 @@ export default function withTimelineViewport<T>(WrappedComponent: ReactClass<T>)
     }
 
     componentWillReceiveProps(newProps: Props) {
+      if (this.props.isRowExpanded !== newProps.isRowExpanded) {
+        this.setState(this.getDefaultState(newProps));
+        return;
+      }
       if (
         this.props.selection !== newProps.selection ||
         this.props.timeRange !== newProps.timeRange
@@ -153,7 +191,11 @@ export default function withTimelineViewport<T>(WrappedComponent: ReactClass<T>)
 
     _mouseWheelListener(event: SyntheticWheelEvent) {
       if (event.shiftKey) {
-        this.zoomSelection(event);
+        this.zoomRangeSelection(event);
+        return;
+      }
+
+      if (!this.props.isRowExpanded) {
         return;
       }
 
@@ -162,6 +204,7 @@ export default function withTimelineViewport<T>(WrappedComponent: ReactClass<T>)
       const maybeScrollElement = this.props.getScrollElement();
       const viewScrollTop = maybeScrollElement ? maybeScrollElement.scrollTop : 0;
       const offsetTopAndCollapsedRow = Math.max(0, this.refs.container.offsetTop - COLLAPSED_ROW_HEIGHT);
+
       // Do not move the contents if the chart is not fully within view.
       if (event.deltaY < 0) {
         // Scrolling up.
@@ -169,11 +212,19 @@ export default function withTimelineViewport<T>(WrappedComponent: ReactClass<T>)
           return;
         }
       } else {
-        // Scrolling down.
-        if (viewScrollTop < offsetTopAndCollapsedRow) {
+        if (
+          // The top of the viewport is not within a single collapsed row height.
+          (viewScrollTop < offsetTopAndCollapsedRow) &&
+          // Can the scroll element still scroll?
+          (maybeScrollElement
+            ? maybeScrollElement.scrollTop !== maybeScrollElement.scrollHeight - maybeScrollElement.offsetHeight
+            : false)
+        ) {
           return;
         }
       }
+
+      this.showShiftScrollingHint();
 
       // Do the work to move the viewport.
       const { containerHeight } = this.state;
@@ -186,10 +237,13 @@ export default function withTimelineViewport<T>(WrappedComponent: ReactClass<T>)
       }
     }
 
-    zoomSelection(event: SyntheticWheelEvent) {
+    zoomRangeSelection(event: SyntheticWheelEvent) {
       if (!this.props.isRowExpanded) {
         // Maybe this should only be listening when expanded.
         return;
+      }
+      if (!this.props.hasZoomedViaMousewheel) {
+        this.props.setHasZoomedViaMousewheel();
       }
       event.preventDefault();
       const { maximumZoom } = this.props;
@@ -344,16 +398,24 @@ export default function withTimelineViewport<T>(WrappedComponent: ReactClass<T>)
     }
 
     render() {
-      const { isRowExpanded } = this.props;
+      const { isRowExpanded, hasZoomedViaMousewheel } = this.props;
 
       const {
         containerWidth, containerHeight, viewportTop, viewportBottom, viewportLeft,
-        viewportRight, isDragging,
+        viewportRight, isDragging, isScrolling,
       } = this.state;
 
-      const viewportClassName = 'flameChartViewport' +
-        (isRowExpanded ? ' expanded' : ' collapsed') +
-        (isDragging ? ' dragging' : '');
+      const viewportClassName = classNames({
+        timelineViewport: true,
+        expanded: isRowExpanded,
+        collapsed: !isRowExpanded,
+        dragging: isDragging,
+      });
+
+      const shiftScrollClassName = classNames({
+        timelineViewportShiftScroll: true,
+        hidden: hasZoomedViaMousewheel || !(isScrolling && isRowExpanded),
+      });
 
       return (
         <div className={viewportClassName}
@@ -367,10 +429,19 @@ export default function withTimelineViewport<T>(WrappedComponent: ReactClass<T>)
                             viewportTop={viewportTop}
                             viewportBottom={viewportBottom}
                             {...this.props} />
+          <div className={shiftScrollClassName}>Zoom Timeline: <kbd>Shift</kbd> <kbd>Scroll</kbd></div>
         </div>
       );
     }
-  };
+  }
+
+  // Connect this component so that it knows whether or not to nag the user to use shift
+  // for zooming on range selections.
+  return connect(state => {
+    return {
+      hasZoomedViaMousewheel: getHasZoomedViaMousewheel(state),
+    };
+  }, (actions: Object))(TimelineViewport);
 }
 
 function clamp(min, max, value) {

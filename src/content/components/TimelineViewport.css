@@ -1,12 +1,12 @@
-.flameChartViewport {
+.timelineViewport {
   flex: 1;
-  overflow: auto;
   position: relative;
   margin-top: 0;
   transition: transform 100ms;
+  overflow: hidden;
 }
 
-.flameChartViewport.expanded {
+.timelineViewport.expanded {
   cursor: -webkit-grab;
   cursor: grab;
   border-top: 1px solid #d6d6d6;
@@ -14,7 +14,7 @@
   margin-bottom: 5px;
 }
 
-.flameChartViewport.expanded::after {
+.timelineViewport.expanded::after {
   content: "";
   pointer-events: none;
   position: absolute;
@@ -27,11 +27,47 @@
   z-index:1;
 }
 
-.flameChartViewport.collapsed {
+.timelineViewport.collapsed {
   transform: translateY(9px);
 }
 
-.flameChartViewport.dragging {
+.timelineViewport.dragging {
   cursor: -webkit-grabbing;
   cursor: grabbing;
+}
+
+.timelineViewportShiftScroll {
+  position: absolute;
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  will-change: opacity, transform;
+  bottom: 0;
+  right: 0;
+  padding: 3px 10px;
+  border-radius: 5px 0 0 0;
+  opacity: 1;
+  background: rgba(0,0,0,0.07);
+  line-height: 20px;
+  transition: transform .2s ease-in-out, opacity .2s ease-in-out;
+  box-shadow: 0 0 0 0.5px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.timelineViewportShiftScroll.hidden {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.timelineViewportShiftScroll kbd {
+  background-color: #f6f6f6;
+  border: 1px solid #ccc;
+  border-radius: .2em;
+  display: inline-block;
+  padding: 0 .5em;
+  box-shadow: .1em .1em 0 #bbb;
+  margin: 0 .2em;
+  top: -1px;
+  position: relative;
+  color: #000;
 }

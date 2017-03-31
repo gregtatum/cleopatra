@@ -103,7 +103,7 @@ class FlameChartCanvas extends Component {
    *
    * Note that most of the units are not absolute values, but unit intervals ranged from
    * 0 - 1. This was done to make the calculations easier for computing various zoomed
-   * and translated views independent of any particular scale. See FlameChartViewport.js
+   * and translated views independent of any particular scale. See TimelineViewport.js
    * for a diagram detailing the various components of this set-up.
    * @param {HTMLCanvasElement} canvas - The current canvas.
    * @returns {undefined}
