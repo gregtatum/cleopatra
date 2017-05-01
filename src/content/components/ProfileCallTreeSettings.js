@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import actions from '../actions';
 import { getImplementationFilter, getInvertCallstack, getSearchString } from '../reducers/url-state';
 import IdleSearchField from '../components/IdleSearchField';
+import CallTreeFilters from '../containers/CallTreeFilters';
 
 import './ProfileCallTreeSettings.css';
 
@@ -68,6 +69,11 @@ class ProfileCallTreeSettings extends PureComponent {
                      onChange={this._onInvertCallstackClick}
                      checked={invertCallstack}/>
               { ' Invert call stack' }
+            </label>
+          </li>
+          <li className='profileCallTreeSettingsListItem'>
+            <label className='profileCallTreeSettingsLabel'>
+              <CallTreeFilters />
             </label>
           </li>
         </ul>

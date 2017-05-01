@@ -77,6 +77,14 @@ class ProfileCallTreeContextMenu extends PureComponent {
           <MenuItem onClick={this.handleClick} data={{type: 'copyFunctionName'}}>Function Name</MenuItem>
           <MenuItem onClick={this.handleClick} data={{type: 'copyStack'}}>Stack</MenuItem>
         </SubMenu>
+        <SubMenu title='Hide' hoverDelay={200}>
+          <MenuItem>This function</MenuItem>
+          <MenuItem>This function and descendants</MenuItem>
+          <MenuItem>Library "libsystem_kernel.dylib"</MenuItem>
+        </SubMenu>
+        <SubMenu title='Focus' hoverDelay={200}>
+          <MenuItem>Calls made by this function</MenuItem>
+        </SubMenu>
       </ContextMenu>
     );
   }
