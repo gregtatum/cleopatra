@@ -1,5 +1,3 @@
-import { assert } from 'chai';
-
 import { createImageMock } from '../fixtures/mocks/image';
 import { blankStore } from '../fixtures/stores';
 import * as iconsAccessors from '../../content/reducers/icons';
@@ -51,23 +49,23 @@ describe('actions/icons', function () {
 
     it('getIcons return an empty set', function () {
       const initialState = iconsAccessors.getIcons(state);
-      assert.typeOf(initialState, 'set');
-      assert.equal(initialState.size, 0);
+      expect(typeof initialState).toBe('set');
+      expect(initialState.size).toEqual(0);
     });
 
     it('getIconForNode returns null for any icon', function () {
       const subject = iconsAccessors.getIconForNode(state, { icon: validIcons[0] });
-      assert.isNull(subject);
+      expect(subject).toBeNull();
     });
 
     it('getIconClassNameForNode returns null for any icon', function () {
       const subject = iconsAccessors.getIconClassNameForNode(state, { icon: validIcons[0] });
-      assert.isNull(subject);
+      expect(subject).toBeNull();
     });
 
     it('getIconsWithClassNames returns an empty array', function () {
       const subject = iconsAccessors.getIconsWithClassNames(state);
-      assert.deepEqual(subject, []);
+      expect(subject).toEqual([]);
     });
   });
 
@@ -82,31 +80,27 @@ describe('actions/icons', function () {
       ];
 
       // Only 2 requests because only 2 different icons
-      assert.lengthOf(instances, 2);
+      expect(instances.length).toBe(2);
       instances.forEach((instance, i) => {
-        assert.equal(instance.src, validIcons[i]);
-        assert.equal(instance.referrerPolicy, 'no-referrer');
+        expect(instance.src).toEqual(validIcons[i]);
+        expect(instance.referrerPolicy).toEqual('no-referrer');
       });
       instances.forEach(instance => instance.onload());
       await Promise.all(promises);
 
       const state = store.getState();
       let subject = iconsAccessors.getIcons(state);
-      assert.sameMembers([...subject], validIcons, 'Icons are in the cache');
+      expect([...subject]).toEqual(validIcons);
 
       subject = iconsAccessors.getIconsWithClassNames(state);
-      assert.deepEqual(
-        subject,
-        validIcons.map((icon, i) => ({ icon, className: expectedClasses[i] })),
-        'We can request all icons with their class names'
-      );
+      expect(subject).toEqual(validIcons.map((icon, i) => ({ icon, className: expectedClasses[i] })));
 
       validIcons.forEach((icon, i) => {
         subject = iconsAccessors.getIconForNode(state, { icon });
-        assert.equal(subject, icon, 'We can get an icon for a specific node');
+        expect(subject).toEqual(icon);
 
         subject = iconsAccessors.getIconClassNameForNode(state, { icon });
-        assert.equal(subject, expectedClasses[i], 'We can get a class name for a specific node');
+        expect(subject).toEqual(expectedClasses[i]);
       });
     });
   });
@@ -114,23 +108,23 @@ describe('actions/icons', function () {
   describe('Requesting a non-existing image', function () {
     it('will not populate the local cache', async function () {
       const actionPromise = store.dispatch(iconsActions.iconStartLoading(invalidIcon));
-      assert.lengthOf(instances, 1);
+      expect(instances.length).toBe(1);
       instances[0].onerror();
 
       await actionPromise;
 
       const state = store.getState();
       let subject = iconsAccessors.getIcons(state);
-      assert.deepEqual([...subject], [], 'Errored icons are not in the cache');
+      expect([...subject]).toEqual([]);
 
       subject = iconsAccessors.getIconForNode(state, { icon: invalidIcon });
-      assert.isNull(subject, 'Errored icons should not be found in the cache');
+      expect(subject).toBeNull();
 
       subject = iconsAccessors.getIconClassNameForNode(state, { icon: invalidIcon });
-      assert.isNull(subject, 'Errored icons should not yield a class name');
+      expect(subject).toBeNull();
 
       subject = iconsAccessors.getIconsWithClassNames(state);
-      assert.deepEqual(subject, [], 'Errores icons are not in the cache');
+      expect(subject).toEqual([]);
     });
   });
 });

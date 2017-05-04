@@ -1,5 +1,4 @@
 import 'babel-polyfill';
-import { assert, config } from 'chai';
 import { SymbolStoreDB } from '../../content/symbol-store-db';
 import exampleSymbolTable from '../fixtures/example-symbol-table';
 import fakeIndexedDB from 'fake-indexeddb';

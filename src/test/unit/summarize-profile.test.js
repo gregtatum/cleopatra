@@ -1,6 +1,5 @@
 import 'babel-polyfill';
 import { describe, it } from 'mocha';
-import { assert } from 'chai';
 import { summarizeProfile } from '../../common/summarize-profile';
 
 const profile = require('../fixtures/profiles/profile-2d-canvas.json');
@@ -9,12 +8,12 @@ describe('summarize-profile', function () {
   const [geckoMain, compositor, content] = summarizeProfile(profile);
 
   it('has the thread names', function () {
-    assert.equal(geckoMain.threadName, 'GeckoMain');
-    assert.equal(compositor.threadName, 'Compositor');
-    assert.equal(content.threadName, 'Content');
-    assert.equal(profile.threads[geckoMain.threadIndex].name, 'GeckoMain');
-    assert.equal(profile.threads[compositor.threadIndex].name, 'Compositor');
-    assert.equal(profile.threads[content.threadIndex].name, 'Content');
+    expect(geckoMain.threadName).toEqual('GeckoMain');
+    expect(compositor.threadName).toEqual('Compositor');
+    expect(content.threadName).toEqual('Content');
+    expect(profile.threads[geckoMain.threadIndex].name).toEqual('GeckoMain');
+    expect(profile.threads[compositor.threadIndex].name).toEqual('Compositor');
+    expect(profile.threads[content.threadIndex].name).toEqual('Content');
   });
 
   // Probably not the most brilliant test, but assert that the values are the same from
@@ -48,7 +47,7 @@ describe('summarize-profile', function () {
       row.percentage = row.samples / sampleCount;
     });
 
-    assert.deepEqual(summary, expectedSummary);
+    expect(summary).toEqual(expectedSummary);
   });
 
   it('provides a rolling summary', () => {
@@ -77,10 +76,10 @@ describe('summarize-profile', function () {
 
   it('provides sane rolling summary values', () => {
     const {samples, percentage} = geckoMain.rollingSummary[0];
-    assert.equal(samples['dom.wait'], 2);
-    assert.equal(samples['script.compile.baseline'], 2);
-    assert.equal(samples.script, 12);
-    assert.equal(samples.dom, 1);
+    expect(samples['dom.wait']).toEqual(2);
+    expect(samples['script.compile.baseline']).toEqual(2);
+    expect(samples.script).toEqual(12);
+    expect(samples.dom).toEqual(1);
 
     assertFloatEquals(percentage['CC.wait'], 0.05263157894736842);
     assertFloatEquals(percentage['script.compile.baseline'], 0.10526315789473684);

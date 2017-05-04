@@ -1,5 +1,4 @@
 import 'babel-polyfill';
-import { assert, config } from 'chai';
 import { getContainingLibrary, symbolicateProfile, applyFunctionMerging, setFuncNames } from '../../content/symbolication';
 import { processProfile, unserializeProfileOfArbitraryFormat, serializeProfile } from '../../content/process-profile';
 import { resourceTypes, getFuncStackInfo, getTracingMarkers, filterThreadByImplementation } from '../../content/profile-data';
@@ -18,23 +17,23 @@ config.truncateThreshold = 0;
 describe('unique-string-array', function () {
   const u = new UniqueStringArray(['foo', 'bar', 'baz']);
   it('should return the right strings', function () {
-    assert.equal(u.getString(0), 'foo');
-    assert.equal(u.getString(1), 'bar');
-    assert.equal(u.getString(2), 'baz');
+    expect(u.getString(0)).toEqual('foo');
+    expect(u.getString(1)).toEqual('bar');
+    expect(u.getString(2)).toEqual('baz');
   });
   it('should return the correct index for existing strings', function () {
-    assert.equal(u.indexForString('foo'), 0);
-    assert.equal(u.indexForString('bar'), 1);
-    assert.equal(u.indexForString('baz'), 2);
+    expect(u.indexForString('foo')).toEqual(0);
+    expect(u.indexForString('bar')).toEqual(1);
+    expect(u.indexForString('baz')).toEqual(2);
   });
   it('should return a new index for a new string', function () {
-    assert.equal(u.indexForString('qux'), 3);
-    assert.equal(u.indexForString('qux'), 3);
-    assert.equal(u.indexForString('hello'), 4);
-    assert.equal(u.indexForString('bar'), 1);
-    assert.equal(u.indexForString('qux'), 3);
-    assert.equal(u.getString(3), 'qux');
-    assert.equal(u.getString(4), 'hello');
+    expect(u.indexForString('qux')).toEqual(3);
+    expect(u.indexForString('qux')).toEqual(3);
+    expect(u.indexForString('hello')).toEqual(4);
+    expect(u.indexForString('bar')).toEqual(1);
+    expect(u.indexForString('qux')).toEqual(3);
+    expect(u.getString(3)).toEqual('qux');
+    expect(u.getString(4)).toEqual('hello');
   });
 });
 
@@ -49,26 +48,26 @@ describe('data-table-utils', function () {
     const dt = JSON.parse(JSON.stringify(originalDataTable));
     it('test preparation', function () {
       // verify copy
-      assert.notEqual(dt, originalDataTable);
-      assert.deepEqual(dt, originalDataTable);
-      assert.deepEqual(dt.word.map(w => w.length), dt.wordLength, 'wordLength is correct');
+      expect(dt).not.toEqual(originalDataTable);
+      expect(dt).toEqual(originalDataTable);
+      expect(dt.word.map(w => w.length)).toEqual(dt.wordLength);
     });
     it('should sort this data table by order', function () {
       // sort by order
       sortDataTable(dt, dt.order, (a, b) => a - b);
 
-      assert.equal(dt.length, originalDataTable.length, 'length should be unaffected');
-      assert.equal(dt.word.length, originalDataTable.length, 'length should be unaffected');
-      assert.equal(dt.order.length, originalDataTable.length, 'length should be unaffected');
-      assert.equal(dt.wordLength.length, originalDataTable.length, 'length should be unaffected');
-      assert.deepEqual(dt.word.map(w => w.length), dt.wordLength, 'wordLength is still correct (was adjusted the same way)');
-      assert.deepEqual(dt.order, [...dt.order].sort((a, b) => a - b), 'dt.order is sorted');
-      assert.equal(dt.word.join(' '), 'This is now a sorted array', 'dt.words was reordered the same way');
+      expect(dt.length).toEqual(originalDataTable.length);
+      expect(dt.word.length).toEqual(originalDataTable.length);
+      expect(dt.order.length).toEqual(originalDataTable.length);
+      expect(dt.wordLength.length).toEqual(originalDataTable.length);
+      expect(dt.word.map(w => w.length)).toEqual(dt.wordLength);
+      expect(dt.order).toEqual([...dt.order].sort((a, b) => a - b));
+      expect(dt.word.join(' ')).toEqual('This is now a sorted array');
     });
     it('should sort this data table by wordLength', function () {
       // sort by wordLength
       sortDataTable(dt, dt.wordLength, (a, b) => a - b);
-      assert.deepEqual(dt, originalDataTable);
+      expect(dt).toEqual(originalDataTable);
     });
     const differentDataTable = {
       length: 7,
@@ -76,7 +75,7 @@ describe('data-table-utils', function () {
     };
     it('should sort this other data table', function () {
       sortDataTable(differentDataTable, differentDataTable.keyColumn, (a, b) => a - b);
-      assert.deepEqual(differentDataTable.keyColumn, [1, 2, 3, 4, 5, 6, 7]);
+      expect(differentDataTable.keyColumn).toEqual([1, 2, 3, 4, 5, 6, 7]);
     });
   });
 });
@@ -85,114 +84,114 @@ describe('process-profile', function () {
   describe('processProfile', function () {
     const profile = processProfile(exampleProfile);
     it('should have three threads', function () {
-      assert.equal(profile.threads.length, 3);
+      expect(profile.threads.length).toEqual(3);
     });
     it('should not have a profile-wide libs property', function () {
-      assert.notProperty(profile, 'libs');
+      expect('libs' in profile).toBeFalsy();
     });
     it('should have threads that are objects of the right shape', function () {
       for (const thread of profile.threads) {
-        assert.equal(typeof thread, 'object');
-        assert.property(thread, 'libs');
-        assert.property(thread, 'samples');
-        assert.property(thread, 'stackTable');
-        assert.property(thread, 'frameTable');
-        assert.property(thread, 'markers');
-        assert.property(thread, 'stringTable');
-        assert.property(thread, 'funcTable');
-        assert.property(thread, 'resourceTable');
+        expect(typeof thread).toEqual('object');
+        expect('libs' in thread).toBeTruthy();
+        expect('samples' in thread).toBeTruthy();
+        expect('stackTable' in thread).toBeTruthy();
+        expect('frameTable' in thread).toBeTruthy();
+        expect('markers' in thread).toBeTruthy();
+        expect('stringTable' in thread).toBeTruthy();
+        expect('funcTable' in thread).toBeTruthy();
+        expect('resourceTable' in thread).toBeTruthy();
       }
     });
     it('should sort libs by start address', function () {
       const libs = profile.threads[0].libs;
       let lastStartAddress = -Infinity;
       for (const lib of libs) {
-        assert.isAbove(lib.start, lastStartAddress);
+        expect(lib.start).toBeGreaterThan(lastStartAddress);
         lastStartAddress = lib.start;
       }
     });
     it('should have reasonable debugName fields on each library', function () {
-      assert.equal(profile.threads[0].libs[0].debugName, 'firefox');
-      assert.equal(profile.threads[0].libs[1].debugName, 'examplebinary');
-      assert.equal(profile.threads[0].libs[2].debugName, 'examplebinary2.pdb');
-      assert.equal(profile.threads[1].libs[0].debugName, 'firefox');
-      assert.equal(profile.threads[1].libs[1].debugName, 'examplebinary');
-      assert.equal(profile.threads[1].libs[2].debugName, 'examplebinary2.pdb');
+      expect(profile.threads[0].libs[0].debugName).toEqual('firefox');
+      expect(profile.threads[0].libs[1].debugName).toEqual('examplebinary');
+      expect(profile.threads[0].libs[2].debugName).toEqual('examplebinary2.pdb');
+      expect(profile.threads[1].libs[0].debugName).toEqual('firefox');
+      expect(profile.threads[1].libs[1].debugName).toEqual('examplebinary');
+      expect(profile.threads[1].libs[2].debugName).toEqual('examplebinary2.pdb');
 
       // Thread 2 is the content process main thread
-      assert.equal(profile.threads[2].libs[0].debugName, 'firefox-webcontent');
-      assert.equal(profile.threads[2].libs[1].debugName, 'examplebinary');
-      assert.equal(profile.threads[2].libs[2].debugName, 'examplebinary2.pdb');
+      expect(profile.threads[2].libs[0].debugName).toEqual('firefox-webcontent');
+      expect(profile.threads[2].libs[1].debugName).toEqual('examplebinary');
+      expect(profile.threads[2].libs[2].debugName).toEqual('examplebinary2.pdb');
     });
     it('should have reasonable breakpadId fields on each library', function () {
       for (const thread of profile.threads) {
         for (const lib of thread.libs) {
-          assert.property(lib, 'breakpadId');
-          assert.equal(lib.breakpadId.length, 33);
-          assert.equal(lib.breakpadId, lib.breakpadId.toUpperCase());
+          expect('breakpadId' in lib).toBeTruthy();
+          expect(lib.breakpadId.length).toEqual(33);
+          expect(lib.breakpadId).toEqual(lib.breakpadId.toUpperCase());
         }
       }
     });
     it('should shift the content process by 1 second', function () {
       // Should be Content, but modified by workaround for bug 1322471.
-      assert.equal(profile.threads[2].name, 'GeckoMain');
+      expect(profile.threads[2].name).toEqual('GeckoMain');
 
-      assert.equal(profile.threads[0].samples.time[0], 0);
-      assert.equal(profile.threads[0].samples.time[1], 1);
-      assert.equal(profile.threads[2].samples.time[0], 1000);
-      assert.equal(profile.threads[2].samples.time[1], 1001);
-      assert.equal(profile.threads[0].markers.time[0], 0);
-      assert.equal(profile.threads[0].markers.time[1], 2);
-      assert.equal(profile.threads[0].markers.time[2], 4);
-      assert.equal(profile.threads[0].markers.time[3], 5);
-      assert.equal(profile.threads[0].markers.data[5].startTime, 9);
-      assert.equal(profile.threads[0].markers.data[5].endTime, 10);
-      assert.equal(profile.threads[2].markers.time[0], 1000);
-      assert.equal(profile.threads[2].markers.time[1], 1002);
-      assert.equal(profile.threads[2].markers.time[2], 1004);
-      assert.equal(profile.threads[2].markers.time[3], 1005);
-      assert.equal(profile.threads[2].markers.data[5].startTime, 1009);
-      assert.equal(profile.threads[2].markers.data[5].endTime, 1010);
+      expect(profile.threads[0].samples.time[0]).toEqual(0);
+      expect(profile.threads[0].samples.time[1]).toEqual(1);
+      expect(profile.threads[2].samples.time[0]).toEqual(1000);
+      expect(profile.threads[2].samples.time[1]).toEqual(1001);
+      expect(profile.threads[0].markers.time[0]).toEqual(0);
+      expect(profile.threads[0].markers.time[1]).toEqual(2);
+      expect(profile.threads[0].markers.time[2]).toEqual(4);
+      expect(profile.threads[0].markers.time[3]).toEqual(5);
+      expect(profile.threads[0].markers.data[5].startTime).toEqual(9);
+      expect(profile.threads[0].markers.data[5].endTime).toEqual(10);
+      expect(profile.threads[2].markers.time[0]).toEqual(1000);
+      expect(profile.threads[2].markers.time[1]).toEqual(1002);
+      expect(profile.threads[2].markers.time[2]).toEqual(1004);
+      expect(profile.threads[2].markers.time[3]).toEqual(1005);
+      expect(profile.threads[2].markers.data[5].startTime).toEqual(1009);
+      expect(profile.threads[2].markers.data[5].endTime).toEqual(1010);
       // TODO: also shift the samples inside marker callstacks
     });
     it('should create one function per frame', function () {
       const thread = profile.threads[0];
-      assert.equal(thread.frameTable.length, 5);
-      assert.notProperty(thread.frameTable, 'location');
-      assert.property(thread.frameTable, 'func');
-      assert.property(thread.funcTable, 'resource');
-      assert.equal(thread.funcTable.length, 5);
-      assert.equal(thread.frameTable.func[0], 0);
-      assert.equal(thread.frameTable.func[1], 1);
-      assert.equal(thread.frameTable.func[2], 2);
-      assert.equal(thread.frameTable.func[3], 3);
-      assert.equal(thread.frameTable.func[4], 4);
-      assert.equal(thread.frameTable.address[0], -1);
-      assert.equal(thread.frameTable.address[1], 3972);
-      assert.equal(thread.frameTable.address[2], 6725);
-      assert.equal(thread.frameTable.address[3], -1);
-      assert.equal(thread.frameTable.address[4], -1);
-      assert.equal(thread.funcTable.name[0], 0);
-      assert.equal(thread.funcTable.name[1], 1);
-      assert.equal(thread.funcTable.name[2], 2);
-      assert.equal(thread.funcTable.name[3], 3);
-      assert.equal(thread.stringTable.getString(thread.funcTable.name[4]), 'frobnicate');
-      assert.equal(thread.stringTable.getString(thread.funcTable.fileName[4]), 'chrome://blargh');
-      assert.equal(thread.funcTable.lineNumber[4], 34);
-      assert.equal(thread.funcTable.address[0], -1);
-      assert.equal(thread.funcTable.address[1], 3972);
-      assert.equal(thread.funcTable.address[2], 6725);
-      assert.equal(thread.funcTable.address[3], -1);
-      assert.equal(thread.funcTable.address[4], -1);
+      expect(thread.frameTable.length).toEqual(5);
+      expect('location' in thread.frameTable).toBeFalsy();
+      expect('func' in thread.frameTable).toBeTruthy();
+      expect('resource' in thread.funcTable).toBeTruthy();
+      expect(thread.funcTable.length).toEqual(5);
+      expect(thread.frameTable.func[0]).toEqual(0);
+      expect(thread.frameTable.func[1]).toEqual(1);
+      expect(thread.frameTable.func[2]).toEqual(2);
+      expect(thread.frameTable.func[3]).toEqual(3);
+      expect(thread.frameTable.func[4]).toEqual(4);
+      expect(thread.frameTable.address[0]).toEqual(-1);
+      expect(thread.frameTable.address[1]).toEqual(3972);
+      expect(thread.frameTable.address[2]).toEqual(6725);
+      expect(thread.frameTable.address[3]).toEqual(-1);
+      expect(thread.frameTable.address[4]).toEqual(-1);
+      expect(thread.funcTable.name[0]).toEqual(0);
+      expect(thread.funcTable.name[1]).toEqual(1);
+      expect(thread.funcTable.name[2]).toEqual(2);
+      expect(thread.funcTable.name[3]).toEqual(3);
+      expect(thread.stringTable.getString(thread.funcTable.name[4])).toEqual('frobnicate');
+      expect(thread.stringTable.getString(thread.funcTable.fileName[4])).toEqual('chrome://blargh');
+      expect(thread.funcTable.lineNumber[4]).toEqual(34);
+      expect(thread.funcTable.address[0]).toEqual(-1);
+      expect(thread.funcTable.address[1]).toEqual(3972);
+      expect(thread.funcTable.address[2]).toEqual(6725);
+      expect(thread.funcTable.address[3]).toEqual(-1);
+      expect(thread.funcTable.address[4]).toEqual(-1);
     });
     it('should create one resource per used library', function () {
       const thread = profile.threads[0];
-      assert.equal(thread.resourceTable.length, 2);
-      assert.equal(thread.resourceTable.type[0], resourceTypes.library);
-      assert.equal(thread.resourceTable.type[1], resourceTypes.url);
+      expect(thread.resourceTable.length).toEqual(2);
+      expect(thread.resourceTable.type[0]).toEqual(resourceTypes.library);
+      expect(thread.resourceTable.type[1]).toEqual(resourceTypes.url);
       const [name0, name1] = thread.resourceTable.name;
-      assert.equal(thread.stringTable.getString(name0), 'firefox');
-      assert.equal(thread.stringTable.getString(name1), 'chrome://blargh');
+      expect(thread.stringTable.getString(name0)).toEqual('firefox');
+      expect(thread.stringTable.getString(name1)).toEqual('chrome://blargh');
     });
   });
 });
@@ -204,14 +203,14 @@ describe('profile-data', function () {
     const { funcStackTable } =
       getFuncStackInfo(thread.stackTable, thread.frameTable, thread.funcTable, thread.samples);
     it('should create one funcStack per stack', function () {
-      assert.equal(thread.stackTable.length, 5);
-      assert.equal(funcStackTable.length, 5);
-      assert.property(funcStackTable, 'prefix');
-      assert.property(funcStackTable, 'func');
-      assert.equal(funcStackTable.func[0], 0);
-      assert.equal(funcStackTable.func[1], 1);
-      assert.equal(funcStackTable.func[2], 2);
-      assert.equal(funcStackTable.func[3], 3);
+      expect(thread.stackTable.length).toEqual(5);
+      expect(funcStackTable.length).toEqual(5);
+      expect('prefix' in funcStackTable).toBeTruthy();
+      expect('func' in funcStackTable).toBeTruthy();
+      expect(funcStackTable.func[0]).toEqual(0);
+      expect(funcStackTable.func[1]).toEqual(1);
+      expect(funcStackTable.func[2]).toEqual(2);
+      expect(funcStackTable.func[3]).toEqual(3);
     });
   });
   describe('getTracingMarkers', function () {
@@ -219,8 +218,8 @@ describe('profile-data', function () {
     const thread = profile.threads[0];
     const tracingMarkers = getTracingMarkers(thread);
     it('should fold the two reflow markers into one tracing marker', function () {
-      assert.equal(tracingMarkers.length, 3);
-      assert.deepEqual(tracingMarkers[0], {
+      expect(tracingMarkers.length).toEqual(3);
+      expect(tracingMarkers[0]).toEqual({
         start: 2,
         name: 'Reflow',
         dur: 6,
@@ -228,8 +227,8 @@ describe('profile-data', function () {
       });
     });
     it('should fold the two Rasterize markers into one tracing marker, after the reflow tracing marker', function () {
-      assert.equal(tracingMarkers.length, 3);
-      assert.deepEqual(tracingMarkers[1], {
+      expect(tracingMarkers.length).toEqual(3);
+      expect(tracingMarkers[1]).toEqual({
         start: 4,
         name: 'Rasterize',
         dur: 1,
@@ -237,8 +236,8 @@ describe('profile-data', function () {
       });
     });
     it('should create a tracing marker for the MinorGC startTime/endTime marker', function () {
-      assert.equal(tracingMarkers.length, 3);
-      assert.deepEqual(tracingMarkers[2], {
+      expect(tracingMarkers.length).toEqual(3);
+      expect(tracingMarkers[2]).toEqual({
         start: 11,
         name: 'MinorGC',
         dur: 1,
@@ -258,30 +257,30 @@ describe('symbolication', function () {
       { start: 80, end: 100, name: 'fifth' },
     ];
     it('should return the first library for addresses inside the first library', function () {
-      assert.equal(getContainingLibrary(libs, 0).name, 'first');
-      assert.equal(getContainingLibrary(libs, 10).name, 'first');
-      assert.equal(getContainingLibrary(libs, 19).name, 'first');
+      expect(getContainingLibrary(libs, 0).name).toEqual('first');
+      expect(getContainingLibrary(libs, 10).name).toEqual('first');
+      expect(getContainingLibrary(libs, 19).name).toEqual('first');
     });
     it('should return the second library for addresses inside the second library', function () {
-      assert.equal(getContainingLibrary(libs, 20).name, 'second');
-      assert.equal(getContainingLibrary(libs, 21).name, 'second');
-      assert.equal(getContainingLibrary(libs, 27).name, 'second');
-      assert.equal(getContainingLibrary(libs, 39).name, 'second');
+      expect(getContainingLibrary(libs, 20).name).toEqual('second');
+      expect(getContainingLibrary(libs, 21).name).toEqual('second');
+      expect(getContainingLibrary(libs, 27).name).toEqual('second');
+      expect(getContainingLibrary(libs, 39).name).toEqual('second');
     });
     it('should return the third library for addresses inside the third library', function () {
-      assert.equal(getContainingLibrary(libs, 40).name, 'third');
-      assert.equal(getContainingLibrary(libs, 41).name, 'third');
-      assert.equal(getContainingLibrary(libs, 47).name, 'third');
-      assert.equal(getContainingLibrary(libs, 49).name, 'third');
+      expect(getContainingLibrary(libs, 40).name).toEqual('third');
+      expect(getContainingLibrary(libs, 41).name).toEqual('third');
+      expect(getContainingLibrary(libs, 47).name).toEqual('third');
+      expect(getContainingLibrary(libs, 49).name).toEqual('third');
     });
     it('should return no library when outside or in holes', function () {
-      assert.equal(getContainingLibrary(libs, -1), null);
-      assert.equal(getContainingLibrary(libs, -10), null);
-      assert.equal(getContainingLibrary(libs, 100), null);
-      assert.equal(getContainingLibrary(libs, 256), null);
-      assert.equal(getContainingLibrary(libs, 50), null);
-      assert.equal(getContainingLibrary(libs, 55), null);
-      assert.equal(getContainingLibrary(libs, 59), null);
+      expect(getContainingLibrary(libs, -1)).toEqual(null);
+      expect(getContainingLibrary(libs, -10)).toEqual(null);
+      expect(getContainingLibrary(libs, 100)).toEqual(null);
+      expect(getContainingLibrary(libs, 256)).toEqual(null);
+      expect(getContainingLibrary(libs, 50)).toEqual(null);
+      expect(getContainingLibrary(libs, 55)).toEqual(null);
+      expect(getContainingLibrary(libs, 59)).toEqual(null);
     });
   });
 
@@ -316,10 +315,10 @@ describe('symbolication', function () {
         const funcNameStringIndex = thread.funcTable.name[funcIndex];
         return thread.stringTable.getString(funcNameStringIndex);
       }
-      assert.equal(functionNameForFrameInThread(unsymbolicatedProfile.threads[0], 1), '0x100000f84');
-      assert.equal(functionNameForFrameInThread(symbolicatedProfile.threads[0], 1), 'second symbol');
-      assert.equal(functionNameForFrameInThread(unsymbolicatedProfile.threads[0], 2), '0x100001a45');
-      assert.equal(functionNameForFrameInThread(symbolicatedProfile.threads[0], 2), 'third symbol');
+      expect(functionNameForFrameInThread(unsymbolicatedProfile.threads[0], 1)).toEqual('0x100000f84');
+      expect(functionNameForFrameInThread(symbolicatedProfile.threads[0], 1)).toEqual('second symbol');
+      expect(functionNameForFrameInThread(unsymbolicatedProfile.threads[0], 2)).toEqual('0x100001a45');
+      expect(functionNameForFrameInThread(symbolicatedProfile.threads[0], 2)).toEqual('third symbol');
     });
   });
   // TODO: check that functions are collapsed correctly
@@ -334,11 +333,11 @@ describe('upgrades', function () {
 
     const exampleOldCleopatraProfile = require('../fixtures/upgrades/old-cleopatra-profile.sps.json');
     it('should detect the profile as an old cleopatra profile', function () {
-      assert.isTrue(isOldCleopatraFormat(exampleOldCleopatraProfile));
+      expect(isOldCleopatraFormat(exampleOldCleopatraProfile)).toBe(true);
     });
     it('should be able to convert the old cleopatra profile into a processed profile', function () {
       const profile = convertOldCleopatraProfile(exampleOldCleopatraProfile);
-      assert.isTrue(isProcessedProfile(profile));
+      expect(isProcessedProfile(profile)).toBe(true);
       // For now, just test that upgrading doesn't throw any exceptions.
       upgradeProcessedProfileToCurrentVersion(profile);
     });
@@ -354,7 +353,7 @@ describe('upgrades', function () {
     delete serializedLhsAsObject.meta.version;
     delete serializedRhsAsObject.meta.version;
 
-    assert.deepEqual(serializedLhsAsObject, serializedRhsAsObject);
+    expect(serializedLhsAsObject).toEqual(serializedRhsAsObject);
   }
   const afterUpgradeReference = unserializeProfileOfArbitraryFormat(require('../fixtures/upgrades/processed-5.json'));
 
@@ -401,19 +400,19 @@ describe('upgrades', function () {
     // Uncomment this to output your next ./upgrades/gecko-X.json
     // upgradeGeckoProfileToCurrentVersion(afterUpgradeGeckoReference);
     // console.log(JSON.stringify(afterUpgradeGeckoReference));
-    assert.equal(afterUpgradeGeckoReference.meta.version, CURRENT_VERSION);
+    expect(afterUpgradeGeckoReference.meta.version).toEqual(CURRENT_VERSION);
 
     const geckoProfile3 = require('../fixtures/upgrades/gecko-3.json');
     upgradeGeckoProfileToCurrentVersion(geckoProfile3);
-    assert.deepEqual(geckoProfile3, afterUpgradeGeckoReference);
+    expect(geckoProfile3).toEqual(afterUpgradeGeckoReference);
 
     const geckoProfile4 = require('../fixtures/upgrades/gecko-4.json');
     upgradeGeckoProfileToCurrentVersion(geckoProfile4);
-    assert.deepEqual(geckoProfile4, afterUpgradeGeckoReference);
+    expect(geckoProfile4).toEqual(afterUpgradeGeckoReference);
 
     const geckoProfile5 = require('../fixtures/upgrades/gecko-5.json');
     upgradeGeckoProfileToCurrentVersion(geckoProfile5);
-    assert.deepEqual(geckoProfile5, afterUpgradeGeckoReference);
+    expect(geckoProfile5).toEqual(afterUpgradeGeckoReference);
   });
 });
 
@@ -425,15 +424,11 @@ describe('color-categories', function () {
       return getCategoryByImplementation(thread, thread.stackTable.frame[stackIndex]);
     });
     for (let i = 0; i < 6; i++) {
-      assert.equal(categories[i].name, 'Platform',
-        'The platform frames are labeled platform');
-      assert.equal(categories[i].color, implementationCategoryMap.Platform,
-        'The platform frames are colored according to the color definition');
+      expect(categories[i].name).toEqual('Platform');
+      expect(categories[i].color).toEqual(implementationCategoryMap.Platform);
     }
-    assert.equal(categories[6].name, 'JS Baseline',
-      'The JS Baseline frame is labeled as as JS Baseline.');
-    assert.equal(categories[6].color, implementationCategoryMap['JS Baseline'],
-      'The platform frames are colored according to the color definition');
+    expect(categories[6].name).toEqual('JS Baseline');
+    expect(categories[6].color).toEqual(implementationCategoryMap['JS Baseline']);
   });
 });
 
@@ -448,7 +443,7 @@ describe('filter-by-implementation', function () {
   }
 
   it('will return the same thread if filtering to "all"', function () {
-    assert.equal(filterThreadByImplementation(thread, 'combined'), thread);
+    expect(filterThreadByImplementation(thread, 'combined')).toEqual(thread);
   });
 
   it('will return only JS samples if filtering to "js"', function () {
@@ -458,8 +453,8 @@ describe('filter-by-implementation', function () {
       .map(stack => stackIsJS(jsOnlyThread, stack))
       .reduce((a, b) => a && b);
 
-    assert.isTrue(samplesAreAllJS, 'samples are all js');
-    assert.lengthOf(nonNullSampleStacks, 4);
+    expect(samplesAreAllJS).toBe(true);
+    expect(nonNullSampleStacks.length).toBe(4);
   });
 
   it('will return only C++ samples if filtering to "cpp"', function () {
@@ -469,7 +464,7 @@ describe('filter-by-implementation', function () {
       .map(stack => !stackIsJS(cppOnlyThread, stack))
       .reduce((a, b) => a && b);
 
-    assert.isTrue(samplesAreAllJS, 'samples are all cpp');
-    assert.lengthOf(nonNullSampleStacks, 10);
+    expect(samplesAreAllJS).toBe(true);
+    expect(nonNullSampleStacks.length).toBe(10);
   });
 });
