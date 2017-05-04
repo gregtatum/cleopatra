@@ -23,18 +23,18 @@ describe('SymbolStoreDB', function () {
     for (let i = 0; i < 5; i++) {
       try {
         await symbolStoreDB.getSymbolTable(libs[i].debugName, libs[i].breakpadId);
-        assert.ok(false, 'should not get any of the first 5 tables back');
+        assert.toBeTruthy();
       } catch (e) {
-        assert.ok(true, 'should not get any of the first 5 tables back');
+        assert.toBeTruthy();
       }
     }
 
     for (let i = 5; i < 10; i++) {
       try {
         await symbolStoreDB.getSymbolTable(libs[i].debugName, libs[i].breakpadId);
-        assert.ok(true, 'the last 5 tables should have been inserted and kept successfully');
+        assert.toBeTruthy();
       } catch (e) {
-        assert.ok(false, 'the last 5 tables should have been inserted and kept successfully');
+        assert.toBeTruthy();
       }
     }
 
@@ -48,18 +48,18 @@ describe('SymbolStoreDB', function () {
     for (let i = 0; i < 5; i++) {
       try {
         await symbolStoreDB.getSymbolTable(libs[i].debugName, libs[i].breakpadId);
-        assert.ok(false, 'should not get any of the first 5 tables back');
+        assert.toBeTruthy();
       } catch (e) {
-        assert.ok(true, 'should not get any of the first 5 tables back');
+        assert.toBeTruthy();
       }
     }
 
     for (let i = 5; i < 10; i++) {
       try {
         await symbolStoreDB.getSymbolTable(libs[i].debugName, libs[i].breakpadId);
-        assert.ok(true, 'the last 5 tables should have been inserted and kept successfully');
+        assert.toBeTruthy();
       } catch (e) {
-        assert.ok(false, 'the last 5 tables should have been inserted and kept successfully');
+        assert.toBeTruthy();
       }
     }
 
@@ -73,9 +73,9 @@ describe('SymbolStoreDB', function () {
     for (let i = 0; i < 10; i++) {
       try {
         await symbolStoreDB.getSymbolTable(libs[i].debugName, libs[i].breakpadId);
-        assert.ok(false, 'should not get any of the tables back');
+        assert.toBeTruthy();
       } catch (e) {
-        assert.ok(true, 'should not get any of the tables back');
+        assert.toBeTruthy();
       }
     }
 

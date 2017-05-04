@@ -14,7 +14,7 @@ describe('actions/receive-profile', function () {
       const store = blankStore();
 
       const initialProfile = ProfileViewSelectors.getProfile(store.getState());
-      assert.ok(initialProfile, 'A blank profile initially exists');
+      assert.toBeTruthy();
       assert.lengthOf(initialProfile.threads, 0, 'The blank profile contains no data');
       store.dispatch(receiveProfileFromAddon(preprocessedProfile));
       assert.strictEqual(ProfileViewSelectors.getProfile(store.getState()), preprocessedProfile, 'The passed in profile is saved in state.');
