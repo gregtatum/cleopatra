@@ -289,7 +289,7 @@ describe('symbolication', function () {
     let unsymbolicatedProfile = null;
     let symbolicatedProfile = null;
 
-    before(function () {
+    beforeAll(function () {
       unsymbolicatedProfile = processProfile(exampleProfile);
       const symbolTable = {
         0: 'first symbol',
