@@ -1,5 +1,4 @@
 import 'babel-polyfill';
-import { describe, it } from 'mocha';
 import { summarizeProfile } from '../../common/summarize-profile';
 
 const profile = require('../fixtures/profiles/profile-2d-canvas.json');
@@ -52,24 +51,30 @@ describe('summarize-profile', function () {
 
   it('provides a rolling summary', () => {
     const {rollingSummary} = geckoMain;
-    assert.toBeTruthy();
+    expect(Array.isArray(rollingSummary)).toBeTruthy();
 
     const hasSamples = (memo, {samples}) => memo && typeof samples === 'object';
-    assert.toBeTruthy();
+
+    // Each summary has samples
+    expect(rollingSummary.reduce(hasSamples, true)).toBeTruthy();
+
 
     const hasPercentages = (memo, {percentage}) => memo && typeof percentage === 'object';
-    assert.toBeTruthy();
+    expect(rollingSummary.reduce(hasPercentages, true)).toBeTruthy();
 
     for (const {samples} of rollingSummary) {
       for (const [name, value] of Object.entries(samples)) {
-        assert.toBeTruthy();
+        // `"${name}" has a sample count greater than 0.`
+        expect(value).toBeGreaterThan(0);
       }
     }
 
     for (const {percentage} of rollingSummary) {
       for (const [name, value] of Object.entries(percentage)) {
-        assert.toBeTruthy();
-        assert.toBeTruthy();
+        // `"${name}" has a percentage count greater than 0.`
+        expect(value).toBeGreaterThan(0);
+        // `"${name}" has a percentage count greater than 0.`
+        expect(value).toBeLessThanOrEqual(1);
       }
     }
   });
@@ -89,5 +94,8 @@ describe('summarize-profile', function () {
 });
 
 function assertFloatEquals(a, b, message) {
-  assert.toBeTruthy();
+  function assertFloatEquals(a, b, message) {
+    // `expected ${a} to be ${b}`
+    expect(Math.abs(a - b) < 0.0001).toBeTruthy();
+  }
 }

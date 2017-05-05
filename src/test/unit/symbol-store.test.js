@@ -5,8 +5,6 @@ import exampleSymbolTable from '../fixtures/example-symbol-table';
 import fakeIndexedDB from 'fake-indexeddb';
 import FDBKeyRange from 'fake-indexeddb/lib/FDBKeyRange';
 
-config.truncateThreshold = 0;
-
 describe('SymbolStore', function () {
   global.window = { indexedDB: fakeIndexedDB, IDBKeyRange: FDBKeyRange };
   global.TextDecoder = TextDecoder;

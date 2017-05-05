@@ -12,8 +12,6 @@ import { isProcessedProfile, upgradeProcessedProfileToCurrentVersion } from '../
 import { upgradeGeckoProfileToCurrentVersion, CURRENT_VERSION } from '../../content/gecko-profile-versioning';
 import { getCategoryByImplementation, implementationCategoryMap } from '../../content/color-categories';
 
-config.truncateThreshold = 0;
-
 describe('unique-string-array', function () {
   const u = new UniqueStringArray(['foo', 'bar', 'baz']);
   it('should return the right strings', function () {
@@ -48,7 +46,7 @@ describe('data-table-utils', function () {
     const dt = JSON.parse(JSON.stringify(originalDataTable));
     it('test preparation', function () {
       // verify copy
-      expect(dt).not.toEqual(originalDataTable);
+      expect(dt).not.toBe(originalDataTable);
       expect(dt).toEqual(originalDataTable);
       expect(dt.word.map(w => w.length)).toEqual(dt.wordLength);
     });
@@ -326,11 +324,6 @@ describe('symbolication', function () {
 
 describe('upgrades', function () {
   describe('old-cleopatra-profile', function () {
-    /* eslint-disable no-invalid-this */
-    // This can take awhile, increase the timeout.
-    this.timeout(10000);
-    /* eslint-enable no-invalid-this */
-
     const exampleOldCleopatraProfile = require('../fixtures/upgrades/old-cleopatra-profile.sps.json');
     it('should detect the profile as an old cleopatra profile', function () {
       expect(isOldCleopatraFormat(exampleOldCleopatraProfile)).toBe(true);
@@ -361,10 +354,6 @@ describe('upgrades', function () {
   // console.log(serializeProfile(afterUpgradeReference));
 
   it('should import an old profile and upgrade it to be the same as the reference processed profile', function () {
-    /* eslint-disable no-invalid-this */
-    // This can take awhile, increase the timeout.
-    this.timeout(10000);
-    /* eslint-enable no-invalid-this */
     const serializedOldProcessedProfile0 = require('../fixtures/upgrades/processed-0.json');
     const upgradedProfile0 = unserializeProfileOfArbitraryFormat(serializedOldProcessedProfile0);
     compareProcessedProfiles(upgradedProfile0, afterUpgradeReference);
@@ -391,11 +380,6 @@ describe('upgrades', function () {
     // compareProcessedProfiles(upgradedGeckoProfile4, afterUpgradeReference);
   });
   it('should import an old Gecko profile and upgrade it to be the same as the newest Gecko profile', function () {
-    /* eslint-disable no-invalid-this */
-    // This can take awhile, increase the timeout.
-    this.timeout(10000);
-    /* eslint-enable no-invalid-this */
-
     const afterUpgradeGeckoReference = require('../fixtures/upgrades/gecko-6.json');
     // Uncomment this to output your next ./upgrades/gecko-X.json
     // upgradeGeckoProfileToCurrentVersion(afterUpgradeGeckoReference);
