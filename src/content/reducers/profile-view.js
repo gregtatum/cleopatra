@@ -462,7 +462,7 @@ export const selectorsForThread = (threadIndex: ThreadIndex): SelectorsForThread
     const _getImplementationFilteredThread = createSelector(
       _getRangeAndCallTreeFilteredThread,
       URLState.getImplementationFilter,
-      ProfileData.filterThreadByImplementation
+      (thread, implementation) => ProfileData.filterThreadByFunc(thread, implementation, [], [])
     );
     const _getImplementationAndSearchFilteredThread = createSelector(
       _getImplementationFilteredThread,
