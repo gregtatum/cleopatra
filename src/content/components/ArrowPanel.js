@@ -12,6 +12,7 @@ class ArrowPanel extends PureComponent {
     super(props);
     this.state = { open: false };
     this._windowMouseDownListener = this._windowMouseDownListener.bind(this);
+    this._escapeListener = this._escapeListener.bind(this);
     this._panelElementCreated = elem => { this._panelElement = elem; };
     this._onOkButtonClick = this._onOkButtonClick.bind(this);
     this._onCancelButtonClick = this._onCancelButtonClick.bind(this);
@@ -27,6 +28,7 @@ class ArrowPanel extends PureComponent {
       this.props.onOpen();
     }
     window.addEventListener('mousedown', this._windowMouseDownListener, true);
+    window.addEventListener('keypress', this._escapeListener, false);
   }
 
   close() {
@@ -39,15 +41,23 @@ class ArrowPanel extends PureComponent {
       this.props.onClose();
     }
     window.removeEventListener('mousedown', this._windowMouseDownListener, true);
+    window.removeEventListener('keypress', this._escapeListener, false);
   }
 
   componentWillUnmount() {
     window.removeEventListener('mousedown', this._windowMouseDownListener, true);
+    window.removeEventListener('keypress', this._escapeListener, false);
   }
 
-  _windowMouseDownListener(e) {
+  _windowMouseDownListener(event) {
     if (this.state.open && this._panelElement &&
-        !this._panelElement.contains(e.target)) {
+        !this._panelElement.contains(event.target)) {
+      this.close();
+    }
+  }
+
+  _escapeListener(event) {
+    if (event.key === 'Escape' && this.state.open && this._panelElement) {
       this.close();
     }
   }
@@ -67,14 +77,14 @@ class ArrowPanel extends PureComponent {
   }
 
   render() {
-    const { className, children, title, okButtonText, cancelButtonText } = this.props;
+    const { className, children, title, okButtonText, cancelButtonText, offsetDirection } = this.props;
     const hasTitle = (title !== undefined);
     const hasButtons = (okButtonText || cancelButtonText);
     const { open } = this.state;
     return (
       <div className='arrowPanelAnchor'>
-        <div className={classNames('arrowPanel', { open, hasTitle, hasButtons }, className)} ref={this._panelElementCreated}>
-          <div className='arrowPanelArrow'/>
+        <div className={classNames('arrowPanel', { open, hasTitle, hasButtons }, offsetDirection, className)} ref={this._panelElementCreated}>
+          <div className={classNames('arrowPanelArrow', offsetDirection)}/>
           { hasTitle ? <h1 className='arrowPanelTitle'>{title}</h1> : null }
           <div className='arrowPanelContent'>
             {children}
@@ -108,6 +118,7 @@ ArrowPanel.propTypes = {
   title: PropTypes.string,
   okButtonText: PropTypes.string,
   cancelButtonText: PropTypes.string,
+  offsetDirection: PropTypes.string,
 };
 
 export default ArrowPanel;

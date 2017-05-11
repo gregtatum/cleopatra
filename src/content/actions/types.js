@@ -23,6 +23,7 @@ export type PostfixCallTreeFilter = {
 };
 export type CallTreeFilter = PrefixCallTreeFilter | PostfixCallTreeFilter;
 export type CallTreeFiltersPerThread = { [id: ThreadIndex]: CallTreeFilter[] };
+export type FuncsPerThread = { [id: ThreadIndex]: IndexIntoFuncTable[] };
 export type DataSource = 'none' | 'from-file' | 'from-addon' | 'local' | 'public' | 'from-url';
 export type ProfileSelection =
   { hasSelection: false, isModifying: false } |
@@ -107,7 +108,11 @@ type URLStateAction =
   { type: 'POP_CALL_TREE_FILTERS', threadIndex: ThreadIndex, firstRemovedFilterIndex: number } |
   { type: 'CHANGE_IMPLEMENTATION_FILTER', implementation: ImplementationFilter } |
   { type: 'CHANGE_INVERT_CALLSTACK', invertCallstack: boolean } |
-  { type: 'CHANGE_HIDE_PLATFORM_DETAILS', hidePlatformDetails: boolean };
+  { type: 'CHANGE_HIDE_PLATFORM_DETAILS', hidePlatformDetails: boolean } |
+  { type: 'PRUNE_FUNCTION', funcIndex: IndexIntoFuncTable, threadIndex: ThreadIndex } |
+  { type: 'UNPRUNE_FUNCTION', funcIndex: IndexIntoFuncTable, threadIndex: ThreadIndex } |
+  { type: 'PRUNE_SUBTREE', funcIndex: IndexIntoFuncTable, threadIndex: ThreadIndex } |
+  { type: 'UNPRUNE_SUBTREE', funcIndex: IndexIntoFuncTable, threadIndex: ThreadIndex };
 
 type IconsAction =
   { type: 'ICON_HAS_LOADED', icon: string } |

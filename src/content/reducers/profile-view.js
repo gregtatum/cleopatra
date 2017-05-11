@@ -30,7 +30,7 @@ import type {
   MarkerTimingRows,
 } from '../../common/types/profile-derived';
 import type { Milliseconds, StartEndRange } from '../../common/types/units';
-import type { Action, CallTreeFilter, ProfileSelection } from '../actions/types';
+import type { Action, CallTreeFilter, FuncsPerThread, ProfileSelection } from '../actions/types';
 import type {
   State,
   Reducer,
@@ -394,6 +394,8 @@ export const selectorsForThread = (threadIndex: ThreadIndex): SelectorsForThread
     const getThread = (state: State): Thread => getProfile(state).threads[threadIndex];
     const getViewOptions = (state: State): ThreadViewOptions => getProfileViewOptions(state).perThread[threadIndex];
     const getCallTreeFilters = (state: State): CallTreeFilter[] => URLState.getCallTreeFilters(state, threadIndex);
+    const getPruneFunctionsList = (state: State): IndexIntoFuncTable[] => URLState.getPruneFunctionsList(state, threadIndex);
+    const getPruneSubtreeList = (state: State): IndexIntoFuncTable[] => URLState.getPruneSubtreeList(state, threadIndex);
     const getFriendlyThreadName = createSelector(
       getThreads,
       getThread,
@@ -462,7 +464,9 @@ export const selectorsForThread = (threadIndex: ThreadIndex): SelectorsForThread
     const _getImplementationFilteredThread = createSelector(
       _getRangeAndCallTreeFilteredThread,
       URLState.getImplementationFilter,
-      (thread, implementation) => ProfileData.filterThreadByFunc(thread, implementation, [], [])
+      getPruneFunctionsList,
+      getPruneSubtreeList,
+      ProfileData.filterThreadByFunc
     );
     const _getImplementationAndSearchFilteredThread = createSelector(
       _getImplementationFilteredThread,

@@ -24,42 +24,65 @@
   opacity: 1;
 }
 
-.callTreeFiltersList {
+.callTreeFiltersScroller {
+  max-height: 250px;
+  overflow: scroll;
+}
+
+.callTreeFiltersTable {
   min-width: 300px;
   min-width: 300px;
   background-color: #fff;
   border: 1px solid #d6d6d6;
   margin-bottom: 10px;
+  border-collapse: collapse;
 }
 
-.callTreeFiltersListItem {
-  display: flex;
+.callTreeFiltersRow {
   padding: 4px 0px;
-  color: #777;
-}
-
-.callTreeFiltersListItem.active {
   color: #000;
 }
 
+.callTreeFiltersEmpty {
+  padding: 10px 20px;
+}
+.callTreeFiltersEmptyP {
+  min-width: 300px;
+}
+
+.callTreeFiltersCell,
+.callTreeFiltersCellHeader {
+  padding: 5px 9px;
+  white-space: nowrap;
+}
+
+.callTreeFiltersCellHeader {
+  border: 1px solid #eaeaea;
+}
+
 .callTreeFiltersListItemName {
-  flex: 1;
+  max-width: 300px;
   padding: 0 7px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+.callTreeFiltersType {
+  position: relative;
+  padding-right: 25px;
+  color: #486cc9;
+  text-decoration: underline;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.callTreeFiltersSelectWrapper {
-  position: relative;
-  width: 95px;
-  padding-right: 25px;
-  text-overflow: ellipsis;
-  color: #486cc9;
-  text-decoration: underline;
-}
-
-.callTreeFiltersSelectWrapper::before,
-.callTreeFiltersSelectWrapper::after
+.callTreeFiltersType::before,
+.callTreeFiltersType::after
 {
   content: "";
   width: 0;
@@ -67,19 +90,19 @@
   border-style: solid;
   position: absolute;
   right: 5px;
-  user-select: none;
+  pointer-events: none;
 }
 
-.callTreeFiltersSelectWrapper::before {
+.callTreeFiltersType::before {
   border-width: 0 4px 3px 4px;
   border-color: transparent transparent #000 transparent;
-  top: 3px;
+  top: 8px;
 }
 
-.callTreeFiltersSelectWrapper::after {
+.callTreeFiltersType::after {
   border-width: 3px 4px 0 4px;
   border-color: #000 transparent transparent transparent;
-  bottom: 3px;
+  top: 14px;
 }
 
 .callTreeFiltersSelect {

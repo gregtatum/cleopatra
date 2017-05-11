@@ -12,9 +12,13 @@ import * as RangeFilters from '../range-filters';
 import type { ThreadIndex } from '../../common/types/profile';
 import type { StartEndRange } from '../../common/types/units';
 import type {
-  Action, CallTreeFiltersPerThread, CallTreeFilter, DataSource, ImplementationFilter,
+  Action, CallTreeFiltersPerThread, CallTreeFilter, FuncsPerThread, DataSource,
+  ImplementationFilter,
 } from '../actions/types';
 import type { State, URLState, Reducer } from './types';
+
+// Allow proper memoization and component update checks by passing in the same empty array.
+const EMPTY_ARRAY = Object.freeze([]);
 
 function dataSource(state: DataSource = 'none', action: Action) {
   switch (action.type) {
@@ -159,6 +163,55 @@ function hidePlatformDetails(state: boolean = false, action: Action) {
   }
 }
 
+function pruneFunctions(state: FuncsPerThread = {}, action: Action) {
+  switch (action.type) {
+    case 'PRUNE_FUNCTION': {
+      const { threadIndex, funcIndex } = action;
+      const funcs = state[threadIndex] || [];
+      if (!funcs.includes(funcIndex)) {
+        return Object.assign({}, state, {
+          [threadIndex]: funcs.concat(funcIndex),
+        });
+      }
+      break;
+    }
+    case 'UNPRUNE_FUNCTION': {
+      const { threadIndex, funcIndex } = action;
+      const funcs = state[threadIndex];
+      if (funcs !== undefined) {
+        return Object.assign({}, state, {
+          [threadIndex]: funcs.filter(index => index !== funcIndex),
+        });
+      }
+    }
+  }
+  return state;
+}
+
+function pruneSubtree(state: FuncsPerThread = {}, action: Action) {
+  switch (action.type) {
+    case 'PRUNE_SUBTREE': {
+      const { threadIndex, funcIndex } = action;
+      const funcs = state[threadIndex] || [];
+      if (!funcs.includes(funcIndex)) {
+        return Object.assign({}, state, {
+          [threadIndex]: funcs.concat(funcIndex),
+        });
+      }
+      break;
+    }
+    case 'UNPRUNE_SUBTREE': {
+      const { threadIndex, funcIndex } = action;
+      const funcs = state[threadIndex];
+      if (funcs !== undefined) {
+        return Object.assign({}, state, {
+          [threadIndex]: funcs.filter(index => index !== funcIndex),
+        });
+      }
+    }
+  }
+  return state;
+}
 const urlStateReducer: Reducer<URLState> = (regularUrlStateReducer => (state: URLState, action: Action): URLState => {
   switch (action.type) {
     case '@@urlenhancer/updateURLState':
@@ -169,7 +222,7 @@ const urlStateReducer: Reducer<URLState> = (regularUrlStateReducer => (state: UR
 })(combineReducers({
   dataSource, hash, profileURL, selectedTab, rangeFilters, selectedThread,
   callTreeSearchString, callTreeFilters, implementation, invertCallstack,
-  hidePlatformDetails,
+  hidePlatformDetails, pruneFunctions, pruneSubtree,
 }));
 export default urlStateReducer;
 
@@ -186,7 +239,13 @@ export const getSearchString = (state: State) => getURLState(state).callTreeSear
 export const getSelectedTab = (state: State) => getURLState(state).selectedTab;
 export const getSelectedThreadIndex = (state: State) => getURLState(state).selectedThread;
 export const getCallTreeFilters = (state: State, threadIndex: ThreadIndex): CallTreeFilter[] => {
-  return getURLState(state).callTreeFilters[threadIndex] || [];
+  return getURLState(state).callTreeFilters[threadIndex] || EMPTY_ARRAY;
+};
+export const getPruneFunctionsList = (state: State, threadIndex: ThreadIndex) => {
+  return getURLState(state).pruneFunctions[threadIndex] || EMPTY_ARRAY;
+};
+export const getPruneSubtreeList = (state: State, threadIndex: ThreadIndex) => {
+  return getURLState(state).pruneSubtree[threadIndex] || EMPTY_ARRAY;
 };
 
 export const getURLPredictor = createSelector(

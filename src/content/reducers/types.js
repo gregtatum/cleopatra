@@ -6,8 +6,8 @@
 
 import type { Summary } from '../../common/summarize-profile';
 import type {
-  Action, ExpandedSet, CallTreeFiltersPerThread, DataSource, ProfileSelection,
-  ImplementationFilter,
+  Action, ExpandedSet, CallTreeFiltersPerThread, FuncsPerThread, DataSource,
+  ProfileSelection, ImplementationFilter,
 } from '../actions/types';
 import type { Milliseconds, StartEndRange } from '../../common/types/units';
 import type { IndexIntoMarkersTable, IndexIntoFuncTable, Profile, ThreadIndex } from '../../common/types/profile';
@@ -74,6 +74,8 @@ export type URLState = {
   implementation: ImplementationFilter,
   invertCallstack: boolean,
   hidePlatformDetails: boolean,
+  pruneFunctions: FuncsPerThread,
+  pruneSubtree: FuncsPerThread,
 };
 
 export type IconState = Set<string>;

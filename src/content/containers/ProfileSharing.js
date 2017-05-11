@@ -180,6 +180,7 @@ class ProfileSharingCompositeButton extends PureComponent {
                       title={'Upload Profile – Privacy Notice'}
                       okButtonText='Share'
                       cancelButtonText='Cancel'
+                      offsetDirection='right'
                       onOkButtonClick={this._attemptToShare}>
             <PrivacyNotice/>
           </ArrowPanel>
@@ -190,6 +191,7 @@ class ProfileSharingCompositeButton extends PureComponent {
                          label='Permalink'
                          panel={
           <ArrowPanel className='profileSharingPermalinkPanel'
+                      offsetDirection='right'
                       onOpen={this._onPermalinkPanelOpen}
                       onClose={this._onPermalinkPanelClose}>
             <input type='text'
@@ -207,6 +209,7 @@ class ProfileSharingCompositeButton extends PureComponent {
                       title={'Upload Error'}
                       okButtonText='Try Again'
                       cancelButtonText='Cancel'
+                      offsetDirection='right'
                       onOkButtonClick={this._attemptToShare}>
             <p>An error occurred during upload:</p>
             <pre>{`${error}`}</pre>
@@ -275,6 +278,7 @@ class ProfileDownloadButton extends PureComponent {
                        panel={
         <ArrowPanel className='profileSharingProfileDownloadPanel'
                     title={'Save Profile to a Local File'}
+                    offsetDirection='right'
                     onOpen={this._onPanelOpen}>
           <section>
             { uncompressedBlobUrl
