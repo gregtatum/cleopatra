@@ -102,9 +102,6 @@ class ProfileCallTreeContextMenu extends PureComponent {
             This subtree <span className='profileCallTreeContextMenuLabel'>entire thread</span>
           </MenuItem>
         </SubMenu>
-        <SubMenu title='Focus' hoverDelay={200}>
-          <MenuItem>Calls made by this function</MenuItem>
-        </SubMenu>
       </ContextMenu>
     );
   }

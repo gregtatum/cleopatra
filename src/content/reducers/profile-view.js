@@ -30,7 +30,7 @@ import type {
   MarkerTimingRows,
 } from '../../common/types/profile-derived';
 import type { Milliseconds, StartEndRange } from '../../common/types/units';
-import type { Action, CallTreeFilter, FuncsPerThread, ProfileSelection } from '../actions/types';
+import type { Action, CallTreeFilter, ProfileSelection } from '../actions/types';
 import type {
   State,
   Reducer,
@@ -38,6 +38,7 @@ import type {
   RequestedLib,
   SymbolicationStatus,
   ThreadViewOptions,
+  LastAddedFilter,
 } from './types';
 
 function profile(state: Profile = ProfileData.getEmptyProfile(), action: Action) {
@@ -298,6 +299,23 @@ function tabOrder(state: number[] = [0, 1, 2, 3, 4, 5], action: Action) {
   }
 }
 
+/**
+ * Remember which pruned functions were last applied to the call tree to be able to
+ * display helpful hints to the user as they add filters.
+ */
+function lastAddedFilter(state: LastAddedFilter = null, action: Action) {
+  switch (action.type) {
+    case 'PRUNE_FUNCTION':
+    case 'PRUNE_SUBTREE':
+      return {
+        threadIndex: action.threadIndex,
+        funcIndex: action.funcIndex,
+      };
+    default:
+      return state;
+  }
+}
+
 const profileViewReducer: Reducer<ProfileViewState> = combineReducers({
   viewOptions: combineReducers({
     perThread: viewOptionsPerThread,
@@ -305,6 +323,7 @@ const profileViewReducer: Reducer<ProfileViewState> = combineReducers({
     selection, scrollToSelectionGeneration, rootRange, zeroAt,
     tabOrder,
   }),
+  lastAddedFilter,
   profile,
 });
 export default profileViewReducer;
@@ -352,6 +371,8 @@ export const getTasksByThread = createSelector(
   (state: State) => getProfileTaskTracerData(state).threadTable,
   TaskTracerTools.getTasksByThread
 );
+
+export const getLastAddedFilter = (state: State): LastAddedFilter => getProfileView(state).lastAddedFilter;
 
 /**
  * Profile
