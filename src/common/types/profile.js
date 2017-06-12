@@ -207,7 +207,10 @@ export type Thread = {
  * Meta information associated for the entire profile.
  */
 export type ProfileMeta = {
-  interval: number,
+  interval: Milliseconds,
+  startTime: Milliseconds,
+  product: string,
+  version: number,
 };
 
 /**

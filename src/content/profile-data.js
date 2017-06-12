@@ -24,6 +24,8 @@ import type {
 } from '../common/types/profile-derived';
 import { timeCode } from '../common/time-code';
 import { getEmptyTaskTracerData } from './task-tracer';
+import { CURRENT_VERSION } from './processed-profile-versioning';
+import { UniqueStringArray } from './unique-string-array';
 
 /**
  * Various helpers for dealing with the profile as a data structure.
@@ -853,8 +855,72 @@ export function getThreadProcessDetails(thread: Thread): string {
 
 export function getEmptyProfile(): Profile {
   return {
-    meta: { interval: 1 },
+    meta: {
+      interval: 1,
+      startTime: 0,
+      product: 'blank',
+      version: CURRENT_VERSION,
+    },
     threads: [],
     tasktracer: getEmptyTaskTracerData(),
+  };
+}
+
+export function getEmptyThread(): Thread {
+  return {
+    processType: '',
+    name: '',
+    pid: undefined,
+    tid: undefined,
+    samples: {
+      length: 0,
+      time: [],
+      stack: [],
+      responsiveness: [],
+      rss: [],
+      uss: [],
+      frameNumber: [],
+      power: [],
+    },
+    markers: {
+      length: 0,
+      time: [],
+      name: [],
+      data: [],
+    },
+    stackTable: {
+      length: 0,
+      prefix: [],
+      frame: [],
+    },
+    frameTable: {
+      length: 0,
+      implementation: [],
+      optimizations: [],
+      line: [],
+      category: [],
+      func: [],
+      address: [],
+    },
+    stringTable: new UniqueStringArray(),
+    libs: [],
+    funcTable: {
+      address: [],
+      isJS: [],
+      length: 0,
+      name: [],
+      resource: [],
+      fileName: [],
+      lineNumber: [],
+    },
+    resourceTable: {
+      addonId: [],
+      icon: [],
+      length: 0,
+      lib: [],
+      name: [],
+      host: [],
+      type: [],
+    },
   };
 }

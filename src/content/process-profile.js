@@ -9,6 +9,7 @@ import { provideHostSide } from './promise-worker';
 import { CURRENT_VERSION, upgradeProcessedProfileToCurrentVersion, isProcessedProfile } from './processed-profile-versioning';
 import { upgradeGeckoProfileToCurrentVersion } from './gecko-profile-versioning';
 import { isOldCleopatraFormat, convertOldCleopatraProfile } from './old-cleopatra-profile-format';
+import { isChromeProfile, convertChromeProfile } from './chrome-profile-format';
 import { getEmptyTaskTracerData } from './task-tracer';
 
 /**
@@ -482,11 +483,14 @@ export function unserializeProfileOfArbitraryFormat(jsonString) {
   try {
     let profile = typeof jsonString === 'string' ? JSON.parse(jsonString) : jsonString;
     if (isOldCleopatraFormat(profile)) {
-      profile = convertOldCleopatraProfile(profile); // outputs proprocessed profile
+      profile = convertOldCleopatraProfile(profile); // outputs processed profile
     }
     if (isProcessedProfile(profile)) {
       upgradeProcessedProfileToCurrentVersion(profile);
       return unserializeProfile(profile);
+    }
+    if (isChromeProfile(profile)) {
+      return convertChromeProfile(profile);
     }
     // Else: Treat it as a Gecko profile and just attempt to process it.
     return processProfile(profile);

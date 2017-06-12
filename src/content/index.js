@@ -8,6 +8,7 @@ import { render } from 'react-dom';
 import Root from './containers/Root';
 import createStore from './create-store';
 import '../../res/style.css';
+import {attemptToUnserializeChromeProfileFormat} from './chrome-profile-format';
 
 if (process.env.NODE_ENV === 'production') {
   const runtime = require('offline-plugin/runtime');
