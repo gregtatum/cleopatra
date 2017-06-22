@@ -19,8 +19,8 @@ type Props = {
   threadIndex: ThreadIndex,
   funcStackInfo: FuncStackInfo,
   selectedFuncStack: IndexIntoFuncStackTable,
-  pruneFunction: IndexIntoFuncTable => {},
-  pruneSubtree: IndexIntoFuncTable => {},
+  mergeFunction: IndexIntoFuncTable => {},
+  mergeSubtree: IndexIntoFuncTable => {},
 };
 
 require('./ProfileCallTreeContextMenu.css');
@@ -31,8 +31,8 @@ class ProfileCallTreeContextMenu extends PureComponent {
     super(props);
     (this: any).copyFunctionName = this.copyFunctionName.bind(this);
     (this: any).copyStack = this.copyStack.bind(this);
-    (this: any).pruneFunction = this.pruneFunction.bind(this);
-    (this: any).pruneSubtree = this.pruneSubtree.bind(this);
+    (this: any).mergeFunction = this.mergeFunction.bind(this);
+    (this: any).mergeSubtree = this.mergeSubtree.bind(this);
   }
 
   getSelectedFuncIndex(): IndexIntoFuncTable {
@@ -77,14 +77,14 @@ class ProfileCallTreeContextMenu extends PureComponent {
     copy(stack);
   }
 
-  pruneFunction(): void {
+  mergeFunction(): void {
     const { threadIndex } = this.props;
-    this.props.pruneFunction(this.getSelectedFuncIndex(), threadIndex);
+    this.props.mergeFunction(this.getSelectedFuncIndex(), threadIndex);
   }
 
-  pruneSubtree(): void {
+  mergeSubtree(): void {
     const { threadIndex } = this.props;
-    this.props.pruneSubtree(this.getSelectedFuncIndex(), threadIndex);
+    this.props.mergeSubtree(this.getSelectedFuncIndex(), threadIndex);
   }
 
   render() {
@@ -94,12 +94,12 @@ class ProfileCallTreeContextMenu extends PureComponent {
           <MenuItem onClick={this.copyFunctionName}>Function Name</MenuItem>
           <MenuItem onClick={this.copyStack}>Stack</MenuItem>
         </SubMenu>
-        <SubMenu title='Prune' hoverDelay={200}>
-          <MenuItem onClick={this.pruneFunction}>
-            This function <span className='profileCallTreeContextMenuLabel'>entire thread</span>
+        <SubMenu title='Merge into caller' hoverDelay={200}>
+          <MenuItem onClick={this.mergeFunction}>
+            This function <span className='profileCallTreeContextMenuLabel'>across entire thread</span>
           </MenuItem>
-          <MenuItem onClick={this.pruneSubtree}>
-            This subtree <span className='profileCallTreeContextMenuLabel'>entire thread</span>
+          <MenuItem onClick={this.mergeSubtree}>
+            This subtree <span className='profileCallTreeContextMenuLabel'>across entire thread</span>
           </MenuItem>
         </SubMenu>
       </ContextMenu>

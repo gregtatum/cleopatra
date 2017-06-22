@@ -163,9 +163,9 @@ function hidePlatformDetails(state: boolean = false, action: Action) {
   }
 }
 
-function pruneFunctions(state: FuncsPerThread = {}, action: Action) {
+function mergeFunctions(state: FuncsPerThread = {}, action: Action) {
   switch (action.type) {
-    case 'PRUNE_FUNCTION': {
+    case 'MERGE_FUNCTION': {
       const { threadIndex, funcIndex } = action;
       const funcs = state[threadIndex] || [];
       if (!funcs.includes(funcIndex)) {
@@ -175,7 +175,7 @@ function pruneFunctions(state: FuncsPerThread = {}, action: Action) {
       }
       break;
     }
-    case 'UNPRUNE_FUNCTION': {
+    case 'UNMERGE_FUNCTION': {
       const { threadIndex, funcIndex } = action;
       const funcs = state[threadIndex];
       if (funcs !== undefined) {
@@ -188,9 +188,9 @@ function pruneFunctions(state: FuncsPerThread = {}, action: Action) {
   return state;
 }
 
-function pruneSubtree(state: FuncsPerThread = {}, action: Action) {
+function mergeSubtree(state: FuncsPerThread = {}, action: Action) {
   switch (action.type) {
-    case 'PRUNE_SUBTREE': {
+    case 'MERGE_SUBTREE': {
       const { threadIndex, funcIndex } = action;
       const funcs = state[threadIndex] || [];
       if (!funcs.includes(funcIndex)) {
@@ -200,7 +200,7 @@ function pruneSubtree(state: FuncsPerThread = {}, action: Action) {
       }
       break;
     }
-    case 'UNPRUNE_SUBTREE': {
+    case 'UNMERGE_SUBTREE': {
       const { threadIndex, funcIndex } = action;
       const funcs = state[threadIndex];
       if (funcs !== undefined) {
@@ -222,7 +222,7 @@ const urlStateReducer: Reducer<URLState> = (regularUrlStateReducer => (state: UR
 })(combineReducers({
   dataSource, hash, profileURL, selectedTab, rangeFilters, selectedThread,
   callTreeSearchString, callTreeFilters, implementation, invertCallstack,
-  hidePlatformDetails, pruneFunctions, pruneSubtree,
+  hidePlatformDetails, mergeFunctions, mergeSubtree,
 }));
 export default urlStateReducer;
 
@@ -241,11 +241,11 @@ export const getSelectedThreadIndex = (state: State) => getURLState(state).selec
 export const getCallTreeFilters = (state: State, threadIndex: ThreadIndex): CallTreeFilter[] => {
   return getURLState(state).callTreeFilters[threadIndex] || EMPTY_ARRAY;
 };
-export const getPruneFunctionsList = (state: State, threadIndex: ThreadIndex) => {
-  return getURLState(state).pruneFunctions[threadIndex] || EMPTY_ARRAY;
+export const getMergeFunctionsList = (state: State, threadIndex: ThreadIndex) => {
+  return getURLState(state).mergeFunctions[threadIndex] || EMPTY_ARRAY;
 };
-export const getPruneSubtreeList = (state: State, threadIndex: ThreadIndex) => {
-  return getURLState(state).pruneSubtree[threadIndex] || EMPTY_ARRAY;
+export const getMergeSubtreeList = (state: State, threadIndex: ThreadIndex) => {
+  return getURLState(state).mergeSubtree[threadIndex] || EMPTY_ARRAY;
 };
 
 export const getURLPredictor = createSelector(

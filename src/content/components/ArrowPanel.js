@@ -82,7 +82,7 @@ class ArrowPanel extends PureComponent {
     const hasButtons = (okButtonText || cancelButtonText);
     const { open } = this.state;
     return (
-      <div className='arrowPanelAnchor'>
+      <div className={classNames('arrowPanelAnchor', className + 'arrowPanelAnchor')}>
         <div className={classNames('arrowPanel', { open, hasTitle, hasButtons }, offsetDirection, className)} ref={this._panelElementCreated}>
           <div className={classNames('arrowPanelArrow', offsetDirection)}/>
           { hasTitle ? <h1 className='arrowPanelTitle'>{title}</h1> : null }

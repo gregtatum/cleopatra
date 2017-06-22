@@ -2,6 +2,10 @@
   z-index: 1;
 }
 
+.callTreeFiltersPanelarrowPanelAnchor {
+  top: 16px;
+}
+
 .callTreeFiltersButton {
   background: none 0 0 no-repeat transparent;
   flex-shrink: 0;
@@ -127,17 +131,21 @@
 
 .callTreeFiltersTransitionGroup {
   position: absolute;
-  z-index: 0;
+  top: 29px;
+  left: -10px;
 }
 
-.callTreeFiltersFilterHint {
-    padding: 2px 7px;
-    margin-left: 20px;
+.callTreeFiltersHintContainer {
+  transform-origin: 30px 13px;
+}
+
+.callTreeFiltersHint {
+    padding: 6px 9px;
     border-radius: 3px;
     line-height: 13px;
     background-color: #798fc8;
     color: #fff;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
     pointer-events: none;
     max-width: 150px;
     text-overflow: ellipsis;
@@ -145,65 +153,62 @@
     overflow: hidden;
 }
 
+.callTreeFiltersHint::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: -7px;
+  width: 10px;
+  height: 10px;
+  background: #798fc8;
+  transform: rotate(45deg);
+  transform-origin: top left;
+  z-index: -1;
+  left: 18px;
+}
+
 .callTreeFiltersTransition-enter {
-  animation: callTreeFiltersBounceIn 1000ms;
-  --callTreeFiltersBounceIn-distance: 200px;
+  animation: callTreeFiltersEnter 150ms;
 }
 
 .callTreeFiltersTransition-leave {
-  animation: callTreeFiltersFadeOut 300ms;
+  animation: callTreeFiltersLeave 200ms;
 }
 
-@keyframes callTreeFiltersBounceIn {
+@keyframes callTreeFiltersEnter {
   0% {
     opacity: 0;
-    transform: translateX(var(--callTreeFiltersBounceIn-distance));
-    animation-timing-function: ease-in;
+    animation-timing-function: cubic-bezier(0.0, 0.2, 0.2, 0);
   }
-  36% {
-    transform: translateX(0px);
-    animation-timing-function: ease-out;
-  }
-
-  54% {
-    transform: translateX(calc(0.25 * var(--callTreeFiltersBounceIn-distance)));
-    animation-timing-function: ease-in;
-  }
-
-  72% {
-    transform: translateX(0px);
-    animation-timing-function: ease-out;
-  }
-
-  82% {
-    transform: translateX(calc(0.0625 * var(--callTreeFiltersBounceIn-distance)));
-    animation-timing-function: ease-in;
-  }
-
-  92% {
-    transform: translateX(0px);
-    animation-timing-function: ease-out;
-  }
-
-  96% {
-    transform: translateX(0.015625 * var(--callTreeFiltersBounceIn-distance));
-    animation-timing-function: ease-in;
-  }
-
   100% {
     opacity: 1;
-    transform: translateX(0px);
+  }
+}
+
+@keyframes callTreeFiltersLeave {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-10px,-22px) scale(0.1);
     animation-timing-function: ease-out;
   }
 }
 
-@keyframes callTreeFiltersFadeOut {
+.callTreeFiltersFlash > .buttonWithPanelButtonWrapper {
+  animation: callTreeFiltersButtonFlash 0.5s;
+}
+
+@keyframes callTreeFiltersButtonFlash {
   0% {
-    opacity: 1;
-    transform: translateX(0);
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.5);
   }
   100% {
-    opacity: 0;
-    transform: translateX(-20px);
+    transform: scale(1);
   }
 }

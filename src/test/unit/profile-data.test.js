@@ -485,14 +485,14 @@ describe('filter threads by charging to caller', function () {
   });
 });
 
-describe('filter threads by pruning subtree', function () {
+describe('filter threads by merging a subtree', function () {
   const profile = processProfile(profileWithJS);
   const thread = profile.threads[0];
 
   const javascriptOneFuncIndex = getFuncIndexByName(thread, 'javascriptOne');
   const javascriptTwoFuncIndex = getFuncIndexByName(thread, 'javascriptTwo');
-  const prunedAddressFuncIndex = getFuncIndexByName(thread, '0x10000f0f0');
-  const nonPrunedAddressFuncIndex = getFuncIndexByName(thread, '0x100000f84');
+  const mergedAddressFuncIndex = getFuncIndexByName(thread, '0x10000f0f0');
+  const nonMergedAddressFuncIndex = getFuncIndexByName(thread, '0x100000f84');
 
   it('will not filter the thread if no charging is done', function () {
     const filteredThread = filterThreadByFunc(thread, 'combined', [], []);
@@ -514,13 +514,13 @@ describe('filter threads by pruning subtree', function () {
     expect(mapSamplesToStackHeight(filteredThread))
       .toEqual([2, 3, 3, 3, 1, 2, 2, 2, 2, 2]);
 
-    // These funcs are all pruned in the sample profile.
+    // These funcs are all merged in the sample profile.
     expect(mapSamplesToHasFunc(filteredThread, javascriptOneFuncIndex)).toEqual(allFalse);
     expect(mapSamplesToHasFunc(filteredThread, javascriptTwoFuncIndex)).toEqual(allFalse);
-    expect(mapSamplesToHasFunc(filteredThread, prunedAddressFuncIndex)).toEqual(allFalse);
+    expect(mapSamplesToHasFunc(filteredThread, mergedAddressFuncIndex)).toEqual(allFalse);
 
-    // The func "0x100000f84" is an example func not in the pruned subtree.
-    expect(mapSamplesToHasFunc(filteredThread, nonPrunedAddressFuncIndex))
+    // The func "0x100000f84" is an example func not in the merged subtree.
+    expect(mapSamplesToHasFunc(filteredThread, nonMergedAddressFuncIndex))
       .toEqual([true, true, true, true, false, true, true, true, true, true]);
   });
 });

@@ -153,33 +153,33 @@ export function popCallTreeFilters(threadIndex: ThreadIndex, firstRemovedFilterI
   };
 }
 
-export function pruneFunction(funcIndex: IndexIntoFuncTable, threadIndex: ThreadIndex) {
+export function mergeFunction(funcIndex: IndexIntoFuncTable, threadIndex: ThreadIndex) {
   return {
-    type: 'PRUNE_FUNCTION',
+    type: 'MERGE_FUNCTION',
     funcIndex,
     threadIndex,
   };
 }
 
-export function unpruneFunction(funcIndex: IndexIntoFuncTable, threadIndex: ThreadIndex) {
+export function unmergeFunction(funcIndex: IndexIntoFuncTable, threadIndex: ThreadIndex) {
   return {
-    type: 'UNPRUNE_FUNCTION',
+    type: 'UNMERGE_FUNCTION',
     funcIndex,
     threadIndex,
   };
 }
 
-export function pruneSubtree(funcIndex: IndexIntoFuncTable, threadIndex: ThreadIndex) {
+export function mergeSubtree(funcIndex: IndexIntoFuncTable, threadIndex: ThreadIndex) {
   return {
-    type: 'PRUNE_SUBTREE',
+    type: 'MERGE_SUBTREE',
     funcIndex,
     threadIndex,
   };
 }
 
-export function unpruneSubtree(funcIndex: IndexIntoFuncTable, threadIndex: ThreadIndex) {
+export function unmergeSubtree(funcIndex: IndexIntoFuncTable, threadIndex: ThreadIndex) {
   return {
-    type: 'UNPRUNE_SUBTREE',
+    type: 'UNMERGE_SUBTREE',
     funcIndex,
     threadIndex,
   };

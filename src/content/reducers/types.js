@@ -76,8 +76,8 @@ export type URLState = {
   implementation: ImplementationFilter,
   invertCallstack: boolean,
   hidePlatformDetails: boolean,
-  pruneFunctions: FuncsPerThread,
-  pruneSubtree: FuncsPerThread,
+  mergeFunctions: FuncsPerThread,
+  mergeSubtree: FuncsPerThread,
 };
 
 export type IconState = Set<string>;

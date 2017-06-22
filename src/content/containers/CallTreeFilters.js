@@ -4,13 +4,14 @@ import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import ButtonWithPanel from '../components/ButtonWithPanel';
 import ArrowPanel from '../components/ArrowPanel';
 import { selectedThreadSelectors, getLastAddedFilter } from '../reducers/profile-view';
-import { getPruneFunctionsList, getPruneSubtreeList, getSelectedThreadIndex } from '../reducers/url-state';
+import { getMergeFunctionsList, getMergeSubtreeList, getSelectedThreadIndex } from '../reducers/url-state';
 import { connect } from 'react-redux';
+import classNames from 'classnames';
 import {
-  pruneFunction,
-  unpruneFunction,
-  pruneSubtree,
-  unpruneSubtree,
+  mergeFunction,
+  unmergeFunction,
+  mergeSubtree,
+  unmergeSubtree,
 } from '../actions/profile-view';
 
 import type { State, LastAddedFilter } from '../reducers/types';
@@ -18,20 +19,20 @@ import type { Thread, ThreadIndex, IndexIntoFuncTable } from '../../common/types
 
 import './CallTreeFilters.css';
 
-const PRUNE_FUNCTION_LABEL = 'prune function';
-const PRUNE_SUBTREE_LABEL = 'prune subtree';
+const MERGE_FUNCTION_LABEL = 'merge function';
+const MERGE_SUBTREE_LABEL = 'merge subtree';
 const REMOVE_FILTER_LABEL = 'remove this filter';
-const HINT_ENTER_TIMEOUT = 1000;
-const HINT_LEAVE_TIMEOUT = 300;
-const HINT_ON_DECK_TIMEOUT = 2500;
+const HINT_ENTER_TIMEOUT = 250;
+const HINT_LEAVE_TIMEOUT = 200;
+const HINT_ON_DECK_TIMEOUT = 1200;
 
 type Props = {
-  pruneFunction: typeof pruneFunction,
-  unpruneFunction: typeof unpruneFunction,
-  pruneSubtree: typeof pruneSubtree,
-  unpruneSubtree: typeof unpruneSubtree,
-  pruneFunctionsList: IndexIntoFuncTable[],
-  pruneSubtreeList: IndexIntoFuncTable[],
+  mergeFunction: typeof mergeFunction,
+  unmergeFunction: typeof unmergeFunction,
+  mergeSubtree: typeof mergeSubtree,
+  unmergeSubtree: typeof unmergeSubtree,
+  mergeFunctionsList: IndexIntoFuncTable[],
+  mergeSubtreeList: IndexIntoFuncTable[],
   thread: Thread,
   threadIndex: ThreadIndex,
   lastAddedFilter: LastAddedFilter,
@@ -42,19 +43,50 @@ class CallTreeFilters extends PureComponent {
   props: Props;
 
   state: {
+    hasAddedFuncAtLeastOnce: boolean,
     lastAddedFunc: string | null,
   };
 
   _timeoutID: number;
+  _scroller: ?HTMLElement;
 
   constructor(props: Props) {
     super(props);
     (this: any)._renderItem = this._renderItem.bind(this);
+    (this: any)._setScrollerElement = this._setScrollerElement.bind(this);
+    (this: any)._setScrollerMaxHeight = this._setScrollerMaxHeight.bind(this);
     this._timeoutID = 0;
 
     this.state = {
+      hasAddedFuncAtLeastOnce: false,
       lastAddedFunc: null,
     };
+  }
+
+  componentDidMount() {
+    window.addEventListener('resize', this._setScrollerMaxHeight, false);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._setScrollerMaxHeight, false);
+  }
+
+  _setScrollerElement(scroller: HTMLElement) {
+    this._scroller = scroller;
+    this._setScrollerMaxHeight();
+  }
+
+  _setScrollerMaxHeight() {
+    if (this._scroller) {
+      // This number is fairly arbitrary, but leave some room at the bottom of the scroller.
+      const BOTTOM_MARGIN = 20;
+      const { top } = this._scroller.getBoundingClientRect();
+      const height = window.innerHeight - top - BOTTOM_MARGIN;
+      // Satisfy flow's null checks.
+      if (this._scroller) {
+        this._scroller.style.maxHeight = `${height}px`;
+      }
+    }
   }
 
   componentWillReceiveProps(nextProps: Props) {
@@ -62,6 +94,7 @@ class CallTreeFilters extends PureComponent {
     if (this.props.lastAddedFilter !== nextProps.lastAddedFilter) {
       if (lastAddedFilter && threadIndex === lastAddedFilter.threadIndex) {
         this.setState({
+          hasAddedFuncAtLeastOnce: true,
           lastAddedFunc: this._funcIndexToName(lastAddedFilter.funcIndex),
         });
         this._timeoutID++;
@@ -86,8 +119,8 @@ class CallTreeFilters extends PureComponent {
                    onChange={(event: SyntheticInputEvent) => (
                      this._changeFilterType(id, type, event.target.value)
                    )}>
-             <option>{PRUNE_FUNCTION_LABEL}</option>
-             <option>{PRUNE_SUBTREE_LABEL}</option>
+             <option>{MERGE_FUNCTION_LABEL}</option>
+             <option>{MERGE_SUBTREE_LABEL}</option>
              <option>{REMOVE_FILTER_LABEL}</option>
            </select>
          </td>
@@ -103,24 +136,24 @@ class CallTreeFilters extends PureComponent {
 
   _changeFilterType(funcIndex: IndexIntoFuncTable, oldType: string, newType: string) {
     const {
-      unpruneFunction, pruneSubtree, unpruneSubtree, threadIndex,
+      unmergeFunction, mergeSubtree, unmergeSubtree, threadIndex,
     } = this.props;
     switch (oldType) {
-      case PRUNE_FUNCTION_LABEL:
-        unpruneFunction(funcIndex, threadIndex);
+      case MERGE_FUNCTION_LABEL:
+        unmergeFunction(funcIndex, threadIndex);
         break;
-      case PRUNE_SUBTREE_LABEL:
-        unpruneSubtree(funcIndex, threadIndex);
+      case MERGE_SUBTREE_LABEL:
+        unmergeSubtree(funcIndex, threadIndex);
         break;
     }
 
     switch (newType) {
-      case PRUNE_FUNCTION_LABEL:
-        pruneFunction(funcIndex, threadIndex);
-        this.props.pruneFunction(funcIndex, threadIndex);
+      case MERGE_FUNCTION_LABEL:
+        mergeFunction(funcIndex, threadIndex);
+        this.props.mergeFunction(funcIndex, threadIndex);
         break;
-      case PRUNE_SUBTREE_LABEL:
-        pruneSubtree(funcIndex, threadIndex);
+      case MERGE_SUBTREE_LABEL:
+        mergeSubtree(funcIndex, threadIndex);
         break;
     }
   }
@@ -131,25 +164,29 @@ class CallTreeFilters extends PureComponent {
   }
 
   _parseFilters() {
-    const { pruneFunctionsList, pruneSubtreeList } = this.props;
+    const { mergeFunctionsList, mergeSubtreeList } = this.props;
 
     return [
-      ...pruneFunctionsList.map(id => ({
+      ...mergeFunctionsList.map(id => ({
         id,
         name: this._funcIndexToName(id),
-        type: PRUNE_FUNCTION_LABEL,
+        type: MERGE_FUNCTION_LABEL,
       })),
-      ...pruneSubtreeList.map(id => ({
+      ...mergeSubtreeList.map(id => ({
         id,
         name: this._funcIndexToName(id),
-        type: PRUNE_SUBTREE_LABEL,
+        type: MERGE_SUBTREE_LABEL,
       })),
     ].sort((a, b) => a.name.localeCompare(b.name));
   }
 
   render() {
     const filters = this._parseFilters();
-    const { lastAddedFunc } = this.state;
+    const { lastAddedFunc, hasAddedFuncAtLeastOnce } = this.state;
+    const panelClass = classNames({
+      callTreeFiltersFlash: hasAddedFuncAtLeastOnce && !lastAddedFunc,
+      callTreeFilters: true,
+    });
 
     return (
       <div>
@@ -159,19 +196,21 @@ class CallTreeFilters extends PureComponent {
                                  component='div'
                                  className='callTreeFiltersTransitionGroup'>
           {lastAddedFunc
-            ? <div className='callTreeFiltersFilterHint' key={lastAddedFunc}>
-                {lastAddedFunc}
+            ? <div className='callTreeFiltersHintContainer' key={lastAddedFunc}>
+                <div className='callTreeFiltersHint'>
+                  {lastAddedFunc}
+                </div>
               </div>
             : null
           }
         </ReactCSSTransitionGroup>
-        <ButtonWithPanel className='callTreeFilters'
+        <ButtonWithPanel className={panelClass}
                          label='Filter'
                          panel={
           <ArrowPanel className='callTreeFiltersPanel'
-                      title='Pruned functions and subtrees'
+                      title='Merged functions and subtrees'
                       offsetDirection='left'>
-            <div className='callTreeFiltersScroller'>
+            <div className='callTreeFiltersScroller' ref={this._setScrollerElement}>
               <table className='callTreeFiltersTable'>
                 <thead>
                   <tr>
@@ -188,9 +227,9 @@ class CallTreeFilters extends PureComponent {
                           <td colSpan={3} className='callTreeFiltersEmpty'>
                             <p className='callTreeFiltersEmptyP'>
                               No filters are currently active. Right click on the call tree,
-                              and prune away individual functions or entire subtrees of the
-                              call tree. These filters help to hide away noisy functions that
-                              get in the way of performance analysis.
+                              and merge individual functions or entire subtrees into their
+                              callers in the call tree. These filters help to hide away
+                              noisy functions that get in the way of performance analysis.
                             </p>
                           </td>
                         </tr>
@@ -212,14 +251,14 @@ export default connect(
       thread: selectedThreadSelectors.getThread(state),
       threadIndex,
       lastAddedFilter: getLastAddedFilter(state),
-      pruneFunctionsList: getPruneFunctionsList(state, threadIndex),
-      pruneSubtreeList: getPruneSubtreeList(state, threadIndex),
+      mergeFunctionsList: getMergeFunctionsList(state, threadIndex),
+      mergeSubtreeList: getMergeSubtreeList(state, threadIndex),
     };
   },
   {
-    pruneFunction,
-    unpruneFunction,
-    pruneSubtree,
-    unpruneSubtree,
+    mergeFunction,
+    unmergeFunction,
+    mergeSubtree,
+    unmergeSubtree,
   }
 )(CallTreeFilters);

@@ -109,10 +109,10 @@ type URLStateAction =
   { type: 'CHANGE_IMPLEMENTATION_FILTER', implementation: ImplementationFilter } |
   { type: 'CHANGE_INVERT_CALLSTACK', invertCallstack: boolean } |
   { type: 'CHANGE_HIDE_PLATFORM_DETAILS', hidePlatformDetails: boolean } |
-  { type: 'PRUNE_FUNCTION', funcIndex: IndexIntoFuncTable, threadIndex: ThreadIndex } |
-  { type: 'UNPRUNE_FUNCTION', funcIndex: IndexIntoFuncTable, threadIndex: ThreadIndex } |
-  { type: 'PRUNE_SUBTREE', funcIndex: IndexIntoFuncTable, threadIndex: ThreadIndex } |
-  { type: 'UNPRUNE_SUBTREE', funcIndex: IndexIntoFuncTable, threadIndex: ThreadIndex };
+  { type: 'MERGE_FUNCTION', funcIndex: IndexIntoFuncTable, threadIndex: ThreadIndex } |
+  { type: 'UNMERGE_FUNCTION', funcIndex: IndexIntoFuncTable, threadIndex: ThreadIndex } |
+  { type: 'MERGE_SUBTREE', funcIndex: IndexIntoFuncTable, threadIndex: ThreadIndex } |
+  { type: 'UNMERGE_SUBTREE', funcIndex: IndexIntoFuncTable, threadIndex: ThreadIndex };
 
 type IconsAction =
   { type: 'ICON_HAS_LOADED', icon: string } |

@@ -166,26 +166,26 @@ export function filterThreadByFunc(
   thread: Thread,
   implementation: string,
   chargeToCallerList: IndexIntoFuncTable[],
-  pruneSubtreeList: IndexIntoFuncTable[]
+  mergeSubtreeList: IndexIntoFuncTable[]
 ) {
   // Return the existing thread if no filters need to be applied.
   if (
     implementation === 'combined' &&
     chargeToCallerList.length === 0 &&
-    pruneSubtreeList.length === 0
+    mergeSubtreeList.length === 0
   ) {
     return thread;
   }
 
   // Prepare the filtering functions.
   const filterFuncByImplementation = _getFuncImplementationFilter(thread, implementation);
-  const filterOutByFunc = funcIndex =>
+  const filterOutFrameByFunc = funcIndex =>
     filterFuncByImplementation(funcIndex) ||
     chargeToCallerList.includes(funcIndex);
-  const pruneByFunc = funcIndex => pruneSubtreeList.includes(funcIndex);
+  const filterOutSubtreeByFunc = funcIndex => mergeSubtreeList.includes(funcIndex);
 
   // Apply all the filters to the thread.
-  return _applyFuncFilters(thread, filterOutByFunc, pruneByFunc);
+  return _applyFuncFilters(thread, filterOutFrameByFunc, filterOutSubtreeByFunc);
 }
 
 function _getFuncImplementationFilter(thread, implementation: string): IndexIntoFuncTable => boolean {
@@ -217,9 +217,9 @@ function _getFuncImplementationFilter(thread, implementation: string): IndexInto
 
 /**
  * Take two arbitrary functions. The first filters out individual stack frames based
- * on the function. The second prunes the entire subtree based on the the function.
+ * on the function. The second merges the entire subtree based on the function.
  *
- * filterOutByFunc:
+ * filterOutFrameByFunc:
  *
  *          0                    0
  *        /  \      Func 1     / | \
@@ -227,7 +227,7 @@ function _getFuncImplementationFilter(thread, implementation: string): IndexInto
  *     /\     /\                   / \
  *    3 4    5  6                 5  6
  *
- * pruneByFunc:
+ * filterOutSubtreeByFunc:
  *
  *          0                    0
  *        /  \      Func 1       |
@@ -238,8 +238,8 @@ function _getFuncImplementationFilter(thread, implementation: string): IndexInto
  */
 function _applyFuncFilters(
   thread: Thread,
-  filterOutByFunc: IndexIntoFuncTable => boolean,
-  pruneByFunc: IndexIntoFuncTable => boolean
+  filterOutFrameByFunc: IndexIntoFuncTable => boolean,
+  filterOutSubtreeByFunc: IndexIntoFuncTable => boolean
 ): Thread {
   return timeCode('filterThread', () => {
     const { stackTable, frameTable, samples } = thread;
@@ -255,7 +255,7 @@ function _applyFuncFilters(
     const prefixStackAndFrameToStack = new Map(); // prefixNewStack * frameCount + frame => newStackIndex
 
     /**
-     * Create a new StackTable by applying filterOutByFunc.
+     * Create a new StackTable by applying filterOutFrameByFunc.
      */
     function convertStack(stackIndex) {
       if (stackIndex === null) {
@@ -266,7 +266,7 @@ function _applyFuncFilters(
         const prefixNewStack = convertStack(stackTable.prefix[stackIndex]);
         const frameIndex = stackTable.frame[stackIndex];
         const funcIndex = frameTable.func[frameIndex];
-        if (filterOutByFunc(funcIndex)) {
+        if (filterOutFrameByFunc(funcIndex)) {
           // Discard this stack frame, and use the prefix.
           newStack = prefixNewStack;
         } else {
@@ -286,9 +286,9 @@ function _applyFuncFilters(
     }
 
     /**
-     * Find the correct leaf stack by pruning subtrees that match pruneByFunc.
+     * Find the correct leaf stack by merging subtrees that match filterOutSubtreeByFunc.
      */
-    function pruneStack(stackIn: IndexIntoStackTable | null) {
+    function mergeStack(stackIn: IndexIntoStackTable | null) {
       let leafStack = stackIn;
       let stackIndex = stackIn;
       // Walk up the stack, and find the leaf-most stack.
@@ -296,7 +296,7 @@ function _applyFuncFilters(
         const prefix = newStackTable.prefix[stackIndex];
         const frameIndex = newStackTable.frame[stackIndex];
         const funcIndex = frameTable.func[frameIndex];
-        if (pruneByFunc(funcIndex)) {
+        if (filterOutSubtreeByFunc(funcIndex)) {
           leafStack = prefix;
         }
         stackIndex = prefix;
@@ -305,7 +305,7 @@ function _applyFuncFilters(
     }
 
     const newSamples = Object.assign({}, samples, {
-      stack: samples.stack.map(oldStack => pruneStack(convertStack(oldStack))),
+      stack: samples.stack.map(oldStack => mergeStack(convertStack(oldStack))),
     });
 
     return Object.assign({}, thread, {

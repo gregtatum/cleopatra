@@ -68,14 +68,14 @@ export function urlFromState(urlState: URLState) {
       break;
   }
 
-  const pruneFunctionsList = urlState.pruneFunctions[urlState.selectedThread];
-  if (pruneFunctionsList && pruneFunctionsList.length > 0) {
-    query.pruneFunctions = uintArrayToString(pruneFunctionsList);
+  const mergeFunctionsList = urlState.mergeFunctions[urlState.selectedThread];
+  if (mergeFunctionsList && mergeFunctionsList.length > 0) {
+    query.mergeFunctions = uintArrayToString(mergeFunctionsList);
   }
 
-  const pruneSubtreeList = urlState.pruneSubtree[urlState.selectedThread];
-  if (pruneSubtreeList && pruneSubtreeList.length > 0) {
-    query.pruneSubtree = uintArrayToString(pruneSubtreeList);
+  const mergeSubtreeList = urlState.mergeSubtree[urlState.selectedThread];
+  if (mergeSubtreeList && mergeSubtreeList.length > 0) {
+    query.mergeSubtree = uintArrayToString(mergeSubtreeList);
   }
 
   const qString = queryString.stringify(query);
@@ -131,8 +131,8 @@ export function stateFromLocation(location: Location): URLState {
         implementation: 'combined',
         invertCallstack: false,
         hidePlatformDetails: false,
-        pruneFunctions: {},
-        pruneSubtree: {},
+        mergeFunctions: {},
+        mergeSubtree: {},
       };
     }
   }
@@ -166,11 +166,11 @@ export function stateFromLocation(location: Location): URLState {
     implementation,
     invertCallstack: query.invertCallstack !== undefined,
     hidePlatformDetails: query.hidePlatformDetails !== undefined,
-    pruneFunctions: {
-      [selectedThread]: query.pruneFunctions ? stringToUintArray(query.pruneFunctions) : [],
+    mergeFunctions: {
+      [selectedThread]: query.mergeFunctions ? stringToUintArray(query.mergeFunctions) : [],
     },
-    pruneSubtree: {
-      [selectedThread]: query.pruneSubtree ? stringToUintArray(query.pruneSubtree) : [],
+    mergeSubtree: {
+      [selectedThread]: query.mergeSubtree ? stringToUintArray(query.mergeSubtree) : [],
     },
   };
 }

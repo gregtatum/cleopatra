@@ -300,13 +300,13 @@ function tabOrder(state: number[] = [0, 1, 2, 3, 4, 5], action: Action) {
 }
 
 /**
- * Remember which pruned functions were last applied to the call tree to be able to
+ * Remember which merged functions were last applied to the call tree to be able to
  * display helpful hints to the user as they add filters.
  */
 function lastAddedFilter(state: LastAddedFilter = null, action: Action) {
   switch (action.type) {
-    case 'PRUNE_FUNCTION':
-    case 'PRUNE_SUBTREE':
+    case 'MERGE_FUNCTION':
+    case 'MERGE_SUBTREE':
       return {
         threadIndex: action.threadIndex,
         funcIndex: action.funcIndex,
@@ -415,8 +415,8 @@ export const selectorsForThread = (threadIndex: ThreadIndex): SelectorsForThread
     const getThread = (state: State): Thread => getProfile(state).threads[threadIndex];
     const getViewOptions = (state: State): ThreadViewOptions => getProfileViewOptions(state).perThread[threadIndex];
     const getCallTreeFilters = (state: State): CallTreeFilter[] => URLState.getCallTreeFilters(state, threadIndex);
-    const getPruneFunctionsList = (state: State): IndexIntoFuncTable[] => URLState.getPruneFunctionsList(state, threadIndex);
-    const getPruneSubtreeList = (state: State): IndexIntoFuncTable[] => URLState.getPruneSubtreeList(state, threadIndex);
+    const getMergeFunctionsList = (state: State): IndexIntoFuncTable[] => URLState.getMergeFunctionsList(state, threadIndex);
+    const getMergeSubtreeList = (state: State): IndexIntoFuncTable[] => URLState.getMergeSubtreeList(state, threadIndex);
     const getFriendlyThreadName = createSelector(
       getThreads,
       getThread,
@@ -485,8 +485,8 @@ export const selectorsForThread = (threadIndex: ThreadIndex): SelectorsForThread
     const _getImplementationFilteredThread = createSelector(
       _getRangeAndCallTreeFilteredThread,
       URLState.getImplementationFilter,
-      getPruneFunctionsList,
-      getPruneSubtreeList,
+      getMergeFunctionsList,
+      getMergeSubtreeList,
       ProfileData.filterThreadByFunc
     );
     const _getImplementationAndSearchFilteredThread = createSelector(
