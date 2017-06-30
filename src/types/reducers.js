@@ -66,7 +66,7 @@ export type URLState = {
   hash: string,
   profileURL: string,
   selectedTab: string,
-  rangeFilters: RangeFilterState[],
+  transformPipeline: TransformPipeline,
   selectedThread: ThreadIndex,
   callTreeSearchString: string,
   callTreeFilters: CallTreeFiltersPerThread,
@@ -90,6 +90,10 @@ export type TimelineViewState = {
   areMarkersExpanded: IsThreadExpandedMap,
   hasZoomedViaMousewheel: boolean,
 }
+
+export type RangeFilterTransform = StartEndRange & { type: 'RANGE_FILTER' };
+export type Transforms = RangeFilterTransform;
+export type TransformPipeline = Array<RangeFilterTransform>;
 
 export type State = {
   app: AppState,

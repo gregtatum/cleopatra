@@ -4,8 +4,9 @@
 
 // @flow
 import queryString from 'query-string';
-import { stringifyRangeFilters, parseRangeFilters } from './profile-logic/range-filters';
+import { parseLegacyRangeFilters } from './profile-logic/range-filters';
 import { stringifyCallTreeFilters, parseCallTreeFilters } from './profile-logic/call-tree-filters';
+import { transformPipelineToString, transformPipelineFromString } from './profile-logic/transform-pipeline';
 import type { URLState } from './types/reducers';
 import type { DataSource } from './types/actions';
 
@@ -54,7 +55,9 @@ export function urlFromState(urlState: URLState) {
 
   // Start with the query parameters that are shown regardless of the active tab.
   const query: Object = {
-    range: stringifyRangeFilters(urlState.rangeFilters) || undefined,
+    transforms: urlState.transformPipeline.length > 0
+      ? transformPipelineToString(urlState.transformPipeline)
+      : undefined,
     thread: `${urlState.selectedThread}`,
     threadOrder: urlState.threadOrder.join('-'),
     hiddenThreads: urlState.hiddenThreads.join('-'),
@@ -138,7 +141,7 @@ export function stateFromLocation(location: Location): URLState {
         hash: legacyQuery.report,
         profileURL: '',
         selectedTab: 'calltree',
-        rangeFilters: [],
+        transformPipeline: [],
         selectedThread: 0,
         callTreeSearchString: '',
         callTreeFilters: {},
@@ -166,12 +169,21 @@ export function stateFromLocation(location: Location): URLState {
     implementation = 'js';
   }
 
+  let transformPipeline = [];
+  // Check for legacy range filters, and convert them to a transform pipeline.
+  if (query.range) {
+    const rangeFilters = parseLegacyRangeFilters(query.range);
+    transformPipeline = rangeFilters.map(range => Object.assign({}, range, { type: 'RANGE_FILTER' }));
+  } else if (query.transform) {
+    transformPipeline = transformPipelineFromString(query.transform);
+  }
+
   return {
     dataSource,
     hash: needHash ? dirs[1] : '',
     profileURL: needProfileURL ? decodeURIComponent(dirs[1]) : '',
     selectedTab: ((needHash || needProfileURL) ? dirs[2] : dirs[1]) || 'calltree',
-    rangeFilters: query.range ? parseRangeFilters(query.range) : [],
+    transformPipeline,
     selectedThread: selectedThread,
     callTreeSearchString: query.search || '',
     callTreeFilters: {

@@ -7,10 +7,10 @@ import { combineReducers } from 'redux';
 import { defaultThreadOrder } from '../profile-logic/profile-data';
 import { createSelector } from 'reselect';
 import { urlFromState } from '../url-handling';
+import transformPipeline from './transform-pipeline';
 import * as RangeFilters from '../profile-logic/range-filters';
 
 import type { ThreadIndex } from '../types/profile';
-import type { StartEndRange } from '../types/units';
 import type {
   Action, CallTreeFiltersPerThread, CallTreeFilter, DataSource, ImplementationFilter,
 } from '../types/actions';
@@ -47,19 +47,6 @@ function selectedTab(state: string = 'calltree', action: Action) {
   switch (action.type) {
     case 'CHANGE_SELECTED_TAB':
       return action.selectedTab;
-    default:
-      return state;
-  }
-}
-
-function rangeFilters(state: StartEndRange[] = [], action: Action) {
-  switch (action.type) {
-    case 'ADD_RANGE_FILTER': {
-      const { start, end } = action;
-      return [...state, { start, end }];
-    }
-    case 'POP_RANGE_FILTERS':
-      return state.slice(0, action.firstRemovedFilterIndex);
     default:
       return state;
   }
@@ -223,7 +210,7 @@ const urlStateReducer: Reducer<URLState> = (regularUrlStateReducer => (state: UR
       return regularUrlStateReducer(state, action);
   }
 })(combineReducers({
-  dataSource, hash, profileURL, selectedTab, rangeFilters, selectedThread,
+  dataSource, hash, profileURL, selectedTab, transformPipeline, selectedThread,
   callTreeSearchString, callTreeFilters, implementation, invertCallstack,
   hidePlatformDetails, threadOrder, hiddenThreads,
 }));
@@ -234,7 +221,11 @@ const getURLState = (state: State): URLState => state.urlState;
 export const getDataSource = (state: State) => getURLState(state).dataSource;
 export const getHash = (state: State) => getURLState(state).hash;
 export const getProfileURL = (state: State) => getURLState(state).profileURL;
-export const getRangeFilters = (state: State) => getURLState(state).rangeFilters;
+export const getTransformPipeline = (state: State) => getURLState(state).transformPipeline;
+export const getRangeFilters = createSelector(
+  getTransformPipeline,
+  transforms => transforms.filter(({type}) => type === 'RANGE_FILTER')
+);
 export const getImplementationFilter = (state: State) => getURLState(state).implementation;
 export const getHidePlatformDetails = (state: State) => getURLState(state).hidePlatformDetails;
 export const getInvertCallstack = (state: State) => getURLState(state).invertCallstack;

@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-export function parseRangeFilters(stringValue = '') {
+export function parseLegacyRangeFilters(stringValue = '') {
   if (!stringValue) {
     return [];
   }
@@ -13,14 +13,6 @@ export function parseRangeFilters(stringValue = '') {
     }
     return { start: m[1] * 1000, end: m[2] * 1000 };
   });
-}
-
-export function stringifyRangeFilters(arrayValue = []) {
-  return arrayValue.map(({ start, end }) => {
-    const startStr = (start / 1000).toFixed(4);
-    const endStr = (end / 1000).toFixed(4);
-    return `${startStr}_${endStr}`;
-  }).join('~');
 }
 
 export function getFormattedTimeLength(length: number) {

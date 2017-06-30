@@ -33,8 +33,8 @@ export type IndexIntoFuncStackTable = number;
  * For a detailed explanation of funcStacks see `docs/func-stacks.md`.
  */
 export type FuncStackTable = {
-  prefix: Int32Array,
-  func: Int32Array,
+  prefix: Int32Array, // IndexIntoFuncStackTable[]
+  func: Int32Array, // IndexIntoFuncTable[]
   depth: number[],
   length: number,
 };
