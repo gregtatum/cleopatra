@@ -17,7 +17,7 @@ import { resourceTypes } from './profile-data';
 import { UniqueStringArray } from '../utils/unique-string-array';
 import { timeCode } from '../utils/time-code';
 
-export const CURRENT_VERSION = 5; // The current version of the 'preprocessed profile' format.
+export const CURRENT_VERSION = 6; // The current version of the 'preprocessed profile' format.
 
 // Processed profiles before version 1 did not have a profile.meta.preprocessedProfileVersion
 // field. Treat those as version zero.
@@ -274,6 +274,22 @@ const _upgraders = {
     // The "frameNumber" column was removed from the samples table.
     for (const thread of profile.threads) {
       delete thread.samples.frameNumber;
+    }
+  },
+  [6]: profile => {
+    // A depth property was added to the stackTable in the process of removing
+    // funcStackInfo.
+    for (const thread of profile.threads) {
+      const { stackTable } = thread;
+      stackTable.depth = stackTable.prefix.map(prefix => {
+        let depth = 0;
+        let nextPrefix = prefix;
+        while (nextPrefix !== null) {
+          depth++;
+          nextPrefix = stackTable.prefix[nextPrefix];
+        }
+        return depth;
+      });
     }
   },
 };
