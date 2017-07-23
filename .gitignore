@@ -2,6 +2,7 @@ npm-debug.log*
 node_modules/
 .DS_Store
 dist/
+dist-npm/
 public_html/
 flow-coverage
 coverage
