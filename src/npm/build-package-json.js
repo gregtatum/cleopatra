@@ -6,7 +6,7 @@ const packageJson = Object.assign({}, require('../../package.json'), {
   name: 'perf-api',
   description: 'A programmatic API for performance data.',
   version: '0.0.0',
-  main: 'public-api/index.js',
+  main: 'npm/index.js',
 });
 
 deleteFromObject(packageJson, [
