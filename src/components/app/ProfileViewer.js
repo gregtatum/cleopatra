@@ -14,6 +14,7 @@ import ProfileFilterNavigator from './ProfileFilterNavigator';
 import ProfileSharing from './ProfileSharing';
 import SymbolicationStatusOverlay from './SymbolicationStatusOverlay';
 import StackChart from '../stack-chart/';
+import FlameGraph from '../flame-graph/';
 import MarkerChart from '../marker-chart/';
 import { changeSelectedTab, changeTabOrder } from '../../actions/app';
 import { getTabOrder } from '../../reducers/profile-view';
@@ -63,6 +64,10 @@ class ProfileViewer extends PureComponent<Props> {
         title: 'Stack Chart',
       },
       {
+        name: 'flame-graph',
+        title: 'Flame Graph',
+      },
+      {
         name: 'marker-chart',
         title: 'Marker Chart',
       },
@@ -104,6 +109,7 @@ class ProfileViewer extends PureComponent<Props> {
             calltree: <ProfileCallTreeView />,
             'marker-table': <MarkerTable />,
             'stack-chart': <StackChart />,
+            'flame-graph': <FlameGraph />,
             'marker-chart': <MarkerChart />,
           }[selectedTab]
         }

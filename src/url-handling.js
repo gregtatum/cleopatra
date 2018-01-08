@@ -117,6 +117,7 @@ export function urlStateToUrlObject(urlState: UrlState): UrlObject {
       query.markerSearch = urlState.markersSearchString;
       break;
     case 'stack-chart':
+    case 'flame-graph':
       query.search = urlState.callTreeSearchString || undefined;
       query.invertCallstack = urlState.invertCallstack ? null : undefined;
       query.hidePlatformDetails = urlState.hidePlatformDetails

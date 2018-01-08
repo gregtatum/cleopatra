@@ -46,6 +46,7 @@ export type ImplementationFilter = 'combined' | 'js' | 'cpp';
 export type TabSlug =
   | 'calltree'
   | 'stack-chart'
+  | 'flame-graph'
   | 'marker-chart'
   | 'marker-table';
 
