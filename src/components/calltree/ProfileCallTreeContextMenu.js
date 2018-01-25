@@ -241,7 +241,6 @@ class ProfileCallTreeContextMenu extends PureComponent<Props> {
       expandAllCallNodeDescendants,
       threadIndex,
       selectedCallNodeIndex,
-      callNodeInfo,
     } = this.props;
     if (selectedCallNodeIndex === null) {
       throw new Error(
@@ -249,11 +248,7 @@ class ProfileCallTreeContextMenu extends PureComponent<Props> {
       );
     }
 
-    expandAllCallNodeDescendants(
-      threadIndex,
-      selectedCallNodeIndex,
-      callNodeInfo
-    );
+    expandAllCallNodeDescendants(threadIndex, selectedCallNodeIndex);
   }
 
   getNameForSelectedResource(): string | null {
@@ -312,9 +307,7 @@ class ProfileCallTreeContextMenu extends PureComponent<Props> {
     } = this.props;
 
     if (selectedCallNodeIndex === null) {
-      throw new Error(
-        "The context menu assumes there is a selected call node and there wasn't one."
-      );
+      return null;
     }
 
     const funcIndex = callNodeTable.func[selectedCallNodeIndex];

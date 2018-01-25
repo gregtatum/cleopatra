@@ -10,7 +10,7 @@ import type {
   IndexIntoMarkersTable,
   IndexIntoFuncTable,
 } from './profile';
-import type { CallNodePath } from './profile-derived';
+import type { IndexIntoCallNodeTable } from './profile-derived';
 import type { GetLabel } from '../profile-logic/labeling-strategies';
 import type { GetCategory } from '../profile-logic/color-categories';
 import type { TemporaryError } from '../utils/errors';
@@ -71,7 +71,8 @@ type ProfileAction =
   | {
       type: 'CHANGE_SELECTED_CALL_NODE',
       threadIndex: ThreadIndex,
-      selectedCallNodePath: CallNodePath,
+      selectedCallNodeIndex: IndexIntoCallNodeTable | null,
+      callNodeAncestors: IndexIntoCallNodeTable[],
     }
   | {
       type: 'FOCUS_CALL_TREE',
@@ -79,7 +80,7 @@ type ProfileAction =
   | {
       type: 'CHANGE_EXPANDED_CALL_NODES',
       threadIndex: ThreadIndex,
-      expandedCallNodePaths: Array<CallNodePath>,
+      expandedCallNodeIndexes: IndexIntoCallNodeTable[],
     }
   | {
       type: 'CHANGE_SELECTED_MARKER',

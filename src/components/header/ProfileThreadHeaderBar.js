@@ -9,10 +9,7 @@ import explicitConnect from '../../utils/connect';
 import ThreadStackGraph from './ThreadStackGraph';
 import { selectorsForThread } from '../../reducers/profile-view';
 import { getSelectedThreadIndex } from '../../reducers/url-state';
-import {
-  getSampleIndexClosestToTime,
-  getCallNodePath,
-} from '../../profile-logic/profile-data';
+import { getSampleIndexClosestToTime } from '../../profile-logic/profile-data';
 import ContextMenuTrigger from '../shared/ContextMenuTrigger';
 import ProfileThreadJankOverview from './ProfileThreadJankOverview';
 import ProfileThreadTracingMarkerOverview from './ProfileThreadTracingMarkerOverview';
@@ -118,10 +115,7 @@ class ProfileThreadHeaderBar extends PureComponent<Props> {
       newSelectedStack === null
         ? -1
         : callNodeInfo.stackIndexToCallNodeIndex[newSelectedStack];
-    changeSelectedCallNode(
-      threadIndex,
-      getCallNodePath(newSelectedCallNode, callNodeInfo.callNodeTable)
-    );
+    changeSelectedCallNode(threadIndex, newSelectedCallNode);
     focusCallTree();
   }
 
