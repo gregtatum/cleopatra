@@ -285,9 +285,9 @@ type TreeViewProps<NodeIndex, DisplayData> = {|
   +fixedColumns: Column[],
   +mainColumn: Column,
   +tree: Tree<NodeIndex, DisplayData>,
-  +expandedNodeIds: Array<NodeIndex>,
+  +expandedNodeIds: Set<NodeIndex>,
   +selectedNodeId: NodeIndex | null,
-  +onExpandedNodesChange: PropTypes.func.isRequired,
+  +onExpandedNodesChange: (Set<NodeIndex>) => void,
   +highlightRegExp?: RegExp | null,
   +appendageColumn?: Column,
   +appendageButtons?: string[],
@@ -370,7 +370,7 @@ class TreeView<
       );
     }
     const canBeExpanded = tree.hasChildren(nodeId);
-    const isExpanded = expandedNodeIds.includes(nodeId);
+    const isExpanded = expandedNodeIds.has(nodeId);
     return (
       <TreeViewRowScrolledColumns
         displayData={displayData}
@@ -398,7 +398,7 @@ class TreeView<
     depth: number
   ) {
     arr.push(nodeId);
-    if (!props.expandedNodeIds.includes(nodeId)) {
+    if (!props.expandedNodeIds.has(nodeId)) {
       return;
     }
     const children = props.tree.getChildren(nodeId);
@@ -419,7 +419,7 @@ class TreeView<
   }
 
   _isCollapsed(nodeId: NodeIndex): boolean {
-    return !this.props.expandedNodeIds.includes(nodeId);
+    return !this.props.expandedNodeIds.has(nodeId);
   }
 
   _toggle(
@@ -438,7 +438,7 @@ class TreeView<
     } else {
       newSet.delete(nodeId);
     }
-    this.props.onExpandedNodesChange(Array.from(newSet.values()));
+    this.props.onExpandedNodesChange(newSet);
   }
 
   _toggleAll(
@@ -592,35 +592,5 @@ class TreeView<
     );
   }
 }
-
-TreeView.propTypes = {
-  fixedColumns: PropTypes.arrayOf(
-    PropTypes.shape({
-      propName: PropTypes.string.isRequired,
-      title: PropTypes.string.isRequired,
-      component: PropTypes.func,
-    })
-  ).isRequired,
-  mainColumn: PropTypes.shape({
-    propName: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-  }).isRequired,
-  tree: PropTypes.object.isRequired,
-  expandedNodeIds: PropTypes.arrayOf(PropTypes.number).isRequired,
-  selectedNodeId: PropTypes.number,
-  onExpandedNodesChange: PropTypes.func.isRequired,
-  onSelectionChange: PropTypes.func.isRequired,
-  highlightRegExp: PropTypes.instanceOf(RegExp),
-  appendageColumn: PropTypes.shape({
-    propName: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-  }),
-  appendageButtons: PropTypes.arrayOf(PropTypes.string),
-  onAppendageButtonClick: PropTypes.func,
-  disableOverscan: PropTypes.bool,
-  contextMenu: PropTypes.object,
-  contextMenuId: PropTypes.string,
-  icons: PropTypes.array,
-};
 
 export default TreeView;

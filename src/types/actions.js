@@ -80,7 +80,7 @@ type ProfileAction =
   | {
       type: 'CHANGE_EXPANDED_CALL_NODES',
       threadIndex: ThreadIndex,
-      expandedCallNodeIndexes: IndexIntoCallNodeTable[],
+      expandedCallNodeIndexes: Set<IndexIntoCallNodeTable>,
     }
   | {
       type: 'CHANGE_SELECTED_MARKER',
