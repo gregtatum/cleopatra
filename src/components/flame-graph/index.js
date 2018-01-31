@@ -4,7 +4,7 @@
 
 // @flow
 import * as React from 'react';
-import { connect } from 'react-redux';
+import explicitConnect from '../../utils/connect';
 import FlameGraphCanvas from './Canvas';
 import {
   selectedThreadSelectors,
@@ -12,6 +12,7 @@ import {
   getProfileViewOptions,
 } from '../../reducers/profile-view';
 import FlameGraphSettings from './Settings';
+import { getSelectedThreadIndex } from '../../reducers/url-state';
 
 import type { Thread } from '../../types/profile';
 import type { Milliseconds } from '../../types/units';
@@ -19,28 +20,33 @@ import type { FlameGraphTiming } from '../../profile-logic/flame-graph';
 import type { ProfileSelection } from '../../types/actions';
 import type { CallNodeInfo } from '../../types/profile-derived';
 
+import type {
+  ExplicitConnectOptions,
+  ConnectedProps,
+} from '../../utils/connect';
+
 require('./index.css');
 
 const STACK_FRAME_HEIGHT = 16;
 
-type Props = {
-  thread: Thread,
-  maxStackDepth: number,
-  flameGraphTiming: FlameGraphTiming,
-  callNodeInfo: CallNodeInfo,
-  timeRange: { start: Milliseconds, end: Milliseconds },
-  threadIndex: number,
-  selection: ProfileSelection,
-  threadName: string,
-  processDetails: string,
-};
+type StateProps = {|
+  +thread: Thread,
+  +maxStackDepth: number,
+  +timeRange: { start: Milliseconds, end: Milliseconds },
+  +selection: ProfileSelection,
+  +flameGraphTiming: FlameGraphTiming,
+  +threadName: string,
+  +processDetails: string,
+  +callNodeInfo: CallNodeInfo,
+  +threadIndex: number,
+|};
+type Props = ConnectedProps<{||}, StateProps, {||}>;
 
 class FlameGraph extends React.PureComponent<Props> {
-  _noOp = () => {};
-
   render() {
     const {
       thread,
+      threadIndex,
       maxStackDepth,
       flameGraphTiming,
       callNodeInfo,
@@ -62,20 +68,24 @@ class FlameGraph extends React.PureComponent<Props> {
             </span>
           </div>
           <FlameGraphCanvas
+            key={threadIndex}
             // ChartViewport props
-            timeRange={timeRange}
-            maxViewportHeight={maxViewportHeight}
-            startsAtBottom={true}
-            maximumZoom={1}
-            selection={selection}
-            updateProfileSelection={this._noOp}
-            viewportNeedsUpdate={viewportNeedsUpdate}
+            viewportProps={{
+              timeRange,
+              maxViewportHeight,
+              maximumZoom: 1,
+              selection,
+              startsAtBottom: true,
+              viewportNeedsUpdate: viewportNeedsUpdate,
+            }}
             // FlameGraphCanvas props
-            thread={thread}
-            flameGraphTiming={flameGraphTiming}
-            callNodeInfo={callNodeInfo}
-            maxStackDepth={maxStackDepth}
-            stackFrameHeight={STACK_FRAME_HEIGHT}
+            chartProps={{
+              thread: thread,
+              maxStackDepth: maxStackDepth,
+              flameGraphTiming: flameGraphTiming,
+              callNodeInfo: callNodeInfo,
+              stackFrameHeight: STACK_FRAME_HEIGHT,
+            }}
           />
         </div>
       </div>
@@ -83,23 +93,32 @@ class FlameGraph extends React.PureComponent<Props> {
   }
 }
 
-export default connect(state => {
-  const flameGraphTiming = selectedThreadSelectors.getFlameGraphTiming(state);
-
-  return {
-    thread: selectedThreadSelectors.getThread(state),
-    maxStackDepth: selectedThreadSelectors.getCallNodeMaxDepthForFlameGraph(
-      state
-    ),
-    flameGraphTiming,
-    timeRange: getDisplayRange(state),
-    selection: getProfileViewOptions(state).selection,
-    threadName: selectedThreadSelectors.getFriendlyThreadName(state),
-    processDetails: selectedThreadSelectors.getThreadProcessDetails(state),
-    callNodeInfo: selectedThreadSelectors.getCallNodeInfo(state),
-  };
-})(FlameGraph);
-
-function viewportNeedsUpdate(prevProps, newProps) {
+// This function is given the FlameGraphCanvas's chartProps.
+function viewportNeedsUpdate(
+  prevProps: { +flameGraphTiming: FlameGraphTiming },
+  newProps: { +flameGraphTiming: FlameGraphTiming }
+) {
   return prevProps.flameGraphTiming !== newProps.flameGraphTiming;
 }
+
+const options: ExplicitConnectOptions<{||}, StateProps, {||}> = {
+  mapStateToProps: state => {
+    const flameGraphTiming = selectedThreadSelectors.getFlameGraphTiming(state);
+
+    return {
+      thread: selectedThreadSelectors.getThread(state),
+      maxStackDepth: selectedThreadSelectors.getCallNodeMaxDepthForFlameGraph(
+        state
+      ),
+      flameGraphTiming,
+      timeRange: getDisplayRange(state),
+      selection: getProfileViewOptions(state).selection,
+      threadName: selectedThreadSelectors.getFriendlyThreadName(state),
+      processDetails: selectedThreadSelectors.getThreadProcessDetails(state),
+      callNodeInfo: selectedThreadSelectors.getCallNodeInfo(state),
+      threadIndex: getSelectedThreadIndex(state),
+    };
+  },
+  component: FlameGraph,
+};
+export default explicitConnect(options);

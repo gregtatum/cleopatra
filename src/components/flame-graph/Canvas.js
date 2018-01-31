@@ -5,35 +5,36 @@
 // @flow
 import * as React from 'react';
 import seedrandom from 'seedrandom';
-import withChartViewport from '../shared/chart/Viewport';
+import {
+  withChartViewport,
+  type WithChartViewport,
+} from '../shared/chart/Viewport';
 import ChartCanvas from '../shared/chart/Canvas';
 import TextMeasurement from '../../utils/text-measurement';
 
 import type { Thread } from '../../types/profile';
-import type { CssPixels, UnitIntervalOfProfileRange } from '../../types/units';
+import type { CssPixels } from '../../types/units';
 import type {
   FlameGraphTiming,
   FlameGraphDepth,
   IndexIntoFlameGraphTiming,
 } from '../../profile-logic/flame-graph';
-import type { Action, ProfileSelection } from '../../types/actions';
 import type { CallNodeInfo } from '../../types/profile-derived';
+import type { Viewport } from '../shared/chart/Viewport';
 
-type Props = {
-  thread: Thread,
-  maxStackDepth: number,
-  containerWidth: CssPixels,
-  containerHeight: CssPixels,
-  viewportLeft: UnitIntervalOfProfileRange,
-  viewportRight: UnitIntervalOfProfileRange,
-  viewportTop: CssPixels,
-  viewportBottom: CssPixels,
-  flameGraphTiming: FlameGraphTiming,
-  callNodeInfo: CallNodeInfo,
-  stackFrameHeight: CssPixels,
-  updateProfileSelection: ProfileSelection => Action,
-  isDragging: boolean,
-};
+export type OwnProps = {|
+  +thread: Thread,
+  +maxStackDepth: number,
+  +flameGraphTiming: FlameGraphTiming,
+  +callNodeInfo: CallNodeInfo,
+  +stackFrameHeight: CssPixels,
+|};
+
+type Props = {|
+  ...OwnProps,
+  // Bring in the viewport props from the higher order Viewport component.
+  +viewport: Viewport,
+|};
 
 type HoveredStackTiming = {
   depth: FlameGraphDepth,
@@ -74,14 +75,16 @@ class FlameGraphCanvas extends React.PureComponent<Props> {
   ) {
     const {
       thread,
-      containerWidth,
-      containerHeight,
       flameGraphTiming,
       callNodeInfo: { callNodeTable },
       stackFrameHeight,
-      viewportTop,
-      viewportBottom,
       maxStackDepth,
+      viewport: {
+        containerWidth,
+        containerHeight,
+        viewportTop,
+        viewportBottom,
+      },
     } = this.props;
 
     // Ensure the text measurement tool is created, since this is the first time
@@ -192,10 +195,9 @@ class FlameGraphCanvas extends React.PureComponent<Props> {
 
   _hitTest(x: CssPixels, y: CssPixels): HoveredStackTiming | null {
     const {
-      viewportTop,
-      containerWidth,
       flameGraphTiming,
       maxStackDepth,
+      viewport: { viewportTop, containerWidth },
     } = this.props;
     const pos = x / containerWidth;
     const depth = Math.floor(maxStackDepth - (y + viewportTop) / ROW_HEIGHT);
@@ -219,7 +221,7 @@ class FlameGraphCanvas extends React.PureComponent<Props> {
   _noOp = () => {};
 
   render() {
-    const { containerWidth, containerHeight, isDragging } = this.props;
+    const { containerWidth, containerHeight, isDragging } = this.props.viewport;
 
     return (
       <ChartCanvas
@@ -236,4 +238,6 @@ class FlameGraphCanvas extends React.PureComponent<Props> {
   }
 }
 
-export default withChartViewport(FlameGraphCanvas);
+export default (withChartViewport: WithChartViewport<OwnProps, Props>)(
+  FlameGraphCanvas
+);
