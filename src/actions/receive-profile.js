@@ -13,6 +13,9 @@ import { symbolicateProfile } from '../profile-logic/symbolication';
 import { decompress } from '../utils/gz';
 import { getTimeRangeIncludingAllThreads } from '../profile-logic/profile-data';
 import { TemporaryError } from '../utils/errors';
+import { objectValues } from '../utils/flow';
+import JSZip from 'jszip';
+import type { StaticJSZip } from 'jszip';
 
 import type {
   FunctionsUpdatePerThread,
@@ -378,6 +381,7 @@ function _wait(delayMs) {
 type FetchProfileArgs = {
   url: string,
   onTemporaryError: TemporaryError => void,
+  reportError?: (...args: any[]) => void,
 };
 
 /**
@@ -388,16 +392,95 @@ type FetchProfileArgs = {
  * If we can retrieve the profile properly, the returned promise is resolved
  * with the JSON.parsed profile.
  */
-async function _fetchProfile({ url, onTemporaryError }: FetchProfileArgs) {
+export async function _fetchProfile(args: FetchProfileArgs) {
   const MAX_WAIT_SECONDS = 10;
   let i = 0;
+  const { url, onTemporaryError } = args;
+  // Allow tests to capture the reported error, but normally use console.error.
+  const reportError = args.reportError || console.error;
+  const moreInfoMessage =
+    'The full error information has been printed out to the DevTool’s console.';
 
   while (true) {
     const response = await fetch(url);
     // Case 1: successful answer.
     if (response.ok) {
-      const json = await response.json();
-      return json;
+      const contentType = response.headers.get('content-type');
+
+      // We're getting information from third parties, they may not serve them correctly.
+      // Try to do the right thing for them to reduce errors.
+      const isZipContentType = contentType === 'application/zip';
+      const isJsonContentType = contentType === 'application/json';
+      const isUnknownContentType = !isZipContentType && !isJsonContentType;
+      const hasZipEnding = !!url.match(/\.zip$/);
+      const hasJsonEnding = !!url.match(/\.json/);
+
+      if (isZipContentType || (isUnknownContentType && hasZipEnding)) {
+        // Probably a zip file.
+        const buffer = await response.arrayBuffer();
+        let zip;
+        try {
+          zip = await (JSZip: StaticJSZip).loadAsync(buffer);
+        } catch (error) {
+          const message = 'Unable to unzip the zip file.';
+          reportError(message);
+          reportError('Error:', error);
+          reportError('Fetch response:', response);
+          throw new Error(`${message} ${moreInfoMessage}`);
+        }
+
+        // Only pull out the first file.
+        const firstFile = objectValues(zip.files)[0];
+        if (!firstFile) {
+          const message = 'The zip file did not contain any profiles.';
+          reportError(message);
+          reportError('Zip file:', zip);
+          reportError('Fetch response:', response);
+          throw new Error(`${message} ${moreInfoMessage}`);
+        }
+
+        const text = await firstFile.async('string');
+        try {
+          return JSON.parse(text);
+        } catch (error) {
+          const message = 'The profile’s JSON could not be decoded.';
+
+          // Provide helpful debugging information to the console.
+          reportError(message);
+          reportError('JSON parsing error:', error);
+          reportError('Fetch response:', response);
+          reportError('Zip file:', zip);
+        }
+      } else {
+        try {
+          // Don't check the content-type, but attempt to parse the response as JSON.
+          return await response.json();
+        } catch (error) {
+          // Change the error message depending on the circumstance:
+          let message;
+          if (isJsonContentType) {
+            message = 'The profile’s JSON could not be decoded.';
+          } else if (hasJsonEnding) {
+            message = oneLine`
+              The profile’s JSON could not be decoded. The file was not sent with the
+              "application/json" content type, but it did have a .json file ending.
+              Are you sure it was actually JSON?
+            `;
+          } else {
+            message = oneLine`
+              The profile could not be decoded. This does not look like a supported file
+              type.
+            `;
+          }
+
+          // Provide helpful debugging information to the console.
+          reportError(message);
+          reportError('JSON parsing error:', error);
+          reportError('Fetch response:', response);
+
+          throw new Error(`${message} ${moreInfoMessage}`);
+        }
+      }
     }
 
     // case 2: unrecoverable error.

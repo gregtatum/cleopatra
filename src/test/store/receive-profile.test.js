@@ -13,10 +13,15 @@ import {
   retrieveProfileFromAddon,
   retrieveProfileFromStore,
   retrieveProfileFromUrl,
+  _fetchProfile,
 } from '../../actions/receive-profile';
 
 import preprocessedProfile from '../fixtures/profiles/profile-2d-canvas.json';
 import getGeckoProfile from '../fixtures/profiles/gecko-profile';
+import { getEmptyProfile } from '../../profile-logic/profile-data';
+import JSZip from 'jszip';
+import { serializeProfile } from '../../profile-logic/process-profile';
+import type { InitJSZip } from 'jszip';
 
 describe('actions/receive-profile', function() {
   /**
@@ -130,6 +135,9 @@ describe('actions/receive-profile', function() {
     const fetch200Response = {
       ok: true,
       status: 200,
+      headers: {
+        get: () => 'appliciation/json',
+      },
       json: () => Promise.resolve(getGeckoProfile()),
     };
 
@@ -244,6 +252,9 @@ describe('actions/receive-profile', function() {
     const fetch200Response = {
       ok: true,
       status: 200,
+      headers: {
+        get: () => 'application/json',
+      },
       json: () => Promise.resolve(getGeckoProfile()),
     };
 
@@ -347,6 +358,210 @@ describe('actions/receive-profile', function() {
         phase: 'FATAL_ERROR',
         error: expect.any(Error),
       });
+    });
+  });
+
+  /**
+   * _fetchProfile is a helper function for the actions, but it is tested separately
+   * since it has a decent amount of complexity around different issues with loading
+   * in different support URL formats. It's mainly testing what happens when JSON
+   * and zip file is sent, and what happens when things fail.
+   */
+  describe('_fetchProfile', function() {
+    beforeEach(function() {
+      window.fetch = sinon.stub();
+      sinon.stub(window, 'setTimeout').yieldsAsync(); // will call its argument asynchronously
+    });
+
+    afterEach(function() {
+      delete window.fetch;
+      window.setTimeout.restore();
+    });
+
+    /**
+     * This helper function encapsulates various configurations for the type of content
+     * as well and response headers.
+     */
+    async function configureFetch(obj: {
+      url: string,
+      contentType?: string,
+      isZipped?: true,
+      isJSON?: true,
+      arrayBuffer?: () => Promise<Uint8Array>,
+      json?: () => Promise<mixed>,
+    }) {
+      const { url, contentType, isZipped, isJSON } = obj;
+      const profile = getEmptyProfile();
+      let arrayBuffer = obj.arrayBuffer;
+      let json = obj.json;
+
+      if (isZipped) {
+        const zip = new (JSZip: InitJSZip)();
+        zip.file('profile.json', serializeProfile(profile));
+        const buffer = await zip.generateAsync({ type: 'uint8array' });
+        arrayBuffer = () => buffer;
+        json = () => Promise.reject(new Error('Not JSON'));
+      }
+
+      if (isJSON) {
+        arrayBuffer = () => Promise.reject(new Error('Unhandled mock'));
+        json = () => Promise.resolve(profile);
+      }
+
+      const zippedProfileResponse = {
+        ok: true,
+        status: 200,
+        json,
+        arrayBuffer,
+        headers: {
+          get: (name: string) => {
+            switch (name) {
+              case 'content-type':
+                return contentType;
+              default:
+                throw new Error(
+                  "Unhandled stub for fetch's response.headers.get"
+                );
+            }
+          },
+        },
+      };
+      window.fetch.withArgs(url).resolves(zippedProfileResponse);
+      const reportError = jest.fn();
+      const args = {
+        url,
+        onTemporaryError: () => {},
+        reportError,
+      };
+
+      // Return fetch's args, based on the inputs.
+      return { profile, args, reportError };
+    }
+
+    it('fetches a normal profile with the correct content-type headers', async function() {
+      const { profile, args } = await configureFetch({
+        url: 'https://example.com/profile.json',
+        contentType: 'application/json',
+        isJSON: true,
+      });
+
+      const profileFetched = await _fetchProfile(args);
+      expect(profileFetched).toEqual(profile);
+    });
+
+    it('fetches a zipped profile with correct content-type headers', async function() {
+      const { profile, args, reportError } = await configureFetch({
+        url: 'https://example.com/profile.zip',
+        contentType: 'application/zip',
+        isZipped: true,
+      });
+
+      const profileFetched = await _fetchProfile(args);
+      expect(profileFetched).toEqual(profile);
+      expect(reportError.mock.calls.length).toBe(0);
+    });
+
+    it('fetches a zipped profile with incorrect content-type headers, but .zip extension', async function() {
+      const { profile, args, reportError } = await configureFetch({
+        url: 'https://example.com/profile.zip',
+        isZipped: true,
+      });
+
+      const profileFetched = await _fetchProfile(args);
+      expect(profileFetched).toEqual(profile);
+      expect(reportError.mock.calls.length).toBe(0);
+    });
+
+    it('fetches a profile with incorrect content-type headers, but .json extension', async function() {
+      const { profile, args, reportError } = await configureFetch({
+        url: 'https://example.com/profile.json',
+        isJSON: true,
+      });
+
+      const profileFetched = await _fetchProfile(args);
+      expect(profileFetched).toEqual(profile);
+      expect(reportError.mock.calls.length).toBe(0);
+    });
+
+    it('fetches a profile with incorrect content-type headers, no known extension, and attempts to JSON parse it it', async function() {
+      const { profile, args, reportError } = await configureFetch({
+        url: 'https://example.com/profile.file',
+        isJSON: true,
+      });
+
+      const profileFetched = await _fetchProfile(args);
+      expect(profileFetched).toEqual(profile);
+      expect(reportError.mock.calls.length).toBe(0);
+    });
+
+    it('fails if a bad zip file is passed in', async function() {
+      const { args, reportError } = await configureFetch({
+        url: 'https://example.com/profile.file',
+        contentType: 'application/zip',
+        arrayBuffer: () => Promise.resolve(new Uint8Array([0, 1, 2, 3])),
+      });
+
+      let userFacingError;
+      try {
+        await _fetchProfile(args);
+      } catch (error) {
+        userFacingError = error;
+      }
+      expect(userFacingError).toMatchSnapshot();
+      expect(reportError.mock.calls.length).toBeGreaterThan(0);
+      expect(reportError.mock.calls).toMatchSnapshot();
+    });
+
+    it('fails if a bad profile JSON is passed in', async function() {
+      const { args, reportError } = await configureFetch({
+        url: 'https://example.com/profile.json',
+        contentType: 'application/json',
+        json: () => Promise.reject(new Error('Invalid JSON')),
+      });
+
+      let userFacingError;
+      try {
+        await _fetchProfile(args);
+      } catch (error) {
+        userFacingError = error;
+      }
+      expect(userFacingError).toMatchSnapshot();
+      expect(reportError.mock.calls.length).toBeGreaterThan(0);
+      expect(reportError.mock.calls).toMatchSnapshot();
+    });
+
+    it('fails if a bad profile JSON is passed in, with no content type', async function() {
+      const { args, reportError } = await configureFetch({
+        url: 'https://example.com/profile.json',
+        json: () => Promise.reject(new Error('Invalid JSON')),
+      });
+
+      let userFacingError;
+      try {
+        await _fetchProfile(args);
+      } catch (error) {
+        userFacingError = error;
+      }
+      expect(userFacingError).toMatchSnapshot();
+      expect(reportError.mock.calls.length).toBeGreaterThan(0);
+      expect(reportError.mock.calls).toMatchSnapshot();
+    });
+
+    it('fails if a completely unknown file is passed in', async function() {
+      const { args, reportError } = await configureFetch({
+        url: 'https://example.com/profile.unknown',
+        json: () => Promise.reject(new Error('Invalid JSON')),
+      });
+
+      let userFacingError;
+      try {
+        await _fetchProfile(args);
+      } catch (error) {
+        userFacingError = error;
+      }
+      expect(userFacingError).toMatchSnapshot();
+      expect(reportError.mock.calls.length).toBeGreaterThan(0);
+      expect(reportError.mock.calls).toMatchSnapshot();
     });
   });
 });
