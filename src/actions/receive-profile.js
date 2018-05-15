@@ -49,6 +49,8 @@ export function viewProfile(
   pathInZipFile: ?string
 ): ThunkAction<void> {
   return (dispatch, getState) => {
+    // Choose threads to show, and the default to select, or use the ones that are
+    // already encoded in the URL. Ensure the URL encodings are sane.
     const threadIndexes = profile.threads.map((_, threadIndex) => threadIndex);
     let hiddenThreadIndexes;
     let selectedThreadIndex = getSelectedThreadIndexOrNull(getState());
@@ -91,7 +93,17 @@ export function viewProfile(
   };
 }
 
-const IDLE_FUNCTION_NAMES = ['___psynch_cvwait'];
+const IDLE_FUNCTION_NAMES = [
+  '___psynch_cvwait',
+  '__psynch_cvwait',
+  '__poll',
+  '_mach_msg_trap',
+  'mach_msg_trap',
+  'pthread_cond_wait',
+  'NtWaitForAlertByThreadId',
+  'NtUserMsgWaitForMultipleObjectsEx',
+  'NtWaitForAlertByThreadId',
+];
 const PERCENTAGE_ACTIVE_SAMPLES = 0.01;
 
 /**
@@ -108,76 +120,63 @@ function _hideIdleThreads(profile: Profile): ThreadIndex[] {
     threadIndex < profile.threads.length;
     threadIndex++
   ) {
-    // Hide content threads with no RefreshDriverTick. This indicates they were
-    // not painted to, and most likely idle. This is just a heuristic to help users.
     const thread = profile.threads[threadIndex];
-    const paintStringIndex = thread.stringTable.indexForString(
-      'RefreshDriverTick'
-    );
-    if (thread.name === 'GeckoMain' && thread.processType === 'tab') {
-      let isPaintMarkerFound = false;
-      for (
-        let markerIndex = 0;
-        markerIndex < thread.markers.length;
-        markerIndex++
-      ) {
-        if (paintStringIndex === thread.markers.name[markerIndex]) {
-          isPaintMarkerFound = true;
-          break;
-        }
-      }
-      if (!isPaintMarkerFound) {
-        hiddenThreadIndexes.push(threadIndex);
-      }
-    } else if (thread.name === 'DOM Worker') {
-      // Provide a Set that contains all of the stringIndexes the names of idle functions.
-      const idleFunctionNames = new Set(
-        IDLE_FUNCTION_NAMES.map(name => thread.stringTable.indexForString(name))
-      );
-      let maxActiveStackCount =
-        PERCENTAGE_ACTIVE_SAMPLES * thread.samples.length;
-      let activeStackCount = 0;
-      let filteredStackCount = 0;
-      // Default to being idle until proven otherwise.
-      let threadIsIdle = true;
-      for (
-        let sampleIndex = 0;
-        sampleIndex < thread.samples.length;
-        sampleIndex++
-      ) {
-        const stackIndex = thread.samples.stack[sampleIndex];
-        if (stackIndex === null) {
-          // This stack was filtered out. Most likely this will never actually happen
-          // on a new profile, but keep these checks here since they are in the Flow
-          // type definitions.
-          filteredStackCount++;
-          // Adjust the maximum necessary active stacks to find based on null stacks.
-          maxActiveStackCount =
-            PERCENTAGE_ACTIVE_SAMPLES *
-            (thread.samples.length - filteredStackCount);
-        } else {
-          const frameIndex = thread.stackTable.frame[stackIndex];
-          const funcIndex = thread.frameTable.func[frameIndex];
-          const nameIndex = thread.funcTable.name[funcIndex];
 
-          // Is this stack active?
-          if (!idleFunctionNames.has(nameIndex)) {
-            activeStackCount++;
-            if (activeStackCount > maxActiveStackCount) {
-              // Stop looping looking for idle samples. This thread is already has enough
-              // threads to not be idle.
-              threadIsIdle = false;
-              break;
-            }
+    if (
+      // Don't hide the compositor.
+      thread.name === 'Compositor' ||
+      // Don't hide the main thread.
+      (thread.name === 'GeckoMain' && thread.processType === 'default')
+    ) {
+      continue;
+    }
+
+    // Provide a Set that contains all of the stringIndexes the names of idle functions.
+    const idleFunctionNames = new Set(
+      IDLE_FUNCTION_NAMES.map(name => thread.stringTable.indexForString(name))
+    );
+    let maxActiveStackCount = PERCENTAGE_ACTIVE_SAMPLES * thread.samples.length;
+    let activeStackCount = 0;
+    let filteredStackCount = 0;
+    // Default to being idle until proven otherwise.
+    let threadIsIdle = true;
+    for (
+      let sampleIndex = 0;
+      sampleIndex < thread.samples.length;
+      sampleIndex++
+    ) {
+      const stackIndex = thread.samples.stack[sampleIndex];
+      if (stackIndex === null) {
+        // This stack was filtered out. Most likely this will never actually happen
+        // on a new profile, but keep this check here since the stacks are possibly
+        // null in the Flow type definitions.
+        filteredStackCount++;
+        // Adjust the maximum necessary active stacks to find based on null stacks.
+        maxActiveStackCount =
+          PERCENTAGE_ACTIVE_SAMPLES *
+          (thread.samples.length - filteredStackCount);
+      } else {
+        const frameIndex = thread.stackTable.frame[stackIndex];
+        const funcIndex = thread.frameTable.func[frameIndex];
+        const nameIndex = thread.funcTable.name[funcIndex];
+
+        // Is this stack active?
+        if (!idleFunctionNames.has(nameIndex)) {
+          activeStackCount++;
+          if (activeStackCount > maxActiveStackCount) {
+            // Stop looping looking for idle samples. This thread is already has enough
+            // threads to not be idle.
+            threadIsIdle = false;
+            break;
           }
         }
       }
+    }
 
-      // The above loop breaks out if the active stack count is too high. If this code
-      // is reached, then it must be an idle thread.
-      if (threadIsIdle) {
-        hiddenThreadIndexes.push(threadIndex);
-      }
+    // The above loop breaks out if the active stack count is too high. If this code
+    // is reached, then it must be an idle thread.
+    if (threadIsIdle) {
+      hiddenThreadIndexes.push(threadIndex);
     }
   }
 
