@@ -4,8 +4,12 @@
 
 // @flow
 import type { Milliseconds } from './units';
-import type { MarkerPayload } from './markers';
-import type { IndexIntoFuncTable, ThreadIndex, Pid } from './profile';
+import type {
+  IndexIntoFuncTable,
+  ThreadIndex,
+  Pid,
+  IndexIntoMarkersTable,
+} from './profile';
 export type IndexIntoCallNodeTable = number;
 
 /**
@@ -65,16 +69,6 @@ export type CallNodeInfo = {
  */
 export type CallNodePath = IndexIntoFuncTable[];
 
-export type TracingMarker = {
-  start: Milliseconds,
-  dur: Milliseconds,
-  name: string,
-  title: string | null,
-  data: MarkerPayload,
-};
-
-export type IndexIntoTracingMarkers = number;
-
 export type CallNodeData = {
   funcName: string,
   totalTime: number,
@@ -101,10 +95,10 @@ export type IndexIntoMarkerTiming = number;
 
 export type MarkerTiming = {
   // Start time in milliseconds.
-  start: number[],
+  start: Milliseconds[],
   // End time in milliseconds.
-  end: number[],
-  index: IndexIntoTracingMarkers[],
+  end: Milliseconds[],
+  index: IndexIntoMarkersTable[],
   label: string[],
   name: string,
   length: number,

@@ -106,17 +106,22 @@ export type ProfilerMarkerPayload = {
 
 /**
  * Markers represent arbitrary events that happen within the browser. They have a
- * name, time, and potentially a JSON data payload. These can come from all over the
- * system. For instance Paint markers instrument the rendering and layout process.
- * Engineers can easily add arbitrary markers to their code without coordinating with
- * perf.html to instrument their code.
+ * name, timing information, and potentially a JSON data payload. These can come from all
+ * over the system. For instance Paint markers instrument the rendering and layout
+ * process. Engineers can easily add arbitrary markers to their code without coordinating
+ * with perf.html to instrument their code.
  */
-export type MarkersTable = {
-  data: MarkerPayload[],
+export type MarkersTableByType<Payload> = {|
+  time: Milliseconds[],
+  duration: Array<Milliseconds | null>,
+  type: IndexIntoStringTable[],
   name: IndexIntoStringTable[],
-  time: number[],
+  title: IndexIntoStringTable[],
+  data: Payload[],
   length: number,
-};
+|};
+
+export type MarkersTable = MarkersTableByType<MarkerPayload>;
 
 /**
  * Frames contain the context information about the function execution at the moment in

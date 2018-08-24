@@ -742,10 +742,10 @@ describe('snapshots of selectors/profile-view', function() {
       selectedThreadSelectors.getRangeAndTransformFilteredThread(getState())
     ).toMatchSnapshot();
   });
-  it('matches the last stored run of selectedThreadSelector.getJankInstances', function() {
+  it('matches the last stored run of selectedThreadSelector.getJankMarkers', function() {
     const { getState } = setupStore();
     expect(
-      selectedThreadSelectors.getJankInstances(getState())
+      selectedThreadSelectors.getJankMarkers(getState())
     ).toMatchSnapshot();
   });
   it('matches the last stored run of selectedThreadSelector.getProcessedMarkersThread', function() {

@@ -19,36 +19,40 @@ import {
   getPreviewSelection,
 } from '../../reducers/profile-view';
 import { getSelectedThreadIndex } from '../../reducers/url-state';
-import './TracingMarkers.css';
+import './Markers.css';
 
 import type { Milliseconds, CssPixels } from '../../types/units';
-import type { TracingMarker } from '../../types/profile-derived';
+import type { UniqueStringArray } from '../../utils/unique-string-array';
 import type { SizeProps } from '../shared/WithSize';
 import type {
   ExplicitConnectOptions,
   ConnectedProps,
 } from '../../utils/connect';
-import type { ThreadIndex } from '../../types/profile';
+import type {
+  ThreadIndex,
+  MarkersTableByType,
+  IndexIntoMarkersTable,
+} from '../../types/profile';
 
 type MarkerState = 'PRESSED' | 'HOVERED' | 'NONE';
 
 /**
- * The TimelineTracingMarkers component is built up of several nested components,
+ * The TimelineMarkers component is built up of several nested components,
  * and they are all collected in this file. In pseudo-code, they take
  * the following forms:
  *
- * export const TimelineTracingMarkersJank = (
+ * export const TimelineJankMarkers = (
  *  <Connect markers={JankMarkers}>
  *    <WithSize>
- *      <TimelineTracingMarkers />
+ *      <TimelineMarkers />
  *    </WithSize>
  *  </Connect>
  * );
  *
- * export const TimelineTracingMarkersOverview = (
+ * export const TimelineOverviewMarkers = (
  *   <Connect markers={AllMarkers}>
  *     <WithSize>
- *       <TimelineTracingMarkers />
+ *       <TimelineMarkers />
  *     </WithSize>
  *   </Connect>
  * );
@@ -63,7 +67,8 @@ export type OwnProps = {|
 |};
 
 export type StateProps = {|
-  +intervalMarkers: TracingMarker[],
+  +markers: MarkersTableByType<*>,
+  +markerStringTable: UniqueStringArray,
   +isSelected: boolean,
   +styles: any,
   +overlayFills: {
@@ -76,16 +81,13 @@ export type StateProps = {|
 type Props = ConnectedProps<SizeProps, OwnProps, StateProps>;
 
 type State = {
-  hoveredItem: TracingMarker | null,
-  mouseDownItem: TracingMarker | null,
+  hoveredItem: IndexIntoMarkersTable | null,
+  mouseDownItem: IndexIntoMarkersTable | null,
   mouseX: CssPixels,
   mouseY: CssPixels,
 };
 
-class TimelineTracingMarkersImplementation extends React.PureComponent<
-  Props,
-  State
-> {
+class TimelineMarkersImplementation extends React.PureComponent<Props, State> {
   _canvas: HTMLCanvasElement | null = null;
   _requestedAnimationFrame: boolean = false;
   state = {
@@ -110,14 +112,21 @@ class TimelineTracingMarkersImplementation extends React.PureComponent<
     });
   }
 
-  _hitTest(e): TracingMarker | null {
+  _hitTest(e): IndexIntoMarkersTable | null {
     const c = this._canvas;
     if (c === null) {
       return null;
     }
 
     const r = c.getBoundingClientRect();
-    const { width, rangeStart, rangeEnd, intervalMarkers, styles } = this.props;
+    const {
+      width,
+      rangeStart,
+      rangeEnd,
+      markers,
+      styles,
+      markerStringTable,
+    } = this.props;
     const x = e.pageX - r.left;
     const y = e.pageY - r.top;
     const time = rangeStart + x / width * (rangeEnd - rangeStart);
@@ -126,14 +135,20 @@ class TimelineTracingMarkersImplementation extends React.PureComponent<
     // there are multiple markers under the mouse, we want to find the one
     // with the highest array index. So we walk the list of intervalMarkers
     // from high index to low index, which is front to back in z-order.
-    for (let i = intervalMarkers.length - 1; i >= 0; i--) {
-      const { start, dur, name } = intervalMarkers[i];
-      if (time < start || time >= start + dur) {
+    for (
+      let markerIndex = markers.length - 1;
+      markerIndex >= 0;
+      markerIndex--
+    ) {
+      const start = markers.time[markerIndex];
+      const duration = markers.duration[markerIndex];
+      const name = markerStringTable.getString(markers.name[markerIndex]);
+      if (time < start || time >= start + duration) {
         continue;
       }
       const style = name in styles ? styles[name] : styles.default;
       if (y >= style.top && y < style.top + style.height) {
-        return intervalMarkers[i];
+        return markerIndex;
       }
     }
     return null;
@@ -174,12 +189,10 @@ class TimelineTracingMarkersImplementation extends React.PureComponent<
         mouseUpItem !==
           null /* extra null check because flow doesn't realize it's unnecessary */
       ) {
-        const { onSelect, threadIndex } = this.props;
-        onSelect(
-          threadIndex,
-          mouseUpItem.start,
-          mouseUpItem.start + mouseUpItem.dur
-        );
+        const { onSelect, threadIndex, markers } = this.props;
+        const time = markers.time[mouseUpItem];
+        const duration = markers.duration[mouseUpItem];
+        onSelect(threadIndex, time, time + duration);
       }
       this.setState({
         hoveredItem: mouseUpItem,
@@ -217,7 +230,7 @@ class TimelineTracingMarkersImplementation extends React.PureComponent<
     return (
       <div className={classNames(className, isSelected ? 'selected' : null)}>
         <canvas
-          className="timelineTracingMarkersCanvas"
+          className="timelineMarkersCanvas"
           ref={this._takeCanvasRef}
           onMouseDown={this._onMouseDown}
           onMouseMove={this._onMouseMove}
@@ -257,9 +270,10 @@ class TimelineTracingMarkersImplementation extends React.PureComponent<
       rangeStart,
       rangeEnd,
       width,
-      intervalMarkers,
+      markers,
       styles,
       overlayFills,
+      markerStringTable,
     } = this.props;
 
     const devicePixelRatio = c.ownerDocument
@@ -281,11 +295,17 @@ class TimelineTracingMarkersImplementation extends React.PureComponent<
     ctx.clearRect(0, 0, pixelWidth, pixelHeight);
     ctx.scale(devicePixelRatio, devicePixelRatio);
 
-    intervalMarkers.forEach(marker => {
-      const { start, dur, name } = marker;
+    for (let markerIndex = 0; markerIndex < markers.length; markerIndex++) {
+      const start = markers.time[markerIndex];
+      const duration = markers.duration[markerIndex];
+      const name = markerStringTable.getString(markers.name[markerIndex]);
+      if (duration === null) {
+        // Only draw markers with a duration.
+        continue;
+      }
       const pos = (start - rangeStart) / (rangeEnd - rangeStart) * width;
-      const itemWidth = Number.isFinite(dur)
-        ? dur / (rangeEnd - rangeStart) * width
+      const itemWidth = Number.isFinite(duration)
+        ? duration / (rangeEnd - rangeStart) * width
         : Number.MAX_SAFE_INTEGER;
       const style = name in styles ? styles[name] : styles.default;
       ctx.fillStyle = style.background;
@@ -309,7 +329,7 @@ class TimelineTracingMarkersImplementation extends React.PureComponent<
         ctx.fillStyle = style.borderRight;
         ctx.fillRect(pos + itemWidth - 1, style.top, 1, style.height);
       }
-      const markerState = this._getMarkerState(marker);
+      const markerState = this._getMarkerState(markerIndex);
       if (markerState === 'HOVERED' || markerState === 'PRESSED') {
         ctx.fillStyle = overlayFills[markerState];
         if (style.squareCorners) {
@@ -325,11 +345,11 @@ class TimelineTracingMarkersImplementation extends React.PureComponent<
           );
         }
       }
-    });
+    }
     ctx.scale(1 / devicePixelRatio, 1 / devicePixelRatio);
   }
 
-  _getMarkerState(marker): MarkerState {
+  _getMarkerState(marker: IndexIntoMarkersTable): MarkerState {
     const { hoveredItem, mouseDownItem } = this.state;
     if (mouseDownItem !== null) {
       if (marker === mouseDownItem && marker === hoveredItem) {
@@ -345,12 +365,10 @@ class TimelineTracingMarkersImplementation extends React.PureComponent<
 }
 
 /**
- * Combine the base implementation of the TimelineTracingMarkers with the
+ * Combine the base implementation of the TimelineMarkers with the
  * WithSize component.
  */
-export const TimelineTracingMarkers = withSize(
-  TimelineTracingMarkersImplementation
-);
+export const TimelineMarkers = withSize(TimelineMarkersImplementation);
 
 /**
  * Create a special connected component for Jank instances.
@@ -362,38 +380,38 @@ const jankOptions: ExplicitConnectOptions<OwnProps, StateProps, {||}> = {
     const selectedThread = getSelectedThreadIndex(state);
 
     return {
-      intervalMarkers: selectors.getJankInstances(state),
+      markers: selectors.getJankMarkers(state),
+      markerStringTable: selectors.getThread(state).stringTable,
       isSelected: threadIndex === selectedThread,
       styles: styles,
       overlayFills: overlayFills,
       isModifyingSelection: getPreviewSelection(state).isModifying,
     };
   },
-  component: TimelineTracingMarkers,
+  component: TimelineMarkers,
 };
 
-export const TimelineTracingMarkersJank = explicitConnect(jankOptions);
+export const TimelineJankMarkers = explicitConnect(jankOptions);
 
 /**
- * Create a connected component for all tracing markers.
+ * Create a connected component for an overview of the markers.
  */
 const tracingOptions: ExplicitConnectOptions<OwnProps, StateProps, {||}> = {
   mapStateToProps: (state, props) => {
     const { threadIndex } = props;
     const selectors = selectorsForThread(threadIndex);
     const selectedThread = getSelectedThreadIndex(state);
-    const intervalMarkers = selectors.getCommittedRangeFilteredTracingMarkersForHeader(
-      state
-    );
+    const markers = selectors.getCommittedRangeFilteredMarkersForHeader(state);
     return {
-      intervalMarkers,
+      markers,
+      markerStringTable: selectors.getThread(state).stringTable,
       isSelected: threadIndex === selectedThread,
       styles,
       overlayFills,
       isModifyingSelection: getPreviewSelection(state).isModifying,
     };
   },
-  component: TimelineTracingMarkers,
+  component: TimelineMarkers,
 };
 
-export const TimelineTracingMarkersOverview = explicitConnect(tracingOptions);
+export const TimelineOverviewMarkers = explicitConnect(tracingOptions);

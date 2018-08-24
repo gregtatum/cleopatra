@@ -21,6 +21,7 @@ import type {
   IndexIntoMarkersTable,
   IndexIntoStackTable,
   ThreadIndex,
+  MarkersTableByType,
 } from '../types/profile';
 import type {
   CallNodeInfo,
@@ -1203,36 +1204,50 @@ export function getSampleIndexClosestToTime(
   return distanceToThis < distanceToLast ? index : index - 1;
 }
 
-export function getJankInstances(
+export function getJankMarkers(
   samples: SamplesTable,
   thresholdInMs: number
-): TracingMarker[] {
-  const addTracingMarker = () =>
-    jankInstances.push({
-      start: lastTimestamp - lastResponsiveness,
-      dur: lastResponsiveness,
-      title: `${lastResponsiveness.toFixed(2)}ms event processing delay`,
-      name: 'Jank',
-      data: null,
-    });
-
+): MarkersTableByType<null> {
+  const markers: MarkersTableByType<null> = {
+    time: [],
+    duration: [],
+    type: [],
+    name: [],
+    title: [],
+    data: [],
+    length: 0,
+  };
   let lastResponsiveness = 0;
   let lastTimestamp = 0;
-  const jankInstances = [];
+
+  const addMarker = () => {
+    markers.time.push(lastTimestamp - lastResponsiveness);
+    markers.duration.push(lastResponsiveness);
+    markers.type.push('Jank');
+    markers.name.push('Jank');
+    markers.title.push(
+      `${lastResponsiveness.toFixed(2)}ms event processing delay`
+    );
+    markers.data.push(null);
+    markers.length++;
+  };
+
   for (let i = 0; i < samples.length; i++) {
     const currentResponsiveness = samples.responsiveness[i];
     if (currentResponsiveness < lastResponsiveness) {
       if (lastResponsiveness >= thresholdInMs) {
-        addTracingMarker();
+        addMarker();
       }
     }
     lastResponsiveness = currentResponsiveness;
     lastTimestamp = samples.time[i];
   }
+
   if (lastResponsiveness >= thresholdInMs) {
-    addTracingMarker();
+    addMarker();
   }
-  return jankInstances;
+
+  return markers;
 }
 
 export function getSearchFilteredMarkers(
@@ -1493,16 +1508,6 @@ export function getTracingMarkers(thread: Thread): TracingMarker[] {
 
   tracingMarkers.sort((a, b) => a.start - b.start);
   return tracingMarkers;
-}
-
-export function filterTracingMarkersToRange(
-  tracingMarkers: TracingMarker[],
-  rangeStart: number,
-  rangeEnd: number
-): TracingMarker[] {
-  return tracingMarkers.filter(
-    tm => tm.start < rangeEnd && tm.start + tm.dur >= rangeStart
-  );
 }
 
 export function isNetworkMarker(marker: TracingMarker): boolean {

@@ -1530,7 +1530,7 @@ Array [
 `;
 
 exports[
-  `snapshots of selectors/profile-view matches the last stored run of selectedThreadSelector.getJankInstances 1`
+  `snapshots of selectors/profile-view matches the last stored run of selectedThreadSelector.getJankMarkers 1`
 ] = `
 Array [
   Object {
