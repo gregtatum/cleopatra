@@ -784,7 +784,7 @@ export type SelectorsForThread = {
   getJsTracerTable: State => JsTracerTable | null,
   getJsTracerEvents: State => JsTracerEvents | null,
   getJsTracerStringTable: State => UniqueStringArray | null,
-  getJsTracerTiming: State => JsTracerTiming[],
+  getJsTracerTiming: State => JsTracerTiming[] | null,
 };
 
 const selectorsForThreads: { [key: ThreadIndex]: SelectorsForThread } = {};
@@ -1183,8 +1183,12 @@ export const selectorsForThread = (
       const tracerTable = getJsTracerTable(state);
       return tracerTable === null ? null : tracerTable.stringTable;
     };
-    const getJsTracerTiming = createSelector(getJsTracerTable, jsTracerTable =>
-      JsTracer.getJsTracerTiming(ensureExists(jsTracerTable))
+    const getJsTracerTiming = createSelector(
+      getJsTracerTable,
+      jsTracerTable =>
+        jsTracerTable === null
+          ? null
+          : JsTracer.getJsTracerTiming(jsTracerTable)
     );
 
     selectorsForThreads[threadIndex] = {
