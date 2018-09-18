@@ -178,6 +178,7 @@ export function urlStateToUrlObject(urlState: UrlState): UrlObject {
       break;
     case 'marker-chart':
     case 'network-chart':
+    case 'js-tracer':
       break;
     default:
       assertExhaustiveCheck(selectedTab);
