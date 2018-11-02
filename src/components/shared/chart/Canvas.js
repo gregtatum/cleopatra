@@ -7,10 +7,22 @@ import * as React from 'react';
 import { timeCode } from '../../../utils/time-code';
 import classNames from 'classnames';
 import { TOOLTIP_TIMEOUT } from '../../../app-logic/constants';
+import explicitConnect from '../../../utils/connect';
+import {
+  viewTooltip,
+  requestToDismissTooltip,
+  keepTooltipOpen,
+} from '../../../actions/app';
+import { getTooltipReference } from '../../../reducers/app';
 
+import type { TooltipReference } from '../../../types/actions';
+import type {
+  ExplicitConnectOptions,
+  ConnectedProps,
+} from '../../../utils/connect';
 import type { CssPixels, DevicePixels } from '../../../types/units';
 
-type Props<HoveredItem> = {|
+type OwnProps<HoveredItem> = {|
   +containerWidth: CssPixels,
   +containerHeight: CssPixels,
   +className: string,
@@ -19,12 +31,26 @@ type Props<HoveredItem> = {|
   +drawCanvas: (CanvasRenderingContext2D, HoveredItem | null) => void,
   +isDragging: boolean,
   +hitTest: (x: CssPixels, y: CssPixels) => HoveredItem | null,
-  +onHoverChange: (
-    x: CssPixels,
-    y: CssPixels,
-    mouseOverItem: HoveredItem | null
-  ) => void,
+  +getHoveredItemsTooltipReference: (
+    hoveredItem: HoveredItem
+  ) => TooltipReference,
 |};
+
+type StateProps = {|
+  tooltipReference: TooltipReference | null,
+|};
+
+type DispatchProps = {|
+  viewTooltip: typeof viewTooltip,
+  requestToDismissTooltip: typeof requestToDismissTooltip,
+  keepTooltipOpen: typeof keepTooltipOpen,
+|};
+
+type Props<HoveredItem> = ConnectedProps<
+  OwnProps<HoveredItem>,
+  StateProps,
+  DispatchProps
+>;
 
 // The naming of the X and Y coordinates here correspond to the ones
 // found on the MouseEvent interface.
@@ -50,7 +76,7 @@ const MOUSE_CLICK_MAX_MOVEMENT_DELTA: CssPixels = 5;
 
 // This isn't a PureComponent on purpose: we always want to update if the parent updates
 // But we still conditionally update the canvas itself, see componentDidUpdate.
-export default class ChartCanvas<HoveredItem> extends React.Component<
+class ChartCanvas<HoveredItem> extends React.Component<
   Props<HoveredItem>,
   State<HoveredItem>
 > {
@@ -154,14 +180,14 @@ export default class ChartCanvas<HoveredItem> extends React.Component<
     if (!this._canvas) {
       return;
     }
-    const { isDragging, hitTest, onHoverChange } = this.props;
+    const { isDragging, hitTest } = this.props;
 
     if (isDragging) {
       if (this.state.mouseOverItem !== null) {
         // When dragging, hide the hover.
         this._hoverGeneration++;
         if (this.state.hoveredItemWithTooltip !== null) {
-          onHoverChange(event.pageX, event.pageY, null);
+          this._onHoverChange(event.pageX, event.pageY, null);
         }
         this.setState({
           mouseOverItem: null,
@@ -206,14 +232,14 @@ export default class ChartCanvas<HoveredItem> extends React.Component<
         setTimeout(() => {
           if (this._hoverGeneration === thisHoverGeneration) {
             // Ensure that the hover hasn't changed.
-            onHoverChange(pageX, pageY, mouseOverItem);
+            this._onHoverChange(pageX, pageY, mouseOverItem);
             this.setState({ hoveredItemWithTooltip: mouseOverItem });
           }
         }, TOOLTIP_TIMEOUT);
 
         // If there is a previously displayed item, now is the time to remove it.
         if (previousHoveredItem !== null) {
-          onHoverChange(event.pageX, event.pageY, null);
+          this._onHoverChange(event.pageX, event.pageY, null);
         }
 
         // Immediately remember that there is a hovered item.
@@ -224,13 +250,19 @@ export default class ChartCanvas<HoveredItem> extends React.Component<
       this._hoverGeneration++;
 
       if (this.state.hoveredItemWithTooltip !== null) {
-        onHoverChange(event.pageX, event.pageY, null);
+        this._onHoverChange(event.pageX, event.pageY, null);
       }
 
       this.setState({
         mouseOverItem: null,
         hoveredItemWithTooltip: null,
       });
+    }
+  };
+
+  _onMouseOut = () => {
+    if (this.state.mouseOverItem !== null) {
+      this.setState({ mouseOverItem: null });
     }
   };
 
@@ -267,6 +299,23 @@ export default class ChartCanvas<HoveredItem> extends React.Component<
       !hoveredItemsAreEqual(prevState.mouseOverItem, this.state.mouseOverItem)
     ) {
       this._scheduleDraw();
+    }
+  }
+
+  _onHoverChange(
+    x: CssPixels,
+    y: CssPixels,
+    hoveredItem: HoveredItem | null
+  ): void {
+    const { requestToDismissTooltip, viewTooltip } = this.props;
+    if (hoveredItem === null) {
+      requestToDismissTooltip();
+    } else {
+      viewTooltip(
+        x,
+        y,
+        this.props.getHoveredItemsTooltipReference(hoveredItem)
+      );
     }
   }
 
@@ -322,3 +371,17 @@ function hoveredItemsAreEqual(a: any, b: any) {
   }
   return a === b;
 }
+
+const options: ExplicitConnectOptions<
+  OwnProps<*>,
+  StateProps,
+  DispatchProps
+> = {
+  mapStateToProps: state => ({
+    tooltipReference: getTooltipReference(state),
+  }),
+  mapDispatchToProps: { viewTooltip, requestToDismissTooltip, keepTooltipOpen },
+  component: ChartCanvas,
+};
+
+export default explicitConnect(options);

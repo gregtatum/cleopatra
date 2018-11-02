@@ -11,7 +11,7 @@ import {
   getTooltipReferenceReactKey,
 } from '../../reducers/app';
 import MarkerTooltipContents from '../shared/MarkerTooltipContents';
-import { dismissTooltip } from '../../actions/app';
+import { requestToDismissTooltip, keepTooltipOpen } from '../../actions/app';
 
 import type { TooltipReference, MousePosition } from '../../types/actions';
 import type {
@@ -32,7 +32,8 @@ type StateProps = {|
 |};
 
 type DispatchProps = {|
-  dismissTooltip: typeof dismissTooltip,
+  requestToDismissTooltip: typeof requestToDismissTooltip,
+  keepTooltipOpen: typeof keepTooltipOpen,
 |};
 
 type Props = ConnectedProps<{||}, StateProps, DispatchProps>;
@@ -98,8 +99,12 @@ class Tooltip extends React.PureComponent<Props, State> {
     });
   }
 
+  _onMouseEnter = () => {
+    this.props.keepTooltipOpen();
+  };
+
   _onMouseLeave = () => {
-    this.props.dismissTooltip();
+    this.props.requestToDismissTooltip();
   };
 
   render() {
@@ -168,6 +173,7 @@ class Tooltip extends React.PureComponent<Props, State> {
             className="tooltip"
             style={style}
             ref={this._takeInteriorElementRef}
+            onMouseEnter={this._onMouseEnter}
             onMouseLeave={this._onMouseLeave}
           >
             <div className="tooltipBackground">{contents}</div>
@@ -185,7 +191,8 @@ const options: ExplicitConnectOptions<{||}, StateProps, DispatchProps> = {
     tooltipKey: getTooltipReferenceReactKey(state),
   }),
   mapDispatchToProps: {
-    dismissTooltip,
+    requestToDismissTooltip,
+    keepTooltipOpen,
   },
   component: Tooltip,
 };

@@ -27,7 +27,10 @@ import type {
   IndexIntoTracingMarkers,
 } from '../../types/profile-derived';
 import type { Viewport } from '../shared/chart/Viewport';
-import { typeof viewTooltip, typeof dismissTooltip } from '../../actions/app';
+import {
+  typeof viewTooltip,
+  typeof requestToDismissTooltip,
+} from '../../actions/app';
 
 type MarkerDrawingInformation = {
   x: CssPixels,
@@ -39,7 +42,7 @@ type MarkerDrawingInformation = {
 };
 
 type OwnProps = {|
-  +dismissTooltip: dismissTooltip,
+  +requestToDismissTooltip: requestToDismissTooltip,
   +viewTooltip: viewTooltip,
   +rangeStart: Milliseconds,
   +rangeEnd: Milliseconds,
@@ -373,9 +376,9 @@ class MarkerChartCanvas extends React.PureComponent<Props, State> {
     y: CssPixels,
     tracingMarkerIndex: IndexIntoTracingMarkers | null
   ): void => {
-    const { dismissTooltip, viewTooltip, threadIndex } = this.props;
+    const { requestToDismissTooltip, viewTooltip, threadIndex } = this.props;
     if (tracingMarkerIndex === null) {
-      dismissTooltip();
+      requestToDismissTooltip();
     } else {
       viewTooltip(x, y, {
         type: 'tracing-marker',

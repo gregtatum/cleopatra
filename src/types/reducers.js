@@ -118,6 +118,10 @@ export type ZipFileState =
     |};
 
 export type IsSidebarOpenPerPanelState = { [TabSlug]: boolean };
+export type TooltipDismissRequest = {|
+  +isRequested: boolean,
+  +generation: number,
+|};
 
 export type AppState = {|
   +view: AppViewState,
@@ -127,6 +131,7 @@ export type AppState = {|
   +panelLayoutGeneration: number,
   +lastVisibleThreadTabSlug: TabSlug,
   +tooltipReference: TooltipReference | null,
+  +tooltipDismissRequested: TooltipDismissRequest,
   +tooltipPosition: MousePosition,
   +tooltipDisabled: boolean,
 |};

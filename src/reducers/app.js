@@ -18,6 +18,7 @@ import type {
   AppViewState,
   IsSidebarOpenPerPanelState,
   Reducer,
+  TooltipDismissRequest,
 } from '../types/reducers';
 import type { MousePosition, TooltipReference } from '../types/actions';
 
@@ -173,6 +174,27 @@ function tooltipReference(
   }
 }
 
+/**
+ * It's hard to coordinate between various components and their event handlers of when
+ * exactly a tooltip should be closed. Give the system a bit of wiggle room on leaving
+ * the tooltip open for a single requestAnimationFrame. Then close it unless someone
+ * else wants to leave it open.
+ */
+function tooltipDismissRequested(
+  state: TooltipDismissRequest = { isRequested: false, generation: 0 },
+  action: Action
+): TooltipDismissRequest {
+  switch (action.type) {
+    case 'REQUEST_TO_DISMISS_TOOLTIP':
+      return { isRequested: true, generation: action.generation };
+    case 'DISMISS_TOOLTIP':
+    case 'KEEP_TOOLTIP_OPEN':
+      return { isRequested: false, generation: state.generation };
+    default:
+      return state;
+  }
+}
+
 function tooltipPosition(
   state: MousePosition = { mouseX: 0, mouseY: 0 },
   action: Action
@@ -209,6 +231,7 @@ const appStateReducer: Reducer<AppState> = combineReducers({
   panelLayoutGeneration,
   lastVisibleThreadTabSlug,
   tooltipReference,
+  tooltipDismissRequested,
   tooltipPosition,
   tooltipDisabled,
 });
@@ -237,6 +260,9 @@ export const getAreTooltipsEnabled = (state: State) =>
   !getApp(state).tooltipDisabled;
 export const getAreTooltipsDisabled = (state: State) =>
   getApp(state).tooltipDisabled;
+export const getIsTooltipDismissRequested = (
+  state: State
+): TooltipDismissRequest => getApp(state).tooltipDismissRequested;
 
 /**
  * This function takes a tooltip reference and generates a unique React key.

@@ -55,6 +55,7 @@ export type FunctionsUpdatePerThread = {
     funcNames: string[],
   |},
 };
+
 export type TooltipReference =
   | {|
       +type: 'tracing-marker',
@@ -106,6 +107,13 @@ type AppAction =
     |}
   | {|
       +type: 'ENABLE_TOOLTIPS',
+    |}
+  | {|
+      +type: 'REQUEST_TO_DISMISS_TOOLTIP',
+      +generation: number,
+    |}
+  | {|
+      +type: 'KEEP_TOOLTIP_OPEN',
     |};
 
 type ProfileAction =

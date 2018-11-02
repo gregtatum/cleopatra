@@ -35,7 +35,10 @@ import type {
 import type { GetCategory } from '../../profile-logic/color-categories';
 import type { GetLabel } from '../../profile-logic/labeling-strategies';
 import type { Viewport } from '../shared/chart/Viewport';
-import { typeof dismissTooltip, typeof viewTooltip } from '../../actions/app';
+import {
+  typeof requestToDismissTooltip,
+  typeof viewTooltip,
+} from '../../actions/app';
 
 type OwnProps = {|
   +thread: Thread,
@@ -52,7 +55,7 @@ type OwnProps = {|
   +selectedCallNodeIndex: IndexIntoCallNodeTable | null,
   +onSelectionChange: (IndexIntoCallNodeTable | null) => void,
   +scrollToSelectionGeneration: number,
-  dismissTooltip: dismissTooltip,
+  requestToDismissTooltip: requestToDismissTooltip,
   viewTooltip: viewTooltip,
 |};
 
@@ -340,9 +343,9 @@ class StackChartCanvas extends React.PureComponent<Props> {
     y: CssPixels,
     hoveredItem: HoveredStackTiming | null
   ): void => {
-    const { dismissTooltip, viewTooltip, threadIndex } = this.props;
+    const { requestToDismissTooltip, viewTooltip, threadIndex } = this.props;
     if (hoveredItem === null) {
-      dismissTooltip();
+      requestToDismissTooltip();
     } else {
       const { depth, stackTimingIndex } = hoveredItem;
       const { stackTimingByDepth } = this.props;

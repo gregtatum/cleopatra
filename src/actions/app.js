@@ -3,7 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // @flow
-import { getAreTooltipsEnabled } from '../reducers/app';
+import {
+  getAreTooltipsEnabled,
+  getIsTooltipDismissRequested,
+} from '../reducers/app';
 import { getSelectedTab, getDataSource } from '../reducers/url-state';
 import { sendAnalytics } from '../utils/analytics';
 import type { Action, ThunkAction } from '../types/store';
@@ -112,10 +115,12 @@ export function viewTooltip(
 }
 
 /**
- * Hide the current tooltip.
+ * Dismiss the tooltip immediately.
  */
 export function dismissTooltip(): Action {
-  return { type: 'DISMISS_TOOLTIP' };
+  return {
+    type: 'DISMISS_TOOLTIP',
+  };
 }
 
 /**
@@ -144,5 +149,48 @@ export function disableTooltips(): Action {
 export function enableTooltips(): Action {
   return {
     type: 'ENABLE_TOOLTIPS',
+  };
+}
+
+/**
+ * It is difficult to coordinate the closing of tooltips between separate components.
+ * One may fire the mouseleave, and one will fire the mouseenter. Defer the closing
+ * of the tooltip, and initially only request it to be dismissed.
+ */
+export function requestToDismissTooltip(): ThunkAction<void> {
+  return (dispatch, getState) => {
+    const { generation: oldGeneration } = getIsTooltipDismissRequested(
+      getState()
+    );
+    const generation = oldGeneration + 1;
+    dispatch({
+      type: 'REQUEST_TO_DISMISS_TOOLTIP',
+      generation,
+    });
+
+    // Wait until the next animation frame to allow all of the current event listeners
+    // to fire and decide what they want to do.
+    requestAnimationFrame(() => {
+      const {
+        isRequested,
+        generation: currentGeneration,
+      } = getIsTooltipDismissRequested(getState());
+
+      // Check that the request to
+      if (isRequested && generation === currentGeneration) {
+        dispatch(dismissTooltip());
+      }
+    });
+  };
+}
+
+/**
+ * It is difficult to coordinate the closing of tooltips between separate components.
+ * One may fire the mouseleave, and one will fire the mouseenter. This action stops
+ * the request to dismiss a tooltip, and leaves it open.
+ */
+export function keepTooltipOpen(): Action {
+  return {
+    type: 'KEEP_TOOLTIP_OPEN',
   };
 }

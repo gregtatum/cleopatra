@@ -17,7 +17,7 @@ import { getSelectedThreadIndex } from '../../reducers/url-state';
 import ContextMenuTrigger from '../shared/ContextMenuTrigger';
 import { getCallNodePathFromIndex } from '../../profile-logic/profile-data';
 import { changeSelectedCallNode } from '../../actions/profile-view';
-import { dismissTooltip, viewTooltip } from '../../actions/app';
+import { requestToDismissTooltip, viewTooltip } from '../../actions/app';
 import { getIconsWithClassNames } from '../../reducers/icons';
 import { BackgroundImageStyleDef } from '../shared/StyleDef';
 
@@ -58,7 +58,7 @@ type StateProps = {|
 |};
 type DispatchProps = {|
   +changeSelectedCallNode: typeof changeSelectedCallNode,
-  +dismissTooltip: typeof dismissTooltip,
+  +requestToDismissTooltip: typeof requestToDismissTooltip,
   +viewTooltip: typeof viewTooltip,
 |};
 type Props = ConnectedProps<{||}, StateProps, DispatchProps>;
@@ -88,7 +88,7 @@ class FlameGraph extends React.PureComponent<Props> {
       isCallNodeContextMenuVisible,
       scrollToSelectionGeneration,
       icons,
-      dismissTooltip,
+      requestToDismissTooltip,
       viewTooltip,
     } = this.props;
 
@@ -136,7 +136,7 @@ class FlameGraph extends React.PureComponent<Props> {
               onSelectionChange: this._onSelectedCallNodeChange,
               disableTooltips: isCallNodeContextMenuVisible,
               threadIndex,
-              dismissTooltip,
+              requestToDismissTooltip,
               viewTooltip,
             }}
           />
@@ -178,7 +178,7 @@ const options: ExplicitConnectOptions<{||}, StateProps, DispatchProps> = {
   },
   mapDispatchToProps: {
     changeSelectedCallNode,
-    dismissTooltip,
+    requestToDismissTooltip,
     viewTooltip,
   },
   component: FlameGraph,

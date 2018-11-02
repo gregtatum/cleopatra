@@ -7,7 +7,7 @@ import * as React from 'react';
 import classNames from 'classnames';
 import { timeCode } from '../../utils/time-code';
 import { withSize } from '../shared/WithSize';
-import { viewTooltip, dismissTooltip } from '../../actions/app';
+import { viewTooltip, requestToDismissTooltip } from '../../actions/app';
 import MarkerTooltipContents from '../shared/MarkerTooltipContents';
 import {
   styles,
@@ -78,7 +78,7 @@ export type StateProps = {|
 
 type DispatchProps = {|
   viewTooltip: typeof viewTooltip,
-  dismissTooltip: typeof dismissTooltip,
+  requestToDismissTooltip: typeof requestToDismissTooltip,
 |};
 
 type Props = ConnectedProps<OwnProps, StateProps, DispatchProps>;
@@ -148,7 +148,7 @@ class TimelineTracingMarkersImplementation extends React.PureComponent<
   }
 
   _onMouseMove = (event: SyntheticMouseEvent<>) => {
-    const { threadIndex, viewTooltip, dismissTooltip } = this.props;
+    const { threadIndex, viewTooltip, requestToDismissTooltip } = this.props;
     const hoveredMarkerIndex = this._hitTest(event);
     if (hoveredMarkerIndex !== null) {
       viewTooltip(event.pageX, event.pageY, {
@@ -157,7 +157,7 @@ class TimelineTracingMarkersImplementation extends React.PureComponent<
         tracingMarkerIndex: hoveredMarkerIndex,
       });
     } else if (this.state.hoveredMarkerIndex !== null) {
-      dismissTooltip();
+      requestToDismissTooltip();
     }
   };
 
@@ -405,7 +405,7 @@ const tracingOptions: ExplicitConnectOptions<
       overlayFills,
     };
   },
-  mapDispatchToProps: { viewTooltip, dismissTooltip },
+  mapDispatchToProps: { viewTooltip, requestToDismissTooltip },
   component: TimelineTracingMarkers,
 };
 

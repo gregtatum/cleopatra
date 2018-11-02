@@ -28,7 +28,10 @@ import type {
 } from '../../types/profile-derived';
 import type { CallTree } from '../../profile-logic/call-tree';
 import type { Viewport } from '../shared/chart/Viewport';
-import { typeof dismissTooltip, typeof viewTooltip } from '../../actions/app';
+import {
+  typeof requestToDismissTooltip,
+  typeof viewTooltip,
+} from '../../actions/app';
 
 export type OwnProps = {|
   +thread: Thread,
@@ -41,7 +44,7 @@ export type OwnProps = {|
   +onSelectionChange: (IndexIntoCallNodeTable | null) => void,
   +disableTooltips: boolean,
   +scrollToSelectionGeneration: number,
-  +dismissTooltip: dismissTooltip,
+  +requestToDismissTooltip: requestToDismissTooltip,
   +viewTooltip: viewTooltip,
   +threadIndex: ThreadIndex,
 |};
@@ -423,9 +426,9 @@ class FlameGraphCanvas extends React.PureComponent<Props> {
     y: CssPixels,
     hoveredItem: HoveredStackTiming | null
   ): void => {
-    const { dismissTooltip, viewTooltip, threadIndex } = this.props;
+    const { requestToDismissTooltip, viewTooltip, threadIndex } = this.props;
     if (hoveredItem === null) {
-      dismissTooltip();
+      requestToDismissTooltip();
     } else {
       const { depth, flameGraphTimingIndex } = hoveredItem;
       const { flameGraphTiming } = this.props;
