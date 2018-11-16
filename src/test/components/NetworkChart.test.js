@@ -20,6 +20,7 @@ import {
 } from '../fixtures/profiles/make-profile';
 import { getBoundingBox } from '../fixtures/utils';
 import mockRaf from '../fixtures/mocks/request-animation-frame';
+import { type NetworkPayload } from '../../types/markers';
 
 const NETWORK_MARKERS = Array(10)
   .fill()
@@ -55,10 +56,19 @@ function setupWithProfile(profile) {
   };
 }
 
-describe('NetworkChart', function() {
-  it('renders NetworkChart correctly', () => {
-    window.devicePixelRatio = 1;
+function setupWithPayload(payload: NetworkPayload) {
+  const profile = getProfileWithMarkers([['Network', 0, payload]]);
 
+  const { flushRafCalls, dispatch, networkChart } = setupWithProfile(profile);
+
+  dispatch(changeSelectedTab('network-chart'));
+  networkChart.update();
+  flushRafCalls();
+  return { networkChart };
+}
+
+describe('NetworkChart', function() {
+  it('matches the snapshot', () => {
     const profile = getProfileWithMarkers([...NETWORK_MARKERS]);
     const {
       flushRafCalls,
@@ -74,8 +84,84 @@ describe('NetworkChart', function() {
     const drawCalls = flushDrawLog();
     expect(networkChart).toMatchSnapshot();
     expect(drawCalls).toMatchSnapshot();
+  });
 
-    delete window.devicePixelRatio;
+  describe('NetworkChartRowBar', function() {
+    it('has some description of the width', () => {
+      const { networkChart } = setupWithPayload({
+        // Fill this in with real payload information, possibly with some additional
+        // logic to provide defaults in the helper function.
+        type: 'Network',
+        URI: '',
+        RedirectURI: '',
+        id: 10,
+        pri: 10,
+        count: 10,
+        dur: 20,
+        status: 'SOME_STATUS',
+        startTime: 10,
+        endTime: 20,
+        requestStart: 10,
+        responseStart: 15,
+        responseEnd: 20,
+        title: 'Load',
+        name: 'Name',
+      });
+
+      expect(
+        // I think this is how you get at the style, I didn't actually run this:
+        networkChart.find('.networkChartRowItemBarRequestQueue').prop('style')
+      ).toHaveProperty('width', '30%');
+      // Then repeat here for the other pbars.
+    });
+
+    it('has some description of the width', () => {
+      // ...
+      // Repeat until all the `if` branches are covered through `npm test-coverage`
+    });
+  });
+
+  describe('url shortening', function() {
+    function setupWithUrl(url: string) {
+      return setupWithPayload({
+        // Fill this in with real payload information, possibly with some additional
+        // logic to provide defaults in the helper function.
+        type: 'Network',
+        URI: url,
+        RedirectURI: '',
+        id: 10,
+        pri: 10,
+        count: 10,
+        dur: 20,
+        status: 'SOME_STATUS',
+        startTime: 10,
+        endTime: 20,
+        requestStart: 10,
+        responseStart: 15,
+        responseEnd: 20,
+        title: 'Load',
+        name: 'Name',
+      });
+    }
+
+    it('splits up a url by some strategy', function() {
+      const { networkChart } = setupWithUrl('http://mozilla.org/script.js');
+      expect(
+        // Find the URL shortening parts
+        networkChart
+          .find('.networkChartRowItemLabel span span')
+          .map(node => [node.prop('className'), node.text()])
+      ).toEqual([
+        // Then assert that it's broken up as expected
+        ['networkChartRowItemUriOptional', 'http://'],
+        ['networkChartRowItemUriRequired', 'mozilla.org'],
+        ['networkChartRowItemUriOptional', '/script.js'],
+      ]);
+    });
+
+    it('splits up a url by some strategy', function() {
+      // Repeat for all the different cases.
+    });
   });
 });
 
