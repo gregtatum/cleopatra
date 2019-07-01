@@ -26,6 +26,7 @@ import { assertExhaustiveCheck } from '../../utils/flow';
 import type { ConnectedProps } from '../../utils/connect';
 import type { UrlState, UrlSetupPhase } from '../../types/state';
 import type { Profile } from '../../types/profile';
+import type { DataSource } from '../../types/actions';
 
 type StateProps = {|
   +urlState: UrlState,
@@ -84,28 +85,39 @@ class UrlManager extends React.PureComponent<Props> {
       setupInitialUrlState,
       urlSetupDone,
     } = this.props;
-    let profile: Profile | null = null;
-    let error;
-
     startFetchingProfiles();
 
     try {
       // Process the raw url and fetch the profile.
       // $FlowFixMe Error introduced by upgrading to v0.96.0. See issue #1936.
-      profile = await getProfilesFromRawUrl(window.location);
-    } catch (err) {
-      error = err;
-    }
+      const results: {
+        profile: Profile,
+        dataSource: DataSource,
+      } = await getProfilesFromRawUrl(window.location);
 
-    if (profile) {
-      setupInitialUrlState(window.location, profile);
-    } else if (error) {
-      // Just silently finish the url setup and return to home.
+      // Manually coerce these into the proper type due to the FlowFixMe above.
+      const profile: Profile = results.profile;
+      const dataSource: DataSource = results.dataSource;
+      switch (dataSource) {
+        case 'from-addon':
+          // Comment on this case.
+          urlSetupDone();
+          break;
+        case 'from-file':
+        case 'local':
+        case 'public':
+        case 'from-url':
+        case 'compare':
+        case 'none':
+          // Comment on this case.
+          setupInitialUrlState(window.location, profile);
+          break;
+        default:
+          throw assertExhaustiveCheck(dataSource);
+      }
+    } catch (error) {
+      // Does this error get surfaced?
       urlSetupDone();
-    } else {
-      throw new Error(
-        'An unhandled case was reached during the initial processing of URLs'
-      );
     }
   }
 
