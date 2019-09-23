@@ -118,17 +118,37 @@ export type CallNodeDisplayData = $Exact<
   }>
 >;
 
-export type MarkerTiming = {
+export type StackTiming = {|
+  start: Milliseconds[],
+  end: Milliseconds[],
+  callNode: IndexIntoCallNodeTable[],
+  length: number,
+|};
+
+export type StackTimingByDepth = StackTiming[];
+
+export type MarkerTiming = {|
   // Start time in milliseconds.
   start: number[],
   // End time in milliseconds.
   end: number[],
-  index: MarkerIndex[],
+  markerIndex: MarkerIndex[],
   label: string[],
   name: string,
   length: number,
-};
+|};
+
 export type MarkerTimingRows = Array<MarkerTiming>;
+
+/**
+ * We want to combine both stack timing and marker-based UserTimings into a single
+ * stack chart. This type combines the two together. The individual rows can be refined
+ * with a call to:
+ *  `if (row.callNode) { ... }`
+ *  `if (row.markerIndex) { ... }`
+ */
+export type CombinedTiming = MarkerTiming | StackTiming;
+export type CombinedTimingRows = CombinedTiming[];
 
 export type JsTracerTiming = {
   // Start time in milliseconds.

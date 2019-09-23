@@ -29,6 +29,7 @@ type NeededThreadSelectors = {
   getThread: Selector<Thread>,
   getIsNetworkChartEmptyInFullRange: Selector<boolean>,
   getJsTracerTable: Selector<JsTracerTable | null>,
+  // Add the thread selector requirements here.
 };
 
 /**
@@ -37,6 +38,14 @@ type NeededThreadSelectors = {
 export function getComposedSelectorsPerThread(
   threadSelectors: NeededThreadSelectors
 ): * {
+  const getCombinedStackTimingByDepth: Selector<CombinedStackTiming> = createSelector(
+    threadSelectors.getUserTimingMarkerTimingRows,
+    threadSelectors.getStackTimingByDepth,
+    (markerTimingRows, stackTimingByDepth) => [
+      ...markerTimingRows,
+      ...stackTimingByDepth,
+    ]
+  );
   /**
    * Visible tabs are computed based on the current state of the profile. Some
    * effort is made to not show a tab when there is no data available for it or
@@ -68,5 +77,6 @@ export function getComposedSelectorsPerThread(
 
   return {
     getUsefulTabs,
+    getCombinedStackTimingByDepth,
   };
 }
