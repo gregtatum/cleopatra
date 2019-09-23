@@ -233,7 +233,7 @@ class MarkerChartCanvas extends React.PureComponent<Props, State> {
           x = Math.round(x * devicePixelRatio) / devicePixelRatio;
 
           const text = markerTiming.label[i];
-          const markerIndex = markerTiming.index[i];
+          const markerIndex = markerTiming.markerIndex[i];
 
           const isHighlighted =
             rightClickedMarker === markerIndex || hoveredItem === markerIndex;
@@ -352,7 +352,7 @@ class MarkerChartCanvas extends React.PureComponent<Props, State> {
       // Ensure that really small markers are hoverable with a minDuration.
       const end = Math.max(start + minDuration, markerTiming.end[i]);
       if (start < time && end > time) {
-        return markerTiming.index[i];
+        return markerTiming.markerIndex[i];
       }
     }
     return null;

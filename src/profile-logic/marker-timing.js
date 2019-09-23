@@ -89,7 +89,7 @@ export function getMarkerTiming(
         markerTimingsRow = {
           start: [],
           end: [],
-          index: [],
+          markerIndex: [],
           label: [],
           name: marker.name,
           length: 0,
@@ -104,7 +104,7 @@ export function getMarkerTiming(
         markerTimingsRow.start.push(marker.start);
         markerTimingsRow.end.push(marker.start + marker.dur);
         markerTimingsRow.label.push(computeMarkerLabel(marker.data));
-        markerTimingsRow.index.push(markerIndex);
+        markerTimingsRow.markerIndex.push(markerIndex);
         markerTimingsRow.length++;
         break;
       }

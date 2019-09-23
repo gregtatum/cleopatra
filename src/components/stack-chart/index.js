@@ -61,6 +61,7 @@ type StateProps = {|
   +selectedCallNodeIndex: IndexIntoCallNodeTable | null,
   +rightClickedCallNodeIndex: IndexIntoCallNodeTable | null,
   +scrollToSelectionGeneration: number,
+  getMarker: Function
 |};
 
 type DispatchProps = {|
@@ -140,6 +141,7 @@ class StackChartGraph extends React.PureComponent<Props> {
       categories,
       selectedCallNodeIndex,
       scrollToSelectionGeneration,
+      getMarker,
     } = this.props;
 
     const maxViewportHeight = maxStackDepth * STACK_FRAME_HEIGHT;
@@ -163,6 +165,7 @@ class StackChartGraph extends React.PureComponent<Props> {
             }}
           >
             <div className="stackChartContent">
+            {/* yooooooo */}
               <StackChartCanvas
                 viewportProps={{
                   previewSelection,
@@ -178,6 +181,7 @@ class StackChartGraph extends React.PureComponent<Props> {
                   interval,
                   thread,
                   stackTimingByDepth,
+                  getMarker,
                   // $FlowFixMe Error introduced by upgrading to v0.96.0. See issue #1936.
                   updatePreviewSelection,
                   rangeStart: timeRange.start,
@@ -223,6 +227,7 @@ export default explicitConnect<{||}, StateProps, DispatchProps>({
         state
       ),
       scrollToSelectionGeneration: getScrollToSelectionGeneration(state),
+      getMarker: selectedThreadSelectors.getMarkerGetter(state)
     };
   },
   mapDispatchToProps: {

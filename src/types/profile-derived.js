@@ -123,7 +123,7 @@ export type MarkerTiming = {
   start: number[],
   // End time in milliseconds.
   end: number[],
-  index: MarkerIndex[],
+  markerIndex: MarkerIndex[],
   label: string[],
   name: string,
   length: number,
