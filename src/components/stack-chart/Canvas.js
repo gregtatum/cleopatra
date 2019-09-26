@@ -27,6 +27,7 @@ import type { UserTimingMarkerPayload } from '../../types/markers';
 import type {
   CallNodeInfo,
   IndexIntoCallNodeTable,
+  CombinedTimingRows,
 } from '../../types/profile-derived';
 import type {
   Milliseconds,
@@ -35,7 +36,6 @@ import type {
   UnitIntervalOfProfileRange,
 } from '../../types/units';
 import type {
-  StackTimingByDepth,
   StackTimingDepth,
   IndexIntoStackTiming,
 } from '../../profile-logic/stack-timing';
@@ -47,7 +47,8 @@ type OwnProps = {|
   +interval: Milliseconds,
   +rangeStart: Milliseconds,
   +rangeEnd: Milliseconds,
-  +stackTimingByDepth: StackTimingByDepth,
+  // TODO - Rename this to `combinedTimingRows`
+  +stackTimingByDepth: CombinedTimingRows,
   +stackFrameHeight: CssPixels,
   +updatePreviewSelection: WrapFunctionInDispatch<
     typeof updatePreviewSelection
@@ -231,9 +232,6 @@ class StackChartCanvas extends React.PureComponent<Props> {
 
       let lastDrawnPixelX = 0;
       for (let i = 0; i < stackTiming.length; i++) {
-
-        // const isMarker = !stackTiming.callNode[i];
-
         // Only draw samples that are in bounds.
         if (
           stackTiming.end[i] > timeAtStart &&
@@ -301,9 +299,14 @@ class StackChartCanvas extends React.PureComponent<Props> {
           );
 
           // Look up information about this stack frame.
-          let funcIndex, funcNameIndex, text, categoryIndex, category, isSelected;
+          let funcIndex,
+            funcNameIndex,
+            text,
+            categoryIndex,
+            category,
+            isSelected;
           if (stackTiming.callNode) {
-            const callNodeIndex = stackTiming.callNode[i]
+            const callNodeIndex = stackTiming.callNode[i];
             funcIndex = callNodeTable.func[callNodeIndex];
             funcNameIndex = thread.funcTable.name[funcIndex];
             text = thread.stringTable.getString(funcNameIndex);
@@ -311,8 +314,9 @@ class StackChartCanvas extends React.PureComponent<Props> {
             category = categories[categoryIndex];
             isSelected = selectedCallNodeIndex === categoryIndex;
           } else {
-            const markerIndex = stackTiming.markerIndex[i]
-            const markerPayload = ((getMarker(markerIndex).data: any): UserTimingMarkerPayload);
+            const markerIndex = stackTiming.markerIndex[i];
+            const markerPayload = ((getMarker(markerIndex)
+              .data: any): UserTimingMarkerPayload);
             text = markerPayload.name;
             categoryIndex = 0;
             category = categories[categoryIndex];

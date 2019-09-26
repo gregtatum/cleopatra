@@ -35,6 +35,7 @@ import type { Thread, CategoryList } from '../../types/profile';
 import type {
   CallNodeInfo,
   IndexIntoCallNodeTable,
+  CombinedTimingRows,
 } from '../../types/profile-derived';
 import type {
   Milliseconds,
@@ -51,7 +52,7 @@ const STACK_FRAME_HEIGHT = 16;
 type StateProps = {|
   +thread: Thread,
   +maxStackDepth: number,
-  +stackTimingByDepth: StackTimingByDepth,
+  +stackTimingByDepth: CombinedTimingRows,
   +timeRange: { start: Milliseconds, end: Milliseconds },
   +interval: Milliseconds,
   +previewSelection: PreviewSelection,
@@ -61,7 +62,7 @@ type StateProps = {|
   +selectedCallNodeIndex: IndexIntoCallNodeTable | null,
   +rightClickedCallNodeIndex: IndexIntoCallNodeTable | null,
   +scrollToSelectionGeneration: number,
-  getMarker: Function
+  getMarker: Function,
 |};
 
 type DispatchProps = {|
@@ -132,6 +133,7 @@ class StackChartGraph extends React.PureComponent<Props> {
     const {
       thread,
       maxStackDepth,
+      // TODO - Rename this to `combinedTimingRows`
       stackTimingByDepth,
       timeRange,
       interval,
@@ -165,7 +167,6 @@ class StackChartGraph extends React.PureComponent<Props> {
             }}
           >
             <div className="stackChartContent">
-            {/* yooooooo */}
               <StackChartCanvas
                 viewportProps={{
                   previewSelection,
@@ -206,7 +207,7 @@ class StackChartGraph extends React.PureComponent<Props> {
 
 export default explicitConnect<{||}, StateProps, DispatchProps>({
   mapStateToProps: state => {
-    const stackTimingByDepth = selectedThreadSelectors.getStackTimingByDepth(
+    const stackTimingByDepth = selectedThreadSelectors.getCombinedTimingRows(
       state
     );
 
@@ -227,7 +228,7 @@ export default explicitConnect<{||}, StateProps, DispatchProps>({
         state
       ),
       scrollToSelectionGeneration: getScrollToSelectionGeneration(state),
-      getMarker: selectedThreadSelectors.getMarkerGetter(state)
+      getMarker: selectedThreadSelectors.getMarkerGetter(state),
     };
   },
   mapDispatchToProps: {

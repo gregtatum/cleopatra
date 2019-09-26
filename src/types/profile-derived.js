@@ -13,6 +13,7 @@ import type {
   IndexIntoCategoryList,
   CounterIndex,
 } from './profile';
+import type { StackTiming } from '../profile-logic/stack-timing';
 export type IndexIntoCallNodeTable = number;
 
 /**
@@ -118,7 +119,7 @@ export type CallNodeDisplayData = $Exact<
   }>
 >;
 
-export type MarkerTiming = {
+export type MarkerTiming = {|
   // Start time in milliseconds.
   start: number[],
   // End time in milliseconds.
@@ -127,8 +128,10 @@ export type MarkerTiming = {
   label: string[],
   name: string,
   length: number,
-};
+|};
 export type MarkerTimingRows = Array<MarkerTiming>;
+
+export type CombinedTimingRows = Array<MarkerTiming | StackTiming>;
 
 export type JsTracerTiming = {
   // Start time in milliseconds.

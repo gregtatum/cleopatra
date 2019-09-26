@@ -103,8 +103,6 @@ export function getMarkerSelectorsPerThread(threadSelectors: *) {
       )
   );
 
-
-
   /**
    * This selector returns a function that's used to retrieve a marker object
    * from its MarkerIndex:
@@ -277,12 +275,11 @@ export function getMarkerSelectorsPerThread(threadSelectors: *) {
     filterMarkerIndexesCreator(MarkerData.isNetworkMarker)
   );
 
-  const getUserTimingMarkersIndexes: Selector<MarkerIndex[]> = createSelector(
+  const getUserTimingMarkerIndexes: Selector<MarkerIndex[]> = createSelector(
     getMarkerGetter,
     getCommittedRangeFilteredMarkerIndexes,
     filterMarkerIndexesCreator(MarkerData.isUserTimingMarker)
   );
-
 
   /**
    * This filters network markers using a search string.
@@ -365,6 +362,16 @@ export function getMarkerSelectorsPerThread(threadSelectors: *) {
   );
 
   /**
+   * Creates the layout for the UserTiming markers so they can be displayed
+   * with the stack chart.
+   */
+  const getUserTimingMarkerTiming: Selector<MarkerTimingRows> = createSelector(
+    getMarkerGetter,
+    getUserTimingMarkerIndexes,
+    MarkerTiming.getMarkerTiming
+  );
+
+  /**
    * This groups screenshot markers by their window ID.
    */
   const getRangeFilteredScreenshotsById: Selector<
@@ -442,6 +449,7 @@ export function getMarkerSelectorsPerThread(threadSelectors: *) {
     getRightClickedMarkerIndex,
     getRightClickedMarker,
     getIsNetworkChartEmptyInFullRange,
-    getUserTimingMarkersIndexes
+    getUserTimingMarkerIndexes,
+    getUserTimingMarkerTiming,
   };
 }
