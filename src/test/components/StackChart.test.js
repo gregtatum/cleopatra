@@ -38,9 +38,13 @@ import {
   removeRootOverlayElement,
   findFillTextPositionFromDrawLog,
 } from '../fixtures/utils';
-import { getProfileFromTextSamples } from '../fixtures/profiles/processed-profile';
+import {
+  getProfileFromTextSamples,
+  getProfileWithMarkers,
+} from '../fixtures/profiles/processed-profile';
 
 import type { Profile } from '../../types/profile';
+import type { UserTimingMarkerPayload } from '../../types/markers';
 import type { CssPixels } from '../../types/units';
 
 jest.useFakeTimers();
@@ -199,6 +203,39 @@ describe('StackChart', function() {
     });
   });
 });
+
+function getUserTiming(name: string, startTime: number, duration: number) {
+  return [
+    'UserTiming',
+    startTime,
+    ({
+      type: 'UserTiming',
+      startTime,
+      endTime: startTime + duration,
+      name,
+      entryType: 'measure',
+    }: UserTimingMarkerPayload),
+  ];
+}
+
+function setupUserTimings() {
+  // Approximately generate this type of graph with the following user timings.
+  //
+  // [renderFunction---------------------]
+  //   [componentA---------------------]
+  //     [componentB----]  [componentD]
+  //      [componentC-]
+
+  const profile = getProfileWithMarkers([
+    getUserTiming('renderFunction', 0, 10),
+    getUserTiming('componentA', 1, 8),
+    getUserTiming('componentB', 2, 4),
+    getUserTiming('componentC', 3, 1),
+    getUserTiming('componentD', 7, 1),
+  ]);
+
+  return setup(profile);
+}
 
 /**
  * Currently the stack chart only accepts samples, but in the future it will accept
