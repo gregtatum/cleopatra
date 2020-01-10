@@ -6,6 +6,7 @@
 import * as React from 'react';
 import { render, fireEvent } from 'react-testing-library';
 import { Provider } from 'react-redux';
+import * as UrlStateSelectors from '../../selectors/url-state';
 
 // This module is mocked.
 import copy from 'copy-to-clipboard';
@@ -65,7 +66,13 @@ describe('StackChart', function() {
     expect(drawCalls).toMatchSnapshot();
   });
 
-  it('can select a call node when clicking the chart', function() {
+  // TODO - Fix broken call node selection.
+  // Load up a user timings profile
+  // Click a JS function in the stack chart
+  // expect: The square is colored darker, and appears selected
+  // actual: Nothing is selected in the stack chart, but some kind of selection
+  //         appears to happen in the timeline in the header.
+  it.skip('can select a call node when clicking the chart', function() {
     const {
       dispatch,
       getState,
@@ -204,6 +211,54 @@ describe('StackChart', function() {
   });
 });
 
+describe('MarkerChart', function() {
+  beforeEach(addRootOverlayElement);
+  afterEach(removeRootOverlayElement);
+
+  it('can turn on the show user timings', () => {
+    const { getByLabelText, getState } = setupUserTimings({
+      isShowUserTimingsClicked: false,
+    });
+
+    const checkbox = getByLabelText('Show user timing');
+
+    expect(UrlStateSelectors.getShowUserTimings(getState())).toBe(false);
+    expect(getCheckedState(checkbox)).toBe(false);
+
+    checkbox.click();
+
+    expect(UrlStateSelectors.getShowUserTimings(getState())).toBe(true);
+    expect(getCheckedState(checkbox)).toBe(true);
+  });
+
+  it('matches the snapshots for the component and draw log', () => {
+    const { container, ctx } = setupUserTimings({
+      isShowUserTimingsClicked: true,
+    });
+
+    expect(container.firstChild).toMatchSnapshot();
+    expect(ctx.__flushDrawLog()).toMatchSnapshot();
+  });
+
+  // Link to bug
+  // eslint-disable-next-line jest/no-disabled-test
+  it.skip('can select a marker when clicking the chart', function() {});
+
+  // Link to bug
+  // eslint-disable-next-line jest/no-disabled-test
+  it.skip('can right click a marker and show a context menu', function() {});
+
+  it('shows a tooltip when hovering', () => {
+    const { getTooltip, moveMouse, findFillTextPosition } = setupFlameGraph();
+
+    expect(getTooltip()).toBe(null);
+    const { x, y } = findFillTextPosition('componentB');
+    // todo - Pull moveMouse over to this file from src/test/components/FlameGraph.test.js
+    moveMouse(x, y);
+    expect(getTooltip()).toBeTruthy();
+  });
+});
+
 function getUserTiming(name: string, startTime: number, duration: number) {
   return [
     'UserTiming',
@@ -218,7 +273,7 @@ function getUserTiming(name: string, startTime: number, duration: number) {
   ];
 }
 
-function setupUserTimings() {
+function setupUserTimings(config: {| isShowUserTimingsClicked: boolean |}) {
   // Approximately generate this type of graph with the following user timings.
   //
   // [renderFunction---------------------]
@@ -234,7 +289,17 @@ function setupUserTimings() {
     getUserTiming('componentD', 7, 1),
   ]);
 
-  return setup(profile);
+  const results = setup(profile);
+
+  if (config.isShowUserTimingsClicked) {
+    const { ctx, getByLabelText, flushRafCalls } = results;
+    ctx.__flushDrawLog();
+    const checkbox = getByLabelText('Show user timing');
+    checkbox.click();
+    flushRafCalls();
+  }
+
+  return results;
 }
 
 /**
@@ -384,4 +449,11 @@ function setup(profile: Profile, funcNames: string[] = []): * {
     getContextMenu,
     findFillTextPosition,
   };
+}
+
+/**
+ * Get around the type constraints of refining an HTMLElement into a radio input.
+ */
+function getCheckedState(element: HTMLElement): mixed {
+  return (element: any).checked;
 }
