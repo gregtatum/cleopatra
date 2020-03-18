@@ -43,7 +43,30 @@ export type ThreadViewOptions = {|
   +rightClickedMarker: MarkerIndex | null,
 |};
 
-export type ProfileViewState = {|
+/**
+ * FIXME: split those for now. But probably will we can merge them
+ */
+export type FullProfileViewState = {
+  +globalTracks: GlobalTrack[],
+  +localTracksByPid: Map<Pid, LocalTrack[]>,
+  +activeTabHiddenGlobalTracksGetter: () => Set<TrackIndex>,
+  +activeTabHiddenLocalTracksByPidGetter: () => Map<Pid, Set<TrackIndex>>,
+};
+
+/**
+ *
+ */
+export type ActiveTabProfileViewState = {
+  +globalTracks: GlobalTrack[],
+  +localTracksByPid: Map<Pid, LocalTrack[]>,
+  +activeTabHiddenGlobalTracksGetter: () => Set<TrackIndex>,
+  +activeTabHiddenLocalTracksByPidGetter: () => Map<Pid, Set<TrackIndex>>,
+};
+
+/**
+ *
+ */
+export type ProfileViewState = {
   +viewOptions: {|
     perThread: ThreadViewOptions[],
     symbolicationStatus: SymbolicationStatus,
@@ -54,12 +77,8 @@ export type ProfileViewState = {|
     rootRange: StartEndRange,
     rightClickedTrack: TrackReference | null,
   |},
-  +globalTracks: GlobalTrack[],
-  +localTracksByPid: Map<Pid, LocalTrack[]>,
-  +activeTabHiddenGlobalTracksGetter: () => Set<TrackIndex>,
-  +activeTabHiddenLocalTracksByPidGetter: () => Map<Pid, Set<TrackIndex>>,
   +profile: Profile | null,
-|};
+} & (FullProfileViewState | ActiveTabProfileViewState);
 
 export type AppViewState =
   | {| +phase: 'ROUTE_NOT_FOUND' |}
@@ -169,6 +188,27 @@ export type ZippedProfilesState = {
   expandedZipFileIndexes: Array<IndexIntoZipFileTable | null>,
 };
 
+export type ProfileSpecificUrlState = {|
+  selectedThread: ThreadIndex | null,
+  globalTrackOrder: TrackIndex[],
+  hiddenGlobalTracks: Set<TrackIndex>,
+  hiddenLocalTracksByPid: Map<Pid, Set<TrackIndex>>,
+  localTrackOrderByPid: Map<Pid, TrackIndex[]>,
+  implementation: ImplementationFilter,
+  lastSelectedCallTreeSummaryStrategy: CallTreeSummaryStrategy,
+  invertCallstack: boolean,
+  showUserTimings: boolean,
+  showJsTracerSummary: boolean,
+  committedRanges: StartEndRange[],
+  callTreeSearchString: string,
+  markersSearchString: string,
+  networkSearchString: string,
+  transforms: TransformStacksPerThread,
+  timelineType: TimelineType,
+  legacyThreadOrder: ThreadIndex[] | null,
+  legacyHiddenThreads: ThreadIndex[] | null,
+|};
+
 export type UrlState = {|
   +dataSource: DataSource,
   // This is used for the "public" dataSource".
@@ -181,26 +221,7 @@ export type UrlState = {|
   +pathInZipFile: string | null,
   +profileName: string,
   +showTabOnly: BrowsingContextID | null,
-  +profileSpecific: {|
-    selectedThread: ThreadIndex | null,
-    globalTrackOrder: TrackIndex[],
-    hiddenGlobalTracks: Set<TrackIndex>,
-    hiddenLocalTracksByPid: Map<Pid, Set<TrackIndex>>,
-    localTrackOrderByPid: Map<Pid, TrackIndex[]>,
-    implementation: ImplementationFilter,
-    lastSelectedCallTreeSummaryStrategy: CallTreeSummaryStrategy,
-    invertCallstack: boolean,
-    showUserTimings: boolean,
-    showJsTracerSummary: boolean,
-    committedRanges: StartEndRange[],
-    callTreeSearchString: string,
-    markersSearchString: string,
-    networkSearchString: string,
-    transforms: TransformStacksPerThread,
-    timelineType: TimelineType,
-    legacyThreadOrder: ThreadIndex[] | null,
-    legacyHiddenThreads: ThreadIndex[] | null,
-  |},
+  +profileSpecific: ProfileSpecificUrlState,
 |};
 
 export type IconState = Set<string>;
