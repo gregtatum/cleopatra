@@ -113,6 +113,30 @@ const localTracksByPid: Reducer<Map<Pid, LocalTrack[]>> = (
 };
 
 /**
+ * TODO: write
+ */
+const activeTabGlobalTracks: Reducer<GlobalTrack[]> = (state = [], action) => {
+  switch (action.type) {
+    case 'VIEW_ACTIVE_TAB_PROFILE':
+      return action.globalTracks;
+    default:
+      return state;
+  }
+};
+
+/**
+ * TODO: write
+ */
+const resourceTracks: Reducer<LocalTrack[]> = (state = [], action) => {
+  switch (action.type) {
+    case 'VIEW_ACTIVE_TAB_PROFILE':
+      return action.resourceTracks;
+    default:
+      return state;
+  }
+};
+
+/**
  * This information is stored, rather than derived via selectors, since the coalesced
  * function update would force it to be recomputed on every symbolication update
  * pass. It is valid for the lifetime of the profile.
@@ -583,11 +607,17 @@ const profileViewReducer: Reducer<ProfileViewState> = wrapReducerInResetter(
       rootRange,
       rightClickedTrack,
     }),
-    globalTracks,
-    localTracksByPid,
-    activeTabHiddenGlobalTracksGetter,
-    activeTabHiddenLocalTracksByPidGetter,
     profile,
+    fullProfile: combineReducers({
+      globalTracks,
+      localTracksByPid,
+      activeTabHiddenGlobalTracksGetter,
+      activeTabHiddenLocalTracksByPidGetter,
+    }),
+    activeTabProfile: combineReducers({
+      globalTracks: activeTabGlobalTracks,
+      resourceTracks,
+    }),
   })
 );
 
