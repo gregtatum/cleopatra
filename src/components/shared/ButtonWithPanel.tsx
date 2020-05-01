@@ -1,8 +1,8 @@
+import { Class } from 'utility-types';
+
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
-// @flow
 
 import * as React from 'react';
 import classNames from 'classnames';
@@ -10,13 +10,13 @@ import classNames from 'classnames';
 require('./ButtonWithPanel.css');
 
 type PanelProps = {
-  onOpen?: () => mixed,
-  onClose?: () => mixed,
+  onOpen?: () => unknown,
+  onClose?: () => unknown,
 };
 
 interface Panel {
-  open(): mixed;
-  close(): mixed;
+  open(): unknown;
+  close(): unknown;
 }
 
 /**
@@ -26,7 +26,7 @@ interface Panel {
 type Props = {
   className: string,
   label: string,
-  panel: React.Element<
+  panel: React.ReactElement<
     Class<Panel & React.Component<$Subtype<PanelProps>, any>>
   >,
   open?: boolean,
@@ -37,9 +37,9 @@ type Props = {
   buttonClassName?: string,
 };
 
-type State = {|
+type State = {
   open: boolean,
-|};
+};
 
 class ButtonWithPanel extends React.PureComponent<Props, State> {
   _panel: Panel | null = null;

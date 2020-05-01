@@ -2,8 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
-
 import memoize from 'memoize-immutable';
 import MixedTupleMap from 'mixedtuplemap';
 import {
@@ -12,7 +10,7 @@ import {
   getEmptyBalancedNativeAllocationsTable,
 } from './data-structures';
 
-import type {
+import {
   Profile,
   Thread,
   SamplesTable,
@@ -37,7 +35,7 @@ import type {
   IndexIntoFrameTable,
   PageList,
 } from '../types/profile';
-import type {
+import {
   CallNodeInfo,
   CallNodeTable,
   CallNodePath,
@@ -48,15 +46,15 @@ import type {
 } from '../types/profile-derived';
 import { assertExhaustiveCheck } from '../utils/flow';
 
-import type { Milliseconds, StartEndRange } from '../types/units';
+import { Milliseconds, StartEndRange } from '../types/units';
 import { timeCode } from '../utils/time-code';
 import { hashPath } from '../utils/path';
-import type {
+import {
   ImplementationFilter,
   CallTreeSummaryStrategy,
 } from '../types/actions';
 import bisection from 'bisection';
-import type { UniqueStringArray } from '../utils/unique-string-array';
+import { UniqueStringArray } from '../utils/unique-string-array';
 
 /**
  * Various helpers for dealing with the profile as a data structure.
@@ -176,7 +174,7 @@ export function getCallNodeInfo(
 export function getSampleIndexToCallNodeIndex(
   stacks: Array<IndexIntoStackTable | null>,
   stackIndexToCallNodeIndex: {
-    [key: IndexIntoStackTable]: IndexIntoCallNodeTable,
+    [key: number]: IndexIntoCallNodeTable,
   }
 ): Array<IndexIntoCallNodeTable | null> {
   return stacks.map(stack => {
@@ -233,11 +231,9 @@ export function getSamplesSelectedStates(
   ): SelectedState {
     let callNodeIndex = callNode;
     if (callNodeIndex === null) {
-      return activeTabFilteredCallNode === null
-        ? // This sample was not part of the active tab.
-          'FILTERED_OUT_BY_ACTIVE_TAB'
-        : // This sample was filtered out in the transform pipeline.
-          'FILTERED_OUT_BY_TRANSFORM';
+      return activeTabFilteredCallNode === null // This sample was not part of the active tab.
+        ? 'FILTERED_OUT_BY_ACTIVE_TAB' // This sample was filtered out in the transform pipeline.
+        : 'FILTERED_OUT_BY_TRANSFORM';
     }
 
     // When there's no selected call node, we don't want to shadow everything
@@ -288,6 +284,7 @@ export function getSamplesSelectedStates(
 
     // This code is unreachable, but Flow doesn't know that and thinks this
     // function could return undefined. So throw an error.
+
     /* eslint-disable no-unreachable */
     throw new Error('unreachable');
     /* eslint-enable no-unreachable */
@@ -321,34 +318,36 @@ export function getLeafFuncIndex(path: CallNodePath): IndexIntoFuncTable {
 
 export type JsImplementation = 'interpreter' | 'ion' | 'baseline' | 'unknown';
 export type StackImplementation = 'native' | JsImplementation;
-export type BreakdownByImplementation = { [StackImplementation]: Milliseconds };
-export type OneCategoryBreakdown = {|
+export type BreakdownByImplementation = {
+  [key: string]: Milliseconds,
+};
+export type OneCategoryBreakdown = {
   entireCategoryValue: Milliseconds,
   subcategoryBreakdown: Milliseconds[], // { [IndexIntoSubcategoryList]: Milliseconds }
-|};
+};
 export type BreakdownByCategory = OneCategoryBreakdown[]; // { [IndexIntoCategoryList]: OneCategoryBreakdown }
-type ItemTimings = {|
-  selfTime: {|
+type ItemTimings = {
+  selfTime: {
     // time spent excluding children
     value: Milliseconds,
     breakdownByImplementation: BreakdownByImplementation | null,
     breakdownByCategory: BreakdownByCategory | null,
-  |},
-  totalTime: {|
+  },
+  totalTime: {
     // time spent including children
     value: Milliseconds,
     breakdownByImplementation: BreakdownByImplementation | null,
     breakdownByCategory: BreakdownByCategory | null,
-  |},
-|};
+  },
+};
 
-export type TimingsForPath = {|
+export type TimingsForPath = {
   // timings for this path
   forPath: ItemTimings,
   // timings for this func across the tree
   forFunc: ItemTimings,
   rootTime: Milliseconds, // time for all the samples in the current tree
-|};
+};
 
 /**
  * This function Returns the JS implementation information for a specific stack.
@@ -817,7 +816,7 @@ export function toValidImplementationFilter(
 }
 
 export function toValidCallTreeSummaryStrategy(
-  strategy: mixed
+  strategy: unknown
 ): CallTreeSummaryStrategy {
   switch (strategy) {
     case 'timing':
@@ -884,7 +883,7 @@ export function filterThreadByImplementation(
 
 function _filterThreadByFunc(
   thread: Thread,
-  filter: IndexIntoFuncTable => boolean,
+  filter: (arg0: IndexIntoFuncTable) => boolean,
   defaultCategory: IndexIntoCallNodeTable
 ): Thread {
   return timeCode('filterThread', () => {
@@ -1622,7 +1621,7 @@ export function invertCallstack(
 export function updateThreadStacks(
   thread: Thread,
   newStackTable: StackTable,
-  convertStack: (IndexIntoStackTable | null) => IndexIntoStackTable | null
+  convertStack: (arg0: IndexIntoStackTable | null) => IndexIntoStackTable | null
 ): Thread {
   const { jsAllocations, nativeAllocations, samples } = thread;
 
@@ -1663,7 +1662,7 @@ export function getMapStackUpdater(
     null | IndexIntoStackTable,
     null | IndexIntoStackTable
   >
-): (IndexIntoStackTable | null) => IndexIntoStackTable | null {
+): (arg0: IndexIntoStackTable | null) => IndexIntoStackTable | null {
   return (oldStack: IndexIntoStackTable | null) => {
     if (oldStack === null) {
       return null;
@@ -1878,7 +1877,7 @@ export function getFuncNamesAndOriginsForPath(
 export function getTreeOrderComparator(
   callNodeTable: CallNodeTable,
   sampleCallNodes: Array<IndexIntoCallNodeTable | null>
-): (IndexIntoSamplesTable, IndexIntoSamplesTable) => number {
+): (arg0: IndexIntoSamplesTable, arg1: IndexIntoSamplesTable) => number {
   /**
    * Determine the ordering of two non-null call nodes.
    */

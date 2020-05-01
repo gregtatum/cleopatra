@@ -26,7 +26,9 @@ import { GECKO_PROFILE_VERSION } from '../app-logic/constants';
  * Some of the code below is basically a snapshot of the processing code as
  * it was before the versioning scheme was introduced.
  */
-export function isOldCleopatraFormat(profile: Object): boolean {
+export function isOldCleopatraFormat(profile: {
+  [name: string]: any,
+}): boolean {
   return (
     'format' in profile &&
     profile.format === 'profileJSONWithSymbolicationTable,1'
@@ -35,13 +37,13 @@ export function isOldCleopatraFormat(profile: Object): boolean {
 
 type OldCleopatraMarker = {
   name: string,
-  data: Object | null | undefined,
+  data: { [name: string]: any } | null | undefined,
   time: number,
 };
 
 type OldCleopatraSample = {
   frames: number[],
-  extraInfo: Object,
+  extraInfo: { [name: string]: any },
 };
 
 type OldCleopatraProfileThread = {
@@ -60,7 +62,7 @@ type OldCleopatraProfileJSON =
 
 type OldCleopatraProfile = {
   format: 'profileJSONWithSymbolicationTable,1',
-  meta: Object,
+  meta: { [name: string]: any },
   profileJSON: OldCleopatraProfileJSON,
   symbolicationTable: {
     [symbolIndex: string]: string,
@@ -382,7 +384,7 @@ function _extractThreadList(
  */
 export function convertOldCleopatraProfile(
   profile: OldCleopatraProfile
-): Object {
+): { [name: string]: any } {
   const { meta, profileJSON } = profile;
 
   const threads = _extractThreadList(profileJSON);

@@ -2,49 +2,40 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
 
-import * as React from 'react';
-import { withSize } from '../shared/WithSize';
-import explicitConnect from '../../utils/connect';
-import { formatBytes } from '../../utils/format-numbers';
-import {
-  getCommittedRange,
-  getCounterSelectors,
-  getProfileInterval,
-} from '../../selectors/profile';
-import { getThreadSelectors } from '../../selectors/per-thread';
-import { ORANGE_50 } from 'photon-colors';
-import Tooltip from '../tooltip/Tooltip';
-import EmptyThreadIndicator from './EmptyThreadIndicator';
-import bisection from 'bisection';
 
-import type {
-  CounterIndex,
-  Counter,
-  Thread,
-  ThreadIndex,
-} from '../../types/profile';
-import type { AccumulatedCounterSamples } from '../../types/profile-derived';
-import type { Milliseconds, CssPixels, StartEndRange } from '../../types/units';
-import type { SizeProps } from '../shared/WithSize';
-import type { ConnectedProps } from '../../utils/connect';
+import * as React from "react";
+import { withSize , SizeProps } from "../shared/WithSize";
+import explicitConnect, { ConnectedProps } from "../../utils/connect";
+import { formatBytes } from "../../utils/format-numbers";
+import { getCommittedRange, getCounterSelectors, getProfileInterval } from "../../selectors/profile";
+import { getThreadSelectors } from "../../selectors/per-thread";
+import { ORANGE_50 } from "photon-colors";
+import Tooltip from "../tooltip/Tooltip";
+import EmptyThreadIndicator from "./EmptyThreadIndicator";
+import bisection from "bisection";
 
-import './TrackMemory.css';
+import { CounterIndex, Counter, Thread, ThreadIndex } from "../../types/profile";
+import { AccumulatedCounterSamples } from "../../types/profile-derived";
+import { Milliseconds, CssPixels, StartEndRange } from "../../types/units";
+
+
+
+import "./TrackMemory.css";
 
 /**
  * When adding properties to these props, please consider the comment above the component.
  */
-type CanvasProps = {|
-  +rangeStart: Milliseconds,
-  +rangeEnd: Milliseconds,
-  +counter: Counter,
-  +accumulatedSamples: AccumulatedCounterSamples[],
-  +interval: Milliseconds,
-  +width: CssPixels,
-  +height: CssPixels,
-  +lineWidth: CssPixels,
-|};
+type CanvasProps = {
+  readonly rangeStart: Milliseconds;
+  readonly rangeEnd: Milliseconds;
+  readonly counter: Counter;
+  readonly accumulatedSamples: AccumulatedCounterSamples[];
+  readonly interval: Milliseconds;
+  readonly width: CssPixels;
+  readonly height: CssPixels;
+  readonly lineWidth: CssPixels;
+};
 
 /**
  * This component controls the rendering of the canvas. Every render call through
@@ -52,6 +43,7 @@ type CanvasProps = {|
  * in the props that are needed for the canvas draw call.
  */
 class TrackMemoryCanvas extends React.PureComponent<CanvasProps> {
+
   _canvas: null | HTMLCanvasElement = null;
   _requestedAnimationFrame: boolean = false;
 
@@ -64,7 +56,7 @@ class TrackMemoryCanvas extends React.PureComponent<CanvasProps> {
       width,
       lineWidth,
       interval,
-      accumulatedSamples,
+      accumulatedSamples
     } = this.props;
     if (width === 0) {
       // This is attempting to draw before the canvas was laid out.
@@ -105,7 +97,11 @@ class TrackMemoryCanvas extends React.PureComponent<CanvasProps> {
       // malloc counter. Print an error and bail out early.
       throw new Error('No accumulated sample found for memory counter');
     }
-    const { minCount, countRange, accumulatedCounts } = accumulatedSamples[0];
+    const {
+      minCount,
+      countRange,
+      accumulatedCounts
+    } = accumulatedSamples[0];
 
     {
       // Draw the chart.
@@ -121,14 +117,11 @@ class TrackMemoryCanvas extends React.PureComponent<CanvasProps> {
       for (let i = 0; i < samples.length; i++) {
         // Create a path for the top of the chart. This is the line that will have
         // a stroke applied to it.
-        x = (deviceWidth * (samples.time[i] - rangeStart)) / rangeLength;
+        x = deviceWidth * (samples.time[i] - rangeStart) / rangeLength;
         // Add on half the stroke's line width so that it won't be cut off the edge
         // of the graph.
         const unitGraphCount = (accumulatedCounts[i] - minCount) / countRange;
-        y =
-          innerDeviceHeight -
-          innerDeviceHeight * unitGraphCount +
-          deviceLineHalfWidth;
+        y = innerDeviceHeight - innerDeviceHeight * unitGraphCount + deviceLineHalfWidth;
         if (i === 0) {
           // This is the first iteration, only move the line.
           ctx.moveTo(x, y);
@@ -146,10 +139,7 @@ class TrackMemoryCanvas extends React.PureComponent<CanvasProps> {
       // After doing the stroke, continue the path to complete the fill to the bottom
       // of the canvas.
       ctx.lineTo(x + interval, deviceHeight);
-      ctx.lineTo(
-        (deviceWidth * (samples.time[0] - rangeStart)) / rangeLength + interval,
-        deviceHeight
-      );
+      ctx.lineTo(deviceWidth * (samples.time[0] - rangeStart) / rangeLength + interval, deviceHeight);
       ctx.fill();
     }
   }
@@ -174,76 +164,82 @@ class TrackMemoryCanvas extends React.PureComponent<CanvasProps> {
   render() {
     this._scheduleDraw();
 
-    return (
-      <canvas className="timelineTrackMemoryCanvas" ref={this._takeCanvasRef} />
-    );
+    return <canvas className="timelineTrackMemoryCanvas" ref={this._takeCanvasRef} />;
   }
 }
 
-type OwnProps = {|
-  +counterIndex: CounterIndex,
-  +lineWidth: CssPixels,
-  +graphHeight: CssPixels,
-|};
+type OwnProps = {
+  readonly counterIndex: CounterIndex;
+  readonly lineWidth: CssPixels;
+  readonly graphHeight: CssPixels;
+};
 
-type StateProps = {|
-  +threadIndex: ThreadIndex,
-  +rangeStart: Milliseconds,
-  +rangeEnd: Milliseconds,
-  +counter: Counter,
-  +accumulatedSamples: AccumulatedCounterSamples[],
-  +interval: Milliseconds,
-  +filteredThread: Thread,
-  +unfilteredSamplesRange: StartEndRange | null,
-|};
+type StateProps = {
+  readonly threadIndex: ThreadIndex;
+  readonly rangeStart: Milliseconds;
+  readonly rangeEnd: Milliseconds;
+  readonly counter: Counter;
+  readonly accumulatedSamples: AccumulatedCounterSamples[];
+  readonly interval: Milliseconds;
+  readonly filteredThread: Thread;
+  readonly unfilteredSamplesRange: StartEndRange | null;
+};
 
-type DispatchProps = {||};
+type DispatchProps = {};
 
-type Props = {|
-  ...SizeProps,
-  ...ConnectedProps<OwnProps, StateProps, DispatchProps>,
-|};
+type Props = SizeProps & ConnectedProps<OwnProps, StateProps, DispatchProps>;
 
-type State = {|
-  hoveredCounter: null | number,
-  mouseX: CssPixels,
-  mouseY: CssPixels,
-|};
+type State = {
+  hoveredCounter: null | number;
+  mouseX: CssPixels;
+  mouseY: CssPixels;
+};
 
 /**
  * The memory track graph takes memory information from counters, and renders it as a
  * graph in the timeline.
  */
 class TrackMemoryGraphImpl extends React.PureComponent<Props, State> {
+
   state = {
     hoveredCounter: null,
     mouseX: 0,
-    mouseY: 0,
+    mouseY: 0
   };
 
   _onMouseLeave = () => {
     this.setState({ hoveredCounter: null });
   };
 
-  _onMouseMove = (event: SyntheticMouseEvent<HTMLDivElement>) => {
-    const { pageX: mouseX, pageY: mouseY } = event;
+  _onMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    const {
+      pageX: mouseX,
+      pageY: mouseY
+    } = event;
     // Get the offset from here, and apply it to the time lookup.
-    const { left } = event.currentTarget.getBoundingClientRect();
-    const { width, rangeStart, rangeEnd, counter, interval } = this.props;
+    const {
+      left
+    } = event.currentTarget.getBoundingClientRect();
+    const {
+      width,
+      rangeStart,
+      rangeEnd,
+      counter,
+      interval
+    } = this.props;
     const rangeLength = rangeEnd - rangeStart;
-    const timeAtMouse = rangeStart + ((mouseX - left) / width) * rangeLength;
+    const timeAtMouse = rangeStart + (mouseX - left) / width * rangeLength;
 
     if (counter.sampleGroups.length === 0) {
       // Gecko failed to capture samples for some reason and it shouldn't happen for
       // malloc counter. Print an error and bail out early.
       throw new Error('No sample group found for memory counter');
     }
-    const { samples } = counter.sampleGroups[0];
+    const {
+      samples
+    } = counter.sampleGroups[0];
 
-    if (
-      timeAtMouse < samples.time[0] ||
-      timeAtMouse > samples.time[samples.length - 1] + interval
-    ) {
+    if (timeAtMouse < samples.time[0] || timeAtMouse > samples.time[samples.length - 1] + interval) {
       // We are outside the range of the samples, do not display hover information.
       this.setState({ hoveredCounter: null });
     } else {
@@ -258,12 +254,12 @@ class TrackMemoryGraphImpl extends React.PureComponent<Props, State> {
       this.setState({
         mouseX,
         mouseY,
-        hoveredCounter,
+        hoveredCounter
       });
     }
   };
 
-  _renderTooltip(counterIndex: number): React.Node {
+  _renderTooltip(counterIndex: number): React.ReactNode {
     if (this.props.accumulatedSamples.length === 0) {
       // Gecko failed to capture samples for some reason and it shouldn't happen for
       // malloc counter. Print an error and bail out early.
@@ -272,11 +268,10 @@ class TrackMemoryGraphImpl extends React.PureComponent<Props, State> {
     const {
       minCount,
       countRange,
-      accumulatedCounts,
+      accumulatedCounts
     } = this.props.accumulatedSamples[0];
     const bytes = accumulatedCounts[counterIndex] - minCount;
-    return (
-      <div className="timelineTrackMemoryTooltip">
+    return <div className="timelineTrackMemoryTooltip">
         <div className="timelineTrackMemoryTooltipLine">
           <span className="timelineTrackMemoryTooltipNumber">
             {formatBytes(bytes)}
@@ -289,15 +284,14 @@ class TrackMemoryGraphImpl extends React.PureComponent<Props, State> {
           </span>
           {' memory range in graph'}
         </div>
-      </div>
-    );
+      </div>;
   }
 
   /**
    * Create a div that is a dot on top of the graph representing the current
    * height of the graph.
    */
-  _renderMemoryDot(counterIndex: number): React.Node {
+  _renderMemoryDot(counterIndex: number): React.ReactNode {
     const {
       counter,
       rangeStart,
@@ -305,7 +299,7 @@ class TrackMemoryGraphImpl extends React.PureComponent<Props, State> {
       graphHeight,
       width,
       lineWidth,
-      accumulatedSamples,
+      accumulatedSamples
     } = this.props;
 
     if (counter.sampleGroups.length === 0) {
@@ -313,30 +307,35 @@ class TrackMemoryGraphImpl extends React.PureComponent<Props, State> {
       // malloc counter. Print an error and bail out early.
       throw new Error('No sample group found for memory counter');
     }
-    const { samples } = counter.sampleGroups[0];
+    const {
+      samples
+    } = counter.sampleGroups[0];
     const rangeLength = rangeEnd - rangeStart;
-    const left =
-      (width * (samples.time[counterIndex] - rangeStart)) / rangeLength;
+    const left = width * (samples.time[counterIndex] - rangeStart) / rangeLength;
 
     if (accumulatedSamples.length === 0) {
       // Gecko failed to capture samples for some reason and it shouldn't happen for
       // malloc counter. Print an error and bail out early.
       throw new Error('No accumulated sample found for memory counter');
     }
-    const { minCount, countRange, accumulatedCounts } = accumulatedSamples[0];
-    const unitSampleCount =
-      (accumulatedCounts[counterIndex] - minCount) / countRange;
+    const {
+      minCount,
+      countRange,
+      accumulatedCounts
+    } = accumulatedSamples[0];
+    const unitSampleCount = (accumulatedCounts[counterIndex] - minCount) / countRange;
     const innerTrackHeight = graphHeight - lineWidth / 2;
-    const top =
-      innerTrackHeight - unitSampleCount * innerTrackHeight + lineWidth / 2;
+    const top = innerTrackHeight - unitSampleCount * innerTrackHeight + lineWidth / 2;
 
-    return (
-      <div style={{ left, top }} className="timelineTrackMemoryGraphDot" />
-    );
+    return <div style={{ left, top }} className="timelineTrackMemoryGraphDot" />;
   }
 
   render() {
-    const { hoveredCounter, mouseX, mouseY } = this.state;
+    const {
+      hoveredCounter,
+      mouseX,
+      mouseY
+    } = this.state;
     const {
       filteredThread,
       interval,
@@ -347,55 +346,33 @@ class TrackMemoryGraphImpl extends React.PureComponent<Props, State> {
       graphHeight,
       width,
       lineWidth,
-      accumulatedSamples,
+      accumulatedSamples
     } = this.props;
 
-    return (
-      <div
-        className="timelineTrackMemoryGraph"
-        onMouseMove={this._onMouseMove}
-        onMouseLeave={this._onMouseLeave}
-      >
-        <TrackMemoryCanvas
-          rangeStart={rangeStart}
-          rangeEnd={rangeEnd}
-          counter={counter}
-          height={graphHeight}
-          width={width}
-          lineWidth={lineWidth}
-          interval={interval}
-          accumulatedSamples={accumulatedSamples}
-        />
-        {hoveredCounter === null ? null : (
-          <>
+    return <div className="timelineTrackMemoryGraph" onMouseMove={this._onMouseMove} onMouseLeave={this._onMouseLeave}>
+        <TrackMemoryCanvas rangeStart={rangeStart} rangeEnd={rangeEnd} counter={counter} height={graphHeight} width={width} lineWidth={lineWidth} interval={interval} accumulatedSamples={accumulatedSamples} />
+        {hoveredCounter === null ? null : <>
             {this._renderMemoryDot(hoveredCounter)}
             <Tooltip mouseX={mouseX} mouseY={mouseY}>
               {this._renderTooltip(hoveredCounter)}
             </Tooltip>
-          </>
-        )}
-        <EmptyThreadIndicator
-          thread={filteredThread}
-          interval={interval}
-          rangeStart={rangeStart}
-          rangeEnd={rangeEnd}
-          unfilteredSamplesRange={unfilteredSamplesRange}
-        />
-      </div>
-    );
+          </>}
+        <EmptyThreadIndicator thread={filteredThread} interval={interval} rangeStart={rangeStart} rangeEnd={rangeEnd} unfilteredSamplesRange={unfilteredSamplesRange} />
+      </div>;
   }
 }
 
-export const TrackMemoryGraph = explicitConnect<
-  OwnProps,
-  StateProps,
-  DispatchProps
->({
+export const TrackMemoryGraph = explicitConnect<OwnProps, StateProps, DispatchProps>({
   mapStateToProps: (state, ownProps) => {
-    const { counterIndex } = ownProps;
+    const {
+      counterIndex
+    } = ownProps;
     const counterSelectors = getCounterSelectors(counterIndex);
     const counter = counterSelectors.getCommittedRangeFilteredCounter(state);
-    const { start, end } = getCommittedRange(state);
+    const {
+      start,
+      end
+    } = getCommittedRange(state);
     const selectors = getThreadSelectors(counter.mainThreadIndex);
     return {
       counter,
@@ -405,8 +382,8 @@ export const TrackMemoryGraph = explicitConnect<
       rangeEnd: end,
       interval: getProfileInterval(state),
       filteredThread: selectors.getFilteredThread(state),
-      unfilteredSamplesRange: selectors.unfilteredSamplesRange(state),
+      unfilteredSamplesRange: selectors.unfilteredSamplesRange(state)
     };
   },
-  component: withSize<Props>(TrackMemoryGraphImpl),
+  component: withSize<Props>(TrackMemoryGraphImpl)
 });

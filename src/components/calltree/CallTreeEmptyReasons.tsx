@@ -1,25 +1,24 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
 
 import React, { PureComponent } from 'react';
 
 import EmptyReasons from '../shared/EmptyReasons';
 import { selectedThreadSelectors } from '../../selectors/per-thread';
 import { oneLine } from 'common-tags';
-import explicitConnect, { type ConnectedProps } from '../../utils/connect';
+import explicitConnect, { ConnectedProps } from '../../utils/connect';
 
-import type { Thread } from '../../types/profile';
-import type { State } from '../../types/store';
+import { Thread } from '../../types/profile';
+import { State } from '../../types/store';
 
-type StateProps = {|
+type StateProps = {
   threadName: string,
   rangeFilteredThread: Thread,
   thread: Thread,
-|};
+};
 
-type Props = ConnectedProps<{||}, StateProps, {||}>;
+type Props = ConnectedProps<{}, StateProps, {}>;
 
 /**
  * This component attempts to tell why exactly a call tree is empty with no samples
@@ -51,7 +50,7 @@ class CallTreeEmptyReasons extends PureComponent<Props> {
   }
 }
 
-export default explicitConnect<{||}, StateProps, {||}>({
+export default explicitConnect<{}, StateProps, {}>({
   mapStateToProps: (state: State) => ({
     threadName: selectedThreadSelectors.getFriendlyThreadName(state),
     thread: selectedThreadSelectors.getThread(state),

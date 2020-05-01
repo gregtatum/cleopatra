@@ -25,7 +25,7 @@ import { PROCESSED_PROFILE_VERSION } from '../app-logic/constants';
 // field. Treat those as version zero.
 const UNANNOTATED_VERSION = 0;
 
-export function isProcessedProfile(profile: Object): boolean {
+export function isProcessedProfile(profile: { [name: string]: any }): boolean {
   // If this profile has a .meta.preprocessedProfileVersion field,
   // then it is definitely a preprocessed profile.
   if ('meta' in profile && 'preprocessedProfileVersion' in profile.meta) {
@@ -46,7 +46,9 @@ export function isProcessedProfile(profile: Object): boolean {
  * @param {object} profile The "serialized" form of a processed profile,
  *                         i.e. stringArray instead of stringTable.
  */
-export function upgradeProcessedProfileToCurrentVersion(profile: Object) {
+export function upgradeProcessedProfileToCurrentVersion(profile: {
+  [name: string]: any,
+}) {
   const profileVersion =
     profile.meta.preprocessedProfileVersion || UNANNOTATED_VERSION;
   if (profileVersion === PROCESSED_PROFILE_VERSION) {
@@ -123,7 +125,7 @@ function _mutateProfileToEnsureCauseBacktraces(profile) {
 /**
  * Guess the marker categories for a profile.
  */
-function _guessMarkerCategories(profile: Object) {
+function _guessMarkerCategories(profile: { [name: string]: any }) {
   // [key, categoryName]
   const keyToCategoryName = [
     ['DOMEvent', 'DOM'],

@@ -27,7 +27,10 @@ export class FastFillStyle {
 /**
  * Perform a simple shallow object equality check.
  */
-export function objectShallowEquals(a: Object, b: Object): boolean {
+export function objectShallowEquals(
+  a: { [name: string]: any },
+  b: { [name: string]: any }
+): boolean {
   let aLength = 0;
   let bLength = 0;
   for (const key in a) {

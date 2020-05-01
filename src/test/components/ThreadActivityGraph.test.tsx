@@ -2,10 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
-
-import type { Profile, IndexIntoSamplesTable } from '../../types/profile';
-import type { CssPixels } from '../../types/units';
+import { Profile, IndexIntoSamplesTable } from '../../types/profile';
+import { CssPixels } from '../../types/units';
 
 import * as React from 'react';
 import { Provider } from 'react-redux';

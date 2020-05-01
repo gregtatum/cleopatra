@@ -2,25 +2,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
-import { processProfile } from '../../profile-logic/process-profile';
-import { sanitizePII } from '../../profile-logic/sanitize';
-import { createGeckoProfile } from '../fixtures/profiles/gecko-profile';
-import { getProfileWithMarkers } from '../fixtures/profiles/processed-profile';
-import { ensureExists } from '../../utils/flow';
-import type { RemoveProfileInformation } from '../../types/profile-derived';
-import { storeWithProfile } from '../fixtures/stores';
-import { getHasPreferenceMarkers } from '../../selectors/profile';
-import {
-  getCheckedSharingOptions,
-  getRemoveProfileInformation,
-} from '../../selectors/publish';
-import { toggleCheckedSharingOptions } from '../../actions/publish';
 
-describe('sanitizePII', function() {
-  function getRemoveProfileInformation(
-    customFields: Object
-  ): RemoveProfileInformation {
+import { processProfile } from "../../profile-logic/process-profile";
+import { sanitizePII } from "../../profile-logic/sanitize";
+import { createGeckoProfile } from "../fixtures/profiles/gecko-profile";
+import { getProfileWithMarkers } from "../fixtures/profiles/processed-profile";
+import { ensureExists } from "../../utils/flow";
+import { RemoveProfileInformation } from "../../types/profile-derived";
+import { storeWithProfile } from "../fixtures/stores";
+import { getHasPreferenceMarkers } from "../../selectors/profile";
+import { getCheckedSharingOptions, getRemoveProfileInformation } from "../../selectors/publish";
+import { toggleCheckedSharingOptions } from "../../actions/publish";
+
+describe('sanitizePII', function () {
+  function getRemoveProfileInformation(customFields: {[name: string]: any }): RemoveProfileInformation {
     return {
       shouldRemoveThreads: new Set(),
       shouldRemoveThreadsWithScreenshots: new Set(),
@@ -28,15 +23,15 @@ describe('sanitizePII', function() {
       shouldFilterToCommittedRange: null,
       shouldRemoveExtensions: false,
       shouldRemovePreferenceValues: false,
-      ...customFields,
+      ...customFields
     };
   }
-  it('should sanitize the threads if they are provided', function() {
+  it('should sanitize the threads if they are provided', function () {
     const profile = processProfile(createGeckoProfile());
     // There are 3 threads in the beginning.
     expect(profile.threads.length).toEqual(3);
     const PIIToRemove = getRemoveProfileInformation({
-      shouldRemoveThreads: new Set([0, 2]),
+      shouldRemoveThreads: new Set([0, 2])
     });
 
     const sanitizedProfile = sanitizePII(profile, PIIToRemove).profile;
@@ -44,9 +39,11 @@ describe('sanitizePII', function() {
     expect(sanitizedProfile.threads.length).toEqual(1);
   });
 
-  it('should sanitize counters if its thread is deleted', function() {
+  it('should sanitize counters if its thread is deleted', function () {
     const profile = processProfile(createGeckoProfile());
-    const { counters } = profile;
+    const {
+      counters
+    } = profile;
     expect(counters).not.toEqual(undefined);
     if (counters === undefined) {
       return;
@@ -57,12 +54,11 @@ describe('sanitizePII', function() {
     expect(counters[0].mainThreadIndex).toEqual(0);
 
     const PIIToRemove = getRemoveProfileInformation({
-      shouldRemoveThreads: new Set([0]),
+      shouldRemoveThreads: new Set([0])
     });
-    const { counters: sanitizedCounters } = sanitizePII(
-      profile,
-      PIIToRemove
-    ).profile;
+    const {
+      counters: sanitizedCounters
+    } = sanitizePII(profile, PIIToRemove).profile;
     // The counter was for the first thread, it should be deleted now.
     expect(sanitizedCounters).not.toEqual(undefined);
     if (sanitizedCounters !== undefined) {
@@ -70,9 +66,11 @@ describe('sanitizePII', function() {
     }
   });
 
-  it('should not sanitize counters if its thread is not deleted', function() {
+  it('should not sanitize counters if its thread is not deleted', function () {
     const profile = processProfile(createGeckoProfile());
-    const { counters } = profile;
+    const {
+      counters
+    } = profile;
     expect(counters).not.toEqual(undefined);
     if (counters === undefined) {
       return;
@@ -83,12 +81,11 @@ describe('sanitizePII', function() {
     expect(counters[0].mainThreadIndex).toEqual(0);
 
     const PIIToRemove = getRemoveProfileInformation({
-      shouldRemoveThreads: new Set([1, 2]),
+      shouldRemoveThreads: new Set([1, 2])
     });
-    const { counters: sanitizedCounters } = sanitizePII(
-      profile,
-      PIIToRemove
-    ).profile;
+    const {
+      counters: sanitizedCounters
+    } = sanitizePII(profile, PIIToRemove).profile;
     // The counter was for the first thread, it should not be deleted now.
     expect(sanitizedCounters).not.toEqual(undefined);
     if (sanitizedCounters !== undefined) {
@@ -96,9 +93,11 @@ describe('sanitizePII', function() {
     }
   });
 
-  it('should sanitize profiler overhead if its thread is deleted', function() {
+  it('should sanitize profiler overhead if its thread is deleted', function () {
     const profile = processProfile(createGeckoProfile());
-    const { profilerOverhead } = profile;
+    const {
+      profilerOverhead
+    } = profile;
     expect(profilerOverhead).not.toEqual(undefined);
     if (profilerOverhead === undefined) {
       return;
@@ -109,12 +108,11 @@ describe('sanitizePII', function() {
     expect(profilerOverhead[0].mainThreadIndex).toEqual(0);
 
     const PIIToRemove = getRemoveProfileInformation({
-      shouldRemoveThreads: new Set([0]),
+      shouldRemoveThreads: new Set([0])
     });
-    const { profilerOverhead: sanitizedProfilerOverhead } = sanitizePII(
-      profile,
-      PIIToRemove
-    ).profile;
+    const {
+      profilerOverhead: sanitizedProfilerOverhead
+    } = sanitizePII(profile, PIIToRemove).profile;
     // The counter was for the first thread, it should be deleted now.
     expect(sanitizedProfilerOverhead).not.toEqual(undefined);
     if (sanitizedProfilerOverhead !== undefined) {
@@ -122,9 +120,11 @@ describe('sanitizePII', function() {
     }
   });
 
-  it('should not sanitize profiler overhead if its thread is not deleted', function() {
+  it('should not sanitize profiler overhead if its thread is not deleted', function () {
     const profile = processProfile(createGeckoProfile());
-    const { profilerOverhead } = profile;
+    const {
+      profilerOverhead
+    } = profile;
     expect(profilerOverhead).not.toEqual(undefined);
     if (profilerOverhead === undefined) {
       return;
@@ -135,12 +135,11 @@ describe('sanitizePII', function() {
     expect(profilerOverhead[0].mainThreadIndex).toEqual(0);
 
     const PIIToRemove = getRemoveProfileInformation({
-      shouldRemoveThreads: new Set([1, 2]),
+      shouldRemoveThreads: new Set([1, 2])
     });
-    const { profilerOverhead: sanitizedProfilerOverhead } = sanitizePII(
-      profile,
-      PIIToRemove
-    ).profile;
+    const {
+      profilerOverhead: sanitizedProfilerOverhead
+    } = sanitizePII(profile, PIIToRemove).profile;
     // The counter was for the first thread, it should not be deleted now.
     expect(sanitizedProfilerOverhead).not.toEqual(undefined);
     if (sanitizedProfilerOverhead !== undefined) {
@@ -148,7 +147,7 @@ describe('sanitizePII', function() {
     }
   });
 
-  it('should sanitize the screenshots if they are provided', function() {
+  it('should sanitize the screenshots if they are provided', function () {
     const profile = processProfile(createGeckoProfile());
     // Checking if we have screenshot markers just in case.
     let screenshotMarkerFound = false;
@@ -163,7 +162,7 @@ describe('sanitizePII', function() {
     expect(screenshotMarkerFound).toEqual(true);
 
     const PIIToRemove = getRemoveProfileInformation({
-      shouldRemoveThreadsWithScreenshots: new Set([0, 1, 2]),
+      shouldRemoveThreadsWithScreenshots: new Set([0, 1, 2])
     });
 
     const sanitizedProfile = sanitizePII(profile, PIIToRemove).profile;
@@ -179,7 +178,7 @@ describe('sanitizePII', function() {
     expect(screenshotMarkerFound).toEqual(false);
   });
 
-  it('should sanitize the pages information', function() {
+  it('should sanitize the pages information', function () {
     const profile = processProfile(createGeckoProfile());
 
     for (const page of ensureExists(profile.pages)) {
@@ -187,7 +186,7 @@ describe('sanitizePII', function() {
     }
 
     const PIIToRemove = getRemoveProfileInformation({
-      shouldRemoveUrls: true,
+      shouldRemoveUrls: true
     });
 
     const sanitizedProfile = sanitizePII(profile, PIIToRemove).profile;
@@ -196,10 +195,10 @@ describe('sanitizePII', function() {
     }
   });
 
-  it('should sanitize all the URLs inside network markers', function() {
+  it('should sanitize all the URLs inside network markers', function () {
     const profile = processProfile(createGeckoProfile());
     const PIIToRemove = getRemoveProfileInformation({
-      shouldRemoveUrls: true,
+      shouldRemoveUrls: true
     });
 
     const sanitizedProfile = sanitizePII(profile, PIIToRemove).profile;
@@ -207,11 +206,7 @@ describe('sanitizePII', function() {
       const stringArray = thread.stringTable.serializeToArray();
       for (let i = 0; i < thread.markers.length; i++) {
         const currentMarker = thread.markers.data[i];
-        if (
-          currentMarker &&
-          currentMarker.type &&
-          currentMarker.type === 'Network'
-        ) {
+        if (currentMarker && currentMarker.type && currentMarker.type === 'Network') {
           expect(currentMarker.URI).toBeFalsy();
           expect(currentMarker.RedirectURI).toBeFalsy();
           const stringIndex = thread.markers.name[i];
@@ -221,10 +216,10 @@ describe('sanitizePII', function() {
     }
   });
 
-  it('should sanitize all the URLs inside string table', function() {
+  it('should sanitize all the URLs inside string table', function () {
     const profile = processProfile(createGeckoProfile());
     const PIIToRemove = getRemoveProfileInformation({
-      shouldRemoveUrls: true,
+      shouldRemoveUrls: true
     });
 
     const sanitizedProfile = sanitizePII(profile, PIIToRemove).profile;
@@ -239,7 +234,7 @@ describe('sanitizePII', function() {
     }
   });
 
-  it('should sanitize extensions', function() {
+  it('should sanitize extensions', function () {
     const profile = processProfile(createGeckoProfile());
     expect(profile.meta.extensions).not.toEqual(undefined);
     // For flow
@@ -251,7 +246,7 @@ describe('sanitizePII', function() {
       expect(extensions.baseURL.length).toEqual(3);
     }
     const PIIToRemove = getRemoveProfileInformation({
-      shouldRemoveExtensions: true,
+      shouldRemoveExtensions: true
     });
 
     const sanitizedProfile = sanitizePII(profile, PIIToRemove).profile;
@@ -266,25 +261,19 @@ describe('sanitizePII', function() {
     }
   });
 
-  it('should not sanitize all the preference values inside preference read markers', function() {
-    const profile = getProfileWithMarkers([
-      [
-        'PreferenceRead',
-        1,
-        {
-          type: 'PreferenceRead',
-          startTime: 0,
-          endTime: 1,
-          prefAccessTime: 0,
-          prefName: 'preferenceName',
-          prefKind: 'preferenceKind',
-          prefType: 'preferenceType',
-          prefValue: 'preferenceValue',
-        },
-      ],
-    ]);
+  it('should not sanitize all the preference values inside preference read markers', function () {
+    const profile = getProfileWithMarkers([['PreferenceRead', 1, {
+      type: 'PreferenceRead',
+      startTime: 0,
+      endTime: 1,
+      prefAccessTime: 0,
+      prefName: 'preferenceName',
+      prefKind: 'preferenceKind',
+      prefType: 'preferenceType',
+      prefValue: 'preferenceValue'
+    }]]);
     const PIIToRemove = getRemoveProfileInformation({
-      shouldRemovePreferenceValues: false,
+      shouldRemovePreferenceValues: false
     });
     const sanitizedProfile = sanitizePII(profile, PIIToRemove).profile;
 
@@ -295,33 +284,22 @@ describe('sanitizePII', function() {
 
     const marker = thread.markers.data[0];
     // All the conditions have to be checked to make Flow happy.
-    expect(
-      marker &&
-        marker.type &&
-        marker.type === 'PreferenceRead' &&
-        marker.prefValue === 'preferenceValue'
-    ).toBeTruthy();
+    expect(marker && marker.type && marker.type === 'PreferenceRead' && marker.prefValue === 'preferenceValue').toBeTruthy();
   });
 
-  it('should sanitize all the preference values inside preference read markers', function() {
-    const profile = getProfileWithMarkers([
-      [
-        'PreferenceRead',
-        1,
-        {
-          type: 'PreferenceRead',
-          startTime: 0,
-          endTime: 1,
-          prefAccessTime: 0,
-          prefName: 'preferenceName',
-          prefKind: 'preferenceKind',
-          prefType: 'preferenceType',
-          prefValue: 'preferenceValue',
-        },
-      ],
-    ]);
+  it('should sanitize all the preference values inside preference read markers', function () {
+    const profile = getProfileWithMarkers([['PreferenceRead', 1, {
+      type: 'PreferenceRead',
+      startTime: 0,
+      endTime: 1,
+      prefAccessTime: 0,
+      prefName: 'preferenceName',
+      prefKind: 'preferenceKind',
+      prefType: 'preferenceType',
+      prefValue: 'preferenceValue'
+    }]]);
     const PIIToRemove = getRemoveProfileInformation({
-      shouldRemovePreferenceValues: true,
+      shouldRemovePreferenceValues: true
     });
     const sanitizedProfile = sanitizePII(profile, PIIToRemove).profile;
 
@@ -332,18 +310,13 @@ describe('sanitizePII', function() {
 
     const marker = thread.markers.data[0];
     // All the conditions have to be checked to make Flow happy.
-    expect(
-      marker &&
-        marker.type &&
-        marker.type === 'PreferenceRead' &&
-        marker.prefValue === ''
-    ).toBeTruthy();
+    expect(marker && marker.type && marker.type === 'PreferenceRead' && marker.prefValue === '').toBeTruthy();
   });
 
-  it('should not push any null values to marker values by mistake while filtering', function() {
+  it('should not push any null values to marker values by mistake while filtering', function () {
     const profile = processProfile(createGeckoProfile());
     const PIIToRemove = getRemoveProfileInformation({
-      shouldRemoveThreadsWithScreenshots: new Set([0, 1, 2]),
+      shouldRemoveThreadsWithScreenshots: new Set([0, 1, 2])
     });
 
     const sanitizedProfile = sanitizePII(profile, PIIToRemove).profile;
@@ -361,17 +334,18 @@ describe('sanitizePII', function() {
   });
 });
 
-describe('getRemoveProfileInformation', function() {
-  it('should bail out early when there is no preference marker in the profile', function() {
-    const { getState, dispatch } = storeWithProfile();
+describe('getRemoveProfileInformation', function () {
+  it('should bail out early when there is no preference marker in the profile', function () {
+    const {
+      getState,
+      dispatch
+    } = storeWithProfile();
     // Checking to see that we don't have Preference markers.
     expect(getHasPreferenceMarkers(getState())).toEqual(false);
 
     // Setting includePreferenceValues option to false
     dispatch(toggleCheckedSharingOptions('includePreferenceValues'));
-    expect(
-      getCheckedSharingOptions(getState()).includePreferenceValues
-    ).toEqual(false);
+    expect(getCheckedSharingOptions(getState()).includePreferenceValues).toEqual(false);
 
     const removeProfileInformation = getRemoveProfileInformation(getState());
     // It should return early with null value.

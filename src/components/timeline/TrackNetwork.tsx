@@ -2,57 +2,43 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
 
-import React, { PureComponent } from 'react';
-import { withSize } from '../shared/WithSize';
-import explicitConnect from '../../utils/connect';
-import {
-  getCommittedRange,
-  getZeroAt,
-  getPageList,
-} from '../../selectors/profile';
-import { getThreadSelectors } from '../../selectors/per-thread';
-import { VerticalIndicators } from './VerticalIndicators';
-import {
-  TRACK_NETWORK_ROW_HEIGHT,
-  TRACK_NETWORK_ROW_REPEAT,
-  TRACK_NETWORK_HEIGHT,
-} from '../../app-logic/constants';
 
-import type { ThreadIndex, PageList } from '../../types/profile';
-import type {
-  Marker,
-  MarkerIndex,
-  MarkerTiming,
-} from '../../types/profile-derived';
-import type { Milliseconds } from '../../types/units';
-import type { SizeProps } from '../shared/WithSize';
-import type { ConnectedProps } from '../../utils/connect';
+import React, { PureComponent } from "react";
+import { withSize , SizeProps } from "../shared/WithSize";
+import explicitConnect, { ConnectedProps } from "../../utils/connect";
+import { getCommittedRange, getZeroAt, getPageList } from "../../selectors/profile";
+import { getThreadSelectors } from "../../selectors/per-thread";
+import { VerticalIndicators } from "./VerticalIndicators";
+import { TRACK_NETWORK_ROW_HEIGHT, TRACK_NETWORK_ROW_REPEAT, TRACK_NETWORK_HEIGHT } from "../../app-logic/constants";
 
-import './TrackNetwork.css';
+import { ThreadIndex, PageList } from "../../types/profile";
+import { Marker, MarkerIndex, MarkerTiming } from "../../types/profile-derived";
+import { Milliseconds } from "../../types/units";
 
-type OwnProps = {|
-  +threadIndex: ThreadIndex,
-|};
 
-type StateProps = {|
-  +pages: PageList | null,
-  +rangeStart: Milliseconds,
-  +rangeEnd: Milliseconds,
-  +zeroAt: Milliseconds,
-  +getMarker: MarkerIndex => Marker,
-  +networkTiming: MarkerTiming[],
-  +verticalMarkerIndexes: MarkerIndex[],
-|};
-type DispatchProps = {||};
-type Props = {|
-  ...ConnectedProps<OwnProps, StateProps, DispatchProps>,
-  ...SizeProps,
-|};
+
+import "./TrackNetwork.css";
+
+type OwnProps = {
+  readonly threadIndex: ThreadIndex;
+};
+
+type StateProps = {
+  readonly pages: PageList | null;
+  readonly rangeStart: Milliseconds;
+  readonly rangeEnd: Milliseconds;
+  readonly zeroAt: Milliseconds;
+  readonly getMarker: (arg0: MarkerIndex) => Marker;
+  readonly networkTiming: MarkerTiming[];
+  readonly verticalMarkerIndexes: MarkerIndex[];
+};
+type DispatchProps = {};
+type Props = ConnectedProps<OwnProps, StateProps, DispatchProps> & SizeProps;
 type State = void;
 
 class Network extends PureComponent<Props, State> {
+
   _canvas: null | HTMLCanvasElement = null;
   _requestedAnimationFrame: boolean = false;
 
@@ -91,7 +77,7 @@ class Network extends PureComponent<Props, State> {
       rangeStart,
       rangeEnd,
       networkTiming,
-      width: containerWidth,
+      width: containerWidth
     } = this.props;
 
     const rangeLength = rangeEnd - rangeStart;
@@ -109,13 +95,9 @@ class Network extends PureComponent<Props, State> {
     for (let rowIndex = 0; rowIndex < networkTiming.length; rowIndex++) {
       const timing = networkTiming[rowIndex];
       for (let timingIndex = 0; timingIndex < timing.length; timingIndex++) {
-        const start =
-          (canvas.width / rangeLength) *
-          (timing.start[timingIndex] - rangeStart);
-        const end =
-          (canvas.width / rangeLength) * (timing.end[timingIndex] - rangeStart);
-        const y =
-          (rowIndex % TRACK_NETWORK_ROW_REPEAT) * rowHeight + rowHeight * 0.5;
+        const start = canvas.width / rangeLength * (timing.start[timingIndex] - rangeStart);
+        const end = canvas.width / rangeLength * (timing.end[timingIndex] - rangeStart);
+        const y = rowIndex % TRACK_NETWORK_ROW_REPEAT * rowHeight + rowHeight * 0.5;
         ctx.beginPath();
         ctx.moveTo(start, y);
         ctx.lineTo(end, y);
@@ -131,39 +113,29 @@ class Network extends PureComponent<Props, State> {
       rangeEnd,
       getMarker,
       verticalMarkerIndexes,
-      zeroAt,
+      zeroAt
     } = this.props;
     this._scheduleDraw();
 
-    return (
-      <div
-        className="timelineTrackNetwork"
-        style={{
-          height: TRACK_NETWORK_HEIGHT,
-        }}
-      >
-        <canvas
-          className="timelineTrackNetworkCanvas"
-          ref={this._takeCanvasRef}
-        />
-        <VerticalIndicators
-          verticalMarkerIndexes={verticalMarkerIndexes}
-          getMarker={getMarker}
-          pages={pages}
-          rangeStart={rangeStart}
-          rangeEnd={rangeEnd}
-          zeroAt={zeroAt}
-        />
-      </div>
-    );
+    return <div className="timelineTrackNetwork" style={{
+      height: TRACK_NETWORK_HEIGHT
+    }}>
+        <canvas className="timelineTrackNetworkCanvas" ref={this._takeCanvasRef} />
+        <VerticalIndicators verticalMarkerIndexes={verticalMarkerIndexes} getMarker={getMarker} pages={pages} rangeStart={rangeStart} rangeEnd={rangeEnd} zeroAt={zeroAt} />
+      </div>;
   }
 }
 
 export default explicitConnect<OwnProps, StateProps, DispatchProps>({
   mapStateToProps: (state, ownProps) => {
-    const { threadIndex } = ownProps;
+    const {
+      threadIndex
+    } = ownProps;
     const selectors = getThreadSelectors(threadIndex);
-    const { start, end } = getCommittedRange(state);
+    const {
+      start,
+      end
+    } = getCommittedRange(state);
     const networkTiming = selectors.getNetworkTrackTiming(state);
     return {
       getMarker: selectors.getMarkerGetter(state),
@@ -172,8 +144,8 @@ export default explicitConnect<OwnProps, StateProps, DispatchProps>({
       rangeStart: start,
       rangeEnd: end,
       zeroAt: getZeroAt(state),
-      verticalMarkerIndexes: selectors.getTimelineVerticalMarkerIndexes(state),
+      verticalMarkerIndexes: selectors.getTimelineVerticalMarkerIndexes(state)
     };
   },
-  component: withSize<Props>(Network),
+  component: withSize<Props>(Network)
 });

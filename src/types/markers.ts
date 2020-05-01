@@ -404,7 +404,7 @@ export type TextMarkerPayload = {
 export type ChromeCompleteTraceEventPayload = {
   type: "CompleteTraceEvent";
   category: string;
-  data: Object | null;
+  data: {[name: string]: any } | null;
   startTime: number;
   endTime: number;
 };
@@ -413,7 +413,7 @@ export type ChromeCompleteTraceEventPayload = {
 export type ChromeInstantTraceEventPayload = {
   type: "InstantTraceEvent";
   category: string;
-  data: Object | null;
+  data: {[name: string]: any } | null;
   startTime: number;
   endTime: number;
 };
@@ -423,7 +423,7 @@ export type ChromeDurationTraceEventPayload = {
   type: "tracing";
   category: "FromChrome";
   interval: "start" | "end";
-  data: Object | null;
+  data: {[name: string]: any } | null;
   cause?: CauseBacktrace;
 };
 

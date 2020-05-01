@@ -1,9 +1,9 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
 
-import * as Jwt from '../../utils/jwt';
+
+import * as Jwt from "../../utils/jwt";
 
 // This is a valid token taken from jwt.io.
 // It was carefully chosen to contain both - and _ characters, that are
@@ -21,18 +21,11 @@ describe('jwt/isValidJwtToken', () => {
     expect(Jwt.isValidJwtToken(fixture)).toBe(false);
   });
 
-  const fixtures = [
-    // This one is invalid for both encodings base64 and base64url
-    '|ODe.iOIZ.X;oD',
-
-    // These ones are valid base64 values, but invalid base64url
-    'a+hD.b1sc.cSre',
-    'a/4a.bRcZ.c81Z',
-
-    // This one is valid base64url but uses a padding character, that's not
-    // used with JWT.
-    'SOE=.SUY5.4ScA',
-  ];
+  const fixtures = [// This one is invalid for both encodings base64 and base64url
+  '|ODe.iOIZ.X;oD', // These ones are valid base64 values, but invalid base64url
+  'a+hD.b1sc.cSre', 'a/4a.bRcZ.c81Z', // This one is valid base64url but uses a padding character, that's not
+  // used with JWT.
+  'SOE=.SUY5.4ScA'];
 
   fixtures.forEach(fixture => {
     it(`returns false for invalid base64url value: ${fixture}`, () => {
@@ -91,8 +84,6 @@ describe('jwt/extractProfileTokenFromJwt', () => {
   it(`errors when the token doesn't have the needed property`, () => {
     // This token's payload is { "name": "John Doe" }
     const tokenWithoutProfileToken = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSm9obiBEb2UifQ.DjwRE2jZhren2Wt37t5hlVru6Myq4AhpGLiiefF69u8`;
-    expect(() =>
-      Jwt.extractProfileTokenFromJwt(tokenWithoutProfileToken)
-    ).toThrow();
+    expect(() => Jwt.extractProfileTokenFromJwt(tokenWithoutProfileToken)).toThrow();
   });
 });

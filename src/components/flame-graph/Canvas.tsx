@@ -2,67 +2,56 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
-import * as React from 'react';
-import memoize from 'memoize-immutable';
-import {
-  withChartViewport,
-  type WithChartViewport,
-} from '../shared/chart/Viewport';
-import ChartCanvas from '../shared/chart/Canvas';
-import TextMeasurement from '../../utils/text-measurement';
-import { mapCategoryColorNameToStackChartStyles } from '../../utils/colors';
-import { TooltipCallNode } from '../tooltip/CallNode';
-import { getTimingsForCallNodeIndex } from '../../profile-logic/profile-data';
-import MixedTupleMap from 'mixedtuplemap';
 
-import type { Thread, CategoryList, PageList } from '../../types/profile';
-import type { CssPixels, Milliseconds } from '../../types/units';
-import type {
-  FlameGraphTiming,
-  FlameGraphDepth,
-  IndexIntoFlameGraphTiming,
-} from '../../profile-logic/flame-graph';
+import * as React from "react";
+import memoize from "memoize-immutable";
+import { withChartViewport, WithChartViewport , Viewport } from "../shared/chart/Viewport";
+import ChartCanvas from "../shared/chart/Canvas";
+import TextMeasurement from "../../utils/text-measurement";
+import { mapCategoryColorNameToStackChartStyles } from "../../utils/colors";
+import { TooltipCallNode } from "../tooltip/CallNode";
+import { getTimingsForCallNodeIndex } from "../../profile-logic/profile-data";
+import MixedTupleMap from "mixedtuplemap";
 
-import type {
-  CallNodeInfo,
-  IndexIntoCallNodeTable,
-} from '../../types/profile-derived';
-import type { CallTree } from '../../profile-logic/call-tree';
-import type { Viewport } from '../shared/chart/Viewport';
-import type { CallTreeSummaryStrategy } from '../../types/actions';
+import { Thread, CategoryList, PageList } from "../../types/profile";
+import { CssPixels, Milliseconds } from "../../types/units";
+import { FlameGraphTiming, FlameGraphDepth, IndexIntoFlameGraphTiming } from "../../profile-logic/flame-graph";
 
-export type OwnProps = {|
-  +thread: Thread,
-  +pages: PageList | null,
-  +unfilteredThread: Thread,
-  +sampleIndexOffset: number,
-  +maxStackDepth: number,
-  +flameGraphTiming: FlameGraphTiming,
-  +callNodeInfo: CallNodeInfo,
-  +callTree: CallTree,
-  +stackFrameHeight: CssPixels,
-  +selectedCallNodeIndex: IndexIntoCallNodeTable | null,
-  +onSelectionChange: (IndexIntoCallNodeTable | null) => void,
-  +onRightClick: (IndexIntoCallNodeTable | null) => void,
-  +shouldDisplayTooltips: () => boolean,
-  +scrollToSelectionGeneration: number,
-  +categories: CategoryList,
-  +interval: Milliseconds,
-  +isInverted: boolean,
-  +callTreeSummaryStrategy: CallTreeSummaryStrategy,
-|};
+import { CallNodeInfo, IndexIntoCallNodeTable } from "../../types/profile-derived";
+import { CallTree } from "../../profile-logic/call-tree";
 
-type Props = {|
-  ...OwnProps,
+import { CallTreeSummaryStrategy } from "../../types/actions";
+
+export type OwnProps = {
+  readonly thread: Thread;
+  readonly pages: PageList | null;
+  readonly unfilteredThread: Thread;
+  readonly sampleIndexOffset: number;
+  readonly maxStackDepth: number;
+  readonly flameGraphTiming: FlameGraphTiming;
+  readonly callNodeInfo: CallNodeInfo;
+  readonly callTree: CallTree;
+  readonly stackFrameHeight: CssPixels;
+  readonly selectedCallNodeIndex: IndexIntoCallNodeTable | null;
+  readonly onSelectionChange: (arg0: IndexIntoCallNodeTable | null) => void;
+  readonly onRightClick: (arg0: IndexIntoCallNodeTable | null) => void;
+  readonly shouldDisplayTooltips: () => boolean;
+  readonly scrollToSelectionGeneration: number;
+  readonly categories: CategoryList;
+  readonly interval: Milliseconds;
+  readonly isInverted: boolean;
+  readonly callTreeSummaryStrategy: CallTreeSummaryStrategy;
+};
+
+type Props = OwnProps & {
   // Bring in the viewport props from the higher order Viewport component.
-  +viewport: Viewport,
-|};
+  readonly viewport: Viewport;
+};
 
-type HoveredStackTiming = {|
-  +depth: FlameGraphDepth,
-  +flameGraphTimingIndex: IndexIntoFlameGraphTiming,
-|};
+type HoveredStackTiming = {
+  readonly depth: FlameGraphDepth;
+  readonly flameGraphTimingIndex: IndexIntoFlameGraphTiming;
+};
 
 require('./Canvas.css');
 
@@ -71,6 +60,7 @@ const TEXT_OFFSET_START = 3;
 const TEXT_OFFSET_TOP = 11;
 
 class FlameGraphCanvas extends React.PureComponent<Props> {
+
   _textMeasurement: null | TextMeasurement;
 
   componentDidUpdate(prevProps) {
@@ -79,10 +69,7 @@ class FlameGraphCanvas extends React.PureComponent<Props> {
     // vertically so that its offset from the base of the flame graph
     // is maintained.
     if (prevProps.maxStackDepth !== this.props.maxStackDepth) {
-      this.props.viewport.moveViewport(
-        0,
-        (prevProps.maxStackDepth - this.props.maxStackDepth) * ROW_HEIGHT
-      );
+      this.props.viewport.moveViewport(0, (prevProps.maxStackDepth - this.props.maxStackDepth) * ROW_HEIGHT);
     }
 
     // We want to scroll the selection into view when this component
@@ -90,33 +77,27 @@ class FlameGraphCanvas extends React.PureComponent<Props> {
     // viewport will not have completed setting its size by
     // then. Instead, look for when the viewport's isSizeSet prop
     // changes to true.
-    const viewportDidMount =
-      !prevProps.viewport.isSizeSet && this.props.viewport.isSizeSet;
+    const viewportDidMount = !prevProps.viewport.isSizeSet && this.props.viewport.isSizeSet;
 
-    if (
-      viewportDidMount ||
-      this.props.scrollToSelectionGeneration >
-        prevProps.scrollToSelectionGeneration
-    ) {
+    if (viewportDidMount || this.props.scrollToSelectionGeneration > prevProps.scrollToSelectionGeneration) {
       this._scrollSelectionIntoView();
     }
   }
 
   // Provide a memoized function that maps the category color names to specific color
   // choices that are used across this project's charts.
-  _mapCategoryColorNameToStyles = memoize(
-    mapCategoryColorNameToStackChartStyles,
-    {
-      // Memoize every color that is seen.
-      limit: Infinity,
-    }
-  );
+  _mapCategoryColorNameToStyles = memoize(mapCategoryColorNameToStackChartStyles, {
+    // Memoize every color that is seen.
+    limit: Infinity
+  });
 
   _scrollSelectionIntoView = () => {
     const {
       selectedCallNodeIndex,
       maxStackDepth,
-      callNodeInfo: { callNodeTable },
+      callNodeInfo: {
+        callNodeTable
+      }
     } = this.props;
 
     if (selectedCallNodeIndex === null) {
@@ -129,21 +110,17 @@ class FlameGraphCanvas extends React.PureComponent<Props> {
     if (y < this.props.viewport.viewportTop) {
       this.props.viewport.moveViewport(0, this.props.viewport.viewportTop - y);
     } else if (y + ROW_HEIGHT > this.props.viewport.viewportBottom) {
-      this.props.viewport.moveViewport(
-        0,
-        this.props.viewport.viewportBottom - (y + ROW_HEIGHT)
-      );
+      this.props.viewport.moveViewport(0, this.props.viewport.viewportBottom - (y + ROW_HEIGHT));
     }
   };
 
-  _drawCanvas = (
-    ctx: CanvasRenderingContext2D,
-    hoveredItem: HoveredStackTiming | null
-  ) => {
+  _drawCanvas = (ctx: CanvasRenderingContext2D, hoveredItem: HoveredStackTiming | null) => {
     const {
       thread,
       flameGraphTiming,
-      callNodeInfo: { callNodeTable },
+      callNodeInfo: {
+        callNodeTable
+      },
       stackFrameHeight,
       maxStackDepth,
       selectedCallNodeIndex,
@@ -152,8 +129,8 @@ class FlameGraphCanvas extends React.PureComponent<Props> {
         containerWidth,
         containerHeight,
         viewportTop,
-        viewportBottom,
-      },
+        viewportBottom
+      }
     } = this.props;
 
     // Ensure the text measurement tool is created, since this is the first time
@@ -166,9 +143,7 @@ class FlameGraphCanvas extends React.PureComponent<Props> {
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, containerWidth, containerHeight);
 
-    const startDepth = Math.floor(
-      maxStackDepth - viewportBottom / stackFrameHeight
-    );
+    const startDepth = Math.floor(maxStackDepth - viewportBottom / stackFrameHeight);
     const endDepth = Math.ceil(maxStackDepth - viewportTop / stackFrameHeight);
 
     // Only draw the stack frames that are vertically within view.
@@ -185,8 +160,7 @@ class FlameGraphCanvas extends React.PureComponent<Props> {
         const endTime = stackTiming.end[i];
 
         const x: CssPixels = startTime * containerWidth;
-        const y: CssPixels =
-          (maxStackDepth - depth - 1) * ROW_HEIGHT - viewportTop;
+        const y: CssPixels = (maxStackDepth - depth - 1) * ROW_HEIGHT - viewportTop;
         const w: CssPixels = (endTime - startTime) * containerWidth;
         const h: CssPixels = ROW_HEIGHT - 1;
 
@@ -197,26 +171,17 @@ class FlameGraphCanvas extends React.PureComponent<Props> {
 
         const callNodeIndex = stackTiming.callNode[i];
         const funcIndex = callNodeTable.func[callNodeIndex];
-        const funcName = thread.stringTable.getString(
-          thread.funcTable.name[funcIndex]
-        );
+        const funcName = thread.stringTable.getString(thread.funcTable.name[funcIndex]);
 
         const isSelected = selectedCallNodeIndex === callNodeIndex;
-        const isHovered =
-          hoveredItem &&
-          depth === hoveredItem.depth &&
-          i === hoveredItem.flameGraphTimingIndex;
+        const isHovered = hoveredItem && depth === hoveredItem.depth && i === hoveredItem.flameGraphTimingIndex;
 
         const categoryIndex = callNodeTable.category[callNodeIndex];
         const category = categories[categoryIndex];
         const colorStyles = this._mapCategoryColorNameToStyles(category.color);
 
-        const background =
-          isHovered || isSelected
-            ? colorStyles.selectedFillStyle
-            : colorStyles.unselectedFillStyle;
-        const foreground =
-          isHovered || isSelected ? colorStyles.selectedTextColor : '#000';
+        const background = isHovered || isSelected ? colorStyles.selectedFillStyle : colorStyles.unselectedFillStyle;
+        const foreground = isHovered || isSelected ? colorStyles.selectedTextColor : '#000';
 
         ctx.fillStyle = background;
         ctx.fillRect(x, y, w, h);
@@ -242,13 +207,13 @@ class FlameGraphCanvas extends React.PureComponent<Props> {
 
   // Properly memoize this derived information for the Tooltip component.
   _getTimingsForCallNodeIndex = memoize(getTimingsForCallNodeIndex, {
-    cache: new MixedTupleMap(),
+    cache: new MixedTupleMap()
   });
 
   _getHoveredStackInfo = ({
     depth,
-    flameGraphTimingIndex,
-  }: HoveredStackTiming): React.Node => {
+    flameGraphTimingIndex
+  }: HoveredStackTiming): React.ReactNode => {
     const {
       thread,
       unfilteredThread,
@@ -261,7 +226,7 @@ class FlameGraphCanvas extends React.PureComponent<Props> {
       interval,
       isInverted,
       callTreeSummaryStrategy,
-      pages,
+      pages
     } = this.props;
 
     if (!shouldDisplayTooltips()) {
@@ -270,58 +235,32 @@ class FlameGraphCanvas extends React.PureComponent<Props> {
 
     const stackTiming = flameGraphTiming[depth];
     const callNodeIndex = stackTiming.callNode[flameGraphTimingIndex];
-    const duration =
-      stackTiming.end[flameGraphTimingIndex] -
-      stackTiming.start[flameGraphTimingIndex];
+    const duration = stackTiming.end[flameGraphTimingIndex] - stackTiming.start[flameGraphTimingIndex];
 
-    const shouldComputeTimings =
-      // This is currently too slow for JS Tracer threads.
-      !thread.isJsTracer &&
-      // Only calculate this if our summary strategy is actually timing related.
-      // This function could be made more generic to handle other summary
-      // strategies, but it may not be worth implementing it.
-      callTreeSummaryStrategy === 'timing';
+    const shouldComputeTimings = // This is currently too slow for JS Tracer threads.
+    !thread.isJsTracer && // Only calculate this if our summary strategy is actually timing related.
+    // This function could be made more generic to handle other summary
+    // strategies, but it may not be worth implementing it.
+    callTreeSummaryStrategy === 'timing';
 
-    return (
-      // Important! Only pass in props that have been properly memoized so this component
+    return (// Important! Only pass in props that have been properly memoized so this component
       // doesn't over-render.
-      <TooltipCallNode
-        thread={thread}
-        pages={pages}
-        interval={interval}
-        callNodeIndex={callNodeIndex}
-        callNodeInfo={callNodeInfo}
-        categories={categories}
-        durationText={`${(100 * duration).toFixed(2)}%`}
-        callTree={callTree}
-        callTreeSummaryStrategy={callTreeSummaryStrategy}
-        timings={
-          shouldComputeTimings
-            ? this._getTimingsForCallNodeIndex(
-                callNodeIndex,
-                callNodeInfo,
-                interval,
-                isInverted,
-                thread,
-                unfilteredThread,
-                sampleIndexOffset,
-                categories
-              )
-            : undefined
-        }
-      />
+      <TooltipCallNode thread={thread} pages={pages} interval={interval} callNodeIndex={callNodeIndex} callNodeInfo={callNodeInfo} categories={categories} durationText={`${(100 * duration).toFixed(2)}%`} callTree={callTree} callTreeSummaryStrategy={callTreeSummaryStrategy} timings={shouldComputeTimings ? this._getTimingsForCallNodeIndex(callNodeIndex, callNodeInfo, interval, isInverted, thread, unfilteredThread, sampleIndexOffset, categories) : undefined} />
     );
   };
 
-  _getCallNodeIndexFromHoveredItem(
-    hoveredItem: HoveredStackTiming | null
-  ): IndexIntoCallNodeTable | null {
+  _getCallNodeIndexFromHoveredItem(hoveredItem: HoveredStackTiming | null): IndexIntoCallNodeTable | null {
     if (hoveredItem === null) {
       return null;
     }
 
-    const { depth, flameGraphTimingIndex } = hoveredItem;
-    const { flameGraphTiming } = this.props;
+    const {
+      depth,
+      flameGraphTimingIndex
+    } = hoveredItem;
+    const {
+      flameGraphTiming
+    } = this.props;
     const stackTiming = flameGraphTiming[depth];
     const callNodeIndex = stackTiming.callNode[flameGraphTimingIndex];
     return callNodeIndex;
@@ -345,7 +284,10 @@ class FlameGraphCanvas extends React.PureComponent<Props> {
     const {
       flameGraphTiming,
       maxStackDepth,
-      viewport: { viewportTop, containerWidth },
+      viewport: {
+        viewportTop,
+        containerWidth
+      }
     } = this.props;
     const pos = x / containerWidth;
     const depth = Math.floor(maxStackDepth - (y + viewportTop) / ROW_HEIGHT);
@@ -369,26 +311,14 @@ class FlameGraphCanvas extends React.PureComponent<Props> {
   _noOp = () => {};
 
   render() {
-    const { containerWidth, containerHeight, isDragging } = this.props.viewport;
+    const {
+      containerWidth,
+      containerHeight,
+      isDragging
+    } = this.props.viewport;
 
-    return (
-      <ChartCanvas
-        className="flameGraphCanvas"
-        containerWidth={containerWidth}
-        containerHeight={containerHeight}
-        isDragging={isDragging}
-        scaleCtxToCssPixels={true}
-        onDoubleClickItem={this._noOp}
-        getHoveredItemInfo={this._getHoveredStackInfo}
-        drawCanvas={this._drawCanvas}
-        hitTest={this._hitTest}
-        onSelectItem={this._onSelectItem}
-        onRightClick={this._onRightClick}
-      />
-    );
+    return <ChartCanvas className="flameGraphCanvas" containerWidth={containerWidth} containerHeight={containerHeight} isDragging={isDragging} scaleCtxToCssPixels={true} onDoubleClickItem={this._noOp} getHoveredItemInfo={this._getHoveredStackInfo} drawCanvas={this._drawCanvas} hitTest={this._hitTest} onSelectItem={this._onSelectItem} onRightClick={this._onRightClick} />;
   }
 }
 
-export default (withChartViewport: WithChartViewport<OwnProps, Props>)(
-  FlameGraphCanvas
-);
+export default (withChartViewport as WithChartViewport<OwnProps, Props>)(FlameGraphCanvas);

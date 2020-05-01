@@ -1,20 +1,17 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
 
-import * as profileViewSelectors from '../../../selectors/profile';
-import * as urlStateSelectors from '../../../selectors/url-state';
-import {
-  getProfileFromTextSamples,
-  getCounterForThread,
-} from './processed-profile';
-import { storeWithProfile } from '../stores';
-import { oneLine } from 'common-tags';
 
-import type { Profile } from '../../../types/profile';
-import type { State } from '../../../types/state';
-import { assertExhaustiveCheck } from '../../../utils/flow';
+import * as profileViewSelectors from "../../../selectors/profile";
+import * as urlStateSelectors from "../../../selectors/url-state";
+import { getProfileFromTextSamples, getCounterForThread } from "./processed-profile";
+import { storeWithProfile } from "../stores";
+import { oneLine } from "common-tags";
+
+import { Profile } from "../../../types/profile";
+import { State } from "../../../types/state";
+import { assertExhaustiveCheck } from "../../../utils/flow";
 
 /**
  * This function takes the current timeline tracks, and generates a human readable result
@@ -47,57 +44,37 @@ export function getHumanReadableTracks(state: State): string[] {
   const text: string[] = [];
   for (const globalTrackIndex of urlStateSelectors.getGlobalTrackOrder(state)) {
     const globalTrack = globalTracks[globalTrackIndex];
-    const globalHiddenText = hiddenGlobalTracks.has(globalTrackIndex)
-      ? 'hide'
-      : 'show';
-    if (
-      globalTrack.type === 'process' &&
-      globalTrack.mainThreadIndex !== null
-    ) {
-      const selected =
-        globalTrack.mainThreadIndex === selectedThreadIndex ? ' SELECTED' : '';
+    const globalHiddenText = hiddenGlobalTracks.has(globalTrackIndex) ? 'hide' : 'show';
+    if (globalTrack.type === 'process' && globalTrack.mainThreadIndex !== null) {
+      const selected = globalTrack.mainThreadIndex === selectedThreadIndex ? ' SELECTED' : '';
       const thread = threads[globalTrack.mainThreadIndex];
-      text.push(
-        // This is broken up into multiple lines to make it easier to read, but it is
-        // in fact one line.
-        /// Example: 'hide [thread GeckoMain default] SELECTED'
-        oneLine`
+      text.push( // This is broken up into multiple lines to make it easier to read, but it is
+      // in fact one line.
+      /// Example: 'hide [thread GeckoMain default] SELECTED'
+      oneLine`
           ${globalHiddenText}
           [thread ${thread.name} ${thread.processType}]${selected}
-        `
-      );
+        `);
     } else {
       text.push(`${globalHiddenText} [${globalTrack.type}]`);
     }
 
     if (globalTrack.type === 'process') {
-      const trackOrder = urlStateSelectors.getLocalTrackOrder(
-        state,
-        globalTrack.pid
-      );
-      const tracks = profileViewSelectors.getLocalTracks(
-        state,
-        globalTrack.pid
-      );
+      const trackOrder = urlStateSelectors.getLocalTrackOrder(state, globalTrack.pid);
+      const tracks = profileViewSelectors.getLocalTracks(state, globalTrack.pid);
 
       for (const trackIndex of trackOrder) {
         const track = tracks[trackIndex];
         let trackName;
         if (track.type === 'memory') {
-          trackName = profileViewSelectors
-            .getCounterSelectors(track.counterIndex)
-            .getPid(state);
+          trackName = profileViewSelectors.getCounterSelectors(track.counterIndex).getPid(state);
         } else {
           trackName = threads[track.threadIndex].name;
         }
-        const hiddenTracks = urlStateSelectors.getHiddenLocalTracks(
-          state,
-          globalTrack.pid
-        );
+        const hiddenTracks = urlStateSelectors.getHiddenLocalTracks(state, globalTrack.pid);
 
         const hiddenText = hiddenTracks.has(trackIndex) ? 'hide' : 'show';
-        const selected =
-          track.threadIndex === selectedThreadIndex ? ' SELECTED' : '';
+        const selected = track.threadIndex === selectedThreadIndex ? ' SELECTED' : '';
 
         text.push(`  - ${hiddenText} [${track.type} ${trackName}]${selected}`);
       }
@@ -116,7 +93,9 @@ export function getHumanReadableTracks(state: State): string[] {
  *  ]
  */
 export function getProfileWithNiceTracks(): Profile {
-  const { profile } = getProfileFromTextSamples('A', 'B', 'C', 'D');
+  const {
+    profile
+  } = getProfileFromTextSamples('A', 'B', 'C', 'D');
   const [thread1, thread2, thread3, thread4] = profile.threads;
   thread1.name = 'GeckoMain';
   thread1.processType = 'process';
@@ -130,12 +109,10 @@ export function getProfileWithNiceTracks(): Profile {
   thread2.markers.data.push({
     type: 'tracing',
     category: 'Paint',
-    interval: 'start',
+    interval: 'start'
   });
   thread2.markers.category.push(0);
-  thread2.markers.name.push(
-    thread2.stringTable.indexForString('RefreshDriverTick')
-  );
+  thread2.markers.name.push(thread2.stringTable.indexForString('RefreshDriverTick'));
   thread2.markers.time.push(0);
   thread2.markers.length++;
 
@@ -149,13 +126,11 @@ export function getProfileWithNiceTracks(): Profile {
   return profile;
 }
 
-export function getStoreWithMemoryTrack(pid: number = 222): * {
-  const { profile } = getProfileFromTextSamples(
-    // Create a trivial profile with 10 samples, all of the function "A".
-    Array(10)
-      .fill('A')
-      .join('  ')
-  );
+export function getStoreWithMemoryTrack(pid: number = 222): any {
+  const {
+    profile
+  } = getProfileFromTextSamples( // Create a trivial profile with 10 samples, all of the function "A".
+  Array(10).fill('A').join('  '));
   const threadIndex = 0;
   const trackIndex = 0;
   const trackReference = { type: 'local', pid, trackIndex };
@@ -172,10 +147,7 @@ export function getStoreWithMemoryTrack(pid: number = 222): * {
   }
 
   const store = storeWithProfile(profile);
-  const localTrack = profileViewSelectors.getLocalTrackFromReference(
-    store.getState(),
-    trackReference
-  );
+  const localTrack = profileViewSelectors.getLocalTrackFromReference(store.getState(), trackReference);
 
   if (localTrack.type !== 'memory') {
     throw new Error('Expected a memory track.');
@@ -203,22 +175,21 @@ export function getHumanReadableActiveTabTracks(state: State): string[] {
 
   for (const globalTrack of globalTracks) {
     switch (globalTrack.type) {
-      case 'tab': {
-        const selected =
-          globalTrack.threadIndex === selectedThreadIndex ? ' SELECTED' : '';
-        text.push(`main track [tab]${selected}`);
-        // TODO: Add resource tracks
-        break;
-      }
-      case 'screenshots': {
-        text.push(`${globalTrack.type}`);
-        break;
-      }
+      case 'tab':
+        {
+          const selected = globalTrack.threadIndex === selectedThreadIndex ? ' SELECTED' : '';
+          text.push(`main track [tab]${selected}`);
+          // TODO: Add resource tracks
+          break;
+        }
+      case 'screenshots':
+        {
+          text.push(`${globalTrack.type}`);
+          break;
+        }
       default:
-        throw assertExhaustiveCheck(
-          globalTrack,
-          'Unhandled ActiveTabGlobalTrack.'
-        );
+        throw assertExhaustiveCheck(globalTrack, 'Unhandled ActiveTabGlobalTrack.');
+
     }
   }
 

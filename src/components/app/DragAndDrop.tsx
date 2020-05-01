@@ -2,47 +2,38 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
 
-import * as React from 'react';
-import classNames from 'classnames';
-import { retrieveProfileFromFile } from '../../actions/receive-profile';
-import type { ConnectedProps } from '../../utils/connect';
-import explicitConnect from '../../utils/connect';
 
-import {
-  startDragging,
-  stopDragging,
-  registerDragAndDropOverlay,
-  unregisterDragAndDropOverlay,
-} from '../../actions/app';
-import {
-  getIsDragAndDropDragging,
-  getIsDragAndDropOverlayRegistered,
-  getIsNewProfileLoadAllowed,
-} from '../../selectors/app';
+import * as React from "react";
+import classNames from "classnames";
+import { retrieveProfileFromFile } from "../../actions/receive-profile";
+import explicitConnect, { ConnectedProps } from "../../utils/connect";
 
-import './DragAndDrop.css';
+
+import { startDragging, stopDragging, registerDragAndDropOverlay, unregisterDragAndDropOverlay } from "../../actions/app";
+import { getIsDragAndDropDragging, getIsDragAndDropOverlayRegistered, getIsNewProfileLoadAllowed } from "../../selectors/app";
+
+import "./DragAndDrop.css";
 
 function _dragPreventDefault(event: DragEvent) {
   event.preventDefault();
 }
 
-type OwnProps = {|
-  +className?: string,
-  +children?: React.Node,
-|};
+type OwnProps = {
+  readonly className?: string;
+  readonly children?: React.ReactNode;
+};
 
-type StateProps = {|
-  +isNewProfileLoadAllowed: boolean,
-  +useDefaultOverlay: boolean,
-|};
+type StateProps = {
+  readonly isNewProfileLoadAllowed: boolean;
+  readonly useDefaultOverlay: boolean;
+};
 
-type DispatchProps = {|
-  +retrieveProfileFromFile: typeof retrieveProfileFromFile,
-  +startDragging: typeof startDragging,
-  +stopDragging: typeof stopDragging,
-|};
+type DispatchProps = {
+  readonly retrieveProfileFromFile: typeof retrieveProfileFromFile;
+  readonly startDragging: typeof startDragging;
+  readonly stopDragging: typeof stopDragging;
+};
 
 type Props = ConnectedProps<OwnProps, StateProps, DispatchProps>;
 
@@ -75,8 +66,8 @@ type Props = ConnectedProps<OwnProps, StateProps, DispatchProps>;
  * </DragAndDrop>
  * (no default overlay added here anymore)
  */
-
 class DragAndDropImpl extends React.PureComponent<Props> {
+
   componentDidMount() {
     // Prevent dropping files on the document.
     document.addEventListener('drag', _dragPreventDefault, false);
@@ -108,68 +99,59 @@ class DragAndDropImpl extends React.PureComponent<Props> {
       return;
     }
 
-    const { files } = event.dataTransfer;
+    const {
+      files
+    } = event.dataTransfer;
     if (files.length > 0) {
       this.props.retrieveProfileFromFile(files[0]);
     }
   };
 
   render() {
-    const { className, children } = this.props;
+    const {
+      className,
+      children
+    } = this.props;
 
-    return (
-      <>
-        <div
-          className={classNames(className, 'dragAndDropArea')}
-          onDragEnter={this._startDragging}
-          onDragExit={this._stopDragging}
-          onDrop={this._handleProfileDrop}
-        >
+    return <>
+        <div className={classNames(className, 'dragAndDropArea')} onDragEnter={this._startDragging} onDragExit={this._stopDragging} onDrop={this._handleProfileDrop}>
           {children}
         </div>
-        {/* Put the default overlay here if it is to be used. The
-          dragAndDropArea div creates its own stacking context, so
-          even if it contains children with high z-indexes, the
-          default overlay will still appear on top when shown.*/
-        this.props.useDefaultOverlay ? (
-          <DragAndDropOverlay isDefault={true} />
-        ) : null}
-      </>
-    );
+        {
+      /* Put the default overlay here if it is to be used. The
+       dragAndDropArea div creates its own stacking context, so
+       even if it contains children with high z-indexes, the
+       default overlay will still appear on top when shown.*/
+      this.props.useDefaultOverlay ? <DragAndDropOverlay isDefault={true} /> : null}
+      </>;
   }
 }
 
-export const DragAndDrop = explicitConnect<OwnProps, StateProps, DispatchProps>(
-  {
-    mapStateToProps: state => ({
-      isNewProfileLoadAllowed: getIsNewProfileLoadAllowed(state),
-      useDefaultOverlay: !getIsDragAndDropOverlayRegistered(state),
-    }),
-    mapDispatchToProps: {
-      retrieveProfileFromFile,
-      startDragging,
-      stopDragging,
-    },
-    component: DragAndDropImpl,
-  }
-);
+export const DragAndDrop = explicitConnect<OwnProps, StateProps, DispatchProps>({
+  mapStateToProps: state => ({
+    isNewProfileLoadAllowed: getIsNewProfileLoadAllowed(state),
+    useDefaultOverlay: !getIsDragAndDropOverlayRegistered(state)
+  }),
+  mapDispatchToProps: {
+    retrieveProfileFromFile,
+    startDragging,
+    stopDragging
+  },
+  component: DragAndDropImpl
+});
 
-type OverlayOwnProps = {|
-  +isDefault?: boolean,
-|};
-type OverlayStateProps = {|
-  +isDragging: boolean,
-  +isNewProfileLoadAllowed: boolean,
-|};
-type OverlayDispatchProps = {|
-  +registerDragAndDropOverlay: typeof registerDragAndDropOverlay,
-  +unregisterDragAndDropOverlay: typeof unregisterDragAndDropOverlay,
-|};
-type OverlayProps = ConnectedProps<
-  OverlayOwnProps,
-  OverlayStateProps,
-  OverlayDispatchProps
->;
+type OverlayOwnProps = {
+  readonly isDefault?: boolean;
+};
+type OverlayStateProps = {
+  readonly isDragging: boolean;
+  readonly isNewProfileLoadAllowed: boolean;
+};
+type OverlayDispatchProps = {
+  readonly registerDragAndDropOverlay: typeof registerDragAndDropOverlay;
+  readonly unregisterDragAndDropOverlay: typeof unregisterDragAndDropOverlay;
+};
+type OverlayProps = ConnectedProps<OverlayOwnProps, OverlayStateProps, OverlayDispatchProps>;
 
 /**
  * An overlay which is visible only when the user is dragging a file.
@@ -179,6 +161,7 @@ type OverlayProps = ConnectedProps<
  * rendered.
  */
 class DragAndDropOverlayImpl extends React.PureComponent<OverlayProps> {
+
   componentDidMount() {
     if (!this.props.isDefault) {
       this.props.registerDragAndDropOverlay();
@@ -192,33 +175,20 @@ class DragAndDropOverlayImpl extends React.PureComponent<OverlayProps> {
   }
 
   render() {
-    return (
-      <div
-        className={classNames(
-          'dragAndDropOverlayWrapper',
-          this.props.isDragging && this.props.isNewProfileLoadAllowed
-            ? 'dragging'
-            : false
-        )}
-      >
+    return <div className={classNames('dragAndDropOverlayWrapper', this.props.isDragging && this.props.isNewProfileLoadAllowed ? 'dragging' : false)}>
         <div className="dragAndDropOverlay">Drop a saved profile here</div>
-      </div>
-    );
+      </div>;
   }
 }
 
-export const DragAndDropOverlay = explicitConnect<
-  OverlayOwnProps,
-  OverlayStateProps,
-  OverlayDispatchProps
->({
+export const DragAndDropOverlay = explicitConnect<OverlayOwnProps, OverlayStateProps, OverlayDispatchProps>({
   mapStateToProps: state => ({
     isDragging: getIsDragAndDropDragging(state),
-    isNewProfileLoadAllowed: getIsNewProfileLoadAllowed(state),
+    isNewProfileLoadAllowed: getIsNewProfileLoadAllowed(state)
   }),
   mapDispatchToProps: {
     registerDragAndDropOverlay,
-    unregisterDragAndDropOverlay,
+    unregisterDragAndDropOverlay
   },
-  component: DragAndDropOverlayImpl,
+  component: DragAndDropOverlayImpl
 });

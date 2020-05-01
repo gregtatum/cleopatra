@@ -2,7 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
 import * as React from 'react';
 import { Provider } from 'react-redux';
 import { render } from 'react-testing-library';
@@ -12,8 +11,7 @@ import { changeSelectedTab, changeSidebarOpenState } from '../../actions/app';
 import { storeWithProfile } from '../fixtures/stores';
 import { getProfileFromTextSamples } from '../fixtures/profiles/processed-profile';
 
-import { tabSlugs } from '../../app-logic/tabs-handling';
-import type { TabSlug } from '../../app-logic/tabs-handling';
+import { tabSlugs, TabSlug } from '../../app-logic/tabs-handling';
 
 // Let's mock all possible views so that we don't spend too much time rendering stuff.
 // We use the tab slugs as class names. `call-tree` is an exception because if

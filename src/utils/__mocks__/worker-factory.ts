@@ -1,28 +1,27 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
+
 
 // $FlowExpectError Flow doesn't know about this util
-import { Worker } from 'worker_threads'; // eslint-disable-line import/no-unresolved
+import { Worker } from "worker_threads"; // eslint-disable-line import/no-unresolved
 
 class NodeWorker {
+
   _instance: Worker;
-  onmessage: MessageEvent => mixed;
+  onmessage: (arg0: MessageEvent) => unknown;
 
   constructor(file: string) {
     const worker = new Worker(__dirname + '/node-worker-contents.js', {
-      workerData: file,
+      workerData: file
     });
     worker.on('message', this.onMessage);
     worker.on('error', this.onError);
     this._instance = worker;
   }
 
-  postMessage(
-    message: mixed,
-    transfer?: Array<ArrayBuffer | MessagePort | ImageBitmap>
-  ) {
+  postMessage(message: unknown, transfer?: Array<ArrayBuffer | MessagePort | ImageBitmap>) {
     let payload = message;
 
     // Starting with node v11.12, postMessage sends the payload using the same
@@ -38,7 +37,7 @@ class NodeWorker {
     this._instance.postMessage(payload, transfer);
   }
 
-  onMessage = (message: Object) => {
+  onMessage = (message: {[name: string]: any }) => {
     if (this.onmessage) {
       this.onmessage(new MessageEvent('message', { data: message }));
     }
@@ -56,12 +55,13 @@ class NodeWorker {
 }
 
 const workerConfigs = {
-  'zee-worker': './res/zee-worker.js',
+  'zee-worker': './res/zee-worker.js'
 };
 
 const workerInstances = [];
 
 export default class {
+
   constructor(file: string) {
     const path = workerConfigs[file];
     const worker = new NodeWorker(path);

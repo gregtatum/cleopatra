@@ -2,8 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
-
 import * as React from 'react';
 import { Provider } from 'react-redux';
 import { render } from 'react-testing-library';
@@ -22,7 +20,7 @@ import {
   getMergedProfileFromTextSamples,
 } from '../fixtures/profiles/processed-profile';
 
-import type { CallNodePath } from '../../types/profile-derived';
+import { CallNodePath } from '../../types/profile-derived';
 
 describe('CallTreeSidebar', function() {
   function setup() {

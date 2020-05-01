@@ -1,5 +1,3 @@
-import { $Shape } from "utility-types";
-
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -15,6 +13,7 @@ import { UrlState } from "../types/state";
 import { DataSource } from "../types/actions";
 import { Pid, Profile, Thread, IndexIntoStackTable, BrowsingContextID } from "../types/profile";
 import { TrackIndex, CallNodePath } from "../types/profile-derived";
+import { $Shape } from "utility-types";
 
 export const CURRENT_URL_VERSION = 4;
 
@@ -462,7 +461,7 @@ type ProcessedLocation = {
 };
 
 type ProcessedLocationBeforeUpgrade = ProcessedLocation & {
-  query: Object;
+  query: any;
 };
 
 export function upgradeLocationToCurrentVersion(processedLocation: ProcessedLocationBeforeUpgrade, profile?: Profile): ProcessedLocation {

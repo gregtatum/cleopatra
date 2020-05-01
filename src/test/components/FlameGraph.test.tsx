@@ -2,7 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
 import * as React from 'react';
 import { render, fireEvent } from 'react-testing-library';
 import { Provider } from 'react-redux';
@@ -37,7 +36,7 @@ import mockRaf from '../fixtures/mocks/request-animation-frame';
 import { getInvertCallstack } from '../../selectors/url-state';
 import { ensureExists } from '../../utils/flow';
 
-import type { CssPixels } from '../../types/units';
+import { CssPixels } from '../../types/units';
 
 const GRAPH_WIDTH = 200;
 const GRAPH_HEIGHT = 300;
@@ -93,7 +92,13 @@ describe('FlameGraph', function() {
     }
 
     // Start out with callnode B selected
-    dispatch(changeSelectedCallNode(0, [0, 1] /* B */));
+    dispatch(
+      changeSelectedCallNode(
+        0,
+        [0, 1]
+        /* B */
+      )
+    );
     expect(selectedNode()).toBe('B');
 
     // Move one callnode up

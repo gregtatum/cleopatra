@@ -2,130 +2,77 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
-import * as React from 'react';
-import { render, fireEvent } from 'react-testing-library';
-import { Provider } from 'react-redux';
+
+import * as React from "react";
+import { render, fireEvent } from "react-testing-library";
+import { Provider } from "react-redux";
 
 // This module is mocked.
-import copy from 'copy-to-clipboard';
+import copy from "copy-to-clipboard";
 
-import { changeMarkersSearchString } from '../../actions/profile-view';
-import {
-  TIMELINE_MARGIN_LEFT,
-  TIMELINE_MARGIN_RIGHT,
-} from '../../app-logic/constants';
-import MarkerChart from '../../components/marker-chart';
-import MarkerContextMenu from '../../components/shared/MarkerContextMenu';
-import { changeSelectedTab } from '../../actions/app';
-import { ensureExists } from '../../utils/flow';
+import { changeMarkersSearchString } from "../../actions/profile-view";
+import { TIMELINE_MARGIN_LEFT, TIMELINE_MARGIN_RIGHT } from "../../app-logic/constants";
+import MarkerChart from "../../components/marker-chart";
+import MarkerContextMenu from "../../components/shared/MarkerContextMenu";
+import { changeSelectedTab } from "../../actions/app";
+import { ensureExists } from "../../utils/flow";
 
-import mockCanvasContext from '../fixtures/mocks/canvas-context';
-import { storeWithProfile } from '../fixtures/stores';
-import { getProfileWithMarkers } from '../fixtures/profiles/processed-profile';
-import {
-  getBoundingBox,
-  getMouseEvent,
-  addRootOverlayElement,
-  removeRootOverlayElement,
-  findFillTextPositionFromDrawLog,
-} from '../fixtures/utils';
-import mockRaf from '../fixtures/mocks/request-animation-frame';
+import mockCanvasContext from "../fixtures/mocks/canvas-context";
+import { storeWithProfile } from "../fixtures/stores";
+import { getProfileWithMarkers } from "../fixtures/profiles/processed-profile";
+import { getBoundingBox, getMouseEvent, addRootOverlayElement, removeRootOverlayElement, findFillTextPositionFromDrawLog } from "../fixtures/utils";
+import mockRaf from "../fixtures/mocks/request-animation-frame";
 
-import type { UserTimingMarkerPayload } from '../../types/markers';
-import type { CssPixels } from '../../types/units';
+import { UserTimingMarkerPayload } from "../../types/markers";
+import { CssPixels } from "../../types/units";
 
-const MARKERS = [
-  ['Marker A', 0, { startTime: 0, endTime: 10 }],
-  ['Marker A', 0, { startTime: 0, endTime: 10 }],
-  ['Marker A', 11, { startTime: 11, endTime: 15 }],
-  [
-    'Very very very very very very Very very very very very very Very very very very very very Very very very very very very Very very very very very very long Marker D',
-    6,
-    { startTime: 5, endTime: 15 },
-  ],
-  ['Dot marker E', 4, { startTime: 4, endTime: 4 }],
-  ['Non-interval marker F without data', 7, null],
-  [
-    'Marker G type DOMEvent',
-    5,
-    {
-      type: 'tracing',
-      category: 'DOMEvent',
-      eventType: 'click',
-      interval: 'start',
-      phase: 2,
-    },
-  ],
-  [
-    'Marker G type DOMEvent',
-    10,
-    {
-      type: 'tracing',
-      category: 'DOMEvent',
-      eventType: 'click',
-      interval: 'end',
-      phase: 2,
-    },
-  ],
-  [
-    'Marker H with no start',
-    3,
-    {
-      type: 'tracing',
-      category: 'Paint',
-      interval: 'end',
-    },
-  ],
-  [
-    'Marker H with no end',
-    9,
-    {
-      type: 'tracing',
-      category: 'Paint',
-      interval: 'start',
-    },
-  ],
-  getUserTiming('Marker B', 2, 8),
-];
+const MARKERS = [['Marker A', 0, { startTime: 0, endTime: 10 }], ['Marker A', 0, { startTime: 0, endTime: 10 }], ['Marker A', 11, { startTime: 11, endTime: 15 }], ['Very very very very very very Very very very very very very Very very very very very very Very very very very very very Very very very very very very long Marker D', 6, { startTime: 5, endTime: 15 }], ['Dot marker E', 4, { startTime: 4, endTime: 4 }], ['Non-interval marker F without data', 7, null], ['Marker G type DOMEvent', 5, {
+  type: 'tracing',
+  category: 'DOMEvent',
+  eventType: 'click',
+  interval: 'start',
+  phase: 2
+}], ['Marker G type DOMEvent', 10, {
+  type: 'tracing',
+  category: 'DOMEvent',
+  eventType: 'click',
+  interval: 'end',
+  phase: 2
+}], ['Marker H with no start', 3, {
+  type: 'tracing',
+  category: 'Paint',
+  interval: 'end'
+}], ['Marker H with no end', 9, {
+  type: 'tracing',
+  category: 'Paint',
+  interval: 'start'
+}], getUserTiming('Marker B', 2, 8)];
 
 function setupWithProfile(profile) {
   const flushRafCalls = mockRaf();
   const ctx = mockCanvasContext();
-  jest
-    .spyOn(HTMLCanvasElement.prototype, 'getContext')
-    .mockImplementation(() => ctx);
+  jest.spyOn(HTMLCanvasElement.prototype, 'getContext').mockImplementation(() => ctx);
 
   // Ideally we'd want this only on the Canvas and on ChartViewport, but this is
   // a lot easier to mock this everywhere.
-  jest
-    .spyOn(HTMLElement.prototype, 'getBoundingClientRect')
-    .mockImplementation(() =>
-      getBoundingBox(200 + TIMELINE_MARGIN_LEFT + TIMELINE_MARGIN_RIGHT, 300)
-    );
+  jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(() => getBoundingBox(200 + TIMELINE_MARGIN_LEFT + TIMELINE_MARGIN_RIGHT, 300));
 
   const store = storeWithProfile(profile);
   store.dispatch(changeSelectedTab('marker-chart'));
 
-  const renderResult = render(
-    <Provider store={store}>
+  const renderResult = render(<Provider store={store}>
       <>
         <MarkerContextMenu />
         <MarkerChart />
       </>
-    </Provider>
-  );
+    </Provider>);
 
-  const { container } = renderResult;
+  const {
+    container
+  } = renderResult;
 
   function fireMouseEvent(eventName, options) {
-    fireEvent(
-      ensureExists(
-        container.querySelector('canvas'),
-        `Couldn't find the canvas element`
-      ),
-      getMouseEvent(eventName, options)
-    );
+    fireEvent(ensureExists(container.querySelector('canvas'), `Couldn't find the canvas element`), getMouseEvent(eventName, options));
   }
 
   return {
@@ -133,11 +80,11 @@ function setupWithProfile(profile) {
     ...store,
     flushRafCalls,
     flushDrawLog: () => ctx.__flushDrawLog(),
-    fireMouseEvent,
+    fireMouseEvent
   };
 }
 
-describe('MarkerChart', function() {
+describe('MarkerChart', function () {
   beforeEach(addRootOverlayElement);
   afterEach(removeRootOverlayElement);
 
@@ -149,7 +96,7 @@ describe('MarkerChart', function() {
       container,
       flushRafCalls,
       dispatch,
-      flushDrawLog,
+      flushDrawLog
     } = setupWithProfile(profile);
 
     dispatch(changeSelectedTab('marker-chart'));
@@ -166,34 +113,28 @@ describe('MarkerChart', function() {
     window.devicePixelRatio = 1;
     const rowName = 'TestMarker';
 
-    const markers = [
-      // RENDERED: This marker defines the start of our range.
-      [rowName, 0, null],
-      // RENDERED: Now create three "dot" markers that should only be rendered once.
-      [rowName, 5000, null],
-      // NOT-RENDERED: This marker has a duration, but it's very small, and would get
-      // rendered as a dot.
-      [rowName, 5001, { startTime: 5001, endTime: 5001.1 }],
-      // NOT-RENDERED: The final dot marker
-      [rowName, 5002, null],
-      // RENDERED: This is a longer marker, it should always be drawn even if it starts
-      // at the same location as a dot marker
-      [rowName, 5002, { startTime: 5002, endTime: 7000 }],
-      // RENDERED: Add a final marker that's quite far away to have a big time range.
-      [rowName, 15000, null],
-    ];
+    const markers = [// RENDERED: This marker defines the start of our range.
+    [rowName, 0, null], // RENDERED: Now create three "dot" markers that should only be rendered once.
+    [rowName, 5000, null], // NOT-RENDERED: This marker has a duration, but it's very small, and would get
+    // rendered as a dot.
+    [rowName, 5001, { startTime: 5001, endTime: 5001.1 }], // NOT-RENDERED: The final dot marker
+    [rowName, 5002, null], // RENDERED: This is a longer marker, it should always be drawn even if it starts
+    // at the same location as a dot marker
+    [rowName, 5002, { startTime: 5002, endTime: 7000 }], // RENDERED: Add a final marker that's quite far away to have a big time range.
+    [rowName, 15000, null]];
 
     const profile = getProfileWithMarkers(markers);
-    const { flushRafCalls, flushDrawLog } = setupWithProfile(profile);
+    const {
+      flushRafCalls,
+      flushDrawLog
+    } = setupWithProfile(profile);
     flushRafCalls();
 
     const drawCalls = flushDrawLog();
 
     // Check that we have 3 arc operations (first marker, one of the 2 dot
     // markers in the middle, and last marker)
-    const arcOperations = drawCalls.filter(
-      ([operation]) => operation === 'arc'
-    );
+    const arcOperations = drawCalls.filter(([operation]) => operation === 'arc');
     expect(arcOperations).toHaveLength(3);
 
     // Check that all X values are different
@@ -202,10 +143,7 @@ describe('MarkerChart', function() {
 
     // Check that we have a fillRect operation for the longer marker.
     // We filter on the height to get only 1 relevant fillRect operation per marker
-    const fillRectOperations = drawCalls.filter(
-      ([operation, , , , height]) =>
-        operation === 'fillRect' && height > 1 && height < 16
-    );
+    const fillRectOperations = drawCalls.filter(([operation,,,, height]) => operation === 'fillRect' && height > 1 && height < 16);
     expect(fillRectOperations).toHaveLength(1);
 
     delete window.devicePixelRatio;
@@ -219,7 +157,7 @@ describe('MarkerChart', function() {
       flushRafCalls,
       dispatch,
       flushDrawLog,
-      fireMouseEvent,
+      fireMouseEvent
     } = setupWithProfile(profile);
 
     dispatch(changeSelectedTab('marker-chart'));
@@ -230,14 +168,17 @@ describe('MarkerChart', function() {
     {
       const drawLog = flushDrawLog();
 
-      const { x, y } = findFillTextPositionFromDrawLog(drawLog, 'Marker B');
+      const {
+        x,
+        y
+      } = findFillTextPositionFromDrawLog(drawLog, 'Marker B');
 
       // Move the mouse on top of an item.
       fireMouseEvent('mousemove', {
         offsetX: x,
         offsetY: y,
         pageX: x,
-        pageY: y,
+        pageY: y
       });
     }
 
@@ -250,12 +191,7 @@ describe('MarkerChart', function() {
     expect(drawLog).toMatchSnapshot();
 
     // The tooltip should be displayed
-    expect(
-      ensureExists(
-        document.querySelector('.tooltip'),
-        'A tooltip component must exist for this test.'
-      )
-    ).toMatchSnapshot();
+    expect(ensureExists(document.querySelector('.tooltip'), 'A tooltip component must exist for this test.')).toMatchSnapshot();
   });
 
   it('only renders a single row when hovering', () => {
@@ -266,7 +202,7 @@ describe('MarkerChart', function() {
       flushRafCalls,
       dispatch,
       flushDrawLog,
-      fireMouseEvent,
+      fireMouseEvent
     } = setupWithProfile(profile);
 
     dispatch(changeSelectedTab('marker-chart'));
@@ -274,14 +210,17 @@ describe('MarkerChart', function() {
 
     const drawLogBefore = flushDrawLog();
 
-    const { x, y } = findFillTextPositionFromDrawLog(drawLogBefore, 'Marker B');
+    const {
+      x,
+      y
+    } = findFillTextPositionFromDrawLog(drawLogBefore, 'Marker B');
 
     // Move the mouse on top of an item.
     fireMouseEvent('mousemove', {
       offsetX: x,
       offsetY: y,
       pageX: x,
-      pageY: y,
+      pageY: y
     });
 
     flushRafCalls();
@@ -300,10 +239,7 @@ describe('MarkerChart', function() {
     });
 
     function setupForContextMenus() {
-      const profile = getProfileWithMarkers([
-        getUserTiming('UserTiming A', 0, 10),
-        getUserTiming('UserTiming B', 2, 8),
-      ]);
+      const profile = getProfileWithMarkers([getUserTiming('UserTiming A', 0, 10), getUserTiming('UserTiming B', 2, 8)]);
       const setupResult = setupWithProfile(profile);
       const {
         flushRafCalls,
@@ -311,14 +247,17 @@ describe('MarkerChart', function() {
         flushDrawLog,
         fireMouseEvent,
         container,
-        getByText,
+        getByText
       } = setupResult;
 
       dispatch(changeSelectedTab('marker-chart'));
       flushRafCalls();
       const drawLog = flushDrawLog();
 
-      function getPositioningOptions({ x, y }) {
+      function getPositioningOptions({
+        x,
+        y
+      }) {
         // These positioning options will be sent to all our mouse events. Note
         // that the values aren't really consistent, especially offsetY and
         // pageY shouldn't be the same, but in the context of our test this will
@@ -333,18 +272,18 @@ describe('MarkerChart', function() {
           clientX: x,
           clientY: y,
           pageX: x,
-          pageY: y,
+          pageY: y
         };
 
         return positioningOptions;
       }
 
-      function rightClick(where: { x: CssPixels, y: CssPixels }) {
+      function rightClick(where: {x: CssPixels;y: CssPixels;}) {
         const positioningOptions = getPositioningOptions(where);
         const clickOptions = {
           ...positioningOptions,
           button: 2,
-          buttons: 2,
+          buttons: 2
         };
 
         // Because different components listen to different events, we trigger
@@ -356,7 +295,7 @@ describe('MarkerChart', function() {
         flushRafCalls();
       }
 
-      function mouseOver(where: { x: CssPixels, y: CssPixels }) {
+      function mouseOver(where: {x: CssPixels;y: CssPixels;}) {
         const positioningOptions = getPositioningOptions(where);
         fireMouseEvent('mousemove', positioningOptions);
         flushRafCalls();
@@ -366,17 +305,11 @@ describe('MarkerChart', function() {
         fireEvent.click(getByText(stringOrRegexp));
       }
 
-      function findFillTextPosition(
-        fillText: string
-      ): {| x: number, y: number |} {
+      function findFillTextPosition(fillText: string): {x: number;y: number;} {
         return findFillTextPositionFromDrawLog(drawLog, fillText);
       }
 
-      const getContextMenu = () =>
-        ensureExists(
-          container.querySelector('.react-contextmenu'),
-          `Couldn't find the context menu.`
-        );
+      const getContextMenu = () => ensureExists(container.querySelector('.react-contextmenu'), `Couldn't find the context menu.`);
 
       return {
         ...setupResult,
@@ -384,7 +317,7 @@ describe('MarkerChart', function() {
         mouseOver,
         getContextMenu,
         findFillTextPosition,
-        clickOnMenuItem,
+        clickOnMenuItem
       };
     }
 
@@ -393,7 +326,7 @@ describe('MarkerChart', function() {
         rightClick,
         clickOnMenuItem,
         getContextMenu,
-        findFillTextPosition,
+        findFillTextPosition
       } = setupForContextMenus();
 
       rightClick(findFillTextPosition('UserTiming A'));
@@ -413,7 +346,7 @@ describe('MarkerChart', function() {
         rightClick,
         clickOnMenuItem,
         getContextMenu,
-        findFillTextPosition,
+        findFillTextPosition
       } = setupForContextMenus();
 
       rightClick(findFillTextPosition('UserTiming A'));
@@ -433,7 +366,7 @@ describe('MarkerChart', function() {
         mouseOver,
         flushDrawLog,
         getContextMenu,
-        findFillTextPosition,
+        findFillTextPosition
       } = setupForContextMenus();
 
       rightClick(findFillTextPosition('UserTiming A'));
@@ -445,25 +378,24 @@ describe('MarkerChart', function() {
 
       // Expect that we have 2 markers drawn with this color.
       const drawCalls = flushDrawLog();
-      const callsWithHighlightColor = drawCalls.filter(
-        ([, argument]) => argument === 'Highlight'
-      );
+      const callsWithHighlightColor = drawCalls.filter(([, argument]) => argument === 'Highlight');
       expect(callsWithHighlightColor).toHaveLength(2);
     });
   });
 
-  describe('with search strings', function() {
+  describe('with search strings', function () {
     function getFillTextCalls(drawCalls) {
-      return drawCalls
-        .filter(([methodName]) => methodName === 'fillText')
-        .map(([_, text]) => text);
+      return drawCalls.filter(([methodName]) => methodName === 'fillText').map(([_, text]) => text);
     }
 
     const searchString = 'Dot marker E';
 
-    it('renders lots of markers initially', function() {
+    it('renders lots of markers initially', function () {
       const profile = getProfileWithMarkers(MARKERS);
-      const { flushRafCalls, flushDrawLog } = setupWithProfile(profile);
+      const {
+        flushRafCalls,
+        flushDrawLog
+      } = setupWithProfile(profile);
 
       flushRafCalls();
       const text = getFillTextCalls(flushDrawLog());
@@ -472,11 +404,13 @@ describe('MarkerChart', function() {
       expect(text.filter(t => t === searchString).length).toBe(1);
     });
 
-    it('renders only the marker that was searched for', function() {
+    it('renders only the marker that was searched for', function () {
       const profile = getProfileWithMarkers(MARKERS);
-      const { flushRafCalls, dispatch, flushDrawLog } = setupWithProfile(
-        profile
-      );
+      const {
+        flushRafCalls,
+        dispatch,
+        flushDrawLog
+      } = setupWithProfile(profile);
 
       // Flush out any existing draw calls.
       flushRafCalls();
@@ -494,7 +428,10 @@ describe('MarkerChart', function() {
   describe('EmptyReasons', () => {
     it('shows a reason when a profile has no markers', () => {
       const profile = getProfileWithMarkers([]);
-      const { dispatch, container } = setupWithProfile(profile);
+      const {
+        dispatch,
+        container
+      } = setupWithProfile(profile);
 
       dispatch(changeSelectedTab('marker-chart'));
       expect(container.querySelector('.EmptyReasons')).toMatchSnapshot();
@@ -502,7 +439,10 @@ describe('MarkerChart', function() {
 
     it("shows a reason when a profile's markers have been filtered out", () => {
       const profile = getProfileWithMarkers(MARKERS);
-      const { dispatch, container } = setupWithProfile(profile);
+      const {
+        dispatch,
+        container
+      } = setupWithProfile(profile);
 
       dispatch(changeSelectedTab('marker-chart'));
       dispatch(changeMarkersSearchString('MATCH_NOTHING'));
@@ -514,16 +454,12 @@ describe('MarkerChart', function() {
 /**
  * This is a quick helper to create UserTiming markers.
  */
-function getUserTiming(name: string, startTime: number, endTime: number): * {
-  return [
-    'UserTiming',
+function getUserTiming(name: string, startTime: number, endTime: number): any {
+  return ['UserTiming', startTime, ({
+    type: 'UserTiming',
     startTime,
-    ({
-      type: 'UserTiming',
-      startTime,
-      endTime,
-      name,
-      entryType: 'measure',
-    }: UserTimingMarkerPayload),
-  ];
+    endTime,
+    name,
+    entryType: 'measure'
+  } as UserTimingMarkerPayload)];
 }

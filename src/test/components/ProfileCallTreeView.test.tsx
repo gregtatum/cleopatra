@@ -2,7 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
 import * as React from 'react';
 import { Provider } from 'react-redux';
 import { render, fireEvent } from 'react-testing-library';
@@ -38,7 +37,7 @@ import {
   addTransformToStack,
 } from '../../actions/profile-view';
 
-import type { Profile } from '../../types/profile';
+import { Profile } from '../../types/profile';
 
 beforeEach(() => {
   // Mock out the 2d canvas for the loupe view.
@@ -368,8 +367,7 @@ describe('calltree/ProfileCallTreeView navigation keys', () => {
           `Couldn't find the tree view body with selector div.treeViewBody`
         );
         fireEvent.keyDown(
-          treeViewBody,
-          // There's a shortcoming in either Flow or the flow type for the
+          treeViewBody, // There's a shortcoming in either Flow or the flow type for the
           // `keyDown` method. $FlowExpectError
           param.key ? param : { key: param }
         );

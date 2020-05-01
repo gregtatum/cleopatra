@@ -2,8 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
-
 import * as React from 'react';
 import { Provider } from 'react-redux';
 import { render, fireEvent } from 'react-testing-library';
@@ -318,10 +316,8 @@ describe('timeline/TrackContextMenu', function() {
       // Hide the global track.
       fireEvent.click(globalTrackItem());
       expect(getHumanReadableTracks(getState())).toEqual([
-        'show [thread GeckoMain process] SELECTED',
-        // The "GeckoMain tab" process is now hidden.
-        'hide [thread GeckoMain tab]',
-        // These are still shown as visible, which reflects their
+        'show [thread GeckoMain process] SELECTED', // The "GeckoMain tab" process is now hidden.
+        'hide [thread GeckoMain tab]', // These are still shown as visible, which reflects their
         // internal state, but in the UI they'll appear hidden.
         '  - show [thread DOM Worker]',
         '  - show [thread Style]',
@@ -330,10 +326,8 @@ describe('timeline/TrackContextMenu', function() {
       // Unhide "DOM Worker" local track.
       fireEvent.click(localTrackItem());
       expect(getHumanReadableTracks(getState())).toEqual([
-        'show [thread GeckoMain process] SELECTED',
-        // The "GeckoMain tab" process is visible again.
-        'show [thread GeckoMain tab]',
-        // Only the "DOM Worker" local track is visible.
+        'show [thread GeckoMain process] SELECTED', // The "GeckoMain tab" process is visible again.
+        'show [thread GeckoMain tab]', // Only the "DOM Worker" local track is visible.
         '  - show [thread DOM Worker]',
         '  - hide [thread Style]',
       ]);

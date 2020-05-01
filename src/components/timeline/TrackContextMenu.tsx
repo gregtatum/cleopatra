@@ -2,95 +2,65 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
-import React, { PureComponent } from 'react';
-import { ContextMenu, MenuItem } from 'react-contextmenu';
-import './TrackContextMenu.css';
-import {
-  hideGlobalTrack,
-  showGlobalTrack,
-  isolateProcess,
-  isolateLocalTrack,
-  isolateProcessMainThread,
-  isolateScreenshot,
-  hideLocalTrack,
-  showLocalTrack,
-} from '../../actions/profile-view';
-import explicitConnect from '../../utils/connect';
-import { ensureExists } from '../../utils/flow';
-import {
-  getThreads,
-  getRightClickedTrack,
-  getGlobalTracks,
-  getRightClickedThreadIndex,
-  getLocalTrackNamesByPid,
-  getGlobalTrackNames,
-  getLocalTracksByPid,
-  getActiveTabHiddenGlobalTracksGetter,
-  getActiveTabHiddenLocalTracksByPidGetter,
-} from '../../selectors/profile';
-import {
-  getGlobalTrackOrder,
-  getHiddenGlobalTracks,
-  getHiddenLocalTracksByPid,
-  getLocalTrackOrderByPid,
-  getShowTabOnly,
-} from '../../selectors/url-state';
-import classNames from 'classnames';
 
-import type {
-  Thread,
-  ThreadIndex,
-  Pid,
-  BrowsingContextID,
-} from '../../types/profile';
-import type {
-  TrackIndex,
-  GlobalTrack,
-  LocalTrack,
-} from '../../types/profile-derived';
-import type { State } from '../../types/state';
-import type { TrackReference } from '../../types/actions';
+import React, { PureComponent } from "react";
+import { ContextMenu, MenuItem } from "react-contextmenu";
+import "./TrackContextMenu.css";
+import { hideGlobalTrack, showGlobalTrack, isolateProcess, isolateLocalTrack, isolateProcessMainThread, isolateScreenshot, hideLocalTrack, showLocalTrack } from "../../actions/profile-view";
+import explicitConnect, { ConnectedProps } from "../../utils/connect";
+import { ensureExists } from "../../utils/flow";
+import { getThreads, getRightClickedTrack, getGlobalTracks, getRightClickedThreadIndex, getLocalTrackNamesByPid, getGlobalTrackNames, getLocalTracksByPid, getActiveTabHiddenGlobalTracksGetter, getActiveTabHiddenLocalTracksByPidGetter } from "../../selectors/profile";
+import { getGlobalTrackOrder, getHiddenGlobalTracks, getHiddenLocalTracksByPid, getLocalTrackOrderByPid, getShowTabOnly } from "../../selectors/url-state";
+import classNames from "classnames";
 
-import type { ConnectedProps } from '../../utils/connect';
+import { Thread, ThreadIndex, Pid, BrowsingContextID } from "../../types/profile";
+import { TrackIndex, GlobalTrack, LocalTrack } from "../../types/profile-derived";
+import { State } from "../../types/state";
+import { TrackReference } from "../../types/actions";
 
-type StateProps = {|
-  +threads: Thread[],
-  +globalTrackOrder: TrackIndex[],
-  +hiddenGlobalTracks: Set<TrackIndex>,
-  +hiddenLocalTracksByPid: Map<Pid, Set<TrackIndex>>,
-  +localTrackOrderByPid: Map<Pid, TrackIndex[]>,
-  +rightClickedTrack: TrackReference | null,
-  +globalTracks: GlobalTrack[],
-  +rightClickedThreadIndex: ThreadIndex | null,
-  +globalTrackNames: string[],
-  +localTracksByPid: Map<Pid, LocalTrack[]>,
-  +localTrackNamesByPid: Map<Pid, string[]>,
-  +showTabOnly: BrowsingContextID | null,
-  +activeTabHiddenGlobalTracksGetter: () => Set<TrackIndex>,
-  +activeTabHiddenLocalTracksByPidGetter: () => Map<Pid, Set<TrackIndex>>,
-|};
 
-type DispatchProps = {|
-  +hideGlobalTrack: typeof hideGlobalTrack,
-  +showGlobalTrack: typeof showGlobalTrack,
-  +isolateProcess: typeof isolateProcess,
-  +hideLocalTrack: typeof hideLocalTrack,
-  +showLocalTrack: typeof showLocalTrack,
-  +isolateLocalTrack: typeof isolateLocalTrack,
-  +isolateProcessMainThread: typeof isolateProcessMainThread,
-  +isolateScreenshot: typeof isolateScreenshot,
-|};
 
-type Props = ConnectedProps<{||}, StateProps, DispatchProps>;
+type StateProps = {
+  readonly threads: Thread[];
+  readonly globalTrackOrder: TrackIndex[];
+  readonly hiddenGlobalTracks: Set<TrackIndex>;
+  readonly hiddenLocalTracksByPid: Map<Pid, Set<TrackIndex>>;
+  readonly localTrackOrderByPid: Map<Pid, TrackIndex[]>;
+  readonly rightClickedTrack: TrackReference | null;
+  readonly globalTracks: GlobalTrack[];
+  readonly rightClickedThreadIndex: ThreadIndex | null;
+  readonly globalTrackNames: string[];
+  readonly localTracksByPid: Map<Pid, LocalTrack[]>;
+  readonly localTrackNamesByPid: Map<Pid, string[]>;
+  readonly showTabOnly: BrowsingContextID | null;
+  readonly activeTabHiddenGlobalTracksGetter: () => Set<TrackIndex>;
+  readonly activeTabHiddenLocalTracksByPidGetter: () => Map<Pid, Set<TrackIndex>>;
+};
+
+type DispatchProps = {
+  readonly hideGlobalTrack: typeof hideGlobalTrack;
+  readonly showGlobalTrack: typeof showGlobalTrack;
+  readonly isolateProcess: typeof isolateProcess;
+  readonly hideLocalTrack: typeof hideLocalTrack;
+  readonly showLocalTrack: typeof showLocalTrack;
+  readonly isolateLocalTrack: typeof isolateLocalTrack;
+  readonly isolateProcessMainThread: typeof isolateProcessMainThread;
+  readonly isolateScreenshot: typeof isolateScreenshot;
+};
+
+type Props = ConnectedProps<{}, StateProps, DispatchProps>;
 
 class TimelineTrackContextMenu extends PureComponent<Props> {
-  _toggleGlobalTrackVisibility = (
-    _,
-    data: { trackIndex: TrackIndex }
-  ): void => {
-    const { trackIndex } = data;
-    const { hiddenGlobalTracks, hideGlobalTrack, showGlobalTrack } = this.props;
+
+  _toggleGlobalTrackVisibility = (_, data: {trackIndex: TrackIndex;}): void => {
+    const {
+      trackIndex
+    } = data;
+    const {
+      hiddenGlobalTracks,
+      hideGlobalTrack,
+      showGlobalTrack
+    } = this.props;
     if (hiddenGlobalTracks.has(trackIndex)) {
       showGlobalTrack(trackIndex);
     } else {
@@ -98,33 +68,28 @@ class TimelineTrackContextMenu extends PureComponent<Props> {
     }
   };
 
-  _toggleLocalTrackVisibility = (
-    _,
-    data: { pid: Pid, trackIndex: TrackIndex, globalTrackIndex: TrackIndex }
-  ): void => {
-    const { trackIndex, pid, globalTrackIndex } = data;
+  _toggleLocalTrackVisibility = (_, data: {pid: Pid;trackIndex: TrackIndex;globalTrackIndex: TrackIndex;}): void => {
+    const {
+      trackIndex,
+      pid,
+      globalTrackIndex
+    } = data;
     const {
       hiddenLocalTracksByPid,
       hideLocalTrack,
       showLocalTrack,
       hiddenGlobalTracks,
       showGlobalTrack,
-      localTrackOrderByPid,
+      localTrackOrderByPid
     } = this.props;
-    const hiddenLocalTracks = ensureExists(
-      hiddenLocalTracksByPid.get(pid),
-      'Expected to find hidden local tracks for the given pid'
-    );
+    const hiddenLocalTracks = ensureExists(hiddenLocalTracksByPid.get(pid), 'Expected to find hidden local tracks for the given pid');
 
     if (hiddenGlobalTracks.has(globalTrackIndex)) {
       // When the parent global track is hidden, instead of simply
       // toggling, we'll just unhide the global track and this
       // particular local track. Other local tracks should be hidden.
       showGlobalTrack(globalTrackIndex);
-      const localTrackOrder = ensureExists(
-        localTrackOrderByPid.get(pid),
-        'Expected to find local tracks for the given pid'
-      );
+      const localTrackOrder = ensureExists(localTrackOrderByPid.get(pid), 'Expected to find local tracks for the given pid');
       localTrackOrder.forEach(index => {
         if (index === trackIndex) {
           showLocalTrack(pid, trackIndex);
@@ -144,65 +109,64 @@ class TimelineTrackContextMenu extends PureComponent<Props> {
   };
 
   _isolateProcess = () => {
-    const { isolateProcess, rightClickedTrack } = this.props;
+    const {
+      isolateProcess,
+      rightClickedTrack
+    } = this.props;
     if (rightClickedTrack === null) {
-      throw new Error(
-        'Attempted to isolate the process with no right clicked track.'
-      );
+      throw new Error('Attempted to isolate the process with no right clicked track.');
     }
     if (rightClickedTrack.type === 'local') {
-      throw new Error(
-        'Attempting to isolate a process track with a local track is selected.'
-      );
+      throw new Error('Attempting to isolate a process track with a local track is selected.');
     }
     isolateProcess(rightClickedTrack.trackIndex);
   };
 
   _isolateScreenshot = () => {
-    const { isolateScreenshot, rightClickedTrack } = this.props;
+    const {
+      isolateScreenshot,
+      rightClickedTrack
+    } = this.props;
     if (rightClickedTrack === null) {
-      throw new Error(
-        'Attempted to isolate the screenshot with no right clicked track.'
-      );
+      throw new Error('Attempted to isolate the screenshot with no right clicked track.');
     }
     if (rightClickedTrack.type !== 'global') {
-      throw new Error(
-        'Attempting to isolate a screenshot track with a local track is selected.'
-      );
+      throw new Error('Attempting to isolate a screenshot track with a local track is selected.');
     }
     isolateScreenshot(rightClickedTrack.trackIndex);
   };
 
   _isolateProcessMainThread = () => {
-    const { isolateProcessMainThread, rightClickedTrack } = this.props;
+    const {
+      isolateProcessMainThread,
+      rightClickedTrack
+    } = this.props;
     if (rightClickedTrack === null) {
-      throw new Error(
-        'Attempted to isolate the process main thread with no right clicked track.'
-      );
+      throw new Error('Attempted to isolate the process main thread with no right clicked track.');
     }
 
     if (rightClickedTrack.type === 'local') {
-      throw new Error(
-        'Attempting to isolate a process track with a local track is selected.'
-      );
+      throw new Error('Attempting to isolate a process track with a local track is selected.');
     }
     isolateProcessMainThread(rightClickedTrack.trackIndex);
   };
 
   _isolateLocalTrack = () => {
-    const { isolateLocalTrack, rightClickedTrack } = this.props;
+    const {
+      isolateLocalTrack,
+      rightClickedTrack
+    } = this.props;
     if (rightClickedTrack === null) {
-      throw new Error(
-        'Attempted to isolate the local track with no right clicked track.'
-      );
+      throw new Error('Attempted to isolate the local track with no right clicked track.');
     }
 
     if (rightClickedTrack.type === 'global') {
-      throw new Error(
-        'Attempting to isolate a local track with a global track is selected.'
-      );
+      throw new Error('Attempting to isolate a local track with a global track is selected.');
     }
-    const { pid, trackIndex } = rightClickedTrack;
+    const {
+      pid,
+      trackIndex
+    } = rightClickedTrack;
     isolateLocalTrack(pid, trackIndex);
   };
 
@@ -212,15 +176,12 @@ class TimelineTrackContextMenu extends PureComponent<Props> {
       activeTabHiddenGlobalTracksGetter,
       hiddenGlobalTracks,
       globalTrackNames,
-      globalTracks,
+      globalTracks
     } = this.props;
     const isHidden = hiddenGlobalTracks.has(trackIndex);
     const track = globalTracks[trackIndex];
 
-    if (
-      showTabOnly !== null &&
-      activeTabHiddenGlobalTracksGetter().has(trackIndex)
-    ) {
+    if (showTabOnly !== null && activeTabHiddenGlobalTracksGetter().has(trackIndex)) {
       // Hide the global track if it's hidden by active tab view.
       return null;
     }
@@ -230,27 +191,17 @@ class TimelineTrackContextMenu extends PureComponent<Props> {
       title += ` (Process ID: ${track.pid})`;
     }
 
-    return (
-      <MenuItem
-        key={trackIndex}
-        preventClose={true}
-        data={{ trackIndex }}
-        onClick={this._toggleGlobalTrackVisibility}
-        attributes={{
-          className: classNames('timelineTrackContextMenuItem', {
-            checkable: true,
-            checked: !isHidden,
-          }),
-          title,
-        }}
-      >
+    return <MenuItem key={trackIndex} preventClose={true} data={{ trackIndex }} onClick={this._toggleGlobalTrackVisibility} attributes={{
+      className: classNames('timelineTrackContextMenuItem', {
+        checkable: true,
+        checked: !isHidden
+      }),
+      title
+    }}>
         <span>{globalTrackNames[trackIndex]}</span>
         <span className="timelineTrackContextMenuSpacer" />
-        {track.type === 'process' && (
-          <span className="timelineTrackContextMenuPid">({track.pid})</span>
-        )}
-      </MenuItem>
-    );
+        {track.type === 'process' && <span className="timelineTrackContextMenuPid">({track.pid})</span>}
+      </MenuItem>;
   }
 
   renderLocalTracks(globalTrackIndex: TrackIndex, pid: Pid) {
@@ -261,7 +212,7 @@ class TimelineTrackContextMenu extends PureComponent<Props> {
       activeTabHiddenLocalTracksByPidGetter,
       hiddenGlobalTracks,
       localTracksByPid,
-      showTabOnly,
+      showTabOnly
     } = this.props;
 
     const isGlobalTrackHidden = hiddenGlobalTracks.has(globalTrackIndex);
@@ -270,16 +221,8 @@ class TimelineTrackContextMenu extends PureComponent<Props> {
     const localTrackNames = localTrackNamesByPid.get(pid);
     const localTracks = localTracksByPid.get(pid);
 
-    if (
-      localTrackOrder === undefined ||
-      hiddenLocalTracks === undefined ||
-      localTrackNames === undefined ||
-      localTracks === undefined
-    ) {
-      console.error(
-        'Unable to find local track information for the given pid:',
-        pid
-      );
+    if (localTrackOrder === undefined || hiddenLocalTracks === undefined || localTrackNames === undefined || localTracks === undefined) {
+      console.error('Unable to find local track information for the given pid:', pid);
       return null;
     }
 
@@ -289,40 +232,29 @@ class TimelineTrackContextMenu extends PureComponent<Props> {
       // showTabOnly is not null, do not include that track if it's not allowed.
       if (showTabOnly !== null) {
         // We need to defer the call of this as much as possible.
-        const activeTabHiddenLocalTracks = activeTabHiddenLocalTracksByPidGetter().get(
-          pid
-        );
-        if (
-          activeTabHiddenLocalTracks !== undefined &&
-          activeTabHiddenLocalTracks.has(trackIndex)
-        ) {
+        const activeTabHiddenLocalTracks = activeTabHiddenLocalTracksByPidGetter().get(pid);
+        if (activeTabHiddenLocalTracks !== undefined && activeTabHiddenLocalTracks.has(trackIndex)) {
           // Do not add the local track menu item if it's in single tab view and it's hidden by it.
           continue;
         }
       }
-      localTrackMenuItems.push(
-        <MenuItem
-          key={trackIndex}
-          preventClose={true}
-          data={{ pid, trackIndex, globalTrackIndex }}
-          onClick={this._toggleLocalTrackVisibility}
-          attributes={{
-            className: classNames('checkable indented', {
-              checked:
-                !hiddenLocalTracks.has(trackIndex) && !isGlobalTrackHidden,
-            }),
-          }}
-        >
+      localTrackMenuItems.push(<MenuItem key={trackIndex} preventClose={true} data={{ pid, trackIndex, globalTrackIndex }} onClick={this._toggleLocalTrackVisibility} attributes={{
+        className: classNames('checkable indented', {
+          checked: !hiddenLocalTracks.has(trackIndex) && !isGlobalTrackHidden
+        })
+      }}>
           {localTrackNames[trackIndex]}
-        </MenuItem>
-      );
+        </MenuItem>);
     }
 
     return localTrackMenuItems;
   }
 
   getRightClickedTrackName(rightClickedTrack: TrackReference): string {
-    const { globalTrackNames, localTrackNamesByPid } = this.props;
+    const {
+      globalTrackNames,
+      localTrackNamesByPid
+    } = this.props;
 
     if (rightClickedTrack.type === 'global') {
       return globalTrackNames[rightClickedTrack.trackIndex];
@@ -342,7 +274,7 @@ class TimelineTrackContextMenu extends PureComponent<Props> {
       globalTrackOrder,
       hiddenGlobalTracks,
       hiddenLocalTracksByPid,
-      localTracksByPid,
+      localTracksByPid
     } = this.props;
 
     if (rightClickedTrack === null) {
@@ -375,10 +307,7 @@ class TimelineTrackContextMenu extends PureComponent<Props> {
       let hasVisibleLocalTrackWithMainThread = false;
       for (let trackIndex = 0; trackIndex < localTracks.length; trackIndex++) {
         const localTrack = localTracks[trackIndex];
-        if (
-          localTrack.type === 'thread' &&
-          !hiddenLocalTracks.has(trackIndex)
-        ) {
+        if (localTrack.type === 'thread' && !hiddenLocalTracks.has(trackIndex)) {
           hasVisibleLocalTrackWithMainThread = true;
           break;
         }
@@ -391,11 +320,9 @@ class TimelineTrackContextMenu extends PureComponent<Props> {
       }
     }
 
-    return (
-      <MenuItem onClick={this._isolateProcess} disabled={isDisabled}>
+    return <MenuItem onClick={this._isolateProcess} disabled={isDisabled}>
         Only show this process group
-      </MenuItem>
-    );
+      </MenuItem>;
   }
 
   renderIsolateProcessMainThread() {
@@ -404,7 +331,7 @@ class TimelineTrackContextMenu extends PureComponent<Props> {
       globalTracks,
       hiddenGlobalTracks,
       hiddenLocalTracksByPid,
-      localTrackOrderByPid,
+      localTrackOrderByPid
     } = this.props;
 
     if (rightClickedTrack === null) {
@@ -428,23 +355,17 @@ class TimelineTrackContextMenu extends PureComponent<Props> {
     const hiddenLocalTracks = hiddenLocalTracksByPid.get(track.pid);
     const localTrackOrder = localTrackOrderByPid.get(track.pid);
     if (hiddenLocalTracks === undefined || localTrackOrder === undefined) {
-      console.error(
-        'Expected to find local track information for the given pid.'
-      );
+      console.error('Expected to find local track information for the given pid.');
       return null;
     }
 
-    const isDisabled =
-      // Does it have no visible local tracks?
-      hiddenLocalTracks.size === localTrackOrder.length &&
-      // Is there only one visible global track?
-      globalTracks.length - hiddenGlobalTracks.size === 1;
+    const isDisabled = // Does it have no visible local tracks?
+    hiddenLocalTracks.size === localTrackOrder.length && // Is there only one visible global track?
+    globalTracks.length - hiddenGlobalTracks.size === 1;
 
-    return (
-      <MenuItem onClick={this._isolateProcessMainThread} disabled={isDisabled}>
+    return <MenuItem onClick={this._isolateProcessMainThread} disabled={isDisabled}>
         Only show {`"${this.getRightClickedTrackName(rightClickedTrack)}"`}
-      </MenuItem>
-    );
+      </MenuItem>;
   }
 
   renderIsolateLocalTrack() {
@@ -453,7 +374,7 @@ class TimelineTrackContextMenu extends PureComponent<Props> {
       globalTracks,
       hiddenGlobalTracks,
       hiddenLocalTracksByPid,
-      localTrackOrderByPid,
+      localTrackOrderByPid
     } = this.props;
 
     if (rightClickedTrack === null) {
@@ -468,37 +389,33 @@ class TimelineTrackContextMenu extends PureComponent<Props> {
     const hiddenLocalTracks = hiddenLocalTracksByPid.get(rightClickedTrack.pid);
     const localTrackOrder = localTrackOrderByPid.get(rightClickedTrack.pid);
     if (hiddenLocalTracks === undefined || localTrackOrder === undefined) {
-      console.error(
-        'Expected to find local track information for the given pid.'
-      );
+      console.error('Expected to find local track information for the given pid.');
       return null;
     }
 
-    const isDisabled =
-      // Is there only one global track visible?
-      globalTracks.length - hiddenGlobalTracks.size === 1 &&
-      // Is there only one local track left?
-      localTrackOrder.length - hiddenLocalTracks.size === 1;
+    const isDisabled = // Is there only one global track visible?
+    globalTracks.length - hiddenGlobalTracks.size === 1 && // Is there only one local track left?
+    localTrackOrder.length - hiddenLocalTracks.size === 1;
 
-    return (
-      <MenuItem onClick={this._isolateLocalTrack} disabled={isDisabled}>
+    return <MenuItem onClick={this._isolateLocalTrack} disabled={isDisabled}>
         Only show {`"${this.getRightClickedTrackName(rightClickedTrack)}"`}
-      </MenuItem>
-    );
+      </MenuItem>;
   }
 
   getVisibleScreenshotTracks(): GlobalTrack[] {
-    const { globalTracks, hiddenGlobalTracks } = this.props;
-    const visibleScreenshotTracks = globalTracks.filter(
-      (globalTrack, trackIndex) =>
-        globalTrack.type === 'screenshots' &&
-        !hiddenGlobalTracks.has(trackIndex)
-    );
+    const {
+      globalTracks,
+      hiddenGlobalTracks
+    } = this.props;
+    const visibleScreenshotTracks = globalTracks.filter((globalTrack, trackIndex) => globalTrack.type === 'screenshots' && !hiddenGlobalTracks.has(trackIndex));
     return visibleScreenshotTracks;
   }
 
   renderIsolateScreenshot() {
-    const { rightClickedTrack, globalTracks } = this.props;
+    const {
+      rightClickedTrack,
+      globalTracks
+    } = this.props;
 
     if (rightClickedTrack === null) {
       return null;
@@ -519,59 +436,44 @@ class TimelineTrackContextMenu extends PureComponent<Props> {
     // because we want to also leave the item disabled when we hide the last
     // screenshot track while the menu is open.
     const isDisabled = this.getVisibleScreenshotTracks().length <= 1;
-    return (
-      <MenuItem onClick={this._isolateScreenshot} disabled={isDisabled}>
+    return <MenuItem onClick={this._isolateScreenshot} disabled={isDisabled}>
         Hide other screenshot tracks
-      </MenuItem>
-    );
+      </MenuItem>;
   }
 
   render() {
-    const { globalTrackOrder, globalTracks } = this.props;
+    const {
+      globalTrackOrder,
+      globalTracks
+    } = this.props;
 
     const isolateProcessMainThread = this.renderIsolateProcessMainThread();
     const isolateProcess = this.renderIsolateProcess();
     const isolateLocalTrack = this.renderIsolateLocalTrack();
     const isolateScreenshot = this.renderIsolateScreenshot();
-    const separator =
-      isolateProcessMainThread ||
-      isolateProcess ||
-      isolateLocalTrack ||
-      isolateScreenshot ? (
-        <div className="react-contextmenu-separator" />
-      ) : null;
+    const separator = isolateProcessMainThread || isolateProcess || isolateLocalTrack || isolateScreenshot ? <div className="react-contextmenu-separator" /> : null;
 
-    return (
-      <ContextMenu
-        id="TimelineTrackContextMenu"
-        className="timeline-context-menu"
-      >
-        {
-          // The menu items header items to isolate tracks may or may not be
-          // visible depending on the current state.
-        }
+    return <ContextMenu id="TimelineTrackContextMenu" className="timeline-context-menu">
+        {// The menu items header items to isolate tracks may or may not be
+        // visible depending on the current state.
+      }
         {isolateProcessMainThread}
         {isolateProcess}
         {isolateLocalTrack}
         {isolateScreenshot}
         {separator}
         {globalTrackOrder.map(globalTrackIndex => {
-          const globalTrack = globalTracks[globalTrackIndex];
-          return (
-            <div key={globalTrackIndex}>
+        const globalTrack = globalTracks[globalTrackIndex];
+        return <div key={globalTrackIndex}>
               {this.renderGlobalTrack(globalTrackIndex)}
-              {globalTrack.type === 'process'
-                ? this.renderLocalTracks(globalTrackIndex, globalTrack.pid)
-                : null}
-            </div>
-          );
-        })}
-      </ContextMenu>
-    );
+              {globalTrack.type === 'process' ? this.renderLocalTracks(globalTrackIndex, globalTrack.pid) : null}
+            </div>;
+      })}
+      </ContextMenu>;
   }
 }
 
-export default explicitConnect<{||}, StateProps, DispatchProps>({
+export default explicitConnect<{}, StateProps, DispatchProps>({
   mapStateToProps: (state: State) => ({
     threads: getThreads(state),
     globalTrackOrder: getGlobalTrackOrder(state),
@@ -585,12 +487,8 @@ export default explicitConnect<{||}, StateProps, DispatchProps>({
     localTracksByPid: getLocalTracksByPid(state),
     localTrackNamesByPid: getLocalTrackNamesByPid(state),
     showTabOnly: getShowTabOnly(state),
-    activeTabHiddenGlobalTracksGetter: getActiveTabHiddenGlobalTracksGetter(
-      state
-    ),
-    activeTabHiddenLocalTracksByPidGetter: getActiveTabHiddenLocalTracksByPidGetter(
-      state
-    ),
+    activeTabHiddenGlobalTracksGetter: getActiveTabHiddenGlobalTracksGetter(state),
+    activeTabHiddenLocalTracksByPidGetter: getActiveTabHiddenLocalTracksByPidGetter(state)
   }),
   mapDispatchToProps: {
     hideGlobalTrack,
@@ -600,7 +498,7 @@ export default explicitConnect<{||}, StateProps, DispatchProps>({
     isolateProcessMainThread,
     isolateScreenshot,
     hideLocalTrack,
-    showLocalTrack,
+    showLocalTrack
   },
-  component: TimelineTrackContextMenu,
+  component: TimelineTrackContextMenu
 });

@@ -1,7 +1,11 @@
+import { $Values } from "utility-types";
+
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
+
+
 
 /**
  * Transforms are the minimal representation some kind of transformation to the data
@@ -16,13 +20,9 @@
  * This combination of information will provide a stable reference to a call node for a
  * given view into a call tree.
  */
-import type {
-  ThreadIndex,
-  IndexIntoFuncTable,
-  IndexIntoResourceTable,
-} from './profile';
-import type { CallNodePath } from './profile-derived';
-import type { ImplementationFilter } from './actions';
+import { ThreadIndex, IndexIntoFuncTable, IndexIntoResourceTable } from "./profile";
+import { CallNodePath } from "./profile-derived";
+import { ImplementationFilter } from "./actions";
 
 /*
  * Define all of the transforms on an object to conveniently access $ObjMap and do
@@ -86,12 +86,12 @@ export type TransformDefinitions = {
    *                        ↓                               ↓
    *                      A:1,0                           X:1,1
    */
-  'focus-subtree': {|
-    +type: 'focus-subtree',
-    +callNodePath: CallNodePath,
-    +implementation: ImplementationFilter,
-    +inverted: boolean,
-  |},
+  'focus-subtree': {
+    readonly type: "focus-subtree";
+    readonly callNodePath: CallNodePath;
+    readonly implementation: ImplementationFilter;
+    readonly inverted: boolean;
+  };
 
   /**
    * This is the same operation as the FocusSubtree, but it is performed on each usage
@@ -117,10 +117,10 @@ export type TransformDefinitions = {
    *                   v
    *                 D:2,2
    */
-  'focus-function': {|
-    +type: 'focus-function',
-    +funcIndex: IndexIntoFuncTable,
-  |},
+  'focus-function': {
+    readonly type: "focus-function";
+    readonly funcIndex: IndexIntoFuncTable;
+  };
 
   /**
    * The MergeCallNode transform represents merging a CallNode into the parent CallNode. The
@@ -165,11 +165,11 @@ export type TransformDefinitions = {
    * This same operation is not applied to an inverted call stack as it has been deemed
    * not particularly useful, and prone to not give the expected results.
    */
-  'merge-call-node': {|
-    +type: 'merge-call-node',
-    +callNodePath: CallNodePath,
-    +implementation: ImplementationFilter,
-  |},
+  'merge-call-node': {
+    readonly type: "merge-call-node";
+    readonly callNodePath: CallNodePath;
+    readonly implementation: ImplementationFilter;
+  };
 
   /**
    * The MergeFunctions transform is similar to the MergeCallNode, except it merges a single
@@ -190,10 +190,10 @@ export type TransformDefinitions = {
    *        v           v
    *      E:1,1       G:1,1
    */
-  'merge-function': {|
-    +type: 'merge-function',
-    +funcIndex: IndexIntoFuncTable,
-  |},
+  'merge-function': {
+    readonly type: "merge-function";
+    readonly funcIndex: IndexIntoFuncTable;
+  };
 
   /**
    * The DropFunction transform removes samples from the thread that have a function
@@ -210,10 +210,10 @@ export type TransformDefinitions = {
    *        v
    *      D:1,1
    */
-  'drop-function': {|
-    +type: 'drop-function',
-    +funcIndex: IndexIntoFuncTable,
-  |},
+  'drop-function': {
+    readonly type: "drop-function";
+    readonly funcIndex: IndexIntoFuncTable;
+  };
 
   /**
    * Collapse resource takes CallNodes that are of a consecutive library, and collapses
@@ -231,13 +231,13 @@ export type TransformDefinitions = {
    *        v
    *        D
    */
-  'collapse-resource': {|
-    +type: 'collapse-resource',
-    +resourceIndex: IndexIntoResourceTable,
+  'collapse-resource': {
+    readonly type: "collapse-resource";
+    readonly resourceIndex: IndexIntoResourceTable;
     // This is the index of the newly created function that represents the collapsed stack.
-    +collapsedFuncIndex: IndexIntoFuncTable,
-    +implementation: ImplementationFilter,
-  |},
+    readonly collapsedFuncIndex: IndexIntoFuncTable;
+    readonly implementation: ImplementationFilter;
+  };
 
   /**
    * Collapse direct recursion takes a function that calls itself recursively and collapses
@@ -255,11 +255,11 @@ export type TransformDefinitions = {
    *      ↓
    *      C
    */
-  'collapse-direction-recursion': {|
-    +type: 'collapse-direct-recursion',
-    +funcIndex: IndexIntoFuncTable,
-    +implementation: ImplementationFilter,
-  |},
+  'collapse-direction-recursion': {
+    readonly type: "collapse-direct-recursion";
+    readonly funcIndex: IndexIntoFuncTable;
+    readonly implementation: ImplementationFilter;
+  };
 
   /**
    * Collapse the subtree of a function into that function across the entire tree.
@@ -278,19 +278,21 @@ export type TransformDefinitions = {
    *        v          v        v     v
    *      E:1,1     G:1,1    I:1,1    J:1,1
    */
-  'collapse-function-subtree': {|
-    +type: 'collapse-function-subtree',
-    +funcIndex: IndexIntoFuncTable,
-  |},
+  'collapse-function-subtree': {
+    readonly type: "collapse-function-subtree";
+    readonly funcIndex: IndexIntoFuncTable;
+  };
 };
 
 // Extract the transforms into a union.
 export type Transform = $Values<TransformDefinitions>;
 
 // This pulls the string value out of { type } for a transform.
-type ExtractType = <T: string, S: { +type: T }>(transform: S) => T;
+type ExtractType = <T extends string, S extends {readonly type: T;}>(transform: S) => T;
 
 export type TransformType = $Values<$ObjMap<TransformDefinitions, ExtractType>>;
 
 export type TransformStack = Transform[];
-export type TransformStacksPerThread = { [id: ThreadIndex]: TransformStack };
+export type TransformStacksPerThread = {
+  [key: number]: TransformStack;
+};

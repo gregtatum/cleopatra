@@ -1,10 +1,12 @@
+import { $Values } from "utility-types";
+
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
 
-import type { TabSlug } from '../app-logic/tabs-handling';
-import type { TransformType } from '../types/transforms';
+
+import { TabSlug } from "../app-logic/tabs-handling";
+import { TransformType } from "../types/transforms";
 
 /**
  * This file contains utils that help Flow understand things better. Occasionally
@@ -19,10 +21,7 @@ import type { TransformType } from '../types/transforms';
  * and the input to the function will be empty. This function hopefully makes that check
  * more readable.
  */
-export function assertExhaustiveCheck(
-  notValid: empty,
-  errorMessage: string = `There was an unhandled case for the value: "${notValid}"`
-): void {
+export function assertExhaustiveCheck(notValid: never, errorMessage: string = `There was an unhandled case for the value: "${notValid}"`): void {
   throw new Error(errorMessage);
 }
 
@@ -31,7 +30,7 @@ export function assertExhaustiveCheck(
  * type information of the object. Flow will occasionally throw errors when
  * inferring what is going on with Object.assign.
  */
-export function immutableUpdate<T: Object>(object: T, ...rest: Object[]): T {
+export function immutableUpdate<T extends Object>(object: T, ...rest: any[]): T {
   return Object.assign({}, object, ...rest);
 }
 
@@ -40,22 +39,18 @@ export function immutableUpdate<T: Object>(object: T, ...rest: Object[]): T {
  * throw an error so that any arbitrary string can be converted, e.g. from a URL.
  */
 export function toValidTabSlug(tabSlug: any): TabSlug | null {
-  const coercedTabSlug = (tabSlug: TabSlug);
+  const coercedTabSlug = (tabSlug as TabSlug);
   switch (coercedTabSlug) {
-    case 'calltree':
-    case 'stack-chart':
-    case 'marker-chart':
-    case 'network-chart':
-    case 'marker-table':
-    case 'flame-graph':
-    case 'js-tracer':
+    case 'calltree':case 'stack-chart':case 'marker-chart':case 'network-chart':case 'marker-table':case 'flame-graph':case 'js-tracer':
       return coercedTabSlug;
-    default: {
-      // The coerced type SHOULD be empty here. If in reality we get
-      // here, then it's not a valid transform type, so return null.
-      (coercedTabSlug: empty);
-      return null;
-    }
+    default:
+      {
+        // The coerced type SHOULD be empty here. If in reality we get
+        // here, then it's not a valid transform type, so return null.
+        (coercedTabSlug as never);
+        return null;
+      }
+
   }
 }
 
@@ -66,9 +61,7 @@ export function toValidTabSlug(tabSlug: any): TabSlug | null {
 export function ensureIsValidTabSlug(type: string): TabSlug {
   const assertedType = toValidTabSlug(type);
   if (!assertedType) {
-    throw new Error(
-      `Attempted to assert that "${type}" is a valid TransformType, and it was not.`
-    );
+    throw new Error(`Attempted to assert that "${type}" is a valid TransformType, and it was not.`);
   }
   return assertedType;
 }
@@ -79,25 +72,20 @@ export function ensureIsValidTabSlug(type: string): TabSlug {
  */
 export function convertToTransformType(type: string): TransformType | null {
   // Coerce this into a TransformType even if it's not one.
-  const coercedType = ((type: any): TransformType);
+  const coercedType = ((type as any) as TransformType);
   switch (coercedType) {
     // Exhaustively check each TransformType. The default arm will assert that
     // we have been exhaustive.
-    case 'merge-call-node':
-    case 'merge-function':
-    case 'focus-subtree':
-    case 'focus-function':
-    case 'collapse-resource':
-    case 'collapse-direct-recursion':
-    case 'collapse-function-subtree':
-    case 'drop-function':
+    case 'merge-call-node':case 'merge-function':case 'focus-subtree':case 'focus-function':case 'collapse-resource':case 'collapse-direct-recursion':case 'collapse-function-subtree':case 'drop-function':
       return coercedType;
-    default: {
-      // The coerced type SHOULD be empty here. If in reality we get
-      // here, then it's not a valid transform type, so return null.
-      (coercedType: empty);
-      return null;
-    }
+    default:
+      {
+        // The coerced type SHOULD be empty here. If in reality we get
+        // here, then it's not a valid transform type, so return null.
+        (coercedType as never);
+        return null;
+      }
+
   }
 }
 
@@ -105,10 +93,10 @@ export function convertToTransformType(type: string): TransformType | null {
  * This is a type-friendly version of Object.values that assumes the object has
  * a Map-like structure.
  */
-export function objectValues<Value, Obj: {| [string]: Value |}>(
-  object: Obj
-): Value[] {
-  return (Object.values: Function)(object);
+export function objectValues<Value, Obj extends {
+  [key: string]: Value;
+}>(object: Obj): Value[] {
+  return (Object.values as Function)(object);
 }
 
 /**
@@ -118,10 +106,10 @@ export function objectValues<Value, Obj: {| [string]: Value |}>(
 export function objectEntries<Key, Value>(object: {
   [Key]: Value,
 }): Array<[Key, Value]> {
-  return (Object.entries: Function)(object);
+  return (Object.entries as Function)(object);
 }
 
-export function getObjectValuesAsUnion<T: Object>(obj: T): Array<$Values<T>> {
+export function getObjectValuesAsUnion<T extends Object>(obj: T): Array<$Values<T>> {
   return Object.values(obj);
 }
 
@@ -132,21 +120,17 @@ export function getObjectValuesAsUnion<T: Object>(obj: T): Array<$Values<T>> {
 export function ensureIsTransformType(type: string): TransformType {
   const assertedType = convertToTransformType(type);
   if (!assertedType) {
-    throw new Error(
-      `Attempted to assert that "${type}" is a valid TransformType, and it was not.`
-    );
+    throw new Error(`Attempted to assert that "${type}" is a valid TransformType, and it was not.`);
   }
   return assertedType;
 }
 
-export function ensureExists<T>(item: ?T, message: ?string): T {
+export function ensureExists<T>(item: T | null | undefined, message: string | null | undefined): T {
   if (item === null) {
     throw new Error(message || 'Expected an item to exist, and it was null.');
   }
   if (item === undefined) {
-    throw new Error(
-      message || 'Expected an item to exist, and it was undefined.'
-    );
+    throw new Error(message || 'Expected an item to exist, and it was undefined.');
   }
   return item;
 }

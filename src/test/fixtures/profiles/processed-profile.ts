@@ -1,56 +1,29 @@
+import { $Shape } from "utility-types";
+
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
-import {
-  getEmptyProfile,
-  getEmptyThread,
-  getEmptyJsTracerTable,
-  resourceTypes,
-  getEmptyJsAllocationsTable,
-  getEmptyUnbalancedNativeAllocationsTable,
-  getEmptyBalancedNativeAllocationsTable,
-} from '../../../profile-logic/data-structures';
-import { mergeProfiles } from '../../../profile-logic/comparison';
-import { stateFromLocation } from '../../../app-logic/url-handling';
-import { UniqueStringArray } from '../../../utils/unique-string-array';
-import { ensureExists } from '../../../utils/flow';
 
-import type {
-  Profile,
-  Thread,
-  ThreadIndex,
-  IndexIntoCategoryList,
-  CategoryList,
-  JsTracerTable,
-  Counter,
-  BrowsingContextID,
-} from '../../../types/profile';
-import type {
-  MarkerPayload,
-  NetworkPayload,
-  NavigationMarkerPayload,
-  IPCMarkerPayload,
-  UserTimingMarkerPayload,
-} from '../../../types/markers';
-import type { Milliseconds } from '../../../types/units';
+import { getEmptyProfile, getEmptyThread, getEmptyJsTracerTable, resourceTypes, getEmptyJsAllocationsTable, getEmptyUnbalancedNativeAllocationsTable, getEmptyBalancedNativeAllocationsTable } from "../../../profile-logic/data-structures";
+import { mergeProfiles } from "../../../profile-logic/comparison";
+import { stateFromLocation } from "../../../app-logic/url-handling";
+import { UniqueStringArray } from "../../../utils/unique-string-array";
+import { ensureExists } from "../../../utils/flow";
+
+import { Profile, Thread, ThreadIndex, IndexIntoCategoryList, CategoryList, JsTracerTable, Counter, BrowsingContextID } from "../../../types/profile";
+import { MarkerPayload, NetworkPayload, NavigationMarkerPayload, IPCMarkerPayload, UserTimingMarkerPayload } from "../../../types/markers";
+import { Milliseconds } from "../../../types/units";
 
 // Array<[MarkerName, Milliseconds, Data]>
 type MarkerName = string;
 type MarkerTime = Milliseconds;
-type MockPayload = {| startTime: Milliseconds, endTime: Milliseconds |};
-export type TestDefinedMarkers = Array<
-  [MarkerName, MarkerTime, MarkerPayload | MockPayload]
->;
-export type TestDefinedJsTracerEvent = [
-  // Event name:
-  string,
-  // Start time:
-  Milliseconds,
-  // End time:
-  Milliseconds
-];
+type MockPayload = {startTime: Milliseconds;endTime: Milliseconds;};
+export type TestDefinedMarkers = Array<[MarkerName, MarkerTime, MarkerPayload | MockPayload]>;
+export type TestDefinedJsTracerEvent = [// Event name:
+string, // Start time:
+Milliseconds, // End time:
+Milliseconds];
 
 /**
  * This function ensures that the mock payloads are converted correctly to real payloads
@@ -58,32 +31,22 @@ export type TestDefinedJsTracerEvent = [
  * to { startTime, endTime } payloads. Doing this means that it's cleaner to create
  * dummy test-defined markers, since we don't have to add a `type` to the payload.
  */
-function _refineMockPayload(
-  payload: MarkerPayload | MockPayload
-): MarkerPayload {
-  if (
-    // Check for a MockPayload.
-    payload !== null &&
-    Object.keys(payload).length === 2 &&
-    typeof payload.startTime === 'number' &&
-    typeof payload.endTime === 'number'
-  ) {
+function _refineMockPayload(payload: MarkerPayload | MockPayload): MarkerPayload {
+  if ( // Check for a MockPayload.
+  payload !== null && Object.keys(payload).length === 2 && typeof payload.startTime === 'number' && typeof payload.endTime === 'number') {
     return {
       type: 'DummyForTests',
       endTime: payload.endTime,
-      startTime: payload.startTime,
+      startTime: payload.startTime
     };
   }
   // There is no way to refine the payload type to just the { startTime, endTime }
   // mock marker. So check for those conditions above, and coerce the final result
   // into a MarkerPayload using the function signature.
-  return (payload: any);
+  return (payload as any);
 }
 
-export function addMarkersToThreadWithCorrespondingSamples(
-  thread: Thread,
-  markers: TestDefinedMarkers
-) {
+export function addMarkersToThreadWithCorrespondingSamples(thread: Thread, markers: TestDefinedMarkers) {
   const stringTable = thread.stringTable;
   const markersTable = thread.markers;
 
@@ -102,31 +65,19 @@ export function getThreadWithMarkers(markers: TestDefinedMarkers) {
   return thread;
 }
 
-export function getUserTiming(
-  name: string,
-  startTime: number,
-  duration: number
-) {
-  return [
-    'UserTiming',
+export function getUserTiming(name: string, startTime: number, duration: number) {
+  return ['UserTiming', startTime, ({
+    type: 'UserTiming',
     startTime,
-    ({
-      type: 'UserTiming',
-      startTime,
-      endTime: startTime + duration,
-      name,
-      entryType: 'measure',
-    }: UserTimingMarkerPayload),
-  ];
+    endTime: startTime + duration,
+    name,
+    entryType: 'measure'
+  } as UserTimingMarkerPayload)];
 }
 
-export function getProfileWithMarkers(
-  ...markersPerThread: TestDefinedMarkers[]
-): Profile {
+export function getProfileWithMarkers(...markersPerThread: TestDefinedMarkers[]): Profile {
   const profile = getEmptyProfile();
-  profile.threads = markersPerThread.map(testDefinedMarkers =>
-    getThreadWithMarkers(testDefinedMarkers)
-  );
+  profile.threads = markersPerThread.map(testDefinedMarkers => getThreadWithMarkers(testDefinedMarkers));
   return profile;
 }
 
@@ -186,12 +137,12 @@ export function getProfileWithNamedThreads(threadNames: string[]): Profile {
  * Now the variables named A B Cjs D directly refer to the func indices and can
  * be used in tests.
  */
-export function getProfileFromTextSamples(
-  ...allTextSamples: string[]
-): {
-  profile: Profile,
-  funcNamesPerThread: Array<string[]>,
-  funcNamesDictPerThread: Array<{ [funcName: string]: number }>,
+export function getProfileFromTextSamples(...allTextSamples: string[]): {
+  profile: Profile;
+  funcNamesPerThread: Array<string[]>;
+  funcNamesDictPerThread: Array<{
+    [funcName: string]: number;
+  }>;
 } {
   const profile = getEmptyProfile();
   const categories = profile.meta.categories;
@@ -223,17 +174,13 @@ export function getProfileFromTextSamples(
     funcNamesDictPerThread.push(funcNamesDict);
 
     // Turn this into a real thread.
-    return _buildThreadFromTextOnlyStacks(
-      textOnlyStacks,
-      funcNames,
-      categories
-    );
+    return _buildThreadFromTextOnlyStacks(textOnlyStacks, funcNames, categories);
   });
 
   return { profile, funcNamesPerThread, funcNamesDictPerThread };
 }
 
-function _getAllMatchRanges(regex, str): Array<{ start: number, end: number }> {
+function _getAllMatchRanges(regex, str): Array<{start: number;end: number;}> {
   const ranges = [];
 
   let match;
@@ -276,10 +223,8 @@ function _getColumnPositions(line): number[] {
  * ]
  */
 function _parseTextSamples(textSamples: string): Array<string[]> {
-  const lines = textSamples.split('\n').filter(
-    // Filter out empty lines
-    t => t
-  );
+  const lines = textSamples.split('\n').filter( // Filter out empty lines
+  t => t);
   if (lines.length === 0) {
     throw new Error('Empty text data was sent');
   }
@@ -288,11 +233,7 @@ function _parseTextSamples(textSamples: string): Array<string[]> {
   const columnPositions = _getColumnPositions(lines[0]);
 
   // Create a table of string cells. Empty cells contain the empty string.
-  const rows = lines.map(line =>
-    columnPositions.map((pos, columnIndex) =>
-      line.substring(pos, columnPositions[columnIndex + 1]).trim()
-    )
-  );
+  const rows = lines.map(line => columnPositions.map((pos, columnIndex) => line.substring(pos, columnPositions[columnIndex + 1]).trim()));
 
   // Transpose the table to go from rows to columns.
   return columnPositions.map((_, columnIndex) => {
@@ -328,11 +269,7 @@ function _isJsFunctionName(funcName) {
   return funcName.endsWith('js');
 }
 
-function _findCategoryFromFuncName(
-  funcNameWithModifier: string,
-  funcName: string,
-  categories: CategoryList
-): IndexIntoCategoryList | null {
+function _findCategoryFromFuncName(funcNameWithModifier: string, funcName: string, categories: CategoryList): IndexIntoCategoryList | null {
   const findCategoryResult = /\[cat:([^\]]+)\]/.exec(funcNameWithModifier);
   let categoryName;
   if (findCategoryResult) {
@@ -361,11 +298,7 @@ function _findLibNameFromFuncName(funcNameWithModifier: string): string | null {
   return null;
 }
 
-function _buildThreadFromTextOnlyStacks(
-  textOnlyStacks: Array<string[]>,
-  funcNames: Array<string>,
-  categories: CategoryList
-): Thread {
+function _buildThreadFromTextOnlyStacks(textOnlyStacks: Array<string[]>, funcNames: Array<string>, categories: CategoryList): Thread {
   const thread = getEmptyThread();
 
   const {
@@ -375,15 +308,13 @@ function _buildThreadFromTextOnlyStacks(
     stackTable,
     samples,
     resourceTable,
-    libs,
+    libs
   } = thread;
 
   // Create the FuncTable.
   funcNames.forEach(funcName => {
     funcTable.name.push(stringTable.indexForString(funcName));
-    funcTable.address.push(
-      funcName.startsWith('0x') ? parseInt(funcName.substr(2), 16) : -1
-    );
+    funcTable.address.push(funcName.startsWith('0x') ? parseInt(funcName.substr(2), 16) : -1);
     funcTable.fileName.push(null);
     funcTable.relevantForJS.push(funcName.endsWith('js-relevant'));
     funcTable.isJS.push(_isJsFunctionName(funcName));
@@ -424,7 +355,7 @@ function _buildThreadFromTextOnlyStacks(
             path: '/path/to/' + libraryName,
             debugName: libraryName,
             debugPath: '/path/to/' + libraryName,
-            breakpadId: 'SOMETHING_FAKE',
+            breakpadId: 'SOMETHING_FAKE'
           });
 
           resourceTable.lib.push(libs.length - 1); // The lastly inserted item.
@@ -442,21 +373,13 @@ function _buildThreadFromTextOnlyStacks(
       // Find the wanted jit type from the function name
       const jitType = _findJitTypeFromFuncName(funcNameWithModifier);
       const jitTypeIndex = jitType ? stringTable.indexForString(jitType) : null;
-      const category = _findCategoryFromFuncName(
-        funcNameWithModifier,
-        funcName,
-        categories
-      );
+      const category = _findCategoryFromFuncName(funcNameWithModifier, funcName, categories);
 
       // Attempt to find a frame that satisfies the given funcIndex, jit type
       // and category..
       let frameIndex;
       for (let i = 0; i < frameTable.length; i++) {
-        if (
-          funcIndex === frameTable.func[i] &&
-          jitTypeIndex === frameTable.implementation[i] &&
-          category === frameTable.category[i]
-        ) {
+        if (funcIndex === frameTable.func[i] && jitTypeIndex === frameTable.implementation[i] && category === frameTable.category[i]) {
           frameIndex = i;
           break;
         }
@@ -478,10 +401,7 @@ function _buildThreadFromTextOnlyStacks(
       // Attempt to find a stack that satisfies the given frameIndex and prefix.
       let stackIndex;
       for (let i = 0; i < stackTable.length; i++) {
-        if (
-          stackTable.prefix[i] === prefix &&
-          stackTable.frame[i] === frameIndex
-        ) {
+        if (stackTable.prefix[i] === prefix && stackTable.frame[i] === frameIndex) {
           stackIndex = i;
           break;
         }
@@ -491,14 +411,10 @@ function _buildThreadFromTextOnlyStacks(
       if (stackIndex === undefined) {
         const frameCategory = frameTable.category[frameIndex];
         const frameSubcategory = frameTable.subcategory[frameIndex];
-        const prefixCategory =
-          prefix === null ? categoryOther : stackTable.category[prefix];
-        const prefixSubcategory =
-          prefix === null ? 0 : stackTable.subcategory[prefix];
-        const stackCategory =
-          frameCategory === null ? prefixCategory : frameCategory;
-        const stackSubcategory =
-          frameSubcategory === null ? prefixSubcategory : frameSubcategory;
+        const prefixCategory = prefix === null ? categoryOther : stackTable.category[prefix];
+        const prefixSubcategory = prefix === null ? 0 : stackTable.subcategory[prefix];
+        const stackCategory = frameCategory === null ? prefixCategory : frameCategory;
+        const stackSubcategory = frameSubcategory === null ? prefixSubcategory : frameSubcategory;
 
         stackTable.frame.push(frameIndex);
         stackTable.prefix.push(prefix);
@@ -522,56 +438,62 @@ function _buildThreadFromTextOnlyStacks(
 /**
  * This returns a merged profile from a number of profile strings.
  */
-export function getMergedProfileFromTextSamples(
-  ...profileStrings: string[]
-): {
-  profile: Profile,
-  funcNamesPerThread: Array<string[]>,
-  funcNamesDictPerThread: Array<{ [funcName: string]: number }>,
+export function getMergedProfileFromTextSamples(...profileStrings: string[]): {
+  profile: Profile;
+  funcNamesPerThread: Array<string[]>;
+  funcNamesDictPerThread: Array<{
+    [funcName: string]: number;
+  }>;
 } {
-  const profilesAndFuncNames = profileStrings.map(str =>
-    getProfileFromTextSamples(str)
-  );
-  const profiles = profilesAndFuncNames.map(({ profile }) => profile);
+  const profilesAndFuncNames = profileStrings.map(str => getProfileFromTextSamples(str));
+  const profiles = profilesAndFuncNames.map(({
+    profile
+  }) => profile);
   const profileState = stateFromLocation({
     pathname: '/public/fakehash1/',
     search: '?thread=0&v=3',
-    hash: '',
+    hash: ''
   });
-  const { profile } = mergeProfiles(
-    profiles,
-    profiles.map(() => profileState)
-  );
+  const {
+    profile
+  } = mergeProfiles(profiles, profiles.map(() => profileState));
   return {
     profile,
-    funcNamesPerThread: profilesAndFuncNames.map(
-      ({ funcNamesPerThread }) => funcNamesPerThread[0]
-    ),
-    funcNamesDictPerThread: profilesAndFuncNames.map(
-      ({ funcNamesDictPerThread }) => funcNamesDictPerThread[0]
-    ),
+    funcNamesPerThread: profilesAndFuncNames.map(({
+      funcNamesPerThread
+    }) => funcNamesPerThread[0]),
+    funcNamesDictPerThread: profilesAndFuncNames.map(({
+      funcNamesDictPerThread
+    }) => funcNamesDictPerThread[0])
   };
 }
 
-type NetworkMarkersOptions = {|
-  uri: string,
-  id: number,
-  startTime: number,
-  fetchStart: number,
-  endTime: number,
-  payload: $Shape<NetworkPayload>,
-|};
+type NetworkMarkersOptions = {
+  uri: string;
+  id: number;
+  startTime: number;
+  fetchStart: number;
+  endTime: number;
+  payload: $Shape<NetworkPayload>;
+};
 
 export function getNetworkMarkers(options: $Shape<NetworkMarkersOptions> = {}) {
   // Default values
-  const { uri, id, startTime, fetchStart, endTime, payload } = {
+  const {
+    uri,
+    id,
+    startTime,
+    fetchStart,
+    endTime,
+    payload
+  } = {
     uri: 'https://mozilla.org',
     id: 0,
     startTime: 0,
     fetchStart: (options.startTime || 0) + 0.5,
     endTime: (options.fetchStart || (options.startTime || 0) + 0.5) + 0.5,
     payload: {},
-    ...options,
+    ...options
   };
 
   const name = `Load ${id}: ${uri}`;
@@ -582,7 +504,7 @@ export function getNetworkMarkers(options: $Shape<NetworkMarkersOptions> = {}) {
     status: 'STATUS_START',
     startTime,
     endTime: fetchStart,
-    URI: uri,
+    URI: uri
   };
 
   const stopPayload: NetworkPayload = {
@@ -590,15 +512,12 @@ export function getNetworkMarkers(options: $Shape<NetworkMarkersOptions> = {}) {
     status: 'STATUS_STOP',
     startTime: fetchStart,
     endTime,
-    ...payload,
+    ...payload
   };
 
-  return [
-    // Note that the "time" of network markers is generally close to the
-    // payload's endTime. We don't use it at all in our business logic though.
-    [name, startPayload.endTime, startPayload],
-    [name, stopPayload.endTime, stopPayload],
-  ];
+  return [// Note that the "time" of network markers is generally close to the
+  // payload's endTime. We don't use it at all in our business logic though.
+  [name, startPayload.endTime, startPayload], [name, stopPayload.endTime, stopPayload]];
 }
 
 /**
@@ -608,27 +527,21 @@ export function getNetworkMarkers(options: $Shape<NetworkMarkersOptions> = {}) {
  * This generates 10 network markers ranged 3-4 ms on their start times.
  */
 export function getNetworkTrackProfile() {
-  const arrayOfNetworkMarkers = Array(10)
-    .fill()
-    .map((_, i) =>
-      getNetworkMarkers({
-        id: i,
-        startTime: 3 + 0.1 * i,
-      })
-    );
+  const arrayOfNetworkMarkers = Array(10).fill().map((_, i) => getNetworkMarkers({
+    id: i,
+    startTime: 3 + 0.1 * i
+  }));
   const profile = getProfileWithMarkers([].concat(...arrayOfNetworkMarkers));
 
   const browsingContextID = 123123;
   const innerWindowID = 1;
 
-  profile.pages = [
-    {
-      browsingContextID: browsingContextID,
-      innerWindowID: innerWindowID,
-      url: 'https://developer.mozilla.org/en-US/',
-      embedderInnerWindowID: 0,
-    },
-  ];
+  profile.pages = [{
+    browsingContextID: browsingContextID,
+    innerWindowID: innerWindowID,
+    url: 'https://developer.mozilla.org/en-US/',
+    embedderInnerWindowID: 0
+  }];
 
   const thread = profile.threads[0];
 
@@ -636,67 +549,43 @@ export function getNetworkTrackProfile() {
     type: 'tracing',
     category: 'Navigation',
     eventType: 'load',
-    innerWindowID: innerWindowID,
+    innerWindowID: innerWindowID
   };
 
   const domContentLoadedBase = {
     type: 'tracing',
     category: 'Navigation',
     interval: 'start',
-    innerWindowID: innerWindowID,
+    innerWindowID: innerWindowID
   };
 
-  addMarkersToThreadWithCorrespondingSamples(thread, [
-    [
-      'Load',
-      4,
-      ({
-        ...loadPayloadBase,
-        interval: 'start',
-      }: NavigationMarkerPayload),
-    ],
-    [
-      'Load',
-      5,
-      ({
-        ...loadPayloadBase,
-        interval: 'end',
-      }: NavigationMarkerPayload),
-    ],
-    ['TTI', 6, null],
-    ['Navigation::Start', 7, null],
-    ['Contentful paint at something', 8, null],
-    [
-      'DOMContentLoaded',
-      6,
-      ({
-        ...domContentLoadedBase,
-        interval: 'start',
-      }: NavigationMarkerPayload),
-    ],
-    [
-      'DOMContentLoaded',
-      7,
-      ({
-        ...domContentLoadedBase,
-        interval: 'end',
-      }: NavigationMarkerPayload),
-    ],
-  ]);
+  addMarkersToThreadWithCorrespondingSamples(thread, [['Load', 4, ({
+    ...loadPayloadBase,
+    interval: 'start'
+  } as NavigationMarkerPayload)], ['Load', 5, ({
+    ...loadPayloadBase,
+    interval: 'end'
+  } as NavigationMarkerPayload)], ['TTI', 6, null], ['Navigation::Start', 7, null], ['Contentful paint at something', 8, null], ['DOMContentLoaded', 6, ({
+    ...domContentLoadedBase,
+    interval: 'start'
+  } as NavigationMarkerPayload)], ['DOMContentLoaded', 7, ({
+    ...domContentLoadedBase,
+    interval: 'end'
+  } as NavigationMarkerPayload)]]);
 
   return profile;
 }
 
-type IPCMarkersOptions = {|
-  startTime: number,
-  endTime: number,
-  otherPid: number,
-  messageType: string,
-  messageSeqno: number,
-  side: 'parent' | 'child',
-  direction: 'sending' | 'receiving',
-  sync: boolean,
-|};
+type IPCMarkersOptions = {
+  startTime: number;
+  endTime: number;
+  otherPid: number;
+  messageType: string;
+  messageSeqno: number;
+  side: "parent" | "child";
+  direction: "sending" | "receiving";
+  sync: boolean;
+};
 
 function _getIPCMarkers(options: $Shape<IPCMarkersOptions> = {}) {
   const payload: IPCMarkerPayload = {
@@ -709,90 +598,53 @@ function _getIPCMarkers(options: $Shape<IPCMarkersOptions> = {}) {
     side: 'parent',
     direction: 'sending',
     sync: false,
-    ...options,
+    ...options
   };
 
   return [['IPC', payload.endTime, payload]];
 }
 
 export function getIPCTrackProfile() {
-  const arrayOfIPCMarkers = Array(10)
-    .fill()
-    .map((_, i) =>
-      _getIPCMarkers({
-        messageSeqno: i,
-        startTime: 3 + 0.1 * i,
-      })
-    );
+  const arrayOfIPCMarkers = Array(10).fill().map((_, i) => _getIPCMarkers({
+    messageSeqno: i,
+    startTime: 3 + 0.1 * i
+  }));
   return getProfileWithMarkers([].concat(...arrayOfIPCMarkers));
 }
 
 export function getScreenshotTrackProfile() {
-  const screenshotMarkersForWindowId = windowID =>
-    Array(10)
-      .fill()
-      .map((_, i) => [
-        'CompositorScreenshot',
-        i,
-        {
-          type: 'CompositorScreenshot',
-          url: 0, // Some arbitrary string.
-          windowID,
-          windowWidth: 300,
-          windowHeight: 150,
-        },
-      ]);
-  return getProfileWithMarkers([
-    ...screenshotMarkersForWindowId('0'),
-    ...screenshotMarkersForWindowId('1'),
-  ]);
+  const screenshotMarkersForWindowId = windowID => Array(10).fill().map((_, i) => ['CompositorScreenshot', i, {
+    type: 'CompositorScreenshot',
+    url: 0, // Some arbitrary string.
+    windowID,
+    windowWidth: 300,
+    windowHeight: 150
+  }]);
+  return getProfileWithMarkers([...screenshotMarkersForWindowId('0'), ...screenshotMarkersForWindowId('1')]);
 }
 
 export function getVisualProgressTrackProfile(profileString: string): Profile {
-  const { profile } = getProfileFromTextSamples(profileString);
+  const {
+    profile
+  } = getProfileFromTextSamples(profileString);
   profile.meta.visualMetrics = {
     SpeedIndex: 2942,
     FirstVisualChange: 960,
     LastVisualChange: 10480,
-    VisualProgress: [
-      { timestamp: 4431.321044921875, percent: 0 },
-      { timestamp: 5391.321044921875, percent: 17 },
-      { timestamp: 5511.321044921875, percent: 17 },
-      { timestamp: 5591.321044921875, percent: 22 },
-      { timestamp: 5631.321044921875, percent: 42 },
-      { timestamp: 5751.321044921875, percent: 70 },
-      { timestamp: 5911.321044921875, percent: 76 },
-    ],
+    VisualProgress: [{ timestamp: 4431.321044921875, percent: 0 }, { timestamp: 5391.321044921875, percent: 17 }, { timestamp: 5511.321044921875, percent: 17 }, { timestamp: 5591.321044921875, percent: 22 }, { timestamp: 5631.321044921875, percent: 42 }, { timestamp: 5751.321044921875, percent: 70 }, { timestamp: 5911.321044921875, percent: 76 }],
     ContentfulSpeedIndex: 2303,
-    ContentfulSpeedIndexProgress: [
-      { timestamp: 4431.321044921875, percent: 0 },
-      { timestamp: 5391.321044921875, percent: 41 },
-      { timestamp: 5511.321044921875, percent: 46 },
-      { timestamp: 5591.321044921875, percent: 48 },
-      { timestamp: 5631.321044921875, percent: 49 },
-      { timestamp: 5751.321044921875, percent: 49 },
-    ],
+    ContentfulSpeedIndexProgress: [{ timestamp: 4431.321044921875, percent: 0 }, { timestamp: 5391.321044921875, percent: 41 }, { timestamp: 5511.321044921875, percent: 46 }, { timestamp: 5591.321044921875, percent: 48 }, { timestamp: 5631.321044921875, percent: 49 }, { timestamp: 5751.321044921875, percent: 49 }],
     PerceptualSpeedIndex: 8314,
-    PerceptualSpeedIndexProgress: [
-      { timestamp: 4431.321044921875, percent: 0 },
-      { timestamp: 5391.321044921875, percent: 11 },
-      { timestamp: 5511.321044921875, percent: 12 },
-      { timestamp: 5591.321044921875, percent: 13 },
-      { timestamp: 5631.321044921875, percent: 13 },
-      { timestamp: 5751.321044921875, percent: 15 },
-    ],
+    PerceptualSpeedIndexProgress: [{ timestamp: 4431.321044921875, percent: 0 }, { timestamp: 5391.321044921875, percent: 11 }, { timestamp: 5511.321044921875, percent: 12 }, { timestamp: 5591.321044921875, percent: 13 }, { timestamp: 5631.321044921875, percent: 13 }, { timestamp: 5751.321044921875, percent: 15 }],
     VisualReadiness: 9520,
     VisualComplete85: 6480,
     VisualComplete95: 10200,
-    VisualComplete99: 10200,
+    VisualComplete99: 10200
   };
   return profile;
 }
 
-export function getJsTracerTable(
-  stringTable: UniqueStringArray,
-  events: TestDefinedJsTracerEvent[]
-): JsTracerTable {
+export function getJsTracerTable(stringTable: UniqueStringArray, events: TestDefinedJsTracerEvent[]): JsTracerTable {
   const jsTracer = getEmptyJsTracerTable();
 
   for (const [event, start, end] of events) {
@@ -808,78 +660,61 @@ export function getJsTracerTable(
   return jsTracer;
 }
 
-export function getThreadWithJsTracerEvents(
-  events: TestDefinedJsTracerEvent[]
-): Thread {
+export function getThreadWithJsTracerEvents(events: TestDefinedJsTracerEvent[]): Thread {
   const thread = getEmptyThread();
   thread.jsTracer = getJsTracerTable(thread.stringTable, events);
 
   let endOfEvents = 0;
-  for (const [, , end] of events) {
+  for (const [,, end] of events) {
     endOfEvents = Math.max(endOfEvents, end);
   }
 
   // Create a sample table that is of the same length as the tracer data
-  endOfEvents = Number.isInteger(endOfEvents)
-    ? // When considering the range of a profile, this range is set to the start of the
-      // first profile sample's timestamp, and the end timestamp of the last
-      // sample + profile.meta.interval.
-      // To keep things slightly realistic, Assume that the profile.meta.interval
-      // value is 1 here.
-      Math.floor(endOfEvents)
-    : endOfEvents - 1;
+  endOfEvents = Number.isInteger(endOfEvents) ? // When considering the range of a profile, this range is set to the start of the
+  // first profile sample's timestamp, and the end timestamp of the last
+  // sample + profile.meta.interval.
+  // To keep things slightly realistic, Assume that the profile.meta.interval
+  // value is 1 here.
+  Math.floor(endOfEvents) : endOfEvents - 1;
 
   // Re-create the table so that it creates a Flow error if we don't handle part of it.
   thread.samples = {
     eventDelay: Array(endOfEvents).fill(null),
     stack: Array(endOfEvents).fill(null),
-    time: Array(endOfEvents)
-      .fill(0)
-      .map((_, i) => i),
-    length: endOfEvents,
+    time: Array(endOfEvents).fill(0).map((_, i) => i),
+    length: endOfEvents
   };
 
   return thread;
 }
 
-export function getProfileWithJsTracerEvents(
-  ...eventsLists: Array<TestDefinedJsTracerEvent[]>
-): Profile {
+export function getProfileWithJsTracerEvents(...eventsLists: Array<TestDefinedJsTracerEvent[]>): Profile {
   const profile = getEmptyProfile();
-  profile.threads = eventsLists.map(events =>
-    getThreadWithJsTracerEvents(events)
-  );
+  profile.threads = eventsLists.map(events => getThreadWithJsTracerEvents(events));
   return profile;
 }
 
 /**
  * Creates a Counter fixture for a given thread.
  */
-export function getCounterForThread(
-  thread: Thread,
-  mainThreadIndex: ThreadIndex
-): Counter {
+export function getCounterForThread(thread: Thread, mainThreadIndex: ThreadIndex): Counter {
   const counter: Counter = {
     name: 'My Counter',
     category: 'My Category',
     description: 'My Description',
     pid: thread.pid,
     mainThreadIndex,
-    sampleGroups: [
-      {
-        id: 0,
-        samples: {
-          time: thread.samples.time.slice(),
-          // Create some arbitrary (positive integer) values for the number.
-          number: thread.samples.time.map((_, i) =>
-            Math.floor(50 * Math.sin(i) + 50)
-          ),
-          // Create some arbitrary values for the count.
-          count: thread.samples.time.map((_, i) => Math.sin(i)),
-          length: thread.samples.length,
-        },
-      },
-    ],
+    sampleGroups: [{
+      id: 0,
+      samples: {
+        time: thread.samples.time.slice(),
+        // Create some arbitrary (positive integer) values for the number.
+        number: thread.samples.time.map((_, i) => Math.floor(50 * Math.sin(i) + 50)),
+        // Create some arbitrary values for the count.
+        count: thread.samples.time.map((_, i) => Math.sin(i)),
+        length: thread.samples.length
+      }
+    }]
   };
   return counter;
 }
@@ -897,12 +732,11 @@ export function getCounterForThread(
  *       - D (total: 3, self: —)
  *         - E (total: 3, self: 3)
  */
-
-export function getProfileWithJsAllocations(): * {
+export function getProfileWithJsAllocations(): any {
   // First create a normal sample-based profile.
   const {
     profile,
-    funcNamesDictPerThread: [funcNamesDict],
+    funcNamesDictPerThread: [funcNamesDict]
   } = getProfileFromTextSamples(`
     A  A     A
     B  B     B
@@ -918,18 +752,21 @@ export function getProfileWithJsAllocations(): * {
 
   // The stack table is built sequentially, so we can assume that the stack indexes
   // match the func indexes.
-  const { E, I, Gjs } = funcNamesDict;
+  const {
+    E,
+    I,
+    Gjs
+  } = funcNamesDict;
 
   // Create a list of allocations.
-  const allocations = [
-    { byteSize: 3, stack: E },
-    { byteSize: 5, stack: Gjs },
-    { byteSize: 7, stack: I },
-  ];
+  const allocations = [{ byteSize: 3, stack: E }, { byteSize: 5, stack: Gjs }, { byteSize: 7, stack: I }];
 
   // Loop through and add them to the table.
   let time = 0;
-  for (const { byteSize, stack } of allocations) {
+  for (const {
+    byteSize,
+    stack
+  } of allocations) {
     const thisTime = time++;
     jsAllocations.time.push(thisTime);
     jsAllocations.className.push('Function');
@@ -974,11 +811,11 @@ export function getProfileWithJsAllocations(): * {
  *       - D (total: -11, self: —)
  *         - E (total: -11, self: -11)
  */
-export function getProfileWithUnbalancedNativeAllocations(): * {
+export function getProfileWithUnbalancedNativeAllocations(): any {
   // First create a normal sample-based profile.
   const {
     profile,
-    funcNamesDictPerThread: [funcNamesDict],
+    funcNamesDictPerThread: [funcNamesDict]
   } = getProfileFromTextSamples(`
     A  A     A
     B  B     B
@@ -994,23 +831,23 @@ export function getProfileWithUnbalancedNativeAllocations(): * {
 
   // The stack table is built sequentially, so we can assume that the stack indexes
   // match the func indexes.
-  const { E, I, Gjs } = funcNamesDict;
+  const {
+    E,
+    I,
+    Gjs
+  } = funcNamesDict;
 
   // Create a list of allocations.
-  const allocations = [
-    // Allocations:
-    { byteSize: 3, stack: E },
-    { byteSize: 5, stack: Gjs },
-    { byteSize: 7, stack: I },
-    // Deallocations:
-    { byteSize: -11, stack: E },
-    { byteSize: -13, stack: Gjs },
-    { byteSize: -17, stack: I },
-  ];
+  const allocations = [// Allocations:
+  { byteSize: 3, stack: E }, { byteSize: 5, stack: Gjs }, { byteSize: 7, stack: I }, // Deallocations:
+  { byteSize: -11, stack: E }, { byteSize: -13, stack: Gjs }, { byteSize: -17, stack: I }];
 
   // Loop through and add them to the table.
   let time = 0;
-  for (const { byteSize, stack } of allocations) {
+  for (const {
+    byteSize,
+    stack
+  } of allocations) {
     const thisTime = time++;
     nativeAllocations.time.push(thisTime);
     nativeAllocations.duration.push(byteSize);
@@ -1037,12 +874,11 @@ export function getProfileWithUnbalancedNativeAllocations(): * {
  *     - Fjs (total: 13, self: —)
  *       - Gjs (total: 13, self: 13)
  */
-
-export function getProfileWithBalancedNativeAllocations(): * {
+export function getProfileWithBalancedNativeAllocations(): any {
   // First create a normal sample-based profile.
   const {
     profile,
-    funcNamesDictPerThread: [funcNamesDict],
+    funcNamesDictPerThread: [funcNamesDict]
   } = getProfileFromTextSamples(`
     A  A     A
     B  B     B
@@ -1056,38 +892,30 @@ export function getProfileWithBalancedNativeAllocations(): * {
   const nativeAllocations = getEmptyBalancedNativeAllocationsTable();
   const [thread] = profile.threads;
   thread.nativeAllocations = nativeAllocations;
-  const threadId = ensureExists(
-    thread.tid,
-    'Expected there to be a tid on the thread'
-  );
+  const threadId = ensureExists(thread.tid, 'Expected there to be a tid on the thread');
 
   // The stack table is built sequentially, so we can assume that the stack indexes
   // match the func indexes.
-  const { E, I, Gjs } = funcNamesDict;
+  const {
+    E,
+    I,
+    Gjs
+  } = funcNamesDict;
 
   // Create a list of allocations.
-  const allocations = [
-    // Matched allocations:
-    { byteSize: 3, stack: E, memoryAddress: 0x10 },
-    { byteSize: 5, stack: Gjs, memoryAddress: 0x11 },
-    { byteSize: 7, stack: I, memoryAddress: 0x12 },
-    // Unmatched allocations:
-    { byteSize: 11, stack: E, memoryAddress: 0x20 },
-    { byteSize: 13, stack: Gjs, memoryAddress: 0x21 },
-    { byteSize: 17, stack: I, memoryAddress: 0x22 },
-    // Deallocations that match the first group.
-    { byteSize: -3, stack: E, memoryAddress: 0x10 },
-    { byteSize: -5, stack: Gjs, memoryAddress: 0x11 },
-    { byteSize: -7, stack: I, memoryAddress: 0x12 },
-    // Unmatched deallocations:
-    { byteSize: -19, stack: E, memoryAddress: 0x30 },
-    { byteSize: -23, stack: Gjs, memoryAddress: 0x31 },
-    { byteSize: -29, stack: I, memoryAddress: 0x32 },
-  ];
+  const allocations = [// Matched allocations:
+  { byteSize: 3, stack: E, memoryAddress: 0x10 }, { byteSize: 5, stack: Gjs, memoryAddress: 0x11 }, { byteSize: 7, stack: I, memoryAddress: 0x12 }, // Unmatched allocations:
+  { byteSize: 11, stack: E, memoryAddress: 0x20 }, { byteSize: 13, stack: Gjs, memoryAddress: 0x21 }, { byteSize: 17, stack: I, memoryAddress: 0x22 }, // Deallocations that match the first group.
+  { byteSize: -3, stack: E, memoryAddress: 0x10 }, { byteSize: -5, stack: Gjs, memoryAddress: 0x11 }, { byteSize: -7, stack: I, memoryAddress: 0x12 }, // Unmatched deallocations:
+  { byteSize: -19, stack: E, memoryAddress: 0x30 }, { byteSize: -23, stack: Gjs, memoryAddress: 0x31 }, { byteSize: -29, stack: I, memoryAddress: 0x32 }];
 
   // Loop through and add them to the table.
   let time = 0;
-  for (const { byteSize, stack, memoryAddress } of allocations) {
+  for (const {
+    byteSize,
+    stack,
+    memoryAddress
+  } of allocations) {
     const thisTime = time++;
     nativeAllocations.time.push(thisTime);
     nativeAllocations.duration.push(byteSize);
@@ -1111,81 +939,63 @@ export function getProfileWithBalancedNativeAllocations(): * {
  * |
  * Page #5
  */
-export function addActiveTabInformationToProfile(
-  profile: Profile,
-  activeBrowsingContextID?: BrowsingContextID
-): * {
+export function addActiveTabInformationToProfile(profile: Profile, activeBrowsingContextID?: BrowsingContextID): any {
   const firstTabBrowsingContextID = 1;
   const secondTabBrowsingContextID = 4;
   const parentInnerWindowIDsWithChildren = 11111111111;
   const iframeInnerWindowIDsWithChild = 11111111112;
-  const fistTabInnerWindowIDs = [
-    parentInnerWindowIDsWithChildren,
-    iframeInnerWindowIDsWithChild,
-    11111111113,
-    11111111115,
-  ];
+  const fistTabInnerWindowIDs = [parentInnerWindowIDsWithChildren, iframeInnerWindowIDsWithChild, 11111111113, 11111111115];
   const secondTabInnerWindowIDs = [11111111114, 11111111116];
 
   // Default to first tab browsingContextID if not given
-  activeBrowsingContextID =
-    activeBrowsingContextID === undefined
-      ? firstTabBrowsingContextID
-      : activeBrowsingContextID;
+  activeBrowsingContextID = activeBrowsingContextID === undefined ? firstTabBrowsingContextID : activeBrowsingContextID;
 
   // Add the pages array
-  profile.pages = [
-    // A top most page in the first tab
-    {
-      browsingContextID: firstTabBrowsingContextID,
-      innerWindowID: parentInnerWindowIDsWithChildren,
-      url: 'Page #1',
-      embedderInnerWindowID: 0,
-    },
-    // An iframe page inside the previous page
-    {
-      browsingContextID: 2,
-      innerWindowID: iframeInnerWindowIDsWithChild,
-      url: 'Page #2',
-      embedderInnerWindowID: parentInnerWindowIDsWithChildren,
-    },
-    // Another iframe page inside the previous iframe
-    {
-      browsingContextID: 3,
-      innerWindowID: fistTabInnerWindowIDs[2],
-      url: 'Page #3',
-      embedderInnerWindowID: iframeInnerWindowIDsWithChild,
-    },
-    // A top most frame from the second tab
-    {
-      browsingContextID: secondTabBrowsingContextID,
-      innerWindowID: secondTabInnerWindowIDs[0],
-      url: 'Page #4',
-      embedderInnerWindowID: 0,
-    },
-    // Another top most frame from the first tab
-    // Their browsingContextIDs are the same because of that.
-    {
-      browsingContextID: firstTabBrowsingContextID,
-      innerWindowID: fistTabInnerWindowIDs[3],
-      url: 'Page #5',
-      embedderInnerWindowID: 0,
-    },
-    // Another top most frame from the second tab
-    {
-      browsingContextID: secondTabBrowsingContextID,
-      innerWindowID: secondTabInnerWindowIDs[1],
-      url: 'Page #4',
-      embedderInnerWindowID: 0,
-    },
-  ];
+  profile.pages = [// A top most page in the first tab
+  {
+    browsingContextID: firstTabBrowsingContextID,
+    innerWindowID: parentInnerWindowIDsWithChildren,
+    url: 'Page #1',
+    embedderInnerWindowID: 0
+  }, // An iframe page inside the previous page
+  {
+    browsingContextID: 2,
+    innerWindowID: iframeInnerWindowIDsWithChild,
+    url: 'Page #2',
+    embedderInnerWindowID: parentInnerWindowIDsWithChildren
+  }, // Another iframe page inside the previous iframe
+  {
+    browsingContextID: 3,
+    innerWindowID: fistTabInnerWindowIDs[2],
+    url: 'Page #3',
+    embedderInnerWindowID: iframeInnerWindowIDsWithChild
+  }, // A top most frame from the second tab
+  {
+    browsingContextID: secondTabBrowsingContextID,
+    innerWindowID: secondTabInnerWindowIDs[0],
+    url: 'Page #4',
+    embedderInnerWindowID: 0
+  }, // Another top most frame from the first tab
+  // Their browsingContextIDs are the same because of that.
+  {
+    browsingContextID: firstTabBrowsingContextID,
+    innerWindowID: fistTabInnerWindowIDs[3],
+    url: 'Page #5',
+    embedderInnerWindowID: 0
+  }, // Another top most frame from the second tab
+  {
+    browsingContextID: secondTabBrowsingContextID,
+    innerWindowID: secondTabInnerWindowIDs[1],
+    url: 'Page #4',
+    embedderInnerWindowID: 0
+  }];
 
   // Set the active BrowsingContext ID.
   profile.meta.configuration = {
     activeBrowsingContextID,
     capacity: 1,
     features: [],
-    threads: [],
+    threads: []
   };
 
   return {
@@ -1196,6 +1006,6 @@ export function addActiveTabInformationToProfile(
     iframeInnerWindowIDsWithChild,
     activeBrowsingContextID,
     fistTabInnerWindowIDs,
-    secondTabInnerWindowIDs,
+    secondTabInnerWindowIDs
   };
 }

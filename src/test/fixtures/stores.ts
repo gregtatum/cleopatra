@@ -1,16 +1,16 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
 
-import createStore from '../../app-logic/create-store';
-import { viewProfile } from '../../actions/receive-profile';
-import { createGeckoProfileWithJsTimings } from './profiles/gecko-profile';
-import { processProfile } from '../../profile-logic/process-profile';
-import { getProfileFromTextSamples } from './profiles/processed-profile';
 
-import type { Store } from '../../types/store';
-import type { Profile } from '../../types/profile';
+import createStore from "../../app-logic/create-store";
+import { viewProfile } from "../../actions/receive-profile";
+import { createGeckoProfileWithJsTimings } from "./profiles/gecko-profile";
+import { processProfile } from "../../profile-logic/process-profile";
+import { getProfileFromTextSamples } from "./profiles/processed-profile";
+
+import { Store } from "../../types/store";
+import { Profile } from "../../types/profile";
 
 export function blankStore() {
   return createStore();
@@ -27,7 +27,9 @@ export function storeWithProfile(profile?: Profile): Store {
 }
 
 export function storeWithSimpleProfile(): Store {
-  const { profile } = getProfileFromTextSamples(`
+  const {
+    profile
+  } = getProfileFromTextSamples(`
     A  A  A
     B  B  B
     C  C  H

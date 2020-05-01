@@ -2,41 +2,42 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
-import React, { PureComponent } from 'react';
-import classNames from 'classnames';
 
-import './IdleSearchField.css';
+import React, { PureComponent } from "react";
+import classNames from "classnames";
 
-type Props = {|
-  +onIdleAfterChange: string => void,
-  +onFocus?: () => void,
-  +onBlur?: (Element | null) => void,
-  +idlePeriod: number,
-  +defaultValue: ?string,
-  +className: ?string,
-  +title: ?string,
-|};
+import "./IdleSearchField.css";
+
+type Props = {
+  readonly onIdleAfterChange: (arg0: string) => void;
+  readonly onFocus?: () => void;
+  readonly onBlur?: (arg0: Element | null) => void;
+  readonly idlePeriod: number;
+  readonly defaultValue: string | null | undefined;
+  readonly className: string | null | undefined;
+  readonly title: string | null | undefined;
+};
 
 type State = {
-  value: string,
+  value: string;
 };
 
 class IdleSearchField extends PureComponent<Props, State> {
+
   _timeout: TimeoutID | null = null;
   _previouslyNotifiedValue: string;
   _input: HTMLInputElement | null = null;
-  _takeInputRef = (input: HTMLInputElement | null) => (this._input = input);
+  _takeInputRef = (input: HTMLInputElement | null) => this._input = input;
 
   constructor(props: Props) {
     super(props);
     this.state = {
-      value: props.defaultValue || '',
+      value: props.defaultValue || ''
     };
     this._previouslyNotifiedValue = this.state.value;
   }
 
-  _onSearchFieldFocus = (e: SyntheticFocusEvent<HTMLInputElement>) => {
+  _onSearchFieldFocus = (e: React.FocusEvent<HTMLInputElement>) => {
     e.currentTarget.select();
 
     if (this.props.onFocus) {
@@ -44,15 +45,15 @@ class IdleSearchField extends PureComponent<Props, State> {
     }
   };
 
-  _onSearchFieldBlur = (e: { relatedTarget: Element | null }) => {
+  _onSearchFieldBlur = (e: {relatedTarget: Element | null;}) => {
     if (this.props.onBlur) {
       this.props.onBlur(e.relatedTarget);
     }
   };
 
-  _onSearchFieldChange = (e: SyntheticEvent<HTMLInputElement>) => {
+  _onSearchFieldChange = (e: React.SyntheticEvent<HTMLInputElement>) => {
     this.setState({
-      value: e.currentTarget.value,
+      value: e.currentTarget.value
     });
 
     if (this._timeout) {
@@ -87,7 +88,7 @@ class IdleSearchField extends PureComponent<Props, State> {
     this._notifyIfChanged('');
   };
 
-  _onFormSubmit(e: SyntheticEvent<HTMLFormElement>) {
+  _onFormSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
   }
 
@@ -95,39 +96,20 @@ class IdleSearchField extends PureComponent<Props, State> {
     if (nextProps.defaultValue !== this.props.defaultValue) {
       this._notifyIfChanged(nextProps.defaultValue || '');
       this.setState({
-        value: nextProps.defaultValue || '',
+        value: nextProps.defaultValue || ''
       });
     }
   }
 
   render() {
-    const { className, title } = this.props;
-    return (
-      <form
-        className={classNames('idleSearchField', className)}
-        onSubmit={this._onFormSubmit}
-      >
-        <input
-          type="search"
-          name="search"
-          placeholder="Enter filter terms"
-          className="idleSearchFieldInput photon-input"
-          required="required"
-          title={title}
-          value={this.state.value}
-          onChange={this._onSearchFieldChange}
-          onFocus={this._onSearchFieldFocus}
-          onBlur={this._onSearchFieldBlur}
-          ref={this._takeInputRef}
-        />
-        <input
-          type="reset"
-          className="idleSearchFieldButton"
-          onClick={this._onClearButtonClick}
-          tabIndex={-1}
-        />
-      </form>
-    );
+    const {
+      className,
+      title
+    } = this.props;
+    return <form className={classNames('idleSearchField', className)} onSubmit={this._onFormSubmit}>
+        <input type="search" name="search" placeholder="Enter filter terms" className="idleSearchFieldInput photon-input" required="required" title={title} value={this.state.value} onChange={this._onSearchFieldChange} onFocus={this._onSearchFieldFocus} onBlur={this._onSearchFieldBlur} ref={this._takeInputRef} />
+        <input type="reset" className="idleSearchFieldButton" onClick={this._onClearButtonClick} tabIndex={-1} />
+      </form>;
   }
 }
 

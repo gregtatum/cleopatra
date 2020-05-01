@@ -2,44 +2,35 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
 
-import { PureComponent } from 'react';
-import explicitConnect from '../../utils/connect';
 
-import {
-  retrieveProfileFromAddon,
-  retrieveProfileFromStore,
-  retrieveProfileOrZipFromUrl,
-  retrieveProfilesToCompare,
-} from '../../actions/receive-profile';
-import {
-  getDataSource,
-  getHash,
-  getProfileUrl,
-  getProfilesToCompare,
-} from '../../selectors/url-state';
+import { PureComponent } from "react";
+import explicitConnect from "../../utils/connect";
 
-import type { ConnectedProps } from '../../utils/connect';
-import type { DataSource } from '../../types/actions';
+import { retrieveProfileFromAddon, retrieveProfileFromStore, retrieveProfileOrZipFromUrl, retrieveProfilesToCompare } from "../../actions/receive-profile";
+import { getDataSource, getHash, getProfileUrl, getProfilesToCompare } from "../../selectors/url-state";
 
-type StateProps = {|
-  +dataSource: DataSource,
-  +hash: string,
-  +profileUrl: string,
-  +profilesToCompare: string[] | null,
-|};
+import { ConnectedProps } from "../../utils/connect";
+import { DataSource } from "../../types/actions";
 
-type DispatchProps = {|
-  +retrieveProfileFromAddon: typeof retrieveProfileFromAddon,
-  +retrieveProfileFromStore: typeof retrieveProfileFromStore,
-  +retrieveProfileOrZipFromUrl: typeof retrieveProfileOrZipFromUrl,
-  +retrieveProfilesToCompare: typeof retrieveProfilesToCompare,
-|};
+type StateProps = {
+  readonly dataSource: DataSource;
+  readonly hash: string;
+  readonly profileUrl: string;
+  readonly profilesToCompare: string[] | null;
+};
 
-type Props = ConnectedProps<{||}, StateProps, DispatchProps>;
+type DispatchProps = {
+  readonly retrieveProfileFromAddon: typeof retrieveProfileFromAddon;
+  readonly retrieveProfileFromStore: typeof retrieveProfileFromStore;
+  readonly retrieveProfileOrZipFromUrl: typeof retrieveProfileOrZipFromUrl;
+  readonly retrieveProfilesToCompare: typeof retrieveProfilesToCompare;
+};
+
+type Props = ConnectedProps<{}, StateProps, DispatchProps>;
 
 class ProfileLoaderImpl extends PureComponent<Props> {
+
   _retrieveProfileFromDataSource = () => {
     const {
       dataSource,
@@ -49,7 +40,7 @@ class ProfileLoaderImpl extends PureComponent<Props> {
       retrieveProfileFromAddon,
       retrieveProfileFromStore,
       retrieveProfileOrZipFromUrl,
-      retrieveProfilesToCompare,
+      retrieveProfilesToCompare
     } = this.props;
     switch (dataSource) {
       case 'from-addon':
@@ -70,23 +61,21 @@ class ProfileLoaderImpl extends PureComponent<Props> {
         if (profilesToCompare) {
           retrieveProfilesToCompare(profilesToCompare);
         }
+
         break;
       case 'none':
         // nothing to do
         break;
       default:
         throw new Error(`Unknown datasource ${dataSource}`);
+
     }
   };
 
   componentDidUpdate(prevProps) {
     if (prevProps.dataSource === 'none' && this.props.dataSource !== 'none') {
       this._retrieveProfileFromDataSource();
-    } else if (
-      this.props.dataSource === 'compare' &&
-      !prevProps.profilesToCompare &&
-      this.props.profilesToCompare
-    ) {
+    } else if (this.props.dataSource === 'compare' && !prevProps.profilesToCompare && this.props.profilesToCompare) {
       this.props.retrieveProfilesToCompare(this.props.profilesToCompare);
     }
   }
@@ -96,18 +85,18 @@ class ProfileLoaderImpl extends PureComponent<Props> {
   }
 }
 
-export const ProfileLoader = explicitConnect<{||}, StateProps, DispatchProps>({
+export const ProfileLoader = explicitConnect<{}, StateProps, DispatchProps>({
   mapStateToProps: state => ({
     dataSource: getDataSource(state),
     hash: getHash(state),
     profileUrl: getProfileUrl(state),
-    profilesToCompare: getProfilesToCompare(state),
+    profilesToCompare: getProfilesToCompare(state)
   }),
   mapDispatchToProps: {
     retrieveProfileFromStore,
     retrieveProfileOrZipFromUrl,
     retrieveProfileFromAddon,
-    retrieveProfilesToCompare,
+    retrieveProfilesToCompare
   },
-  component: ProfileLoaderImpl,
+  component: ProfileLoaderImpl
 });

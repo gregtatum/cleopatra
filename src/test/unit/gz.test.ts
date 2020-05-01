@@ -2,24 +2,24 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
 
-import { compress, decompress } from '../../utils/gz';
 
-import { TextEncoder, TextDecoder } from 'util';
+import { compress, decompress } from "../../utils/gz";
 
-beforeAll(function() {
-  if ((window: any).TextEncoder) {
+import { TextEncoder, TextDecoder } from "util";
+
+beforeAll(function () {
+  if ((window as any).TextEncoder) {
     throw new Error('A TextEncoder was already on the window object.');
   }
-  (window: any).TextEncoder = TextEncoder;
+  (window as any).TextEncoder = TextEncoder;
 });
 
-afterAll(async function() {
-  delete (window: any).TextEncoder;
+afterAll(async function () {
+  delete (window as any).TextEncoder;
 });
 
-describe('utils/gz', function() {
+describe('utils/gz', function () {
   it('compresses and decompresses properly', async () => {
     const clearText = '42';
     const gzipedData = await compress(clearText);

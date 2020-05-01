@@ -2,31 +2,37 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
 
-import { PureComponent } from 'react';
-import explicitConnect from '../../utils/connect';
 
-import { getProfileName, getDataSource } from '../../selectors/url-state';
-import { getProfile } from '../../selectors/profile';
+import { PureComponent } from "react";
+import explicitConnect from "../../utils/connect";
 
-import type { Profile, ProfileMeta } from '../../types/profile';
-import type { ConnectedProps } from '../../utils/connect';
+import { getProfileName, getDataSource } from "../../selectors/url-state";
+import { getProfile } from "../../selectors/profile";
 
-type StateProps = {|
-  +profile: Profile,
-  +profileName: string | null,
-  +dataSource: string,
-|};
+import { Profile, ProfileMeta } from "../../types/profile";
+import { ConnectedProps } from "../../utils/connect";
 
-type Props = ConnectedProps<{||}, StateProps, {||}>;
+type StateProps = {
+  readonly profile: Profile;
+  readonly profileName: string | null;
+  readonly dataSource: string;
+};
+
+type Props = ConnectedProps<{}, StateProps, {}>;
 
 class WindowTitle extends PureComponent<Props> {
-  // This component updates window title in the form of:
+
   // profile name - version - platform - date time - data source - 'Firefox profiler'
   _updateTitle() {
-    const { profile, profileName, dataSource } = this.props;
-    const { meta } = profile;
+    const {
+      profile,
+      profileName,
+      dataSource
+    } = this.props;
+    const {
+      meta
+    } = profile;
     let title = '';
 
     if (profileName) {
@@ -93,17 +99,17 @@ function _formatPlatform(meta: ProfileMeta): string {
 function _formatDateTime(timestamp: number): string {
   const dateTimeLabel = new Date(timestamp).toLocaleString(undefined, {
     timeZone: 'UTC',
-    timeZoneName: 'short',
+    timeZoneName: 'short'
   });
 
   return dateTimeLabel;
 }
 
-export default explicitConnect<{||}, StateProps, {||}>({
+export default explicitConnect<{}, StateProps, {}>({
   mapStateToProps: state => ({
     profileName: getProfileName(state),
     profile: getProfile(state),
-    dataSource: getDataSource(state),
+    dataSource: getDataSource(state)
   }),
-  component: WindowTitle,
+  component: WindowTitle
 });

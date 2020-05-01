@@ -11,7 +11,7 @@ import {
 } from '../types/markers';
 import { Milliseconds, Microseconds } from '../types/units';
 
-export function upgradeGCMinorMarker(marker8: Object): GCMinorMarkerPayload {
+export function upgradeGCMinorMarker(marker8: any): GCMinorMarkerPayload {
   if ('nursery' in marker8) {
     if ('status' in marker8.nursery) {
       if (marker8.nursery.status === 'no collection') {
@@ -62,9 +62,9 @@ export function convertPhaseTimes(
 /*
  * Upgrade a GCMajor marker in the Gecko profile format.
  */
-export function upgradeGCMajorMarker_Gecko8To9(
-  marker: Object
-): GCMajorMarkerPayload_Gecko {
+export function upgradeGCMajorMarker_Gecko8To9(marker: {
+  [name: string]: any,
+}): GCMajorMarkerPayload_Gecko {
   if ('timings' in marker) {
     if (!('status' in marker.timings)) {
       /*
@@ -92,9 +92,9 @@ export function upgradeGCMajorMarker_Gecko8To9(
   return marker;
 }
 
-export function upgradeGCMajorMarker_Processed8to9(
-  marker8: Object
-): GCMajorMarkerPayload {
+export function upgradeGCMajorMarker_Processed8to9(marker8: {
+  [name: string]: any,
+}): GCMajorMarkerPayload {
   // The Processed 8-to-9 upgrade is a superset of the gecko 8-to-9 upgrade.
   const marker9 = upgradeGCMajorMarker_Gecko8To9(marker8);
   const mt = marker9.timings;

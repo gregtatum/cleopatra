@@ -2,17 +2,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
-
 import * as React from 'react';
 import classNames from 'classnames';
-import type { InitialSelectedTrackReference } from '../../types/profile-derived';
+import { InitialSelectedTrackReference } from '../../types/profile-derived';
 
 import './OverflowEdgeIndicator.css';
 
 type Props = {
   className: string,
-  children: React.Node,
+  children: React.ReactNode,
   panelLayoutGeneration: number,
   initialSelected: InitialSelectedTrackReference | null,
 };

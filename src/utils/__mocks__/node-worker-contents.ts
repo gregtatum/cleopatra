@@ -1,9 +1,13 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
+
 //
-const { parentPort, workerData } = require('worker_threads');
+const {
+  parentPort,
+  workerData
+} = require('worker_threads');
 const fs = require('fs');
 const vm = require('vm');
 
@@ -14,11 +18,11 @@ if (typeof workerData !== 'string') {
 const scriptContent = fs.readFileSync(workerData, 'utf8');
 
 const sandbox = {
-  importScripts: function() {
+  importScripts: function () {
     throw new Error(`The function 'importScripts' is not implemented.`);
   },
   postMessage: parentPort.postMessage.bind(parentPort),
-  onmessage: function() {},
+  onmessage: function () {}
 };
 
 vm.runInNewContext(scriptContent, sandbox, { filename: workerData });

@@ -1,52 +1,43 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
 
-import * as React from 'react';
-import { computeActivityGraphFills } from './ActivityGraphFills';
-import { timeCode } from '../../../utils/time-code';
-import classNames from 'classnames';
-import Tooltip, { MOUSE_OFFSET } from '../../tooltip/Tooltip';
-import SampleTooltipContents from '../SampleTooltipContents';
-import { mapCategoryColorNameToStyles } from '../../../utils/colors';
 
-import './ActivityGraph.css';
+import * as React from "react";
+import { computeActivityGraphFills , CategoryDrawStyles, ActivityFillGraphQuerier } from "./ActivityGraphFills";
+import { timeCode } from "../../../utils/time-code";
+import classNames from "classnames";
+import Tooltip, { MOUSE_OFFSET } from "../../tooltip/Tooltip";
+import SampleTooltipContents from "../SampleTooltipContents";
+import { mapCategoryColorNameToStyles } from "../../../utils/colors";
 
-import type {
-  Thread,
-  CategoryList,
-  IndexIntoSamplesTable,
-} from '../../../types/profile';
-import type { SelectedState } from '../../../types/profile-derived';
-import type { Milliseconds, CssPixels } from '../../../types/units';
-import type {
-  CategoryDrawStyles,
-  ActivityFillGraphQuerier,
-} from './ActivityGraphFills';
+import "./ActivityGraph.css";
 
-export type Props = {|
-  +className: string,
-  +fullThread: Thread,
-  +interval: Milliseconds,
-  +rangeStart: Milliseconds,
-  +rangeEnd: Milliseconds,
-  +onSampleClick: (sampleIndex: IndexIntoSamplesTable) => void,
-  +categories: CategoryList,
-  +samplesSelectedStates: null | SelectedState[],
-  +treeOrderSampleComparator: (
-    IndexIntoSamplesTable,
-    IndexIntoSamplesTable
-  ) => number,
-|};
+import { Thread, CategoryList, IndexIntoSamplesTable } from "../../../types/profile";
+import { SelectedState } from "../../../types/profile-derived";
+import { Milliseconds, CssPixels } from "../../../types/units";
+
+
+export type Props = {
+  readonly className: string;
+  readonly fullThread: Thread;
+  readonly interval: Milliseconds;
+  readonly rangeStart: Milliseconds;
+  readonly rangeEnd: Milliseconds;
+  readonly onSampleClick: (sampleIndex: IndexIntoSamplesTable) => void;
+  readonly categories: CategoryList;
+  readonly samplesSelectedStates: null | SelectedState[];
+  readonly treeOrderSampleComparator: (arg0: IndexIntoSamplesTable, arg1: IndexIntoSamplesTable) => number;
+};
 
 type State = {
-  hoveredSample: null | IndexIntoSamplesTable,
-  mouseX: CssPixels,
-  mouseY: CssPixels,
+  hoveredSample: null | IndexIntoSamplesTable;
+  mouseX: CssPixels;
+  mouseY: CssPixels;
 };
 
 class ThreadActivityGraph extends React.PureComponent<Props, State> {
+
   _canvas: null | HTMLCanvasElement = null;
   _resizeListener = () => this.forceUpdate();
   _categoryDrawStyles: null | CategoryDrawStyles = null;
@@ -55,14 +46,14 @@ class ThreadActivityGraph extends React.PureComponent<Props, State> {
   state = {
     hoveredSample: null,
     mouseX: 0,
-    mouseY: 0,
+    mouseY: 0
   };
 
   _onMouseLeave = () => {
     this.setState({ hoveredSample: null });
   };
 
-  _onMouseMove = (event: SyntheticMouseEvent<HTMLDivElement>) => {
+  _onMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
     const canvas = this._canvas;
     if (!canvas) {
       return;
@@ -72,7 +63,7 @@ class ThreadActivityGraph extends React.PureComponent<Props, State> {
       hoveredSample: this._getSampleAtMouseEvent(event),
       mouseX: event.pageX,
       // Have the tooltip align to the bottom of the track.
-      mouseY: rect.bottom - MOUSE_OFFSET,
+      mouseY: rect.bottom - MOUSE_OFFSET
     });
   };
 
@@ -105,19 +96,16 @@ class ThreadActivityGraph extends React.PureComponent<Props, State> {
   _getCategoryDrawStyles(ctx: CanvasRenderingContext2D): CategoryDrawStyles {
     if (this._categoryDrawStyles === null) {
       // Lazily initialize this list.
-      this._categoryDrawStyles = this.props.categories.map(
-        ({ color: colorName }, categoryIndex) => {
-          const styles = mapCategoryColorNameToStyles(colorName);
-          return {
-            ...styles,
-            category: categoryIndex,
-            filteredOutByTransformFillStyle: _createDiagonalStripePattern(
-              ctx,
-              styles.unselectedFillStyle
-            ),
-          };
-        }
-      );
+      this._categoryDrawStyles = this.props.categories.map(({
+        color: colorName
+      }, categoryIndex) => {
+        const styles = mapCategoryColorNameToStyles(colorName);
+        return {
+          ...styles,
+          category: categoryIndex,
+          filteredOutByTransformFillStyle: _createDiagonalStripePattern(ctx, styles.unselectedFillStyle)
+        };
+      });
     }
 
     return this._categoryDrawStyles;
@@ -131,7 +119,7 @@ class ThreadActivityGraph extends React.PureComponent<Props, State> {
       rangeEnd,
       samplesSelectedStates,
       treeOrderSampleComparator,
-      categories,
+      categories
     } = this.props;
 
     const rect = canvas.getBoundingClientRect();
@@ -141,7 +129,10 @@ class ThreadActivityGraph extends React.PureComponent<Props, State> {
     canvas.width = canvasPixelWidth;
     canvas.height = canvasPixelHeight;
 
-    const { fills, fillsQuerier } = computeActivityGraphFills({
+    const {
+      fills,
+      fillsQuerier
+    } = computeActivityGraphFills({
       canvasPixelWidth,
       canvasPixelHeight,
       fullThread,
@@ -152,7 +143,7 @@ class ThreadActivityGraph extends React.PureComponent<Props, State> {
       xPixelsPerMs: canvasPixelWidth / (rangeEnd - rangeStart),
       treeOrderSampleComparator,
       greyCategoryIndex: categories.findIndex(c => c.color === 'grey') || 0,
-      categoryDrawStyles: this._getCategoryDrawStyles(ctx),
+      categoryDrawStyles: this._getCategoryDrawStyles(ctx)
     });
 
     this._fillsQuerier = fillsQuerier;
@@ -165,7 +156,10 @@ class ThreadActivityGraph extends React.PureComponent<Props, State> {
     // The previousUpperEdge keeps track of where the "mountain ridge" is after the
     // previous fill.
     let previousUpperEdge = new Float32Array(canvasPixelWidth);
-    for (const { fillStyle, accumulatedUpperEdge } of fills) {
+    for (const {
+      fillStyle,
+      accumulatedUpperEdge
+    } of fills) {
       ctx.fillStyle = fillStyle;
 
       // Some fills might not span the full width of the graph - they have parts where
@@ -175,20 +169,13 @@ class ThreadActivityGraph extends React.PureComponent<Props, State> {
       // fill has an uninterrupted sequence of non-zero-contribution pixels.
       let lastNonZeroRangeEnd = 0;
       while (lastNonZeroRangeEnd < canvasPixelWidth) {
-        const currentNonZeroRangeStart = _findNextDifferentIndex(
-          accumulatedUpperEdge,
-          previousUpperEdge,
-          lastNonZeroRangeEnd
-        );
+        const currentNonZeroRangeStart = _findNextDifferentIndex(accumulatedUpperEdge, previousUpperEdge, lastNonZeroRangeEnd);
         if (currentNonZeroRangeStart >= canvasPixelWidth) {
           break;
         }
         let currentNonZeroRangeEnd = canvasPixelWidth;
         ctx.beginPath();
-        ctx.moveTo(
-          currentNonZeroRangeStart,
-          (1 - previousUpperEdge[currentNonZeroRangeStart]) * canvasPixelHeight
-        );
+        ctx.moveTo(currentNonZeroRangeStart, (1 - previousUpperEdge[currentNonZeroRangeStart]) * canvasPixelHeight);
         for (let i = currentNonZeroRangeStart + 1; i < canvasPixelWidth; i++) {
           const lastVal = previousUpperEdge[i];
           const thisVal = accumulatedUpperEdge[i];
@@ -198,11 +185,7 @@ class ThreadActivityGraph extends React.PureComponent<Props, State> {
             break;
           }
         }
-        for (
-          let i = currentNonZeroRangeEnd - 1;
-          i >= currentNonZeroRangeStart;
-          i--
-        ) {
+        for (let i = currentNonZeroRangeEnd - 1; i >= currentNonZeroRangeStart; i--) {
           ctx.lineTo(i, (1 - accumulatedUpperEdge[i]) * canvasPixelHeight);
         }
         ctx.closePath();
@@ -214,9 +197,7 @@ class ThreadActivityGraph extends React.PureComponent<Props, State> {
     }
   }
 
-  _getSampleAtMouseEvent(
-    event: SyntheticMouseEvent<>
-  ): null | IndexIntoSamplesTable {
+  _getSampleAtMouseEvent(event: React.MouseEvent<>): null | IndexIntoSamplesTable {
     // Create local variables so that Flow can refine the following to be non-null.
     const fillsQuerier = this._fillsQuerier;
     const canvas = this._canvas;
@@ -224,16 +205,19 @@ class ThreadActivityGraph extends React.PureComponent<Props, State> {
       return null;
     }
     // Re-measure the canvas and get the coordinates and time for the click.
-    const { rangeStart, rangeEnd } = this.props;
+    const {
+      rangeStart,
+      rangeEnd
+    } = this.props;
     const rect = canvas.getBoundingClientRect();
     const x = event.pageX - rect.left;
     const y = event.pageY - rect.top;
-    const time = rangeStart + (x / rect.width) * (rangeEnd - rangeStart);
+    const time = rangeStart + x / rect.width * (rangeEnd - rangeStart);
 
     return fillsQuerier.getSampleAtClick(x, y, time, rect);
   }
 
-  _onMouseUp = (event: SyntheticMouseEvent<>) => {
+  _onMouseUp = (event: React.MouseEvent<>) => {
     const sample = this._getSampleAtMouseEvent(event);
     if (sample !== null) {
       this.props.onSampleClick(sample);
@@ -242,33 +226,21 @@ class ThreadActivityGraph extends React.PureComponent<Props, State> {
 
   render() {
     this._renderCanvas();
-    const { fullThread, categories } = this.props;
-    const { hoveredSample, mouseX, mouseY } = this.state;
-    return (
-      <div
-        className={this.props.className}
-        onMouseMove={this._onMouseMove}
-        onMouseLeave={this._onMouseLeave}
-      >
-        <canvas
-          className={classNames(
-            `${this.props.className}Canvas`,
-            'threadActivityGraphCanvas'
-          )}
-          ref={this._takeCanvasRef}
-          onMouseUp={this._onMouseUp}
-        />
-        {hoveredSample === null ? null : (
-          <Tooltip mouseX={mouseX} mouseY={mouseY}>
-            <SampleTooltipContents
-              sampleIndex={hoveredSample}
-              fullThread={fullThread}
-              categories={categories}
-            />
-          </Tooltip>
-        )}
-      </div>
-    );
+    const {
+      fullThread,
+      categories
+    } = this.props;
+    const {
+      hoveredSample,
+      mouseX,
+      mouseY
+    } = this.state;
+    return <div className={this.props.className} onMouseMove={this._onMouseMove} onMouseLeave={this._onMouseLeave}>
+        <canvas className={classNames(`${this.props.className}Canvas`, 'threadActivityGraphCanvas')} ref={this._takeCanvasRef} onMouseUp={this._onMouseUp} />
+        {hoveredSample === null ? null : <Tooltip mouseX={mouseX} mouseY={mouseY}>
+            <SampleTooltipContents sampleIndex={hoveredSample} fullThread={fullThread} categories={categories} />
+          </Tooltip>}
+      </div>;
   }
 }
 
@@ -277,10 +249,7 @@ export default ThreadActivityGraph;
 /**
  * Filtered out samples use a diagonal stripe pattern, create that here.
  */
-function _createDiagonalStripePattern(
-  chartCtx: CanvasRenderingContext2D,
-  color: string
-): CanvasPattern {
+function _createDiagonalStripePattern(chartCtx: CanvasRenderingContext2D, color: string): CanvasPattern {
   // Create a second canvas, draw to it in order to create a pattern. This canvas
   // and context will be discarded after the pattern is created.
   const patternCanvas = document.createElement('canvas');

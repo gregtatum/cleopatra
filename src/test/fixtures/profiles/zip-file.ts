@@ -1,22 +1,24 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
 
-import { getProfileFromTextSamples } from '../../fixtures/profiles/processed-profile';
-import { serializeProfile } from '../../../profile-logic/process-profile';
-import { receiveZipFile } from '../../../actions/receive-profile';
-import { setDataSource } from '../../../actions/profile-view';
-import type { ZipFileTable } from '../../../profile-logic/zip-files';
-import createStore from '../../../app-logic/create-store';
-import JSZip from 'jszip';
-import { objectValues } from '../../../utils/flow';
+
+import { getProfileFromTextSamples } from "../../fixtures/profiles/processed-profile";
+import { serializeProfile } from "../../../profile-logic/process-profile";
+import { receiveZipFile } from "../../../actions/receive-profile";
+import { setDataSource } from "../../../actions/profile-view";
+import { ZipFileTable } from "../../../profile-logic/zip-files";
+import createStore from "../../../app-logic/create-store";
+import JSZip from "jszip";
+import { objectValues } from "../../../utils/flow";
 
 /**
  * Puts a blank profile at each given path in a zip file.
  */
 export function getZippedProfiles(files: string[] = []): JSZip {
-  const { profile } = getProfileFromTextSamples('A');
+  const {
+    profile
+  } = getProfileFromTextSamples('A');
   const profileText = serializeProfile(profile);
 
   const zip = new JSZip();
@@ -45,7 +47,7 @@ export async function storeWithZipFile(files: string[] = []) {
     store,
     dispatch: store.dispatch,
     getState: store.getState,
-    zippedProfiles,
+    zippedProfiles
   };
 }
 

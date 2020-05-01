@@ -2,7 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
+
+
 
 /**
  * The "perf script" format is the plain text format that is output by an
@@ -26,17 +28,15 @@ type GeckoProfileVersion4 = Object;
 /**
  * Convert the output from `perf script` into the gecko profile format (version 4).
  */
-export function convertPerfScriptProfile(
-  profile: string
-): GeckoProfileVersion4 {
+export function convertPerfScriptProfile(profile: string): GeckoProfileVersion4 {
   function _createThread(name, pid, tid) {
     const markers = {
       schema: {
         name: 0,
         time: 1,
-        data: 2,
+        data: 2
       },
-      data: [],
+      data: []
     };
     const samples = {
       schema: {
@@ -45,9 +45,9 @@ export function convertPerfScriptProfile(
         responsiveness: 2,
         rss: 3,
         uss: 4,
-        frameNumber: 5,
+        frameNumber: 5
       },
-      data: [],
+      data: []
     };
     const frameTable = {
       schema: {
@@ -55,16 +55,16 @@ export function convertPerfScriptProfile(
         implementation: 1,
         optimizations: 2,
         line: 3,
-        category: 4,
+        category: 4
       },
-      data: [],
+      data: []
     };
     const stackTable = {
       schema: {
         frame: 0,
-        prefix: 1,
+        prefix: 1
       },
-      data: [],
+      data: []
     };
     const stringTable = [];
 
@@ -118,9 +118,9 @@ export function convertPerfScriptProfile(
           samples,
           frameTable,
           stackTable,
-          stringTable,
+          stringTable
         };
-      },
+      }
     };
   }
 
@@ -166,10 +166,7 @@ export function convertPerfScriptProfile(
     // First, get the sample's time stamp and whatever comes before the timestamp:
     const sampleStartMatch = /^(.*)\s+([\d.]+):/.exec(sampleStartLine);
     if (!sampleStartMatch) {
-      console.log(
-        'Could not parse line as the start of a sample in the "perf script" profile format: "%s"',
-        sampleStartLine
-      );
+      console.log('Could not parse line as the start of a sample in the "perf script" profile format: "%s"', sampleStartLine);
       continue;
     }
 
@@ -183,15 +180,10 @@ export function convertPerfScriptProfile(
     //                                  |          |        +- tid
     //                                  |          |        |   +- end of word (space or end of string)
     //                                 vvvv   vvvvvvvvvvv vvvvv v
-    const threadNamePidAndTidMatch = /^(.*)\s+(?:(\d+)\/)?(\d+)\b/.exec(
-      beforeTimeStamp
-    );
+    const threadNamePidAndTidMatch = /^(.*)\s+(?:(\d+)\/)?(\d+)\b/.exec(beforeTimeStamp);
 
     if (!threadNamePidAndTidMatch) {
-      console.log(
-        'Could not parse line as the start of a sample in the "perf script" profile format: "%s"',
-        sampleStartLine
-      );
+      console.log('Could not parse line as the start of a sample in the "perf script" profile format: "%s"', sampleStartLine);
       continue;
     }
 
@@ -238,14 +230,12 @@ export function convertPerfScriptProfile(
     }
   }
 
-  const threadArray = Array.from(threadMap.values()).map(thread =>
-    thread.finish()
-  );
+  const threadArray = Array.from(threadMap.values()).map(thread => thread.finish());
 
   for (const thread of threadArray) {
     // The samples are not guaranteed to be in order, sort them so that they are.
     const key = thread.samples.schema.time;
-    (thread.samples.data: Array<any>).sort((a, b) => a[key] - b[key]);
+    (thread.samples.data as Array<any>).sort((a, b) => a[key] - b[key]);
   }
 
   return {
@@ -256,9 +246,9 @@ export function convertPerfScriptProfile(
       stackwalk: 1,
       startTime: startTime,
       version: 4,
-      presymbolicated: true,
+      presymbolicated: true
     },
     libs: [],
-    threads: threadArray,
+    threads: threadArray
   };
 }

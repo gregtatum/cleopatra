@@ -1,19 +1,19 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
 
-import { queryIsMenuButtonEnabled } from '../../app-logic/web-channel';
 
-import { mockWebChannel } from '../fixtures/mocks/web-channel';
+import { queryIsMenuButtonEnabled } from "../../app-logic/web-channel";
 
-describe('event handlers for Firefox WebChannel events', function() {
+import { mockWebChannel } from "../fixtures/mocks/web-channel";
+
+describe('event handlers for Firefox WebChannel events', function () {
   it('can test if the menu button is enabled', async () => {
     const {
       messagesSentToBrowser,
       listeners,
       triggerResponse,
-      getLastRequestId,
+      getLastRequestId
     } = mockWebChannel();
 
     // Initially there are no listeners
@@ -32,7 +32,7 @@ describe('event handlers for Firefox WebChannel events', function() {
     triggerResponse({
       type: 'STATUS_RESPONSE',
       menuButtonIsEnabled: true,
-      requestId: getLastRequestId(),
+      requestId: getLastRequestId()
     });
 
     // Check that the response makes sense and the listeners are cleared.
@@ -41,43 +41,41 @@ describe('event handlers for Firefox WebChannel events', function() {
     expect(isMenuButtonEnabled).toBe(true);
   });
 
-  it('will error if the message is not understood by Firefox', async function() {
-    const { triggerResponse } = mockWebChannel();
+  it('will error if the message is not understood by Firefox', async function () {
+    const {
+      triggerResponse
+    } = mockWebChannel();
 
-    const consoleError = jest
-      .spyOn(console, 'error')
-      .mockImplementation(() => {});
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
     const response = queryIsMenuButtonEnabled();
 
     // The triggerResponse doesn't allow unknown message types, so coerce it
     // into a Function to test the error path.
-    (triggerResponse: Function)({
+    (triggerResponse as Function)({
       errno: 2,
-      error: 'No Such Channel',
+      error: 'No Such Channel'
     });
 
     await expect(response).rejects.toEqual({
       errno: 2,
-      error: 'No Such Channel',
+      error: 'No Such Channel'
     });
     expect(consoleError).toHaveBeenCalled();
   });
 
-  it('will error if the messages are received that are malformed', async function() {
-    const { triggerResponse } = mockWebChannel();
+  it('will error if the messages are received that are malformed', async function () {
+    const {
+      triggerResponse
+    } = mockWebChannel();
 
-    const consoleError = jest
-      .spyOn(console, 'error')
-      .mockImplementation(() => {});
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
     const response = queryIsMenuButtonEnabled();
 
     // The triggerResponse doesn't allow unknown message types, so coerce it
     // into a Function to test the error path.
-    (triggerResponse: Function)('Invalid message');
+    (triggerResponse as Function)('Invalid message');
 
-    await expect(response).rejects.toEqual(
-      new Error('A malformed WebChannel event was received.')
-    );
+    await expect(response).rejects.toEqual(new Error('A malformed WebChannel event was received.'));
     expect(consoleError).toHaveBeenCalled();
   });
 });

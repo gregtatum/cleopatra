@@ -2,12 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
 
-import { removeURLs } from '../../utils/string';
 
-describe('utils/string', function() {
-  describe('removeURLs', function() {
+import { removeURLs } from "../../utils/string";
+
+describe('utils/string', function () {
+  describe('removeURLs', function () {
     it('should remove the basic URLs successfully', () => {
       let string = 'https://foo.com/';
       expect(removeURLs(string)).toEqual('https://<URL>');
@@ -88,8 +88,7 @@ describe('utils/string', function() {
     });
 
     it('should remove the URL with file extension and multiple querystrings successfully', () => {
-      const string =
-        'https://px.image.com/test.gif?e=25&q=2&hp=1&kq=1&lo=1&ua=null&pk=1&wk=1&rk=1';
+      const string = 'https://px.image.com/test.gif?e=25&q=2&hp=1&kq=1&lo=1&ua=null&pk=1&wk=1&rk=1';
       expect(removeURLs(string)).toEqual('https://<URL>');
     });
 
@@ -97,11 +96,8 @@ describe('utils/string', function() {
       let string = 'https://foo.com/ http://bar.com/';
       expect(removeURLs(string)).toEqual('https://<URL> http://<URL>');
       string = 'https://foo.com/ - http://bar.com - ftp://baz.com/';
-      expect(removeURLs(string)).toEqual(
-        'https://<URL> - http://<URL> - ftp://<URL>'
-      );
-      string =
-        'https://www.example.com/foo/?bar=baz&inga=42&quux http://bar.com/';
+      expect(removeURLs(string)).toEqual('https://<URL> - http://<URL> - ftp://<URL>');
+      string = 'https://www.example.com/foo/?bar=baz&inga=42&quux http://bar.com/';
       expect(removeURLs(string)).toEqual('https://<URL> http://<URL>');
     });
 

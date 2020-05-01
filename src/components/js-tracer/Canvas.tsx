@@ -2,87 +2,69 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
-import { GREY_20 } from 'photon-colors';
-import * as React from 'react';
-import classNames from 'classnames';
-import {
-  TIMELINE_MARGIN_LEFT,
-  TIMELINE_MARGIN_RIGHT,
-} from '../../app-logic/constants';
-import {
-  withChartViewport,
-  type WithChartViewport,
-} from '../shared/chart/Viewport';
-import ChartCanvas from '../shared/chart/Canvas';
-import TextMeasurement from '../../utils/text-measurement';
-import { FastFillStyle } from '../../utils';
-import { updatePreviewSelection } from '../../actions/profile-view';
-import { BLUE_40 } from '../../utils/colors';
 
-import type {
-  Milliseconds,
-  CssPixels,
-  UnitIntervalOfProfileRange,
-  DevicePixels,
-} from '../../types/units';
-import type {
-  ThreadIndex,
-  IndexIntoJsTracerEvents,
-  JsTracerTable,
-} from '../../types/profile';
-import type { JsTracerTiming } from '../../types/profile-derived';
-import type { Viewport } from '../shared/chart/Viewport';
-import type { WrapFunctionInDispatch } from '../../utils/connect';
+import { GREY_20 } from "photon-colors";
+import * as React from "react";
+import classNames from "classnames";
+import { TIMELINE_MARGIN_LEFT, TIMELINE_MARGIN_RIGHT } from "../../app-logic/constants";
+import { withChartViewport, WithChartViewport , Viewport } from "../shared/chart/Viewport";
+import ChartCanvas from "../shared/chart/Canvas";
+import TextMeasurement from "../../utils/text-measurement";
+import { FastFillStyle } from "../../utils";
+import { updatePreviewSelection } from "../../actions/profile-view";
+import { BLUE_40 } from "../../utils/colors";
 
-type OwnProps = {|
-  +rangeStart: Milliseconds,
-  +rangeEnd: Milliseconds,
-  +jsTracerTimingRows: JsTracerTiming[],
-  +jsTracerTable: JsTracerTable,
-  +rowHeight: CssPixels,
-  +threadIndex: ThreadIndex,
-  +doFadeIn: boolean,
-  +updatePreviewSelection: WrapFunctionInDispatch<
-    typeof updatePreviewSelection
-  >,
-|};
+import { Milliseconds, CssPixels, UnitIntervalOfProfileRange, DevicePixels } from "../../types/units";
+import { ThreadIndex, IndexIntoJsTracerEvents, JsTracerTable } from "../../types/profile";
+import { JsTracerTiming } from "../../types/profile-derived";
 
-type Props = {|
-  ...OwnProps,
+import { WrapFunctionInDispatch } from "../../utils/connect";
+
+type OwnProps = {
+  readonly rangeStart: Milliseconds;
+  readonly rangeEnd: Milliseconds;
+  readonly jsTracerTimingRows: JsTracerTiming[];
+  readonly jsTracerTable: JsTracerTable;
+  readonly rowHeight: CssPixels;
+  readonly threadIndex: ThreadIndex;
+  readonly doFadeIn: boolean;
+  readonly updatePreviewSelection: WrapFunctionInDispatch<typeof updatePreviewSelection>;
+};
+
+type Props = OwnProps & {
   // Bring in the viewport props from the higher order Viewport component.
-  +viewport: Viewport,
-|};
+  readonly viewport: Viewport;
+};
 
-type State = {|
+type State = {
   // hoveredItem: null | number,
-  hasFirstDraw: boolean,
-|};
+  hasFirstDraw: boolean;
+};
 
 /**
  * Collect all of values that are dependent on the current rendering pass.
  * These values will be reset on every draw call.
  */
-type RenderPass = {|
-  +ctx: CanvasRenderingContext2D,
-  +textMeasurement: TextMeasurement,
-  +fastFillStyle: FastFillStyle,
-  +startRow: number,
-  +endRow: number,
-  +devicePixels: {|
-    +rowHeight: DevicePixels,
-    +containerWidth: DevicePixels,
-    +innerContainerWidth: DevicePixels,
-    +containerHeight: DevicePixels,
-    +viewportTop: DevicePixels,
-    +textOffsetStart: DevicePixels,
-    +textOffsetTop: DevicePixels,
-    +timelineMarginLeft: DevicePixels,
-    +timelineMarginRight: DevicePixels,
-    +oneCssPixel: DevicePixels,
-    +rowLabelOffsetLeft: DevicePixels,
-  |},
-|};
+type RenderPass = {
+  readonly ctx: CanvasRenderingContext2D;
+  readonly textMeasurement: TextMeasurement;
+  readonly fastFillStyle: FastFillStyle;
+  readonly startRow: number;
+  readonly endRow: number;
+  readonly devicePixels: {
+    readonly rowHeight: DevicePixels;
+    readonly containerWidth: DevicePixels;
+    readonly innerContainerWidth: DevicePixels;
+    readonly containerHeight: DevicePixels;
+    readonly viewportTop: DevicePixels;
+    readonly textOffsetStart: DevicePixels;
+    readonly textOffsetTop: DevicePixels;
+    readonly timelineMarginLeft: DevicePixels;
+    readonly timelineMarginRight: DevicePixels;
+    readonly oneCssPixel: DevicePixels;
+    readonly rowLabelOffsetLeft: DevicePixels;
+  };
+};
 
 const TEXT_OFFSET_TOP: CssPixels = 11;
 const TEXT_OFFSET_START: CssPixels = 3;
@@ -90,18 +72,16 @@ const ROW_LABEL_OFFSET_LEFT: CssPixels = 5;
 const FONT_SIZE: CssPixels = 10;
 
 class JsTracerCanvas extends React.PureComponent<Props, State> {
+
   state = {
-    hasFirstDraw: false,
+    hasFirstDraw: false
   };
 
   /**
    * This method is called by the ChartCanvas component whenever the canvas needs to
    * be painted.
    */
-  drawCanvas = (
-    ctx: CanvasRenderingContext2D,
-    hoveredItem: IndexIntoJsTracerEvents | null
-  ) => {
+  drawCanvas = (ctx: CanvasRenderingContext2D, hoveredItem: IndexIntoJsTracerEvents | null) => {
     const {
       rowHeight,
       jsTracerTimingRows,
@@ -109,11 +89,13 @@ class JsTracerCanvas extends React.PureComponent<Props, State> {
         viewportTop,
         viewportBottom,
         containerWidth,
-        containerHeight,
-      },
+        containerHeight
+      }
     } = this.props;
 
-    const { devicePixelRatio } = window;
+    const {
+      devicePixelRatio
+    } = window;
 
     // Set the font size before creating a text measurer.
     ctx.font = `${FONT_SIZE * devicePixelRatio}px sans-serif`;
@@ -125,16 +107,11 @@ class JsTracerCanvas extends React.PureComponent<Props, State> {
       // Define a start and end row, so that we only draw the events
       // that are vertically within view.
       startRow: Math.floor(viewportTop / rowHeight),
-      endRow: Math.min(
-        Math.ceil(viewportBottom / rowHeight),
-        jsTracerTimingRows.length
-      ),
+      endRow: Math.min(Math.ceil(viewportBottom / rowHeight), jsTracerTimingRows.length),
       devicePixels: {
         // Convert many of the common values provided by the Props into DevicePixels.
         containerWidth: containerWidth * devicePixelRatio,
-        innerContainerWidth:
-          (containerWidth - TIMELINE_MARGIN_LEFT - TIMELINE_MARGIN_RIGHT) *
-          devicePixelRatio,
+        innerContainerWidth: (containerWidth - TIMELINE_MARGIN_LEFT - TIMELINE_MARGIN_RIGHT) * devicePixelRatio,
         containerHeight: containerHeight * devicePixelRatio,
         textOffsetStart: TEXT_OFFSET_START * devicePixelRatio,
         textOffsetTop: TEXT_OFFSET_TOP * devicePixelRatio,
@@ -143,28 +120,24 @@ class JsTracerCanvas extends React.PureComponent<Props, State> {
         timelineMarginLeft: TIMELINE_MARGIN_LEFT * devicePixelRatio,
         timelineMarginRight: TIMELINE_MARGIN_RIGHT * devicePixelRatio,
         oneCssPixel: devicePixelRatio,
-        rowLabelOffsetLeft: ROW_LABEL_OFFSET_LEFT * devicePixelRatio,
-      },
+        rowLabelOffsetLeft: ROW_LABEL_OFFSET_LEFT * devicePixelRatio
+      }
     };
 
     {
       // Clear out any previous events.
-      const { fastFillStyle, devicePixels } = renderPass;
+      const {
+        fastFillStyle,
+        devicePixels
+      } = renderPass;
       fastFillStyle.set('#ffffff');
-      ctx.fillRect(
-        0,
-        0,
-        devicePixels.containerWidth,
-        devicePixels.containerHeight
-      );
+      ctx.fillRect(0, 0, devicePixels.containerWidth, devicePixels.containerHeight);
     }
 
     this.drawEvents(renderPass, hoveredItem);
     this.drawSeparatorsAndLabels(renderPass);
 
-    this.setState(state =>
-      state.hasFirstDraw ? null : { hasFirstDraw: true }
-    );
+    this.setState(state => state.hasFirstDraw ? null : { hasFirstDraw: true });
   };
 
   /**
@@ -175,40 +148,28 @@ class JsTracerCanvas extends React.PureComponent<Props, State> {
    * Note: we used a long argument list instead of an object parameter on
    * purpose, to reduce GC pressure while drawing.
    */
-  drawOneEvent(
-    renderPass: RenderPass,
-    x: DevicePixels,
-    y: DevicePixels,
-    w: DevicePixels,
-    h: DevicePixels,
-    uncutWidth: DevicePixels,
-    text: string,
-    isHovered: boolean
-  ) {
-    const { ctx, textMeasurement, fastFillStyle, devicePixels } = renderPass;
+  drawOneEvent(renderPass: RenderPass, x: DevicePixels, y: DevicePixels, w: DevicePixels, h: DevicePixels, uncutWidth: DevicePixels, text: string, isHovered: boolean) {
+    const {
+      ctx,
+      textMeasurement,
+      fastFillStyle,
+      devicePixels
+    } = renderPass;
     const backgroundColor = isHovered ? 'Highlight' : BLUE_40;
     const foregroundColor = isHovered ? 'HighlightText' : 'white';
 
     fastFillStyle.set(backgroundColor);
 
     if (uncutWidth >= 1) {
-      ctx.fillRect(
-        x,
-        // Create margin at the top of 1 pixel.
-        y + 1,
-        w,
-        // Account for the top and bottom margin for a combined 2 pixels.
-        h - 2
-      );
+      ctx.fillRect(x, // Create margin at the top of 1 pixel.
+      y + 1, w, // Account for the top and bottom margin for a combined 2 pixels.
+      h - 2);
 
       // Draw the text label
       // TODO - L10N RTL.
       // Constrain the x coordinate to the leftmost area.
       const contentX: DevicePixels = x + devicePixels.textOffsetStart;
-      const contentWidth: DevicePixels = Math.max(
-        0,
-        w - devicePixels.textOffsetStart
-      );
+      const contentWidth: DevicePixels = Math.max(0, w - devicePixels.textOffsetStart);
 
       if (contentWidth > textMeasurement.minWidth) {
         const fittedText = textMeasurement.getFittedText(text, contentWidth);
@@ -230,21 +191,24 @@ class JsTracerCanvas extends React.PureComponent<Props, State> {
    * This method goes through the tracing information, with the current information
    * from the renderPass, and draws all of the events to the canvas.
    */
-  drawEvents(
-    renderPass: RenderPass,
-    hoveredItem: IndexIntoJsTracerEvents | null
-  ) {
-    const { startRow, endRow, devicePixels } = renderPass;
+  drawEvents(renderPass: RenderPass, hoveredItem: IndexIntoJsTracerEvents | null) {
+    const {
+      startRow,
+      endRow,
+      devicePixels
+    } = renderPass;
     const {
       rangeStart,
       rangeEnd,
       jsTracerTimingRows,
-      viewport: { viewportLeft, viewportRight },
+      viewport: {
+        viewportLeft,
+        viewportRight
+      }
     } = this.props;
 
     const rangeLength: Milliseconds = rangeEnd - rangeStart;
-    const viewportLength: UnitIntervalOfProfileRange =
-      viewportRight - viewportLeft;
+    const viewportLength: UnitIntervalOfProfileRange = viewportRight - viewportLeft;
 
     // Only draw the events that are vertically within view.
     for (let rowIndex = startRow; rowIndex < endRow; rowIndex++) {
@@ -279,17 +243,11 @@ class JsTracerCanvas extends React.PureComponent<Props, State> {
       // currentPixelPartialValue: 0.2
 
       // Decide which samples to actually draw
-      const timeAtViewportLeft: Milliseconds =
-        rangeStart + rangeLength * viewportLeft;
-      const timeAtViewportRightPlusMargin: Milliseconds =
-        rangeStart +
-        rangeLength * viewportRight +
-        // This represents the amount of seconds in the right margin:
-        devicePixels.timelineMarginRight *
-          ((viewportLength * rangeLength) / devicePixels.containerWidth);
+      const timeAtViewportLeft: Milliseconds = rangeStart + rangeLength * viewportLeft;
+      const timeAtViewportRightPlusMargin: Milliseconds = rangeStart + rangeLength * viewportRight + // This represents the amount of seconds in the right margin:
+      devicePixels.timelineMarginRight * (viewportLength * rangeLength / devicePixels.containerWidth);
       const h: DevicePixels = devicePixels.rowHeight - devicePixels.oneCssPixel;
-      const y: CssPixels =
-        rowIndex * devicePixels.rowHeight - devicePixels.viewportTop;
+      const y: CssPixels = rowIndex * devicePixels.rowHeight - devicePixels.viewportTop;
 
       let currentPixelLeftSide: DevicePixels = devicePixels.timelineMarginLeft;
       let currentPixelRightSide: DevicePixels = currentPixelLeftSide + 1;
@@ -298,16 +256,8 @@ class JsTracerCanvas extends React.PureComponent<Props, State> {
 
       const commitAndDrawPartialPixel = (y: number) => {
         if (currentPixelPartialValue > 0) {
-          this.drawOneEvent(
-            renderPass,
-            currentPixelLeftSide,
-            y,
-            currentPixelPartialValue,
-            h,
-            currentPixelPartialValue,
-            '',
-            // Never draw a partial pixel as hovered:
-            false // isHovered
+          this.drawOneEvent(renderPass, currentPixelLeftSide, y, currentPixelPartialValue, h, currentPixelPartialValue, '', // Never draw a partial pixel as hovered:
+          false // isHovered
           );
           currentPixelLeftSide++;
           currentPixelRightSide++;
@@ -320,27 +270,15 @@ class JsTracerCanvas extends React.PureComponent<Props, State> {
         const eventEndTime = timing.end[i];
 
         // Only draw samples that are in bounds.
-        if (
-          eventEndTime > timeAtViewportLeft &&
-          eventStartTime < timeAtViewportRightPlusMargin
-        ) {
-          const unitIntervalStartTime: UnitIntervalOfProfileRange =
-            (eventStartTime - rangeStart) / rangeLength;
-          const unitIntervalEndTime: UnitIntervalOfProfileRange =
-            (eventEndTime - rangeStart) / rangeLength;
+        if (eventEndTime > timeAtViewportLeft && eventStartTime < timeAtViewportRightPlusMargin) {
+          const unitIntervalStartTime: UnitIntervalOfProfileRange = (eventStartTime - rangeStart) / rangeLength;
+          const unitIntervalEndTime: UnitIntervalOfProfileRange = (eventEndTime - rangeStart) / rangeLength;
 
-          let x: DevicePixels =
-            ((unitIntervalStartTime - viewportLeft) *
-              devicePixels.innerContainerWidth) /
-              viewportLength +
-            devicePixels.timelineMarginLeft;
+          let x: DevicePixels = (unitIntervalStartTime - viewportLeft) * devicePixels.innerContainerWidth / viewportLength + devicePixels.timelineMarginLeft;
           // If a viewport is smaller than the width of a box, it gets cut off so only
           // a smaller box is drawn. This variable holds the width of the event before
           // it is potentially "cut" by a smaller viewport.
-          const uncutWidth: DevicePixels =
-            ((unitIntervalEndTime - unitIntervalStartTime) *
-              devicePixels.innerContainerWidth) /
-            viewportLength;
+          const uncutWidth: DevicePixels = (unitIntervalEndTime - unitIntervalStartTime) * devicePixels.innerContainerWidth / viewportLength;
           const text = timing.label[i];
           const isHovered = hoveredItem === timing.index[i];
 
@@ -354,10 +292,7 @@ class JsTracerCanvas extends React.PureComponent<Props, State> {
             // The right hand side of the box is not in the viewport range.
             continue;
           }
-          if (
-            x >
-            devicePixels.containerWidth - devicePixels.timelineMarginRight
-          ) {
+          if (x > devicePixels.containerWidth - devicePixels.timelineMarginRight) {
             // Start of the box is not in the viewport rage.
             continue;
           }
@@ -391,15 +326,14 @@ class JsTracerCanvas extends React.PureComponent<Props, State> {
               // |0---1|1---2|2---3|3---4|4---5|
               //  XXXXX XXXXX XXXXX  0.0
               //                     []
-            } else {
-              // This `else` block is intentionally blank, but shows the current state
+            } else {} // This `else` block is intentionally blank, but shows the current state
               // of the for loop.
               //
               // |0---1|1---2|2---3|3---4|4---5|
               //  XXXXX XXXXX  0.2
               //               []
-            }
-            // Partially apply the value.
+              // Partially apply the value.
+
             currentPixelPartialValue += w;
             continue;
           } else {
@@ -433,8 +367,7 @@ class JsTracerCanvas extends React.PureComponent<Props, State> {
               // |0---1|1---2|2---3|3---4|4---5|
               //  XXXXX XXXXX XXXXX
               //                    [3.1--4.9]
-            } else {
-              // This `else` block is intentionally blank, but the following diagram
+            } else {} // This `else` block is intentionally blank, but the following diagram
               // explains what the state of the loop is inside this block.
               //
               // |0---1|1---2|2---3|3---4|4---5|
@@ -446,23 +379,14 @@ class JsTracerCanvas extends React.PureComponent<Props, State> {
               // |0---1|1---2|2---3|3---4|4---5|
               //  XXXXX XXXXX  0.2
               //                   [3------6.2]
-            }
-            // Cut off the transition to the next pixel, and apply it.
+              // Cut off the transition to the next pixel, and apply it.
+
             x = ceilX;
             currentPixelPartialValue += ceilX - x;
             commitAndDrawPartialPixel(y);
           }
           const floorW = Math.floor(w);
-          this.drawOneEvent(
-            renderPass,
-            x,
-            y,
-            floorW,
-            h,
-            uncutWidth,
-            text,
-            isHovered
-          );
+          this.drawOneEvent(renderPass, x, y, floorW, h, uncutWidth, text, isHovered);
           currentPixelLeftSide = x + floorW;
           currentPixelRightSide = x + floorW + 1;
           currentPixelPartialValue = w - floorW;
@@ -481,27 +405,21 @@ class JsTracerCanvas extends React.PureComponent<Props, State> {
       fastFillStyle,
       startRow,
       endRow,
-      devicePixels,
+      devicePixels
     } = renderPass;
-    const { jsTracerTimingRows } = this.props;
+    const {
+      jsTracerTimingRows
+    } = this.props;
 
     // Draw a line to separate the left margin.
     fastFillStyle.set(GREY_20);
-    ctx.fillRect(
-      devicePixels.timelineMarginLeft - devicePixels.oneCssPixel,
-      0,
-      devicePixels.oneCssPixel,
-      devicePixels.containerHeight
-    );
+    ctx.fillRect(devicePixels.timelineMarginLeft - devicePixels.oneCssPixel, 0, devicePixels.oneCssPixel, devicePixels.containerHeight);
 
     // Draw the row separators.
     for (let rowIndex = startRow; rowIndex < endRow; rowIndex++) {
       // Subtract a CSS Pixel at the end, because the top separator is not drawn in the
       // canvas, it's drawn using CSS' border property. And canvas positioning is 0-based.
-      const y =
-        (rowIndex + 1) * devicePixels.rowHeight -
-        devicePixels.viewportTop -
-        devicePixels.oneCssPixel;
+      const y = (rowIndex + 1) * devicePixels.rowHeight - devicePixels.viewportTop - devicePixels.oneCssPixel;
       ctx.fillRect(0, y, devicePixels.containerWidth, devicePixels.oneCssPixel);
     }
 
@@ -509,21 +427,16 @@ class JsTracerCanvas extends React.PureComponent<Props, State> {
     fastFillStyle.set('#000000');
     for (let rowIndex = startRow; rowIndex < endRow; rowIndex++) {
       // Get the timing information for a row of events.
-      const { name } = jsTracerTimingRows[rowIndex];
+      const {
+        name
+      } = jsTracerTimingRows[rowIndex];
       if (rowIndex > 0 && name === jsTracerTimingRows[rowIndex - 1].name) {
         // Do not draw a label if it's the same as the previous one.
         continue;
       }
-      const fittedText = textMeasurement.getFittedText(
-        name,
-        devicePixels.timelineMarginLeft
-      );
+      const fittedText = textMeasurement.getFittedText(name, devicePixels.timelineMarginLeft);
       const y = rowIndex * devicePixels.rowHeight - devicePixels.viewportTop;
-      ctx.fillText(
-        fittedText,
-        devicePixels.rowLabelOffsetLeft,
-        y + devicePixels.textOffsetTop
-      );
+      ctx.fillText(fittedText, devicePixels.rowLabelOffsetLeft, y + devicePixels.textOffsetTop);
     }
   }
 
@@ -541,22 +454,22 @@ class JsTracerCanvas extends React.PureComponent<Props, State> {
       rangeEnd,
       jsTracerTimingRows,
       rowHeight,
-      viewport: { viewportLeft, viewportRight, viewportTop, containerWidth },
+      viewport: {
+        viewportLeft,
+        viewportRight,
+        viewportTop,
+        containerWidth
+      }
     } = this.props;
-    const innerContainerWidth =
-      containerWidth - TIMELINE_MARGIN_LEFT - TIMELINE_MARGIN_RIGHT;
+    const innerContainerWidth = containerWidth - TIMELINE_MARGIN_LEFT - TIMELINE_MARGIN_RIGHT;
 
     const rangeLength: Milliseconds = rangeEnd - rangeStart;
-    const viewportLength: UnitIntervalOfProfileRange =
-      viewportRight - viewportLeft;
-    const unitIntervalTime: UnitIntervalOfProfileRange =
-      viewportLeft +
-      viewportLength * ((x - TIMELINE_MARGIN_LEFT) / innerContainerWidth);
+    const viewportLength: UnitIntervalOfProfileRange = viewportRight - viewportLeft;
+    const unitIntervalTime: UnitIntervalOfProfileRange = viewportLeft + viewportLength * ((x - TIMELINE_MARGIN_LEFT) / innerContainerWidth);
     const time: Milliseconds = rangeStart + unitIntervalTime * rangeLength;
     const rowIndex = Math.floor((y + viewportTop) / rowHeight);
     const timing = jsTracerTimingRows[rowIndex];
-    const minDuration: Milliseconds =
-      (rangeLength * viewportLength) / innerContainerWidth;
+    const minDuration: Milliseconds = rangeLength * viewportLength / innerContainerWidth;
 
     if (!timing) {
       return null;
@@ -579,8 +492,7 @@ class JsTracerCanvas extends React.PureComponent<Props, State> {
    * These methods were left, but commented out since the intent is to enable them
    * as follow-ups.
    */
-  onDoubleClickEvent = (_eventIndex: IndexIntoJsTracerEvents | null) => {
-    // if (eventIndex === null) {
+  onDoubleClickEvent = (_eventIndex: IndexIntoJsTracerEvents | null) => {// if (eventIndex === null) {
     //   return;
     // }
     // const { markers, updatePreviewSelection } = this.props;
@@ -599,7 +511,7 @@ class JsTracerCanvas extends React.PureComponent<Props, State> {
    * These methods were left, but commented out since the intent is to enable them
    * as follow-ups.
    */
-  getHoveredItemInfo = (_hoveredItem: IndexIntoJsTracerEvents): React.Node => {
+  getHoveredItemInfo = (_hoveredItem: IndexIntoJsTracerEvents): React.ReactNode => {
     return null;
     // return (
     //   <JsTracerTooltipContents
@@ -610,27 +522,17 @@ class JsTracerCanvas extends React.PureComponent<Props, State> {
   };
 
   render() {
-    const { containerWidth, containerHeight, isDragging } = this.props.viewport;
-    return (
-      <ChartCanvas
-        className={classNames({
-          jsTracerCanvasFadeIn: this.props.doFadeIn,
-          jsTracerCanvas: true,
-          jsTracerCanvasDrawn: this.state.hasFirstDraw,
-        })}
-        containerWidth={containerWidth}
-        containerHeight={containerHeight}
-        isDragging={isDragging}
-        onDoubleClickItem={this.onDoubleClickEvent}
-        getHoveredItemInfo={this.getHoveredItemInfo}
-        drawCanvas={this.drawCanvas}
-        hitTest={this.hitTest}
-        scaleCtxToCssPixels={false}
-      />
-    );
+    const {
+      containerWidth,
+      containerHeight,
+      isDragging
+    } = this.props.viewport;
+    return <ChartCanvas className={classNames({
+      jsTracerCanvasFadeIn: this.props.doFadeIn,
+      jsTracerCanvas: true,
+      jsTracerCanvasDrawn: this.state.hasFirstDraw
+    })} containerWidth={containerWidth} containerHeight={containerHeight} isDragging={isDragging} onDoubleClickItem={this.onDoubleClickEvent} getHoveredItemInfo={this.getHoveredItemInfo} drawCanvas={this.drawCanvas} hitTest={this.hitTest} scaleCtxToCssPixels={false} />;
   }
 }
 
-export default (withChartViewport: WithChartViewport<OwnProps, Props>)(
-  JsTracerCanvas
-);
+export default (withChartViewport as WithChartViewport<OwnProps, Props>)(JsTracerCanvas);

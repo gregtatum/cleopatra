@@ -2,44 +2,41 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
-import * as React from 'react';
-import MenuButtons from '../../components/app/MenuButtons';
-import { MenuButtonsMetaInfo } from '../../components/app/MenuButtons/MetaInfo';
-import { render, fireEvent, wait } from 'react-testing-library';
-import { Provider } from 'react-redux';
-import { storeWithProfile } from '../fixtures/stores';
-import { TextEncoder } from 'util';
-import { stateFromLocation } from '../../app-logic/url-handling';
-import { ensureExists } from '../../utils/flow';
-import {
-  getProfileFromTextSamples,
-  getProfileWithMarkers,
-} from '../fixtures/profiles/processed-profile';
-import { createGeckoProfile } from '../fixtures/profiles/gecko-profile';
-import { processProfile } from '../../profile-logic/process-profile';
-import type { Profile } from '../../types/profile';
-import type { SymbolicationStatus } from '../../types/state';
+
+import * as React from "react";
+import MenuButtons from "../../components/app/MenuButtons";
+import { MenuButtonsMetaInfo } from "../../components/app/MenuButtons/MetaInfo";
+import { render, fireEvent, wait } from "react-testing-library";
+import { Provider } from "react-redux";
+import { storeWithProfile } from "../fixtures/stores";
+import { TextEncoder } from "util";
+import { stateFromLocation } from "../../app-logic/url-handling";
+import { ensureExists } from "../../utils/flow";
+import { getProfileFromTextSamples, getProfileWithMarkers } from "../fixtures/profiles/processed-profile";
+import { createGeckoProfile } from "../fixtures/profiles/gecko-profile";
+import { processProfile } from "../../profile-logic/process-profile";
+import { Profile } from "../../types/profile";
+import { SymbolicationStatus } from "../../types/state";
 
 // Mocking SymbolStoreDB
-import { uploadBinaryProfileData } from '../../profile-logic/profile-store';
+import { uploadBinaryProfileData } from "../../profile-logic/profile-store";
 jest.mock('../../profile-logic/profile-store');
 
 // Mocking sha1
-import sha1 from '../../utils/sha1';
+import sha1 from "../../utils/sha1";
 jest.mock('../../utils/sha1');
 
 // Mocking compress
 jest.mock('../../utils/gz');
 
 // Mocking shortenUrl
-import { shortenUrl } from '../../utils/shorten-url';
+import { shortenUrl } from "../../utils/shorten-url";
 jest.mock('../../utils/shorten-url');
 
 // Mock hash
 const hash = 'c5e53f9ab6aecef926d4be68c84f2de550e2ac2f';
 
-describe('app/MenuButtons', function() {
+describe('app/MenuButtons', function () {
   function mockUpload() {
     // Create a promise with the resolve function outside of it.
     let resolveUpload, rejectUpload;
@@ -49,39 +46,33 @@ describe('app/MenuButtons', function() {
     });
 
     // Flow doesn't know uploadBinaryProfileData is a jest mock.
-    (uploadBinaryProfileData: any).mockImplementation(
-      (() => ({
-        abortFunction: () => {},
-        startUpload: () => promise,
-      }): typeof uploadBinaryProfileData)
-    );
+    (uploadBinaryProfileData as any).mockImplementation(((() => ({
+      abortFunction: () => {},
+      startUpload: () => promise
+    })) as typeof uploadBinaryProfileData));
 
     return { resolveUpload, rejectUpload };
   }
 
   function createSimpleProfile(updateChannel = 'release') {
-    const { profile } = getProfileFromTextSamples('A');
+    const {
+      profile
+    } = getProfileFromTextSamples('A');
     profile.meta.updateChannel = updateChannel;
     return { profile };
   }
 
   function createPreferenceReadProfile(updateChannel = 'release') {
-    const profile = getProfileWithMarkers([
-      [
-        'PreferenceRead',
-        1,
-        {
-          type: 'PreferenceRead',
-          startTime: 0,
-          endTime: 1,
-          prefAccessTime: 0,
-          prefName: 'testing',
-          prefKind: 'testing',
-          prefType: 'testing',
-          prefValue: 'testing',
-        },
-      ],
-    ]);
+    const profile = getProfileWithMarkers([['PreferenceRead', 1, {
+      type: 'PreferenceRead',
+      startTime: 0,
+      endTime: 1,
+      prefAccessTime: 0,
+      prefName: 'testing',
+      prefKind: 'testing',
+      prefType: 'testing',
+      prefValue: 'testing'
+    }]]);
     profile.meta.updateChannel = updateChannel;
     return { profile };
   }
@@ -90,34 +81,35 @@ describe('app/MenuButtons', function() {
     jest.useFakeTimers();
 
     const store = storeWithProfile(profile);
-    const { resolveUpload, rejectUpload } = mockUpload();
+    const {
+      resolveUpload,
+      rejectUpload
+    } = mockUpload();
 
     store.dispatch({
       type: 'UPDATE_URL_STATE',
       newUrlState: stateFromLocation({
         pathname: '/from-addon',
         search: '',
-        hash: '',
-      }),
+        hash: ''
+      })
     });
 
-    const renderResult = render(
-      <Provider store={store}>
+    const renderResult = render(<Provider store={store}>
         <MenuButtons />
-      </Provider>
-    );
+      </Provider>);
 
-    const { container, getByTestId, getByText, queryByText } = renderResult;
+    const {
+      container,
+      getByTestId,
+      getByText,
+      queryByText
+    } = renderResult;
     const getPublishButton = () => getByText('Publish…');
     const getErrorButton = () => getByText('Error publishing…');
     const getCancelButton = () => getByText('Cancel Upload');
-    const getPanelForm = () =>
-      ensureExists(
-        container.querySelector('form'),
-        'Could not find the form in the panel'
-      );
-    const queryPreferenceCheckbox = () =>
-      queryByText('Include preference values');
+    const getPanelForm = () => ensureExists(container.querySelector('form'), 'Could not find the form in the panel');
+    const queryPreferenceCheckbox = () => queryByText('Include preference values');
     const getPanel = () => getByTestId('MenuButtonsPublish-container');
     const clickAndRunTimers = where => {
       fireEvent.click(where);
@@ -135,90 +127,108 @@ describe('app/MenuButtons', function() {
       queryPreferenceCheckbox,
       clickAndRunTimers,
       resolveUpload,
-      rejectUpload,
+      rejectUpload
     };
   }
 
-  describe('<Publish>', function() {
-    beforeAll(function() {
-      if ((window: any).TextEncoder) {
+  describe('<Publish>', function () {
+    beforeAll(function () {
+      if ((window as any).TextEncoder) {
         throw new Error('A TextEncoder was already on the window object.');
       }
-      (window: any).TextEncoder = TextEncoder;
+      (window as any).TextEncoder = TextEncoder;
     });
 
-    afterAll(async function() {
+    afterAll(async function () {
       delete URL.createObjectURL;
       delete URL.revokeObjectURL;
-      delete (window: any).TextEncoder;
+      delete (window as any).TextEncoder;
     });
 
-    beforeEach(function() {
+    beforeEach(function () {
       // Flow doesn't know sha1 is a jest mock.
-      (sha1: any).mockImplementation((_data: Uint8Array) =>
-        Promise.resolve(hash)
-      );
+      (sha1 as any).mockImplementation((_data: Uint8Array) => Promise.resolve(hash));
       // Flow doesn't know shortenUrl is a jest mock.
-      (shortenUrl: any).mockImplementation(() =>
-        Promise.resolve('https://profiler.firefox.com/')
-      );
+      (shortenUrl as any).mockImplementation(() => Promise.resolve('https://profiler.firefox.com/'));
       // jsdom does not have URL.createObjectURL.
       // See https://github.com/jsdom/jsdom/issues/1721
-      (URL: any).createObjectURL = () => 'mockCreateObjectUrl';
-      (URL: any).revokeObjectURL = () => {};
+      (URL as any).createObjectURL = () => 'mockCreateObjectUrl';
+      (URL as any).revokeObjectURL = () => {};
     });
 
     it('matches the snapshot for the closed state', () => {
-      const { profile } = createSimpleProfile();
-      const { container } = setup(profile);
+      const {
+        profile
+      } = createSimpleProfile();
+      const {
+        container
+      } = setup(profile);
       expect(container).toMatchSnapshot();
     });
 
     it('matches the snapshot for the opened panel for a nightly profile', () => {
-      const { profile } = createSimpleProfile('nightly');
-      const { getPanel, getPublishButton, clickAndRunTimers } = setup(profile);
+      const {
+        profile
+      } = createSimpleProfile('nightly');
+      const {
+        getPanel,
+        getPublishButton,
+        clickAndRunTimers
+      } = setup(profile);
       clickAndRunTimers(getPublishButton());
       expect(getPanel()).toMatchSnapshot();
     });
 
     it('matches the snapshot for the opened panel for a release profile', () => {
-      const { profile } = createSimpleProfile('release');
-      const { getPanel, getPublishButton, clickAndRunTimers } = setup(profile);
+      const {
+        profile
+      } = createSimpleProfile('release');
+      const {
+        getPanel,
+        getPublishButton,
+        clickAndRunTimers
+      } = setup(profile);
       clickAndRunTimers(getPublishButton());
       expect(getPanel()).toMatchSnapshot();
     });
 
     it('shows the Include preference values checkbox when a PreferenceRead marker is in the profile', () => {
-      const { profile } = createPreferenceReadProfile('release');
+      const {
+        profile
+      } = createPreferenceReadProfile('release');
       const {
         getPublishButton,
         clickAndRunTimers,
-        queryPreferenceCheckbox,
+        queryPreferenceCheckbox
       } = setup(profile);
       clickAndRunTimers(getPublishButton());
       expect(queryPreferenceCheckbox()).toBeTruthy();
     });
 
     it('does not show the Include preference values checkbox when a PreferenceRead marker is in the profile', () => {
-      const { profile } = createSimpleProfile('release');
+      const {
+        profile
+      } = createSimpleProfile('release');
       const {
         getPublishButton,
         clickAndRunTimers,
-        queryPreferenceCheckbox,
+        queryPreferenceCheckbox
       } = setup(profile);
       clickAndRunTimers(getPublishButton());
       expect(queryPreferenceCheckbox()).toBeFalsy();
     });
 
     it('can publish, cancel, and then publish again', () => {
-      const { profile } = createSimpleProfile();
+      const {
+        profile
+      } = createSimpleProfile();
       const {
         getPanel,
         getPublishButton,
         getCancelButton,
         getPanelForm,
         resolveUpload,
-        clickAndRunTimers,
+        clickAndRunTimers
       } = setup(profile);
       clickAndRunTimers(getPublishButton());
       fireEvent.submit(getPanelForm());
@@ -234,14 +244,16 @@ describe('app/MenuButtons', function() {
     });
 
     it('matches the snapshot for an error', async () => {
-      const { profile } = createSimpleProfile();
+      const {
+        profile
+      } = createSimpleProfile();
       const {
         getPanel,
         getPublishButton,
         getErrorButton,
         getPanelForm,
         rejectUpload,
-        clickAndRunTimers,
+        clickAndRunTimers
       } = setup(profile);
 
       clickAndRunTimers(getPublishButton());
@@ -260,31 +272,25 @@ describe('app/MenuButtons', function() {
   });
 });
 
-describe('<MenuButtonsMetaInfo>', function() {
+describe('<MenuButtonsMetaInfo>', function () {
   function setup(profile: Profile, symbolicationStatus = 'DONE') {
     jest.useFakeTimers();
-    jest.spyOn(Date.prototype, 'toLocaleString').mockImplementation(function() {
+    jest.spyOn(Date.prototype, 'toLocaleString').mockImplementation(function () {
       // eslint-disable-next-line babel/no-invalid-this
       return 'toLocaleString ' + this.toUTCString();
     });
     const store = storeWithProfile(profile);
     const resymbolicateProfile = jest.fn();
 
-    const renderResults = render(
-      <Provider store={store}>
-        <MenuButtonsMetaInfo
-          profile={profile}
-          resymbolicateProfile={resymbolicateProfile}
-          symbolicationStatus={symbolicationStatus}
-        />
-      </Provider>
-    );
+    const renderResults = render(<Provider store={store}>
+        <MenuButtonsMetaInfo profile={profile} resymbolicateProfile={resymbolicateProfile} symbolicationStatus={symbolicationStatus} />
+      </Provider>);
 
     return {
       store,
       resymbolicateProfile,
       renderResults,
-      ...renderResults,
+      ...renderResults
     };
   }
 
@@ -295,10 +301,13 @@ describe('<MenuButtonsMetaInfo>', function() {
       features: ['js', 'threads'],
       threads: ['GeckoMain', 'DOM Worker'],
       capacity: Math.pow(2, 14),
-      duration: 20,
+      duration: 20
     };
 
-    const { container, getByValue } = setup(profile);
+    const {
+      container,
+      getByValue
+    } = setup(profile);
     const metaInfoButton = getByValue('Firefox (48.0) Intel Mac OS X 10.11');
     fireEvent.click(metaInfoButton);
     jest.runAllTimers();
@@ -317,7 +326,10 @@ describe('<MenuButtonsMetaInfo>', function() {
       }
     }
 
-    const { getByValue, container } = setup(profile);
+    const {
+      getByValue,
+      container
+    } = setup(profile);
 
     const metaInfoButton = getByValue('Firefox (48.0) Intel Mac OS X 10.11');
     fireEvent.click(metaInfoButton);
@@ -326,20 +338,24 @@ describe('<MenuButtonsMetaInfo>', function() {
     expect(container.firstChild).toMatchSnapshot();
   });
 
-  describe('symbolication', function() {
-    type SymbolicationTestConfig = {|
-      symbolicated: boolean,
-      symbolicationStatus: SymbolicationStatus,
-    |};
+  describe('symbolication', function () {
+    type SymbolicationTestConfig = {
+      symbolicated: boolean;
+      symbolicationStatus: SymbolicationStatus;
+    };
 
     function setupSymbolicationTest(config: SymbolicationTestConfig) {
-      const { profile } = getProfileFromTextSamples('A');
+      const {
+        profile
+      } = getProfileFromTextSamples('A');
       profile.meta.symbolicated = config.symbolicated;
 
       const setupResult = setup(profile, config.symbolicationStatus);
 
       // Open up the arrow panel for the test.
-      const { getByValue } = setupResult;
+      const {
+        getByValue
+      } = setupResult;
       fireEvent.click(getByValue('Firefox'));
       jest.runAllTimers();
 
@@ -347,9 +363,12 @@ describe('<MenuButtonsMetaInfo>', function() {
     }
 
     it('handles successfully symbolicated profiles', () => {
-      const { getByText, resymbolicateProfile } = setupSymbolicationTest({
+      const {
+        getByText,
+        resymbolicateProfile
+      } = setupSymbolicationTest({
         symbolicated: true,
-        symbolicationStatus: 'DONE',
+        symbolicationStatus: 'DONE'
       });
 
       expect(getByText('Profile is symbolicated')).toBeTruthy();
@@ -358,9 +377,12 @@ describe('<MenuButtonsMetaInfo>', function() {
     });
 
     it('handles the contradictory state of non-symbolicated profiles that are done', () => {
-      const { getByText, resymbolicateProfile } = setupSymbolicationTest({
+      const {
+        getByText,
+        resymbolicateProfile
+      } = setupSymbolicationTest({
         symbolicated: false,
-        symbolicationStatus: 'DONE',
+        symbolicationStatus: 'DONE'
       });
 
       expect(getByText('Profile is not symbolicated')).toBeTruthy();
@@ -369,9 +391,12 @@ describe('<MenuButtonsMetaInfo>', function() {
     });
 
     it('handles in progress symbolication', () => {
-      const { getByText, queryByText } = setupSymbolicationTest({
+      const {
+        getByText,
+        queryByText
+      } = setupSymbolicationTest({
         symbolicated: false,
-        symbolicationStatus: 'SYMBOLICATING',
+        symbolicationStatus: 'SYMBOLICATING'
       });
 
       expect(getByText('Currently symbolicating profile')).toBeTruthy();
@@ -381,9 +406,12 @@ describe('<MenuButtonsMetaInfo>', function() {
     });
 
     it('handles in progress re-symbolication', () => {
-      const { getByText, queryByText } = setupSymbolicationTest({
+      const {
+        getByText,
+        queryByText
+      } = setupSymbolicationTest({
         symbolicated: true,
-        symbolicationStatus: 'SYMBOLICATING',
+        symbolicationStatus: 'SYMBOLICATING'
       });
 
       expect(getByText('Attempting to re-symbolicate profile')).toBeTruthy();

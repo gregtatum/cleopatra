@@ -1,18 +1,16 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
-// @flow
+
+
+
 
 /* eslint-disable no-unused-vars, flowtype/no-unused-expressions */
+import { $ReplaceCauseWithStack, CauseBacktrace } from "../../types/markers";
+import { GeckoMarkerStack } from "../../types/gecko-profile";
 
-import type {
-  $ReplaceCauseWithStack,
-  CauseBacktrace,
-} from '../../types/markers';
-import type { GeckoMarkerStack } from '../../types/gecko-profile';
-
-type ObjectWithCause = {| a: number, cause: CauseBacktrace |};
-type ObjectWithOptionalCause = {| a: number, cause?: CauseBacktrace |};
+type ObjectWithCause = {a: number;cause: CauseBacktrace;};
+type ObjectWithOptionalCause = {a: number;cause?: CauseBacktrace;};
 declare var stack: GeckoMarkerStack;
 declare var cause: CauseBacktrace;
 

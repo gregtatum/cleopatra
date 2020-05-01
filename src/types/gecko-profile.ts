@@ -302,7 +302,7 @@ export type GeckoProfileWithMeta<Meta> = {
   pages?: PageList,
   threads: GeckoThread[],
   pausedRanges: PausedRange[],
-  tasktracer?: Object,
+  tasktracer?: { [name: string]: any },
   processes: GeckoSubprocessProfile[],
   jsTracerDictionary?: string[],
 };

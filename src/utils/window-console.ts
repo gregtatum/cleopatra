@@ -20,7 +20,7 @@ const defineProperty = Object.defineProperty;
 export function addDataToWindowObject(
   getState: GetState,
   dispatch: Dispatch,
-  target: Object = window
+  target: any = window
 ) {
   defineProperty(target, 'profile', {
     enumerable: true,

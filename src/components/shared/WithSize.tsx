@@ -1,16 +1,18 @@
+import { $ReadOnly, $Diff } from "utility-types";
+
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
 
-import * as React from 'react';
-import { findDOMNode } from 'react-dom';
-import type { CssPixels } from '../../types/units';
 
-type State = {|
-  width: CssPixels,
-  height: CssPixels,
-|};
+import * as React from "react";
+import { findDOMNode } from "react-dom";
+import { CssPixels } from "../../types/units";
+
+type State = {
+  width: CssPixels;
+  height: CssPixels;
+};
 
 export type SizeProps = $ReadOnly<State>;
 
@@ -29,21 +31,16 @@ export type SizeProps = $ReadOnly<State>;
  * Correct: withSize<Props>(ComponentClass)
  * Incorrect: withSize(ComponentClass)
  */
-export function withSize<
-  // The SizeProps act as a bounds on the generic props. This ensures that the props
-  // that passed in take into account they are being given the width and height.
-  Props: $ReadOnly<{ ...SizeProps }>
->(
-  Wrapped: React.ComponentType<Props>
-): React.ComponentType<
-  // The component that is returned does not accept width and height parameters, as
-  // they are injected by this higher order component.
-  $ReadOnly<$Diff<Props, SizeProps>>
-> {
-  return class WithSizeWrapper extends React.PureComponent<*, State> {
+export function withSize< // The SizeProps act as a bounds on the generic props. This ensures that the props
+// that passed in take into account they are being given the width and height.
+Props extends $ReadOnly<SizeProps>>(Wrapped: React.ComponentType<Props>): React.ComponentType< // The component that is returned does not accept width and height parameters, as
+// they are injected by this higher order component.
+$ReadOnly<$Diff<Props, SizeProps>>> {
+  return class WithSizeWrapper extends React.PureComponent<any, State> {
+
     _isSizeInfoDirty: boolean = false;
     state = { width: 0, height: 0 };
-    _container: ?(Element | Text);
+    _container: (Element | Text) | null | undefined;
 
     componentDidMount() {
       const container = findDOMNode(this); // eslint-disable-line react/no-find-dom-node
@@ -52,10 +49,7 @@ export function withSize<
       }
       this._container = container;
       window.addEventListener('resize', this._resizeListener);
-      window.addEventListener(
-        'visibilitychange',
-        this._visibilityChangeListener
-      );
+      window.addEventListener('visibilitychange', this._visibilityChangeListener);
 
       // Wrapping the first update in a requestAnimationFrame to defer the
       // calculation until the full render is done.
@@ -97,17 +91,17 @@ export function withSize<
     componentWillUnmount() {
       this._container = null;
       window.removeEventListener('resize', this._resizeListener);
-      window.removeEventListener(
-        'visibilitychange',
-        this._visibilityChangeListener
-      );
+      window.removeEventListener('visibilitychange', this._visibilityChangeListener);
     }
 
-    _updateWidth(container: { +getBoundingClientRect?: () => ClientRect }) {
+    _updateWidth(container: {readonly getBoundingClientRect?: () => ClientRect;}) {
       if (typeof container.getBoundingClientRect !== 'function') {
         throw new Error('Cannot measure a Text node.');
       }
-      const { width, height } = container.getBoundingClientRect();
+      const {
+        width,
+        height
+      } = container.getBoundingClientRect();
       this.setState({ width, height });
     }
 

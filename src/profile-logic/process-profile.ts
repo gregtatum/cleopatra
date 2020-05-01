@@ -40,7 +40,7 @@ type RegExpResult = null | string[];
  * And turn it into a data table of the form
  *  `{ length: number, field1: array, field2: array }`
  */
-function _toStructOfArrays(geckoTable: Object): Object {
+function _toStructOfArrays(geckoTable: any): any {
   const result = { length: geckoTable.data.length };
   for (const fieldName in geckoTable.schema) {
     const fieldIndex = geckoTable.schema[fieldName];
@@ -440,7 +440,7 @@ function _processStackTable(geckoStackTable: GeckoStackStruct, frameTable: Frame
  * stack. Otherwise, if it happened before, it was an async stack, and is most likely
  * some event that happened in the past that triggered the marker.
  */
-function _convertStackToCause(data: Object): Object {
+function _convertStackToCause(data: {[name: string]: any }): {[name: string]: any } {
   if ('stack' in data && data.stack && data.stack.samples.data.length > 0) {
     const {
       stack,
@@ -1144,7 +1144,7 @@ export function serializeProfile(profile: Profile): string {
  * Take a serialized processed profile from some saved source, and re-initialize
  * any non-serializable classes.
  */
-function _unserializeProfile(profile: Object): Profile {
+function _unserializeProfile(profile: {[name: string]: any }): Profile {
   // stringArray -> stringTable
   const newProfile = Object.assign({}, profile, {
     threads: profile.threads.map(thread => {

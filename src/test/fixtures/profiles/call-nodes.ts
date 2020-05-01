@@ -1,20 +1,12 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
 
-import type {
-  FuncTable,
-  SamplesTable,
-  FrameTable,
-  Profile,
-} from '../../../types/profile';
 
-import {
-  getEmptyThread,
-  getEmptyProfile,
-  getEmptyStackTable,
-} from '../../../profile-logic/data-structures';
+import { FuncTable, SamplesTable, FrameTable, Profile } from "../../../types/profile";
+
+import { getEmptyThread, getEmptyProfile, getEmptyStackTable } from "../../../profile-logic/data-structures";
+
 /**
  * Note that this fixture doesn't use the `getProfileFromTextSamples()` function to
  * generate the profile, as it's testing the relationships between frames, and thus
@@ -37,18 +29,9 @@ import {
 export default function getProfile(): Profile {
   const profile = getEmptyProfile();
   const thread = getEmptyThread();
-  const funcNames = [
-    'funcA',
-    'funcB',
-    'funcC',
-    'funcD',
-    'funcE',
-    'funcF',
-  ].map(name => thread.stringTable.indexForString(name));
+  const funcNames = ['funcA', 'funcB', 'funcC', 'funcD', 'funcE', 'funcF'].map(name => thread.stringTable.indexForString(name));
 
-  const categoryOther = profile.meta.categories.findIndex(
-    c => c.name === 'Other'
-  );
+  const categoryOther = profile.meta.categories.findIndex(c => c.name === 'Other');
 
   // Be explicit about table creation so flow errors are really readable.
   const funcTable: FuncTable = {
@@ -60,28 +43,19 @@ export default function getProfile(): Profile {
     fileName: Array(funcNames.length).fill(''),
     lineNumber: Array(funcNames.length).fill(null),
     columnNumber: Array(funcNames.length).fill(null),
-    length: funcNames.length,
+    length: funcNames.length
   };
 
-  const frameFuncs = [
-    'funcA', // 0
-    'funcB', // 1
-    'funcC', // 2
-    'funcD', // 3
-    'funcD', // 4 duplicate
-    'funcE', // 5
-    'funcF', // 6
+  const frameFuncs = ['funcA', // 0
+  'funcB', // 1
+  'funcC', // 2
+  'funcD', // 3
+  'funcD', // 4 duplicate
+  'funcE', // 5
+  'funcF' // 6
   ].map(name => thread.stringTable.indexForString(name));
   // Name the indices
-  const [
-    funcAFrame,
-    funcBFrame,
-    funcCFrame,
-    funcDFrame,
-    funcDFrameDuplicate,
-    funcEFrame,
-    funcFFrame,
-  ] = frameFuncs.map((_, i) => i);
+  const [funcAFrame, funcBFrame, funcCFrame, funcDFrame, funcDFrameDuplicate, funcEFrame, funcFFrame] = frameFuncs.map((_, i) => i);
 
   const frameTable: FrameTable = {
     func: frameFuncs.map(stringIndex => funcTable.name.indexOf(stringIndex)),
@@ -93,7 +67,7 @@ export default function getProfile(): Profile {
     line: Array(frameFuncs.length).fill(null),
     column: Array(frameFuncs.length).fill(null),
     optimizations: Array(frameFuncs.length).fill(null),
-    length: frameFuncs.length,
+    length: frameFuncs.length
   };
 
   const stackTable = getEmptyStackTable();
@@ -125,12 +99,10 @@ export default function getProfile(): Profile {
     responsiveness: [0, 0],
     stack: [4, 6],
     time: [0, 0],
-    length: 2,
+    length: 2
   };
 
-  profile.threads.push(
-    Object.assign(thread, { samples, stackTable, funcTable, frameTable })
-  );
+  profile.threads.push(Object.assign(thread, { samples, stackTable, funcTable, frameTable }));
 
   return profile;
 }

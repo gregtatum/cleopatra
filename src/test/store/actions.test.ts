@@ -1,29 +1,17 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
 
-import { storeWithProfile } from '../fixtures/stores';
-import * as ProfileViewSelectors from '../../selectors/profile';
-import * as UrlStateSelectors from '../../selectors/url-state';
 
-import {
-  changeCallTreeSearchString,
-  changeInvertCallstack,
-  updatePreviewSelection,
-  changeImplementationFilter,
-  changeSelectedCallNode,
-  changeShowJsTracerSummary,
-  changeShowUserTimings,
-} from '../../actions/profile-view';
-import {
-  getProfileFromTextSamples,
-  getProfileWithMarkers,
-  getUserTiming,
-} from '../fixtures/profiles/processed-profile';
-import { selectedThreadSelectors } from '../../selectors/per-thread';
+import { storeWithProfile } from "../fixtures/stores";
+import * as ProfileViewSelectors from "../../selectors/profile";
+import * as UrlStateSelectors from "../../selectors/url-state";
 
-describe('selectors/getStackTimingByDepth', function() {
+import { changeCallTreeSearchString, changeInvertCallstack, updatePreviewSelection, changeImplementationFilter, changeSelectedCallNode, changeShowJsTracerSummary, changeShowUserTimings } from "../../actions/profile-view";
+import { getProfileFromTextSamples, getProfileWithMarkers, getUserTiming } from "../fixtures/profiles/processed-profile";
+import { selectedThreadSelectors } from "../../selectors/per-thread";
+
+describe('selectors/getStackTimingByDepth', function () {
   /**
    * This table shows off how a stack chart gets filtered to JS only, where the number is
    * the stack index, and P is platform code, and J javascript.
@@ -40,42 +28,22 @@ describe('selectors/getStackTimingByDepth', function() {
    *                          8J     |
    */
 
-  it('computes unfiltered stack timing by depth', function() {
+  it('computes unfiltered stack timing by depth', function () {
     const store = storeWithProfile();
-    const stackTimingByDepth = selectedThreadSelectors.getStackTimingByDepth(
-      store.getState()
-    );
-    expect(stackTimingByDepth).toEqual([
-      { start: [0], end: [91], callNode: [0], length: 1 },
-      { start: [0, 50], end: [40, 91], callNode: [1, 1], length: 2 },
-      {
-        start: [10, 30, 60],
-        end: [30, 40, 91],
-        callNode: [2, 3, 4],
-        length: 3,
-      },
-      { start: [70], end: [90], callNode: [5], length: 1 },
-      { start: [80], end: [90], callNode: [6], length: 1 },
-      { start: [80], end: [90], callNode: [7], length: 1 },
-      { start: [80], end: [90], callNode: [8], length: 1 },
-    ]);
+    const stackTimingByDepth = selectedThreadSelectors.getStackTimingByDepth(store.getState());
+    expect(stackTimingByDepth).toEqual([{ start: [0], end: [91], callNode: [0], length: 1 }, { start: [0, 50], end: [40, 91], callNode: [1, 1], length: 2 }, {
+      start: [10, 30, 60],
+      end: [30, 40, 91],
+      callNode: [2, 3, 4],
+      length: 3
+    }, { start: [70], end: [90], callNode: [5], length: 1 }, { start: [80], end: [90], callNode: [6], length: 1 }, { start: [80], end: [90], callNode: [7], length: 1 }, { start: [80], end: [90], callNode: [8], length: 1 }]);
   });
 
-  it('uses search strings', function() {
+  it('uses search strings', function () {
     const store = storeWithProfile();
     store.dispatch(changeCallTreeSearchString('javascript'));
-    const stackTimingByDepth = selectedThreadSelectors.getStackTimingByDepth(
-      store.getState()
-    );
-    expect(stackTimingByDepth).toEqual([
-      { start: [60], end: [91], callNode: [0], length: 1 },
-      { start: [60], end: [91], callNode: [1], length: 1 },
-      { start: [60], end: [91], callNode: [4], length: 1 },
-      { start: [70], end: [90], callNode: [5], length: 1 },
-      { start: [80], end: [90], callNode: [6], length: 1 },
-      { start: [80], end: [90], callNode: [7], length: 1 },
-      { start: [80], end: [90], callNode: [8], length: 1 },
-    ]);
+    const stackTimingByDepth = selectedThreadSelectors.getStackTimingByDepth(store.getState());
+    expect(stackTimingByDepth).toEqual([{ start: [60], end: [91], callNode: [0], length: 1 }, { start: [60], end: [91], callNode: [1], length: 1 }, { start: [60], end: [91], callNode: [4], length: 1 }, { start: [70], end: [90], callNode: [5], length: 1 }, { start: [80], end: [90], callNode: [6], length: 1 }, { start: [80], end: [90], callNode: [7], length: 1 }, { start: [80], end: [90], callNode: [8], length: 1 }]);
   });
 
   /**
@@ -93,46 +61,35 @@ describe('selectors/getStackTimingByDepth', function() {
    *                          7P     |                             1P
    *                          8J     |                             0P
    */
-
-  it('can handle inverted stacks', function() {
+  it('can handle inverted stacks', function () {
     const store = storeWithProfile();
     store.dispatch(changeInvertCallstack(true));
-    const stackTimingByDepth = selectedThreadSelectors.getStackTimingByDepth(
-      store.getState()
-    );
-    expect(stackTimingByDepth).toEqual([
-      {
-        start: [0, 10, 30, 40, 50, 60, 70, 80, 90],
-        end: [10, 30, 40, 50, 60, 70, 80, 90, 91],
-        callNode: [0, 2, 5, 8, 0, 9, 12, 16, 9],
-        length: 9,
-      },
-      {
-        start: [0, 10, 30, 50, 60, 70, 80, 90],
-        end: [10, 30, 40, 60, 70, 80, 90, 91],
-        callNode: [1, 3, 6, 1, 10, 13, 17, 10],
-        length: 8,
-      },
-      {
-        start: [10, 30, 60, 70, 80, 90],
-        end: [30, 40, 70, 80, 90, 91],
-        callNode: [4, 7, 11, 14, 18, 11],
-        length: 6,
-      },
-      {
-        start: [70, 80],
-        end: [80, 90],
-        callNode: [15, 19],
-        length: 2,
-      },
-      { start: [80], end: [90], callNode: [20], length: 1 },
-      { start: [80], end: [90], callNode: [21], length: 1 },
-      { start: [80], end: [90], callNode: [22], length: 1 },
-    ]);
+    const stackTimingByDepth = selectedThreadSelectors.getStackTimingByDepth(store.getState());
+    expect(stackTimingByDepth).toEqual([{
+      start: [0, 10, 30, 40, 50, 60, 70, 80, 90],
+      end: [10, 30, 40, 50, 60, 70, 80, 90, 91],
+      callNode: [0, 2, 5, 8, 0, 9, 12, 16, 9],
+      length: 9
+    }, {
+      start: [0, 10, 30, 50, 60, 70, 80, 90],
+      end: [10, 30, 40, 60, 70, 80, 90, 91],
+      callNode: [1, 3, 6, 1, 10, 13, 17, 10],
+      length: 8
+    }, {
+      start: [10, 30, 60, 70, 80, 90],
+      end: [30, 40, 70, 80, 90, 91],
+      callNode: [4, 7, 11, 14, 18, 11],
+      length: 6
+    }, {
+      start: [70, 80],
+      end: [80, 90],
+      callNode: [15, 19],
+      length: 2
+    }, { start: [80], end: [90], callNode: [20], length: 1 }, { start: [80], end: [90], callNode: [21], length: 1 }, { start: [80], end: [90], callNode: [22], length: 1 }]);
   });
 });
 
-describe('selectors/getFlameGraphTiming', function() {
+describe('selectors/getFlameGraphTiming', function () {
   /**
    * Map the flameGraphTiming data structure into a human readable format where
    * each line takes the form:
@@ -140,24 +97,23 @@ describe('selectors/getFlameGraphTiming', function() {
    * "FunctionName1 (StartTime:EndTime) | FunctionName2 (StartTime:EndTime)"
    */
   function getHumanReadableFlameGraphRanges(store, funcNames) {
-    const { callNodeTable } = selectedThreadSelectors.getCallNodeInfo(
-      store.getState()
-    );
-    const flameGraphTiming = selectedThreadSelectors.getFlameGraphTiming(
-      store.getState()
-    );
+    const {
+      callNodeTable
+    } = selectedThreadSelectors.getCallNodeInfo(store.getState());
+    const flameGraphTiming = selectedThreadSelectors.getFlameGraphTiming(store.getState());
 
-    return flameGraphTiming.map(({ callNode, end, length, start }) => {
+    return flameGraphTiming.map(({
+      callNode,
+      end,
+      length,
+      start
+    }) => {
       const lines = [];
       for (let i = 0; i < length; i++) {
         const callNodeIndex = callNode[i];
         const funcIndex = callNodeTable.func[callNodeIndex];
         const funcName = funcNames[funcIndex];
-        lines.push(
-          `${funcName} (${parseFloat(start[i].toFixed(2))}:${parseFloat(
-            end[i].toFixed(2)
-          )})`
-        );
+        lines.push(`${funcName} (${parseFloat(start[i].toFixed(2))}:${parseFloat(end[i].toFixed(2))})`);
       }
       return lines.join(' | ');
     });
@@ -170,14 +126,16 @@ describe('selectors/getFlameGraphTiming', function() {
    * "FunctionName1 (SelfTimeRelative) | ..."
    */
   function getHumanReadableFlameGraphTimings(store, funcNames) {
-    const { callNodeTable } = selectedThreadSelectors.getCallNodeInfo(
-      store.getState()
-    );
-    const flameGraphTiming = selectedThreadSelectors.getFlameGraphTiming(
-      store.getState()
-    );
+    const {
+      callNodeTable
+    } = selectedThreadSelectors.getCallNodeInfo(store.getState());
+    const flameGraphTiming = selectedThreadSelectors.getFlameGraphTiming(store.getState());
 
-    return flameGraphTiming.map(({ selfTimeRelative, callNode, length }) => {
+    return flameGraphTiming.map(({
+      selfTimeRelative,
+      callNode,
+      length
+    }) => {
       const lines = [];
       for (let i = 0; i < length; i++) {
         const callNodeIndex = callNode[i];
@@ -189,10 +147,10 @@ describe('selectors/getFlameGraphTiming', function() {
     });
   }
 
-  it('computes a basic example', function() {
+  it('computes a basic example', function () {
     const {
       profile,
-      funcNamesPerThread: [funcNames],
+      funcNamesPerThread: [funcNames]
     } = getProfileFromTextSamples(`
       A  A  A
       B  B  B
@@ -202,19 +160,13 @@ describe('selectors/getFlameGraphTiming', function() {
     `);
 
     const store = storeWithProfile(profile);
-    expect(getHumanReadableFlameGraphRanges(store, funcNames)).toEqual([
-      'A (0:1)',
-      'B (0:1)',
-      'C (0:0.67) | H (0.67:1)',
-      'D (0:0.33) | F (0.33:0.67) | I (0.67:1)',
-      'E (0:0.33) | G (0.33:0.67)',
-    ]);
+    expect(getHumanReadableFlameGraphRanges(store, funcNames)).toEqual(['A (0:1)', 'B (0:1)', 'C (0:0.67) | H (0.67:1)', 'D (0:0.33) | F (0.33:0.67) | I (0.67:1)', 'E (0:0.33) | G (0.33:0.67)']);
   });
 
-  it('can handle null samples', function() {
+  it('can handle null samples', function () {
     const {
       profile,
-      funcNamesPerThread: [funcNames],
+      funcNamesPerThread: [funcNames]
     } = getProfileFromTextSamples(`
       A  A  X  A
       B  B     B
@@ -227,19 +179,13 @@ describe('selectors/getFlameGraphTiming', function() {
     profile.threads[0].samples.stack[2] = null;
 
     const store = storeWithProfile(profile);
-    expect(getHumanReadableFlameGraphRanges(store, funcNames)).toEqual([
-      'A (0:1)',
-      'B (0:1)',
-      'C (0:0.67) | H (0.67:1)',
-      'D (0:0.33) | F (0.33:0.67) | I (0.67:1)',
-      'E (0:0.33) | G (0.33:0.67)',
-    ]);
+    expect(getHumanReadableFlameGraphRanges(store, funcNames)).toEqual(['A (0:1)', 'B (0:1)', 'C (0:0.67) | H (0.67:1)', 'D (0:0.33) | F (0.33:0.67) | I (0.67:1)', 'E (0:0.33) | G (0.33:0.67)']);
   });
 
-  it('sorts stacks in alphabetical order', function() {
+  it('sorts stacks in alphabetical order', function () {
     const {
       profile,
-      funcNamesPerThread: [funcNames],
+      funcNamesPerThread: [funcNames]
     } = getProfileFromTextSamples(`
       D  D  A  D
       E  F  B  F
@@ -247,17 +193,13 @@ describe('selectors/getFlameGraphTiming', function() {
     `);
 
     const store = storeWithProfile(profile);
-    expect(getHumanReadableFlameGraphRanges(store, funcNames)).toEqual([
-      'A (0:0.25) | D (0.25:1)',
-      'B (0:0.25) | E (0.25:0.5) | F (0.5:1)',
-      'C (0:0.25) | G (0.5:0.75)',
-    ]);
+    expect(getHumanReadableFlameGraphRanges(store, funcNames)).toEqual(['A (0:0.25) | D (0.25:1)', 'B (0:0.25) | E (0.25:0.5) | F (0.5:1)', 'C (0:0.25) | G (0.5:0.75)']);
   });
 
-  it('contains totalTime, selfTime and selfTimeRelative', function() {
+  it('contains totalTime, selfTime and selfTimeRelative', function () {
     const {
       profile,
-      funcNamesPerThread: [funcNames],
+      funcNamesPerThread: [funcNames]
     } = getProfileFromTextSamples(`
       A  A  A  A
       B
@@ -265,17 +207,15 @@ describe('selectors/getFlameGraphTiming', function() {
     `);
 
     const store = storeWithProfile(profile);
-    expect(getHumanReadableFlameGraphTimings(store, funcNames)).toEqual([
-      'A (0.75)',
-      'B (0)',
-      'C (0.25)',
-    ]);
+    expect(getHumanReadableFlameGraphTimings(store, funcNames)).toEqual(['A (0.75)', 'B (0)', 'C (0.25)']);
   });
 });
 
-describe('selectors/getCallNodeMaxDepthForFlameGraph', function() {
-  it('calculates the max call node depth', function() {
-    const { profile } = getProfileFromTextSamples(`
+describe('selectors/getCallNodeMaxDepthForFlameGraph', function () {
+  it('calculates the max call node depth', function () {
+    const {
+      profile
+    } = getProfileFromTextSamples(`
       A  A  A
       B  B  B
       C  C
@@ -283,75 +223,67 @@ describe('selectors/getCallNodeMaxDepthForFlameGraph', function() {
     `);
 
     const store = storeWithProfile(profile);
-    const allSamplesMaxDepth = selectedThreadSelectors.getCallNodeMaxDepthForFlameGraph(
-      store.getState()
-    );
+    const allSamplesMaxDepth = selectedThreadSelectors.getCallNodeMaxDepthForFlameGraph(store.getState());
     expect(allSamplesMaxDepth).toEqual(4);
   });
 
-  it('returns zero if there are no samples', function() {
-    const { profile } = getProfileFromTextSamples(` `);
+  it('returns zero if there are no samples', function () {
+    const {
+      profile
+    } = getProfileFromTextSamples(` `);
     const store = storeWithProfile(profile);
-    const allSamplesMaxDepth = selectedThreadSelectors.getCallNodeMaxDepthForFlameGraph(
-      store.getState()
-    );
+    const allSamplesMaxDepth = selectedThreadSelectors.getCallNodeMaxDepthForFlameGraph(store.getState());
     expect(allSamplesMaxDepth).toEqual(0);
   });
 });
 
-describe('actions/changeImplementationFilter', function() {
+describe('actions/changeImplementationFilter', function () {
   const store = storeWithProfile();
 
-  it('is initially set to filter to all', function() {
+  it('is initially set to filter to all', function () {
     const filter = UrlStateSelectors.getImplementationFilter(store.getState());
     expect(filter).toEqual('combined');
   });
 
-  it('can be changed to cpp', function() {
+  it('can be changed to cpp', function () {
     store.dispatch(changeImplementationFilter('cpp'));
     const filter = UrlStateSelectors.getImplementationFilter(store.getState());
     expect(filter).toEqual('cpp');
   });
 });
 
-describe('actions/updatePreviewSelection', function() {
-  it('can update the selection with new values', function() {
+describe('actions/updatePreviewSelection', function () {
+  it('can update the selection with new values', function () {
     const store = storeWithProfile();
 
-    const initialSelection = ProfileViewSelectors.getPreviewSelection(
-      store.getState()
-    );
+    const initialSelection = ProfileViewSelectors.getPreviewSelection(store.getState());
     expect(initialSelection).toEqual({
       hasSelection: false,
-      isModifying: false,
+      isModifying: false
     });
 
-    store.dispatch(
-      updatePreviewSelection({
-        hasSelection: true,
-        isModifying: false,
-        selectionStart: 100,
-        selectionEnd: 200,
-      })
-    );
+    store.dispatch(updatePreviewSelection({
+      hasSelection: true,
+      isModifying: false,
+      selectionStart: 100,
+      selectionEnd: 200
+    }));
 
-    const secondSelection = ProfileViewSelectors.getPreviewSelection(
-      store.getState()
-    );
+    const secondSelection = ProfileViewSelectors.getPreviewSelection(store.getState());
     expect(secondSelection).toEqual({
       hasSelection: true,
       isModifying: false,
       selectionStart: 100,
-      selectionEnd: 200,
+      selectionEnd: 200
     });
   });
 });
 
-describe('actions/changeInvertCallstack', function() {
+describe('actions/changeInvertCallstack', function () {
   // This profile has a heavily weighted path of A, B, I, J that should be selected.
   const {
     profile,
-    funcNamesPerThread: [funcNames],
+    funcNamesPerThread: [funcNames]
   } = getProfileFromTextSamples(`
       A  A  A  A  A
       B  E  B  B  B
@@ -370,15 +302,11 @@ describe('actions/changeInvertCallstack', function() {
   // Make tests more readable by grabbing the relevant paths, and transforming
   // them to their function names, rather than indexes.
   const getPaths = state => ({
-    selectedCallNodePath: selectedThreadSelectors
-      .getSelectedCallNodePath(state)
-      .map(index => funcNames[index]),
-    expandedCallNodePaths: Array.from(
-      selectedThreadSelectors.getExpandedCallNodePaths(state)
-    ).map(path => path.map(index => funcNames[index])),
+    selectedCallNodePath: selectedThreadSelectors.getSelectedCallNodePath(state).map(index => funcNames[index]),
+    expandedCallNodePaths: Array.from(selectedThreadSelectors.getExpandedCallNodePaths(state)).map(path => path.map(index => funcNames[index]))
   });
 
-  describe('on a normal call tree', function() {
+  describe('on a normal call tree', function () {
     // Each test uses a normal call tree, with a selected call node.
     const storeWithNormalCallTree = () => {
       const store = storeWithProfile(profile);
@@ -386,22 +314,29 @@ describe('actions/changeInvertCallstack', function() {
       return store;
     };
 
-    it('starts with a selectedCallNodePath', function() {
-      const { getState } = storeWithNormalCallTree();
-      const { selectedCallNodePath, expandedCallNodePaths } = getPaths(
-        getState()
-      );
+    it('starts with a selectedCallNodePath', function () {
+      const {
+        getState
+      } = storeWithNormalCallTree();
+      const {
+        selectedCallNodePath,
+        expandedCallNodePaths
+      } = getPaths(getState());
       expect(selectedCallNodePath).toEqual(['A', 'B']);
       expect(expandedCallNodePaths).toEqual([['A']]);
     });
 
-    it('inverts the selectedCallNodePath', function() {
-      const { dispatch, getState } = storeWithProfile(profile);
+    it('inverts the selectedCallNodePath', function () {
+      const {
+        dispatch,
+        getState
+      } = storeWithProfile(profile);
       dispatch(changeSelectedCallNode(threadIndex, callNodePath));
       dispatch(changeInvertCallstack(true));
-      const { selectedCallNodePath, expandedCallNodePaths } = getPaths(
-        getState()
-      );
+      const {
+        selectedCallNodePath,
+        expandedCallNodePaths
+      } = getPaths(getState());
 
       // Do not select the first alphabetical path:
       expect(selectedCallNodePath).not.toEqual(['D', 'C', 'B']);
@@ -412,7 +347,7 @@ describe('actions/changeInvertCallstack', function() {
     });
   });
 
-  describe('on an inverted call tree', function() {
+  describe('on an inverted call tree', function () {
     // Each test uses a store with an inverted profile, and a selected call node.
     const storeWithInvertedCallTree = () => {
       const store = storeWithProfile(profile);
@@ -421,21 +356,28 @@ describe('actions/changeInvertCallstack', function() {
       return store;
     };
 
-    it('starts with a selectedCallNodePath', function() {
-      const { getState } = storeWithInvertedCallTree();
-      const { selectedCallNodePath, expandedCallNodePaths } = getPaths(
-        getState()
-      );
+    it('starts with a selectedCallNodePath', function () {
+      const {
+        getState
+      } = storeWithInvertedCallTree();
+      const {
+        selectedCallNodePath,
+        expandedCallNodePaths
+      } = getPaths(getState());
       expect(selectedCallNodePath).toEqual(['J', 'I', 'B']);
       expect(expandedCallNodePaths).toEqual([['J'], ['J', 'I']]);
     });
 
-    it('uninverts the selectedCallNodePath', function() {
-      const { dispatch, getState } = storeWithInvertedCallTree();
+    it('uninverts the selectedCallNodePath', function () {
+      const {
+        dispatch,
+        getState
+      } = storeWithInvertedCallTree();
       dispatch(changeInvertCallstack(false));
-      const { selectedCallNodePath, expandedCallNodePaths } = getPaths(
-        getState()
-      );
+      const {
+        selectedCallNodePath,
+        expandedCallNodePaths
+      } = getPaths(getState());
 
       expect(selectedCallNodePath).toEqual(['A', 'B']);
       expect(expandedCallNodePaths).toEqual([['A']]);
@@ -443,27 +385,37 @@ describe('actions/changeInvertCallstack', function() {
   });
 });
 
-describe('actions/changeShowJsTracerSummary', function() {
-  it('can change the view to show a summary', function() {
-    const { profile } = getProfileFromTextSamples(`A`);
-    const { dispatch, getState } = storeWithProfile(profile);
+describe('actions/changeShowJsTracerSummary', function () {
+  it('can change the view to show a summary', function () {
+    const {
+      profile
+    } = getProfileFromTextSamples(`A`);
+    const {
+      dispatch,
+      getState
+    } = storeWithProfile(profile);
     expect(UrlStateSelectors.getShowJsTracerSummary(getState())).toBe(false);
     dispatch(changeShowJsTracerSummary(true));
     expect(UrlStateSelectors.getShowJsTracerSummary(getState())).toBe(true);
   });
 });
 
-describe('actions/changeShowUserTimings', function() {
-  it('can change the view to show a summary', function() {
-    const { profile } = getProfileFromTextSamples(`A`);
-    const { dispatch, getState } = storeWithProfile(profile);
+describe('actions/changeShowUserTimings', function () {
+  it('can change the view to show a summary', function () {
+    const {
+      profile
+    } = getProfileFromTextSamples(`A`);
+    const {
+      dispatch,
+      getState
+    } = storeWithProfile(profile);
     expect(UrlStateSelectors.getShowUserTimings(getState())).toBe(false);
     dispatch(changeShowUserTimings(true));
     expect(UrlStateSelectors.getShowUserTimings(getState())).toBe(true);
   });
 });
 
-describe('selectors/getCombinedTimingRows', function() {
+describe('selectors/getCombinedTimingRows', function () {
   function setupUserTimings() {
     // Approximately generate this type of graph with the following user timings.
     //
@@ -471,25 +423,19 @@ describe('selectors/getCombinedTimingRows', function() {
     //   [componentA---------------------]
     //     [componentB----]  [componentD]
     //      [componentC-]
-    return getProfileWithMarkers([
-      getUserTiming('renderFunction', 0, 10),
-      getUserTiming('componentA', 1, 8),
-      getUserTiming('componentB', 2, 4),
-      getUserTiming('componentC', 3, 1),
-      getUserTiming('componentD', 7, 1),
-    ]);
+    return getProfileWithMarkers([getUserTiming('renderFunction', 0, 10), getUserTiming('componentA', 1, 8), getUserTiming('componentB', 2, 4), getUserTiming('componentC', 3, 1), getUserTiming('componentD', 7, 1)]);
   }
 
   function setupSamples() {
-    const { profile } = getProfileFromTextSamples(
-      `
+    const {
+      profile
+    } = getProfileFromTextSamples(`
         A[cat:DOM]       A[cat:DOM]       A[cat:DOM]
         B[cat:DOM]       B[cat:DOM]       B[cat:DOM]
         C[cat:Graphics]  C[cat:Graphics]  H[cat:Network]
         D[cat:Graphics]  F[cat:Graphics]  I[cat:Network]
         E[cat:Graphics]  G[cat:Graphics]
-      `
-    );
+      `);
 
     return profile;
   }
@@ -499,41 +445,30 @@ describe('selectors/getCombinedTimingRows', function() {
     stackProfile.threads[0].markers = markerProfile.threads[0].markers;
     const store = storeWithProfile(stackProfile);
 
-    expect(
-      selectedThreadSelectors.getCombinedTimingRows(store.getState())
-    ).toEqual([
-      {
-        start: [0],
-        end: [10],
-        index: [0],
-        label: ['renderFunction'],
-        name: 'A',
-        bucket: 'None',
-        length: 1,
-      },
-      {
-        start: [1],
-        end: [9],
-        index: [1],
-        label: ['componentA'],
-        name: 'A',
-        bucket: 'None',
-        length: 1,
-      },
-      {
-        start: [2],
-        end: [6],
-        index: [2],
-        label: ['componentB'],
-        name: 'A',
-        bucket: 'None',
-        length: 1,
-      },
-      { start: [0], end: [3], callNode: [0], length: 1 },
-      { start: [0], end: [3], callNode: [1], length: 1 },
-      { start: [0, 2], end: [2, 3], callNode: [2, 7], length: 2 },
-      { start: [0, 1, 2], end: [1, 2, 3], callNode: [3, 5, 8], length: 3 },
-      { start: [0, 1], end: [1, 2], callNode: [4, 6], length: 2 },
-    ]);
+    expect(selectedThreadSelectors.getCombinedTimingRows(store.getState())).toEqual([{
+      start: [0],
+      end: [10],
+      index: [0],
+      label: ['renderFunction'],
+      name: 'A',
+      bucket: 'None',
+      length: 1
+    }, {
+      start: [1],
+      end: [9],
+      index: [1],
+      label: ['componentA'],
+      name: 'A',
+      bucket: 'None',
+      length: 1
+    }, {
+      start: [2],
+      end: [6],
+      index: [2],
+      label: ['componentB'],
+      name: 'A',
+      bucket: 'None',
+      length: 1
+    }, { start: [0], end: [3], callNode: [0], length: 1 }, { start: [0], end: [3], callNode: [1], length: 1 }, { start: [0, 2], end: [2, 3], callNode: [2, 7], length: 2 }, { start: [0, 1, 2], end: [1, 2, 3], callNode: [3, 5, 8], length: 3 }, { start: [0, 1], end: [1, 2], callNode: [4, 6], length: 2 }]);
   });
 });

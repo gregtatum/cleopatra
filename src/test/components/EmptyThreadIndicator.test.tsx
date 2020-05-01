@@ -2,30 +2,28 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 jest.mock('react-dom');
 
-import * as React from 'react';
-import ReactDOM from 'react-dom';
-import { render } from 'react-testing-library';
+import * as React from "react";
+import ReactDOM from "react-dom";
+import { render } from "react-testing-library";
 
-import EmptyThreadIndicator, {
-  getIndicatorPositions,
-} from '../../components/timeline/EmptyThreadIndicator';
-import { getProfileFromTextSamples } from '../fixtures/profiles/processed-profile';
-import { getBoundingBox } from '../fixtures/utils';
-import mockRaf from '../fixtures/mocks/request-animation-frame';
+import EmptyThreadIndicator, { getIndicatorPositions } from "../../components/timeline/EmptyThreadIndicator";
+import { getProfileFromTextSamples } from "../fixtures/profiles/processed-profile";
+import { getBoundingBox } from "../fixtures/utils";
+import mockRaf from "../fixtures/mocks/request-animation-frame";
 
-import type { StartEndRange } from '../../types/units';
+import { StartEndRange } from "../../types/units";
 
-describe('EmptyThreadIndicator', function() {
+describe('EmptyThreadIndicator', function () {
   beforeEach(() => {
     jest.spyOn(ReactDOM, 'findDOMNode').mockImplementation(() => {
       // findDOMNode uses nominal typing instead of structural (null | Element | Text), so
       // opt out of the type checker for this mock by returning `any`.
       const mockEl = ({
-        getBoundingClientRect: () => getBoundingBox(width, height),
-      }: any);
+        getBoundingClientRect: () => getBoundingBox(width, height)
+      } as any);
       return mockEl;
     });
   });
@@ -34,7 +32,9 @@ describe('EmptyThreadIndicator', function() {
   const width = 100;
   const height = 10;
 
-  const { profile } = getProfileFromTextSamples(`
+  const {
+    profile
+  } = getProfileFromTextSamples(`
     A  A  A
   `);
 
@@ -54,24 +54,18 @@ describe('EmptyThreadIndicator', function() {
       interval: 0.1,
       unfilteredSamplesRange: { start: 5, end: 8 },
       width,
-      height: 10,
+      height: 10
     };
   }
-  describe('rendering', function() {
+  describe('rendering', function () {
     it('matches the snapshot when rendering all three types of indicators', () => {
       const props = propsFromViewportRange({ start: 0, end: 10 });
 
       const flushRafCalls = mockRaf(); // WithSize uses requestAnimationFrame
-      const { container } = render(
-        // The props have to be passed in manually to avoid adding the SizeProps.
-        <EmptyThreadIndicator
-          rangeStart={props.rangeStart}
-          rangeEnd={props.rangeEnd}
-          thread={props.thread}
-          interval={props.interval}
-          unfilteredSamplesRange={props.unfilteredSamplesRange}
-        />
-      );
+      const {
+        container
+      } = render( // The props have to be passed in manually to avoid adding the SizeProps.
+      <EmptyThreadIndicator rangeStart={props.rangeStart} rangeEnd={props.rangeEnd} thread={props.thread} interval={props.interval} unfilteredSamplesRange={props.unfilteredSamplesRange} />);
       flushRafCalls();
 
       expect(container.firstChild).toMatchSnapshot();
@@ -82,22 +76,16 @@ describe('EmptyThreadIndicator', function() {
       const props = propsFromViewportRange({ start: 5.5, end: 6.5 });
 
       const flushRafCalls = mockRaf(); // WithSize uses requestAnimationFrame
-      const { container } = render(
-        // The props have to be passed in manually to avoid adding the SizeProps.
-        <EmptyThreadIndicator
-          rangeStart={props.rangeStart}
-          rangeEnd={props.rangeEnd}
-          thread={props.thread}
-          interval={props.interval}
-          unfilteredSamplesRange={props.unfilteredSamplesRange}
-        />
-      );
+      const {
+        container
+      } = render( // The props have to be passed in manually to avoid adding the SizeProps.
+      <EmptyThreadIndicator rangeStart={props.rangeStart} rangeEnd={props.rangeEnd} thread={props.thread} interval={props.interval} unfilteredSamplesRange={props.unfilteredSamplesRange} />);
       flushRafCalls();
       expect(container.firstChild).toMatchSnapshot();
     });
   });
 
-  describe('startup empty thread indicator', function() {
+  describe('startup empty thread indicator', function () {
     // Thread startup is between 0 and 3 seconds in the mock data. In addition the space
     // is 100px wide.
 
@@ -105,9 +93,9 @@ describe('EmptyThreadIndicator', function() {
       //           0  1  2  3  4  5  6  7  8  9  10
       //  viewport |------------------------------|
       //  startup  |--------|
-      const { startup } = getIndicatorPositions(
-        propsFromViewportRange({ start: 0, end: 10 })
-      );
+      const {
+        startup
+      } = getIndicatorPositions(propsFromViewportRange({ start: 0, end: 10 }));
       expect(startup).toEqual({ left: 0, width: 30 });
     });
 
@@ -115,9 +103,9 @@ describe('EmptyThreadIndicator', function() {
       //           0  1  2  3  4  5  6  7  8  9  10
       //  viewport |-----|
       //  startup  |--------|
-      const { startup } = getIndicatorPositions(
-        propsFromViewportRange({ start: 0, end: 2 })
-      );
+      const {
+        startup
+      } = getIndicatorPositions(propsFromViewportRange({ start: 0, end: 2 }));
       expect(startup).toEqual({ left: 0, width: 100 });
     });
 
@@ -125,14 +113,14 @@ describe('EmptyThreadIndicator', function() {
       //           0  1  2  3  4  5  6  7  8  9  10
       //  viewport             |------------------|
       //  startup  |--------|
-      const { startup } = getIndicatorPositions(
-        propsFromViewportRange({ start: 4, end: 10 })
-      );
+      const {
+        startup
+      } = getIndicatorPositions(propsFromViewportRange({ start: 4, end: 10 }));
       expect(startup).toEqual(null);
     });
   });
 
-  describe('shutdown empty thread indicator', function() {
+  describe('shutdown empty thread indicator', function () {
     // Thread startup is between 0 and 3 seconds in the mock data. In addition the space
     // is 100px wide.
 
@@ -140,9 +128,9 @@ describe('EmptyThreadIndicator', function() {
       //           0  1  2  3  4  5  6  7  8  9  10
       //  viewport |------------------------------|
       //  shutdown                            |---|
-      const { shutdown } = getIndicatorPositions(
-        propsFromViewportRange({ start: 0, end: 10 })
-      );
+      const {
+        shutdown
+      } = getIndicatorPositions(propsFromViewportRange({ start: 0, end: 10 }));
       // It takes up 30% of the view.
       expect(shutdown).toEqual({ right: 0, width: 10 });
     });
@@ -151,9 +139,9 @@ describe('EmptyThreadIndicator', function() {
       //           0  1  2  3  4  5  6  7  8  9  10
       //  viewport                             |-|
       //  shutdown                            |---|
-      const { shutdown } = getIndicatorPositions(
-        propsFromViewportRange({ start: 9.2, end: 9.8 })
-      );
+      const {
+        shutdown
+      } = getIndicatorPositions(propsFromViewportRange({ start: 9.2, end: 9.8 }));
       // It takes up 100% of the view.
       expect(shutdown).toEqual({ right: 0, width: 100 });
     });
@@ -162,15 +150,15 @@ describe('EmptyThreadIndicator', function() {
       //           0  1  2  3  4  5  6  7  8  9  10
       //  viewport |--------------|
       //  shutdown                            |---|
-      const { shutdown } = getIndicatorPositions(
-        propsFromViewportRange({ start: 0, end: 5 })
-      );
+      const {
+        shutdown
+      } = getIndicatorPositions(propsFromViewportRange({ start: 0, end: 5 }));
       // It takes up 100% of the view.
       expect(shutdown).toEqual(null);
     });
   });
 
-  describe('empty buffer start indicator', function() {
+  describe('empty buffer start indicator', function () {
     // Thread startup is between 0 and 3 seconds in the mock data. In addition the space
     // is 100px wide.
 
@@ -180,9 +168,9 @@ describe('EmptyThreadIndicator', function() {
       //  samples                 |--------|
       //  viewport             |-----------------|
       //  empty                |--|
-      const { emptyBufferStart } = getIndicatorPositions(
-        propsFromViewportRange({ start: 4, end: 10 })
-      );
+      const {
+        emptyBufferStart
+      } = getIndicatorPositions(propsFromViewportRange({ start: 4, end: 10 }));
 
       // Break the assertion down
       expect(emptyBufferStart && emptyBufferStart.left).toEqual(0);
@@ -195,9 +183,9 @@ describe('EmptyThreadIndicator', function() {
       //  samples                 |--------|
       //  viewport |--------------|
       //  empty             |-----|
-      const { emptyBufferStart } = getIndicatorPositions(
-        propsFromViewportRange({ start: 0, end: 5 })
-      );
+      const {
+        emptyBufferStart
+      } = getIndicatorPositions(propsFromViewportRange({ start: 0, end: 5 }));
 
       // Break the assertion down
       expect(emptyBufferStart).toEqual({ left: 60, width: 40 });
@@ -209,9 +197,9 @@ describe('EmptyThreadIndicator', function() {
       //  samples                 |--------|
       //  viewport |------------------------------|
       //  empty             |-----|
-      const { emptyBufferStart } = getIndicatorPositions(
-        propsFromViewportRange({ start: 0, end: 10 })
-      );
+      const {
+        emptyBufferStart
+      } = getIndicatorPositions(propsFromViewportRange({ start: 0, end: 10 }));
       // It takes up 30% of the view.
       expect(emptyBufferStart).toEqual({ left: 30, width: 20 });
     });
@@ -222,9 +210,9 @@ describe('EmptyThreadIndicator', function() {
       //  samples                 |--------|
       //  viewport           |--|
       //  empty              |--|
-      const { emptyBufferStart } = getIndicatorPositions(
-        propsFromViewportRange({ start: 3.5, end: 4.5 })
-      );
+      const {
+        emptyBufferStart
+      } = getIndicatorPositions(propsFromViewportRange({ start: 3.5, end: 4.5 }));
       // It takes up 100% of the view.
       expect(emptyBufferStart).toEqual({ left: 0, width: 100 });
     });
@@ -235,9 +223,9 @@ describe('EmptyThreadIndicator', function() {
       //  samples                 |--------|
       //  viewport |-----|
       //  empty             none in range
-      const { emptyBufferStart } = getIndicatorPositions(
-        propsFromViewportRange({ start: 0, end: 2 })
-      );
+      const {
+        emptyBufferStart
+      } = getIndicatorPositions(propsFromViewportRange({ start: 0, end: 2 }));
       // It takes up 100% of the view.
       expect(emptyBufferStart).toEqual(null);
     });
@@ -248,9 +236,9 @@ describe('EmptyThreadIndicator', function() {
       //  samples                 |--------|
       //  viewport                   |-----|
       //  empty             none in range
-      const { emptyBufferStart } = getIndicatorPositions(
-        propsFromViewportRange({ start: 6, end: 8 })
-      );
+      const {
+        emptyBufferStart
+      } = getIndicatorPositions(propsFromViewportRange({ start: 6, end: 8 }));
       // It takes up 100% of the view.
       expect(emptyBufferStart).toEqual(null);
     });

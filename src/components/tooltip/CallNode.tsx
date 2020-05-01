@@ -1,78 +1,74 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
-import * as React from 'react';
 
-import { getStackType } from '../../profile-logic/transforms';
-import { objectEntries } from '../../utils/flow';
-import { formatCallNodeNumber } from '../../utils/format-numbers';
-import Icon from '../shared/Icon';
-import {
-  getFriendlyStackTypeName,
-  getCategoryPairLabel,
-} from '../../profile-logic/profile-data';
+import * as React from "react";
 
-import type { CallTree } from '../../profile-logic/call-tree';
-import type { Thread, CategoryList, PageList } from '../../types/profile';
-import type {
-  IndexIntoCallNodeTable,
-  CallNodeDisplayData,
-  CallNodeInfo,
-} from '../../types/profile-derived';
-import type { TimingsForPath } from '../../profile-logic/profile-data';
-import type { Milliseconds } from '../../types/units';
-import type { CallTreeSummaryStrategy } from '../../types/actions';
+import { getStackType } from "../../profile-logic/transforms";
+import { objectEntries } from "../../utils/flow";
+import { formatCallNodeNumber } from "../../utils/format-numbers";
+import Icon from "../shared/Icon";
+import { getFriendlyStackTypeName, getCategoryPairLabel , TimingsForPath } from "../../profile-logic/profile-data";
 
-import './CallNode.css';
+import { CallTree } from "../../profile-logic/call-tree";
+import { Thread, CategoryList, PageList } from "../../types/profile";
+import { IndexIntoCallNodeTable, CallNodeDisplayData, CallNodeInfo } from "../../types/profile-derived";
+
+import { Milliseconds } from "../../types/units";
+import { CallTreeSummaryStrategy } from "../../types/actions";
+
+import "./CallNode.css";
 
 const GRAPH_WIDTH = 150;
 const GRAPH_HEIGHT = 10;
 
-type Props = {|
-  +thread: Thread,
-  +pages: PageList | null,
-  +callNodeIndex: IndexIntoCallNodeTable,
-  +callNodeInfo: CallNodeInfo,
-  +categories: CategoryList,
-  +interval: Milliseconds,
+type Props = {
+  readonly thread: Thread;
+  readonly pages: PageList | null;
+  readonly callNodeIndex: IndexIntoCallNodeTable;
+  readonly callNodeInfo: CallNodeInfo;
+  readonly categories: CategoryList;
+  readonly interval: Milliseconds;
   // Since this tooltip can be used in different context, provide some kind of duration
   // label, e.g. "100ms" or "33%".
-  +durationText: string,
-  +callTree?: CallTree,
-  +timings?: TimingsForPath,
-  +callTreeSummaryStrategy: CallTreeSummaryStrategy,
-|};
+  readonly durationText: string;
+  readonly callTree?: CallTree;
+  readonly timings?: TimingsForPath;
+  readonly callTreeSummaryStrategy: CallTreeSummaryStrategy;
+};
 
 /**
  * This class collects the tooltip rendering for anything that cares about call nodes.
  * This includes the Flame Graph and Stack Chart.
  */
 export class TooltipCallNode extends React.PureComponent<Props> {
-  _renderTimings(
-    maybeTimings: ?TimingsForPath,
-    maybeDisplayData: ?CallNodeDisplayData
-  ) {
+
+  _renderTimings(maybeTimings: TimingsForPath | null | undefined, maybeDisplayData: CallNodeDisplayData | null | undefined) {
     if (!maybeTimings || !maybeDisplayData) {
       return null;
     }
-    const { totalTime, selfTime } = maybeTimings.forPath;
+    const {
+      totalTime,
+      selfTime
+    } = maybeTimings.forPath;
     const displayData = maybeDisplayData;
     if (!totalTime.breakdownByImplementation) {
       return null;
     }
 
-    const sortedTotalBreakdownByImplementation = objectEntries(
-      totalTime.breakdownByImplementation
-    ).sort((a, b) => b[1] - a[1]);
-    const { interval, thread } = this.props;
+    const sortedTotalBreakdownByImplementation = objectEntries(totalTime.breakdownByImplementation).sort((a, b) => b[1] - a[1]);
+    const {
+      interval,
+      thread
+    } = this.props;
 
     // JS Tracer threads have data relevant to the microsecond level.
     const isHighPrecision = Boolean(thread.isJsTracer);
 
-    return (
-      <div className="tooltipCallNodeImplementation">
-        {/* grid row -------------------------------------------------- */}
+    return <div className="tooltipCallNodeImplementation">
+        {
+        /* grid row -------------------------------------------------- */
+      }
         <div />
         <div className="tooltipCallNodeImplementationHeader" />
         <div className="tooltipCallNodeImplementationHeader">
@@ -83,70 +79,50 @@ export class TooltipCallNode extends React.PureComponent<Props> {
           <span className="tooltipCallNodeImplementationHeaderSwatchSelf" />
           Self
         </div>
-        {/* grid row -------------------------------------------------- */}
+        {
+        /* grid row -------------------------------------------------- */
+      }
         <div className="tooltipLabel">Overall</div>
         <div className="tooltipCallNodeImplementationGraph">
-          <div
-            className="tooltipCallNodeImplementationGraphRunning"
-            style={{
-              width: GRAPH_WIDTH,
-            }}
-          />
-          <div
-            className="tooltipCallNodeImplementationGraphSelf"
-            style={{
-              width: (GRAPH_WIDTH * selfTime.value) / totalTime.value,
-            }}
-          />
+          <div className="tooltipCallNodeImplementationGraphRunning" style={{
+          width: GRAPH_WIDTH
+        }} />
+          <div className="tooltipCallNodeImplementationGraphSelf" style={{
+          width: GRAPH_WIDTH * selfTime.value / totalTime.value
+        }} />
         </div>
         <div>{displayData.totalTimeWithUnit}</div>
         <div>{displayData.selfTimeWithUnit}</div>
-        {/* grid row -------------------------------------------------- */}
-        {sortedTotalBreakdownByImplementation.map(
-          ([implementation, time], index) => {
-            let selfTimeValue = 0;
-            if (selfTime.breakdownByImplementation) {
-              selfTimeValue =
-                selfTime.breakdownByImplementation[implementation] || 0;
-            }
+        {
+        /* grid row -------------------------------------------------- */
+      }
+        {sortedTotalBreakdownByImplementation.map(([implementation, time], index) => {
+        let selfTimeValue = 0;
+        if (selfTime.breakdownByImplementation) {
+          selfTimeValue = selfTime.breakdownByImplementation[implementation] || 0;
+        }
 
-            return (
-              <React.Fragment key={index}>
+        return <React.Fragment key={index}>
                 <div className="tooltipCallNodeImplementationName tooltipLabel">
                   {getFriendlyStackTypeName(implementation)}
                 </div>
                 <div className="tooltipCallNodeImplementationGraph">
-                  <div
-                    className="tooltipCallNodeImplementationGraphRunning"
-                    style={{
-                      width: (GRAPH_WIDTH * time) / totalTime.value,
-                    }}
-                  />
-                  <div
-                    className="tooltipCallNodeImplementationGraphSelf"
-                    style={{
-                      width: (GRAPH_WIDTH * selfTimeValue) / totalTime.value,
-                    }}
-                  />
+                  <div className="tooltipCallNodeImplementationGraphRunning" style={{
+              width: GRAPH_WIDTH * time / totalTime.value
+            }} />
+                  <div className="tooltipCallNodeImplementationGraphSelf" style={{
+              width: GRAPH_WIDTH * selfTimeValue / totalTime.value
+            }} />
                 </div>
                 <div className="tooltipCallNodeImplementationTiming">
                   {formatCallNodeNumber(interval, isHighPrecision, time)}ms
                 </div>
                 <div className="tooltipCallNodeImplementationTiming">
-                  {selfTimeValue === 0
-                    ? '—'
-                    : `${formatCallNodeNumber(
-                        interval,
-                        isHighPrecision,
-                        selfTimeValue
-                      )}ms`}
+                  {selfTimeValue === 0 ? '—' : `${formatCallNodeNumber(interval, isHighPrecision, selfTimeValue)}ms`}
                 </div>
-              </React.Fragment>
-            );
-          }
-        )}
-      </div>
-    );
+              </React.Fragment>;
+      })}
+      </div>;
   }
 
   render() {
@@ -159,7 +135,9 @@ export class TooltipCallNode extends React.PureComponent<Props> {
       timings,
       callTreeSummaryStrategy,
       pages,
-      callNodeInfo: { callNodeTable },
+      callNodeInfo: {
+        callNodeTable
+      }
     } = this.props;
     const categoryIndex = callNodeTable.category[callNodeIndex];
     const categoryColor = categories[categoryIndex].color;
@@ -191,12 +169,9 @@ export class TooltipCallNode extends React.PureComponent<Props> {
       // Because of our use of Grid Layout, all our elements need to be direct
       // children of the grid parent. That's why we use arrays here, to add
       // the elements as direct children.
-      resourceOrFileName = [
-        <div className="tooltipLabel" key="file">
+      resourceOrFileName = [<div className="tooltipLabel" key="file">
           Script URL:
-        </div>,
-        fileName,
-      ];
+        </div>, fileName];
     } else {
       const resourceIndex = thread.funcTable.resource[funcIndex];
       if (resourceIndex !== -1) {
@@ -205,12 +180,9 @@ export class TooltipCallNode extends React.PureComponent<Props> {
           // Because of our use of Grid Layout, all our elements need to be direct
           // children of the grid parent. That's why we use arrays here, to add
           // the elements as direct children.
-          resourceOrFileName = [
-            <div className="tooltipLabel" key="resource">
+          resourceOrFileName = [<div className="tooltipLabel" key="resource">
               Resource:
-            </div>,
-            thread.stringTable.getString(resourceNameIndex),
-          ];
+            </div>, thread.stringTable.getString(resourceNameIndex)];
         }
       }
     }
@@ -222,34 +194,23 @@ export class TooltipCallNode extends React.PureComponent<Props> {
       if (page) {
         if (page.embedderInnerWindowID !== 0) {
           // This is an iframe since it has an embedder.
-          pageAndParentPageURL = [
-            <div className="tooltipLabel" key="iframe">
+          pageAndParentPageURL = [<div className="tooltipLabel" key="iframe">
               iframe URL:
-            </div>,
-            <div key="iframeVal">{page.url}</div>,
-          ];
+            </div>, <div key="iframeVal">{page.url}</div>];
 
           // Getting the embedder URL now.
-          const parentPage = pages.find(
-            p => p.innerWindowID === page.embedderInnerWindowID
-          );
+          const parentPage = pages.find(p => p.innerWindowID === page.embedderInnerWindowID);
           // Ideally it should find a page.
           if (parentPage) {
-            pageAndParentPageURL.push(
-              <div className="tooltipLabel" key="page">
+            pageAndParentPageURL.push(<div className="tooltipLabel" key="page">
                 Page URL:
-              </div>,
-              <div key="pageVal">{parentPage.url}</div>
-            );
+              </div>, <div key="pageVal">{parentPage.url}</div>);
           }
         } else {
           // This is a regular page without an embedder.
-          pageAndParentPageURL = [
-            <div className="tooltipLabel" key="page">
+          pageAndParentPageURL = [<div className="tooltipLabel" key="page">
               Page URL:
-            </div>,
-            <div key="pageVal">{page.url}</div>,
-          ];
+            </div>, <div key="pageVal">{page.url}</div>];
         }
       }
     }
@@ -264,69 +225,67 @@ export class TooltipCallNode extends React.PureComponent<Props> {
         stackTypeLabel = 'JavaScript';
         break;
       case 'unsymbolicated':
-        stackTypeLabel = thread.funcTable.isJS[funcIndex]
-          ? 'Unsymbolicated native'
-          : 'Unsymbolicated or generated JIT instructions';
+        stackTypeLabel = thread.funcTable.isJS[funcIndex] ? 'Unsymbolicated native' : 'Unsymbolicated or generated JIT instructions';
         break;
       default:
         throw new Error(`Unknown stack type case "${stackType}".`);
+
     }
 
-    return (
-      <div
-        className="tooltipCallNode"
-        style={{
-          '--graph-width': GRAPH_WIDTH + 'px',
-          '--graph-height': GRAPH_HEIGHT + 'px',
-        }}
-      >
+    return <div className="tooltipCallNode" style={{
+      '--graph-width': GRAPH_WIDTH + 'px',
+      '--graph-height': GRAPH_HEIGHT + 'px'
+    }}>
         <div className="tooltipOneLine tooltipHeader">
           <div className="tooltipTiming">{durationText}</div>
           <div className="tooltipTitle">{funcName}</div>
           <div className="tooltipIcon">
-            {displayData && displayData.icon ? (
-              <Icon displayData={displayData} />
-            ) : null}
+            {displayData && displayData.icon ? <Icon displayData={displayData} /> : null}
           </div>
         </div>
         <div className="tooltipCallNodeDetails">
           {this._renderTimings(timings, displayData)}
-          {callTreeSummaryStrategy !== 'timing' && displayData ? (
-            <div className="tooltipDetails tooltipCallNodeDetailsLeft">
-              {/* Everything in this div needs to come in pairs of two in order to
-                respect the CSS grid. */}
+          {callTreeSummaryStrategy !== 'timing' && displayData ? <div className="tooltipDetails tooltipCallNodeDetailsLeft">
+              {
+            /* Everything in this div needs to come in pairs of two in order to
+             respect the CSS grid. */
+          }
               <div className="tooltipLabel">Total Bytes:</div>
               <div>{displayData.totalTimeWithUnit}</div>
-              {/* --------------------------------------------------------------- */}
+              {
+            /* --------------------------------------------------------------- */
+          }
               <div className="tooltipLabel">Self Bytes:</div>
               <div>{displayData.selfTimeWithUnit}</div>
-              {/* --------------------------------------------------------------- */}
-            </div>
-          ) : null}
+              {
+            /* --------------------------------------------------------------- */
+          }
+            </div> : null}
           <div className="tooltipDetails tooltipCallNodeDetailsLeft">
-            {/* Everything in this div needs to come in pairs of two in order to
-                respect the CSS grid. */}
+            {
+            /* Everything in this div needs to come in pairs of two in order to
+               respect the CSS grid. */
+          }
             <div className="tooltipLabel">Stack Type:</div>
             <div>{stackTypeLabel}</div>
-            {/* --------------------------------------------------------------- */}
+            {
+            /* --------------------------------------------------------------- */
+          }
             <div className="tooltipLabel">Category:</div>
             <div>
-              <span
-                className={`colored-square category-color-${categoryColor}`}
-              />
-              {getCategoryPairLabel(
-                categories,
-                categoryIndex,
-                subcategoryIndex
-              )}
+              <span className={`colored-square category-color-${categoryColor}`} />
+              {getCategoryPairLabel(categories, categoryIndex, subcategoryIndex)}
             </div>
-            {/* --------------------------------------------------------------- */}
+            {
+            /* --------------------------------------------------------------- */
+          }
             {pageAndParentPageURL}
-            {/* --------------------------------------------------------------- */}
+            {
+            /* --------------------------------------------------------------- */
+          }
             {resourceOrFileName}
           </div>
         </div>
-      </div>
-    );
+      </div>;
   }
 }

@@ -5,7 +5,7 @@
 import { sendAnalytics } from './analytics';
 
 const MAX_TIMINGS_PER_LABEL = 3;
-const _timingsPerLabel = {};
+const _timingsPerLabel: { [label: string]: number } = {};
 let _performanceMeasureGeneration = 0;
 
 /**

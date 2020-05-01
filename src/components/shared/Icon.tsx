@@ -2,38 +2,37 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
 
-import React, { PureComponent } from 'react';
-import explicitConnect from '../../utils/connect';
-import { getIconClassName } from '../../selectors/icons';
-import { iconStartLoading } from '../../actions/icons';
 
-import type { CallNodeDisplayData } from '../../types/profile-derived';
-import type { ConnectedProps } from '../../utils/connect';
+import React, { PureComponent } from "react";
+import explicitConnect, { ConnectedProps } from "../../utils/connect";
+import { getIconClassName } from "../../selectors/icons";
+import { iconStartLoading } from "../../actions/icons";
 
-type OwnProps =
-  | {|
-      // This prop is used by call tree.
-      +displayData: CallNodeDisplayData,
-    |}
-  | {|
-      // This prop is for other parts of the profiler.
-      +iconUrl: string | null,
-    |};
+import { CallNodeDisplayData } from "../../types/profile-derived";
 
-type StateProps = {|
-  +className: string,
-  +icon: string | null,
-|};
 
-type DispatchProps = {|
-  +iconStartLoading: typeof iconStartLoading,
-|};
+type OwnProps = {
+  // This prop is used by call tree.
+  readonly displayData: CallNodeDisplayData;
+} | {
+  // This prop is for other parts of the profiler.
+  readonly iconUrl: string | null;
+};
+
+type StateProps = {
+  readonly className: string;
+  readonly icon: string | null;
+};
+
+type DispatchProps = {
+  readonly iconStartLoading: typeof iconStartLoading;
+};
 
 type Props = ConnectedProps<OwnProps, StateProps, DispatchProps>;
 
 class Icon extends PureComponent<Props> {
+
   constructor(props: Props) {
     super(props);
     if (props.icon) {
@@ -54,15 +53,13 @@ class Icon extends PureComponent<Props> {
 
 export default explicitConnect<OwnProps, StateProps, DispatchProps>({
   mapStateToProps: (state, ownProps) => {
-    const icon = ownProps.displayData
-      ? ownProps.displayData.icon
-      : ownProps.iconUrl;
+    const icon = ownProps.displayData ? ownProps.displayData.icon : ownProps.iconUrl;
 
     return {
       className: getIconClassName(state, icon),
-      icon,
+      icon
     };
   },
   mapDispatchToProps: { iconStartLoading },
-  component: Icon,
+  component: Icon
 });

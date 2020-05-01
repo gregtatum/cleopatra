@@ -2,10 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
 import * as React from 'react';
 import ReactDOM from 'react-dom';
-import type { CssPixels } from '../../types/units';
+import { CssPixels } from '../../types/units';
 
 import { ensureExists } from '../../utils/flow';
 require('./Tooltip.css');
@@ -15,7 +14,7 @@ export const MOUSE_OFFSET = 11;
 type Props = {
   mouseX: CssPixels,
   mouseY: CssPixels,
-  children?: React.Node,
+  children?: React.ReactNode,
 };
 
 type State = {

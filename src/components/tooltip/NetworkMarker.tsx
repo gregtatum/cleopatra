@@ -2,26 +2,19 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
 
-import * as React from 'react';
-import classNames from 'classnames';
 
-import { TooltipDetails, TooltipDetail } from './TooltipDetails';
-import {
-  getColorClassNameForMimeType,
-  guessMimeTypeFromNetworkMarker,
-} from '../../profile-logic/marker-data';
-import {
-  formatBytes,
-  formatNumber,
-  formatMilliseconds,
-} from '../../utils/format-numbers';
+import * as React from "react";
+import classNames from "classnames";
 
-import type { NetworkPayload } from '../../types/markers';
-import type { Milliseconds } from '../../types/units';
+import { TooltipDetails, TooltipDetail } from "./TooltipDetails";
+import { getColorClassNameForMimeType, guessMimeTypeFromNetworkMarker } from "../../profile-logic/marker-data";
+import { formatBytes, formatNumber, formatMilliseconds } from "../../utils/format-numbers";
 
-import './NetworkMarker.css';
+import { NetworkPayload } from "../../types/markers";
+import { Milliseconds } from "../../types/units";
+
+import "./NetworkMarker.css";
 
 function _getHumanReadablePriority(priority: number): string | null {
   if (typeof priority !== 'number') {
@@ -62,39 +55,24 @@ function _getHumanReadableDataStatus(str: string): string {
       return 'Redirecting request';
     default:
       return 'other';
+
   }
 }
 
-function _markerDetailBytesNullable(label: string, value: ?number): * {
+function _markerDetailBytesNullable(label: string, value: number | null | undefined): any {
   if (typeof value !== 'number') {
     return null;
   }
-  return (
-    <TooltipDetail key={label} label={label}>
+  return <TooltipDetail key={label} label={label}>
       {formatBytes(value)}
-    </TooltipDetail>
-  );
+    </TooltipDetail>;
 }
 
 /* The preconnect phase may only contain these properties. */
-const PRECONNECT_PROPERTIES_IN_ORDER = [
-  'domainLookupStart',
-  'domainLookupEnd',
-  'connectStart',
-  'tcpConnectEnd',
-  'secureConnectionStart',
-  'connectEnd',
-];
+const PRECONNECT_PROPERTIES_IN_ORDER = ['domainLookupStart', 'domainLookupEnd', 'connectStart', 'tcpConnectEnd', 'secureConnectionStart', 'connectEnd'];
 
 /* A marker without a preconnect phase may contain all these properties. */
-const ALL_NETWORK_PROPERTIES_IN_ORDER = [
-  'startTime',
-  ...PRECONNECT_PROPERTIES_IN_ORDER,
-  'requestStart',
-  'responseStart',
-  'responseEnd',
-  'endTime',
-];
+const ALL_NETWORK_PROPERTIES_IN_ORDER = ['startTime', ...PRECONNECT_PROPERTIES_IN_ORDER, 'requestStart', 'responseStart', 'responseEnd', 'endTime'];
 
 /* For a marker with a preconnect phase, the second displayed diagram may only
  * contain these properties.
@@ -117,7 +95,7 @@ const PROPERTIES_HUMAN_LABELS = {
   requestStart: 'HTTP request and waiting for response',
   responseStart: 'HTTP response',
   responseEnd: 'Waiting to transmit the response',
-  endTime: 'End',
+  endTime: 'End'
 };
 
 const NETWORK_PROPERTY_OPACITIES = {
@@ -131,72 +109,63 @@ const NETWORK_PROPERTY_OPACITIES = {
   requestStart: 0.75,
   responseStart: 1,
   responseEnd: 0,
-  endTime: 0,
+  endTime: 0
 };
 
-type NetworkPhaseProps = {|
-  +propertyName: string,
-  +dur: Milliseconds,
-  +startPosition: Milliseconds,
-  +phaseDuration: Milliseconds,
-|};
+type NetworkPhaseProps = {
+  readonly propertyName: string;
+  readonly dur: Milliseconds;
+  readonly startPosition: Milliseconds;
+  readonly phaseDuration: Milliseconds;
+};
 
 class NetworkPhase extends React.PureComponent<NetworkPhaseProps> {
+
   render() {
-    const { startPosition, dur, propertyName, phaseDuration } = this.props;
-    const startPositionPercent = (startPosition / dur) * 100;
-    const durationPercent = Math.max(0.3, (phaseDuration / dur) * 100);
+    const {
+      startPosition,
+      dur,
+      propertyName,
+      phaseDuration
+    } = this.props;
+    const startPositionPercent = startPosition / dur * 100;
+    const durationPercent = Math.max(0.3, phaseDuration / dur * 100);
     const opacity = NETWORK_PROPERTY_OPACITIES[propertyName];
 
-    return (
-      <React.Fragment>
+    return <React.Fragment>
         <div className="tooltipLabel">
           {PROPERTIES_HUMAN_LABELS[propertyName]}:
         </div>
-        <div
-          aria-label={`Starting at ${formatNumber(
-            startPosition
-          )} milliseconds, duration is ${formatNumber(
-            phaseDuration
-          )} milliseconds`}
-        >
+        <div aria-label={`Starting at ${formatNumber(startPosition)} milliseconds, duration is ${formatNumber(phaseDuration)} milliseconds`}>
           {formatMilliseconds(phaseDuration)}
         </div>
-        <div
-          className={classNames('tooltipNetworkPhase', {
-            tooltipNetworkPhaseEmpty: opacity === 0,
-          })}
-          aria-hidden="true"
-          style={{
-            marginLeft: startPositionPercent + '%',
-            marginRight: 100 - startPositionPercent - durationPercent + '%',
-            opacity: opacity === 0 ? null : opacity,
-          }}
-        />
-      </React.Fragment>
-    );
+        <div className={classNames('tooltipNetworkPhase', {
+        tooltipNetworkPhaseEmpty: opacity === 0
+      })} aria-hidden="true" style={{
+        marginLeft: startPositionPercent + '%',
+        marginRight: 100 - startPositionPercent - durationPercent + '%',
+        opacity: opacity === 0 ? null : opacity
+      }} />
+      </React.Fragment>;
   }
 }
 
-type Props = {|
-  +payload: NetworkPayload,
-  +zeroAt: Milliseconds,
-|};
+type Props = {
+  readonly payload: NetworkPayload;
+  readonly zeroAt: Milliseconds;
+};
 
 export class TooltipNetworkMarker extends React.PureComponent<Props> {
-  _getPhasesForProperties(
-    properties: string[],
-    sectionDuration: Milliseconds,
-    startTime: Milliseconds
-  ): Array<React.Element<typeof NetworkPhase>> | null {
+
+  _getPhasesForProperties(properties: string[], sectionDuration: Milliseconds, startTime: Milliseconds): Array<React.ReactElement<typeof NetworkPhase>> | null {
     if (properties.length < 2) {
-      console.error(
-        'Only 1 preconnect property has been found, this should not happen.'
-      );
+      console.error('Only 1 preconnect property has been found, this should not happen.');
       return null;
     }
 
-    const { payload } = this.props;
+    const {
+      payload
+    } = this.props;
     const phases = [];
 
     for (let i = 1; i < properties.length; i++) {
@@ -210,15 +179,7 @@ export class TooltipNetworkMarker extends React.PureComponent<Props> {
       const phaseDuration = endValue - startValue;
       const startPosition = startValue - startTime;
 
-      phases.push(
-        <NetworkPhase
-          key={previousProperty}
-          propertyName={previousProperty}
-          startPosition={startPosition}
-          phaseDuration={phaseDuration}
-          dur={sectionDuration}
-        />
-      );
+      phases.push(<NetworkPhase key={previousProperty} propertyName={previousProperty} startPosition={startPosition} phaseDuration={phaseDuration} dur={sectionDuration} />);
     }
 
     return phases;
@@ -230,7 +191,9 @@ export class TooltipNetworkMarker extends React.PureComponent<Props> {
    * these phases happen in a preconnect session.
    */
   _getLatestPreconnectValue(): number | null {
-    const { payload } = this.props;
+    const {
+      payload
+    } = this.props;
 
     if (typeof payload.connectEnd === 'number') {
       return payload.connectEnd;
@@ -243,8 +206,11 @@ export class TooltipNetworkMarker extends React.PureComponent<Props> {
     return null;
   }
 
-  _renderPreconnectPhases(): React.Node {
-    const { payload, zeroAt } = this.props;
+  _renderPreconnectPhases(): React.ReactNode {
+    const {
+      payload,
+      zeroAt
+    } = this.props;
     const preconnectStart = payload.domainLookupStart;
     if (typeof preconnectStart !== 'number') {
       // All preconnect operations include a domain lookup part.
@@ -269,43 +235,33 @@ export class TooltipNetworkMarker extends React.PureComponent<Props> {
       return null;
     }
 
-    const availableProperties = PRECONNECT_PROPERTIES_IN_ORDER.filter(
-      property => typeof payload[property] === 'number'
-    );
+    const availableProperties = PRECONNECT_PROPERTIES_IN_ORDER.filter(property => typeof payload[property] === 'number');
     const dur = preconnectEnd - preconnectStart;
 
-    const phases = this._getPhasesForProperties(
-      availableProperties,
-      dur,
-      preconnectStart
-    );
+    const phases = this._getPhasesForProperties(availableProperties, dur, preconnectStart);
 
-    return (
-      <>
+    return <>
         <h3 className="tooltipNetworkTitle3">
           Preconnect (starting at {formatMilliseconds(preconnectStart - zeroAt)}
           )
         </h3>
         {phases}
-      </>
-    );
+      </>;
   }
 
-  _renderPhases(markerColorClass: string): React.Node {
-    const { payload } = this.props;
+  _renderPhases(markerColorClass: string): React.ReactNode {
+    const {
+      payload
+    } = this.props;
 
     if (payload.status === 'STATUS_START') {
       return null;
     }
 
     const preconnectPhases = this._renderPreconnectPhases();
-    const networkProperties = preconnectPhases
-      ? REQUEST_PROPERTIES_IN_ORDER
-      : ALL_NETWORK_PROPERTIES_IN_ORDER;
+    const networkProperties = preconnectPhases ? REQUEST_PROPERTIES_IN_ORDER : ALL_NETWORK_PROPERTIES_IN_ORDER;
 
-    const availableProperties = networkProperties.filter(
-      property => typeof payload[property] === 'number'
-    );
+    const availableProperties = networkProperties.filter(property => typeof payload[property] === 'number');
 
     if (availableProperties.length === 0 || availableProperties.length === 1) {
       // This shouldn't happen as we should always have both startTime and endTime.
@@ -315,46 +271,35 @@ export class TooltipNetworkMarker extends React.PureComponent<Props> {
     const dur = payload.endTime - payload.startTime;
     if (availableProperties.length === 2) {
       // We only have startTime and endTime.
-      return (
-        <div className={`tooltipNetworkPhases ${markerColorClass}`}>
-          <NetworkPhase
-            propertyName="responseStart"
-            startPosition={0}
-            phaseDuration={dur}
-            dur={dur}
-          />
-        </div>
-      );
+      return <div className={`tooltipNetworkPhases ${markerColorClass}`}>
+          <NetworkPhase propertyName="responseStart" startPosition={0} phaseDuration={dur} dur={dur} />
+        </div>;
     }
 
     // Looks like availableProperties.length >= 3.
-    const phases = this._getPhasesForProperties(
-      availableProperties,
-      dur,
-      payload.startTime
-    );
-    return (
-      // We render both phase sections in the same grid so that they're aligned
+    const phases = this._getPhasesForProperties(availableProperties, dur, payload.startTime);
+    return (// We render both phase sections in the same grid so that they're aligned
       // and the bar widths have the same reference.
       <div className={`tooltipNetworkPhases ${markerColorClass}`}>
-        {preconnectPhases ? (
-          <>
-            {/* Note: preconnectPhases contains its own title */}
+        {preconnectPhases ? <>
+            {
+            /* Note: preconnectPhases contains its own title */
+          }
             {preconnectPhases}
             <h3 className="tooltipNetworkTitle3">Actual request</h3>
-          </>
-        ) : null}
+          </> : null}
         {phases}
       </div>
     );
   }
 
   render() {
-    const { payload } = this.props;
+    const {
+      payload
+    } = this.props;
     const mimeType = guessMimeTypeFromNetworkMarker(payload);
     const markerColorClass = getColorClassNameForMimeType(mimeType);
-    return (
-      <>
+    return <>
         <TooltipDetails>
           <TooltipDetail label="Status">
             {_getHumanReadableDataStatus(payload.status)}
@@ -363,29 +308,21 @@ export class TooltipNetworkMarker extends React.PureComponent<Props> {
           <TooltipDetail label="URL">
             <span className="tooltipNetworkUrl">{payload.URI}</span>
           </TooltipDetail>
-          {payload.RedirectURI ? (
-            <TooltipDetail label="Redirect URL">
+          {payload.RedirectURI ? <TooltipDetail label="Redirect URL">
               <span className="tooltipNetworkUrl">{payload.RedirectURI}</span>
-            </TooltipDetail>
-          ) : null}
+            </TooltipDetail> : null}
           <TooltipDetail label="Priority">
             {_getHumanReadablePriority(payload.pri)}
           </TooltipDetail>
-          {mimeType ? (
-            <TooltipDetail label="Guessed MIME type">
+          {mimeType ? <TooltipDetail label="Guessed MIME type">
               <div className="tooltipNetworkMimeType">
-                <span
-                  className={`tooltipNetworkMimeTypeSwatch colored-square ${markerColorClass}`}
-                  title={mimeType}
-                />
+                <span className={`tooltipNetworkMimeTypeSwatch colored-square ${markerColorClass}`} title={mimeType} />
                 {mimeType}
               </div>
-            </TooltipDetail>
-          ) : null}
+            </TooltipDetail> : null}
           {_markerDetailBytesNullable('Requested bytes', payload.count)}
         </TooltipDetails>
         {this._renderPhases(markerColorClass)}
-      </>
-    );
+      </>;
   }
 }

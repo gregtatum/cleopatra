@@ -2,30 +2,28 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
-
 import * as React from 'react';
 import classNames from 'classnames';
 
 require('./ArrowPanel.css');
 
-type Props = {|
-  onOpen?: () => mixed,
-  onClose?: () => mixed,
-  onOkButtonClick?: () => mixed,
-  onCancelButtonClick?: () => mixed,
+type Props = {
+  onOpen?: () => unknown,
+  onClose?: () => unknown,
+  onOkButtonClick?: () => unknown,
+  onCancelButtonClick?: () => unknown,
   className: string,
-  children: React.Node,
+  children: React.ReactNode,
   title?: string,
   okButtonText?: string,
   cancelButtonText?: string,
-|};
+};
 
-type State = {|
+type State = {
   open: boolean,
   isClosing: boolean,
   openGeneration: number,
-|};
+};
 
 class ArrowPanel extends React.PureComponent<Props, State> {
   _panelElement: HTMLElement | null = null;
@@ -80,7 +78,7 @@ class ArrowPanel extends React.PureComponent<Props, State> {
     };
   }
 
-  _onArrowPanelClick = (e: { target: HTMLElement } & SyntheticMouseEvent<>) => {
+  _onArrowPanelClick = (e: { target: HTMLElement } & React.MouseEvent<>) => {
     // The arrow panel element contains the element that has the top arrow,
     // that is visually outside the panel. We still want to hide the panel
     // when clicking in this area.

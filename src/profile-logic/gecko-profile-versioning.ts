@@ -25,7 +25,9 @@ const UNANNOTATED_VERSION = 0;
  * Throws an exception if the profile is too new.
  * @param {object} profile The profile in the "Gecko profile" format.
  */
-export function upgradeGeckoProfileToCurrentVersion(profile: Object) {
+export function upgradeGeckoProfileToCurrentVersion(profile: {
+  [name: string]: any,
+}) {
   const profileVersion = profile.meta.version || UNANNOTATED_VERSION;
   if (profileVersion === GECKO_PROFILE_VERSION) {
     return;

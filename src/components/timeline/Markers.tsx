@@ -2,63 +2,56 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
-import * as React from 'react';
-import classNames from 'classnames';
 
-import { markerStyles, overlayFills } from '../../profile-logic/marker-styles';
-import { withSize } from '../shared/WithSize';
-import Tooltip from '../tooltip/Tooltip';
-import { TooltipMarker } from '../tooltip/Marker';
-import { timeCode } from '../../utils/time-code';
-import explicitConnect from '../../utils/connect';
-import { getPreviewSelection } from '../../selectors/profile';
-import { getThreadSelectors } from '../../selectors/per-thread';
-import { getSelectedThreadIndex } from '../../selectors/url-state';
-import { changeRightClickedMarker } from '../../actions/profile-view';
-import ContextMenuTrigger from '../shared/ContextMenuTrigger';
-import './Markers.css';
+import * as React from "react";
+import classNames from "classnames";
 
-import type { Milliseconds, CssPixels } from '../../types/units';
-import type { Marker, MarkerIndex } from '../../types/profile-derived';
-import type { SizeProps } from '../shared/WithSize';
-import type { ConnectedProps } from '../../utils/connect';
-import type { ThreadIndex } from '../../types/profile';
+import { markerStyles, overlayFills } from "../../profile-logic/marker-styles";
+import { withSize , SizeProps } from "../shared/WithSize";
+import Tooltip from "../tooltip/Tooltip";
+import { TooltipMarker } from "../tooltip/Marker";
+import { timeCode } from "../../utils/time-code";
+import explicitConnect, { ConnectedProps } from "../../utils/connect";
+import { getPreviewSelection } from "../../selectors/profile";
+import { getThreadSelectors } from "../../selectors/per-thread";
+import { getSelectedThreadIndex } from "../../selectors/url-state";
+import { changeRightClickedMarker } from "../../actions/profile-view";
+import ContextMenuTrigger from "../shared/ContextMenuTrigger";
+import "./Markers.css";
+
+import { Milliseconds, CssPixels } from "../../types/units";
+import { Marker, MarkerIndex } from "../../types/profile-derived";
+
+
+import { ThreadIndex } from "../../types/profile";
 
 // Exported for tests.
 export const MIN_MARKER_WIDTH = 0.3;
 
-type MarkerState = 'PRESSED' | 'HOVERED' | 'NONE';
+type MarkerState = "PRESSED" | "HOVERED" | "NONE";
 
-type MouseEventHandler = (SyntheticMouseEvent<HTMLCanvasElement>) => any;
+type MouseEventHandler = (arg0: React.MouseEvent<HTMLCanvasElement>) => any;
 
 /**
  * When adding properties to these props, please consider the comment above the component.
  */
-type CanvasProps = {|
-  +rangeStart: Milliseconds,
-  +rangeEnd: Milliseconds,
-  +width: CssPixels,
-  +height: CssPixels,
-  +getMarker: MarkerIndex => Marker,
-  +markerIndexes: MarkerIndex[],
-  +hoveredItem: Marker | null,
-  +mouseDownItem: Marker | null,
-  +rightClickedMarker: Marker | null,
-  +onMouseDown: MouseEventHandler,
-  +onMouseUp: MouseEventHandler,
-  +onMouseMove: MouseEventHandler,
-  +onMouseOut: MouseEventHandler,
-|};
+type CanvasProps = {
+  readonly rangeStart: Milliseconds;
+  readonly rangeEnd: Milliseconds;
+  readonly width: CssPixels;
+  readonly height: CssPixels;
+  readonly getMarker: (arg0: MarkerIndex) => Marker;
+  readonly markerIndexes: MarkerIndex[];
+  readonly hoveredItem: Marker | null;
+  readonly mouseDownItem: Marker | null;
+  readonly rightClickedMarker: Marker | null;
+  readonly onMouseDown: MouseEventHandler;
+  readonly onMouseUp: MouseEventHandler;
+  readonly onMouseMove: MouseEventHandler;
+  readonly onMouseOut: MouseEventHandler;
+};
 
-function _drawRoundedRect(
-  ctx: CanvasRenderingContext2D,
-  x: CssPixels,
-  y: CssPixels,
-  width: CssPixels,
-  height: CssPixels,
-  cornerSize: CssPixels
-) {
+function _drawRoundedRect(ctx: CanvasRenderingContext2D, x: CssPixels, y: CssPixels, width: CssPixels, height: CssPixels, cornerSize: CssPixels) {
   // Cut out c x c -sized squares in the corners.
   const c = Math.min(width / 2, Math.min(height / 2, cornerSize));
   const bottom = y + height;
@@ -73,11 +66,16 @@ function _drawRoundedRect(
  * in the props that are needed for the canvas draw call.
  */
 class TimelineMarkersCanvas extends React.PureComponent<CanvasProps> {
-  _canvas: {| current: HTMLCanvasElement | null |} = React.createRef();
+
+  _canvas: {current: HTMLCanvasElement | null;} = React.createRef();
   _requestedAnimationFrame: boolean = false;
 
   _getMarkerState(marker: Marker): MarkerState {
-    const { hoveredItem, mouseDownItem, rightClickedMarker } = this.props;
+    const {
+      hoveredItem,
+      mouseDownItem,
+      rightClickedMarker
+    } = this.props;
 
     if (rightClickedMarker === marker) {
       return 'PRESSED';
@@ -101,7 +99,7 @@ class TimelineMarkersCanvas extends React.PureComponent<CanvasProps> {
       width,
       height,
       getMarker,
-      markerIndexes,
+      markerIndexes
     } = this.props;
 
     if (height === 0 || width === 0) {
@@ -109,9 +107,7 @@ class TimelineMarkersCanvas extends React.PureComponent<CanvasProps> {
       return;
     }
 
-    const devicePixelRatio = c.ownerDocument
-      ? c.ownerDocument.defaultView.devicePixelRatio
-      : 1;
+    const devicePixelRatio = c.ownerDocument ? c.ownerDocument.defaultView.devicePixelRatio : 1;
     const pixelWidth = Math.round(width * devicePixelRatio);
     const pixelHeight = Math.round(height * devicePixelRatio);
 
@@ -130,8 +126,12 @@ class TimelineMarkersCanvas extends React.PureComponent<CanvasProps> {
     let previousPos = null;
     for (const markerIndex of markerIndexes) {
       const marker = getMarker(markerIndex);
-      const { start, dur, name } = marker;
-      let pos = ((start - rangeStart) / (rangeEnd - rangeStart)) * width;
+      const {
+        start,
+        dur,
+        name
+      } = marker;
+      let pos = (start - rangeStart) / (rangeEnd - rangeStart) * width;
       pos = Math.round(pos * devicePixelRatio) / devicePixelRatio;
 
       if (previousPos === pos && dur === 0) {
@@ -139,26 +139,13 @@ class TimelineMarkersCanvas extends React.PureComponent<CanvasProps> {
         continue;
       }
       previousPos = pos;
-      const itemWidth = Number.isFinite(dur)
-        ? Math.max(
-            (dur / (rangeEnd - rangeStart)) * width,
-            MIN_MARKER_WIDTH / devicePixelRatio
-          )
-        : Number.MAX_SAFE_INTEGER;
-      const markerStyle =
-        name in markerStyles ? markerStyles[name] : markerStyles.default;
+      const itemWidth = Number.isFinite(dur) ? Math.max(dur / (rangeEnd - rangeStart) * width, MIN_MARKER_WIDTH / devicePixelRatio) : Number.MAX_SAFE_INTEGER;
+      const markerStyle = name in markerStyles ? markerStyles[name] : markerStyles.default;
       ctx.fillStyle = markerStyle.background;
       if (markerStyle.squareCorners) {
         ctx.fillRect(pos, markerStyle.top, itemWidth, markerStyle.height);
       } else {
-        _drawRoundedRect(
-          ctx,
-          pos,
-          markerStyle.top,
-          itemWidth,
-          markerStyle.height,
-          1 / devicePixelRatio
-        );
+        _drawRoundedRect(ctx, pos, markerStyle.top, itemWidth, markerStyle.height, 1 / devicePixelRatio);
       }
       if (markerStyle.borderLeft !== null) {
         ctx.fillStyle = markerStyle.borderLeft;
@@ -166,12 +153,7 @@ class TimelineMarkersCanvas extends React.PureComponent<CanvasProps> {
       }
       if (markerStyle.borderRight !== null) {
         ctx.fillStyle = markerStyle.borderRight;
-        ctx.fillRect(
-          pos + itemWidth - 1,
-          markerStyle.top,
-          1,
-          markerStyle.height
-        );
+        ctx.fillRect(pos + itemWidth - 1, markerStyle.top, 1, markerStyle.height);
       }
       const markerState = this._getMarkerState(marker);
       if (markerState === 'HOVERED' || markerState === 'PRESSED') {
@@ -179,14 +161,7 @@ class TimelineMarkersCanvas extends React.PureComponent<CanvasProps> {
         if (markerStyle.squareCorners) {
           ctx.fillRect(pos, markerStyle.top, itemWidth, markerStyle.height);
         } else {
-          _drawRoundedRect(
-            ctx,
-            pos,
-            markerStyle.top,
-            itemWidth,
-            markerStyle.height,
-            1 / devicePixelRatio
-          );
+          _drawRoundedRect(ctx, pos, markerStyle.top, itemWidth, markerStyle.height, 1 / devicePixelRatio);
         }
       }
     }
@@ -211,16 +186,7 @@ class TimelineMarkersCanvas extends React.PureComponent<CanvasProps> {
   render() {
     this._scheduleDraw();
 
-    return (
-      <canvas
-        className="timelineMarkersCanvas"
-        ref={this._canvas}
-        onMouseDown={this.props.onMouseDown}
-        onMouseMove={this.props.onMouseMove}
-        onMouseUp={this.props.onMouseUp}
-        onMouseOut={this.props.onMouseOut}
-      />
-    );
+    return <canvas className="timelineMarkersCanvas" ref={this._canvas} onMouseDown={this.props.onMouseDown} onMouseMove={this.props.onMouseMove} onMouseUp={this.props.onMouseUp} onMouseOut={this.props.onMouseOut} />;
   }
 }
 
@@ -245,49 +211,46 @@ class TimelineMarkersCanvas extends React.PureComponent<CanvasProps> {
  *   </Connect>
  * );
  */
+export type OwnProps = {
+  readonly rangeStart: Milliseconds;
+  readonly rangeEnd: Milliseconds;
+  readonly threadIndex: ThreadIndex;
+  readonly onSelect: (arg0: ThreadIndex, arg1: Milliseconds, arg2: Milliseconds) => unknown;
+};
 
-export type OwnProps = {|
-  +rangeStart: Milliseconds,
-  +rangeEnd: Milliseconds,
-  +threadIndex: ThreadIndex,
-  +onSelect: (ThreadIndex, Milliseconds, Milliseconds) => mixed,
-|};
+export type StateProps = {
+  readonly additionalClassName?: string | null | undefined;
+  readonly getMarker: (arg0: MarkerIndex) => Marker;
+  readonly markerIndexes: MarkerIndex[];
+  readonly isSelected: boolean;
+  readonly isModifyingSelection: boolean;
+  readonly testId: string;
+  readonly rightClickedMarker: Marker | null;
+};
 
-export type StateProps = {|
-  +additionalClassName?: ?string,
-  +getMarker: MarkerIndex => Marker,
-  +markerIndexes: MarkerIndex[],
-  +isSelected: boolean,
-  +isModifyingSelection: boolean,
-  +testId: string,
-  +rightClickedMarker: Marker | null,
-|};
+export type DispatchProps = {
+  readonly changeRightClickedMarker: typeof changeRightClickedMarker;
+};
 
-export type DispatchProps = {|
-  +changeRightClickedMarker: typeof changeRightClickedMarker,
-|};
-
-type Props = {|
-  ...ConnectedProps<OwnProps, StateProps, DispatchProps>,
-  ...SizeProps,
-|};
+type Props = ConnectedProps<OwnProps, StateProps, DispatchProps> & SizeProps;
 
 type State = {
-  hoveredItem: Marker | null,
-  mouseDownItem: Marker | null,
-  mouseX: CssPixels,
-  mouseY: CssPixels,
+  hoveredItem: Marker | null;
+  mouseDownItem: Marker | null;
+  mouseX: CssPixels;
+  mouseY: CssPixels;
 };
 
 class TimelineMarkersImplementation extends React.PureComponent<Props, State> {
+
   state = {
     hoveredItem: null,
     mouseDownItem: null,
     mouseX: 0,
-    mouseY: 0,
+    mouseY: 0
   };
 
-  _hitTest(e: SyntheticMouseEvent<HTMLCanvasElement>): MarkerIndex | null {
+  _hitTest(e: React.MouseEvent<HTMLCanvasElement>): MarkerIndex | null {
     const c = e.currentTarget;
     const r = c.getBoundingClientRect();
     const {
@@ -295,13 +258,13 @@ class TimelineMarkersImplementation extends React.PureComponent<Props, State> {
       rangeStart,
       rangeEnd,
       getMarker,
-      markerIndexes,
+      markerIndexes
     } = this.props;
     const x = e.pageX - r.left;
     const y = e.pageY - r.top;
     const rangeLength = rangeEnd - rangeStart;
-    const time = rangeStart + (x / width) * rangeLength;
-    const onePixelTime = (rangeLength / width) * window.devicePixelRatio;
+    const time = rangeStart + x / width * rangeLength;
+    const onePixelTime = rangeLength / width * window.devicePixelRatio;
 
     // Markers are drawn in array order; the one drawn last is on top. So if
     // there are multiple markers under the mouse, we want to find the one
@@ -310,13 +273,16 @@ class TimelineMarkersImplementation extends React.PureComponent<Props, State> {
     for (let i = markerIndexes.length - 1; i >= 0; i--) {
       const markerIndex = markerIndexes[i];
       const marker = getMarker(markerIndex);
-      const { start, dur, name } = marker;
+      const {
+        start,
+        dur,
+        name
+      } = marker;
       const duration = Math.max(dur, onePixelTime);
       if (time < start || time >= start + duration) {
         continue;
       }
-      const markerStyle =
-        name in markerStyles ? markerStyles[name] : markerStyles.default;
+      const markerStyle = name in markerStyles ? markerStyles[name] : markerStyles.default;
       if (y >= markerStyle.top && y < markerStyle.top + markerStyle.height) {
         return markerIndex;
       }
@@ -324,9 +290,7 @@ class TimelineMarkersImplementation extends React.PureComponent<Props, State> {
     return null;
   }
 
-  _getHitMarker = (
-    e: SyntheticMouseEvent<HTMLCanvasElement>
-  ): Marker | null => {
+  _getHitMarker = (e: React.MouseEvent<HTMLCanvasElement>): Marker | null => {
     const markerIndex = this._hitTest(e);
 
     if (markerIndex !== null) {
@@ -336,24 +300,28 @@ class TimelineMarkersImplementation extends React.PureComponent<Props, State> {
     return null;
   };
 
-  _onMouseMove = (event: SyntheticMouseEvent<HTMLCanvasElement>) => {
+  _onMouseMove = (event: React.MouseEvent<HTMLCanvasElement>) => {
     const hoveredItem = this._getHitMarker(event);
     if (hoveredItem !== null) {
       this.setState({
         hoveredItem,
         mouseX: event.pageX,
-        mouseY: event.pageY,
+        mouseY: event.pageY
       });
     } else if (this.state.hoveredItem !== null) {
       this.setState({
-        hoveredItem: null,
+        hoveredItem: null
       });
     }
   };
 
   _onMouseDown = e => {
     const markerIndex = this._hitTest(e);
-    const { changeRightClickedMarker, threadIndex, getMarker } = this.props;
+    const {
+      changeRightClickedMarker,
+      threadIndex,
+      getMarker
+    } = this.props;
 
     if (e.button === 2) {
       // The right button is a contextual action. It is important that we call
@@ -361,14 +329,13 @@ class TimelineMarkersImplementation extends React.PureComponent<Props, State> {
       // the context menus are rendered before the mouseup/contextmenu events.
       changeRightClickedMarker(threadIndex, markerIndex);
     } else {
-      const mouseDownItem =
-        markerIndex !== null ? getMarker(markerIndex) : null;
+      const mouseDownItem = markerIndex !== null ? getMarker(markerIndex) : null;
 
       this.setState({ mouseDownItem });
 
       if (mouseDownItem !== null) {
         // Disabling Flow type checking because Flow doesn't know about setCapture.
-        const canvas = (e.currentTarget: any);
+        const canvas = (e.currentTarget as any);
         if (canvas.setCapture) {
           // This retargets all mouse events to this element. This is useful
           // when for example the user releases the mouse button outside of the
@@ -380,32 +347,31 @@ class TimelineMarkersImplementation extends React.PureComponent<Props, State> {
     }
   };
 
-  _onMouseUp = (e: SyntheticMouseEvent<HTMLCanvasElement>) => {
-    const { mouseDownItem } = this.state;
+  _onMouseUp = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const {
+      mouseDownItem
+    } = this.state;
     if (mouseDownItem !== null) {
       const mouseUpItem = this._getHitMarker(e);
-      if (
-        mouseDownItem === mouseUpItem &&
-        mouseUpItem !==
-          null /* extra null check because flow doesn't realize it's unnecessary */
+      if (mouseDownItem === mouseUpItem && mouseUpItem !== null
+      /* extra null check because flow doesn't realize it's unnecessary */
       ) {
-        const { onSelect, threadIndex } = this.props;
-        onSelect(
-          threadIndex,
-          mouseUpItem.start,
-          mouseUpItem.start + mouseUpItem.dur
-        );
-      }
+          const {
+            onSelect,
+            threadIndex
+          } = this.props;
+          onSelect(threadIndex, mouseUpItem.start, mouseUpItem.start + mouseUpItem.dur);
+        }
       this.setState({
         hoveredItem: mouseUpItem,
-        mouseDownItem: null,
+        mouseDownItem: null
       });
     }
   };
 
   _onMouseOut = () => {
     this.setState({
-      hoveredItem: null,
+      hoveredItem: null
     });
   };
 
@@ -416,46 +382,25 @@ class TimelineMarkersImplementation extends React.PureComponent<Props, State> {
       isModifyingSelection,
       threadIndex,
       testId,
-      rightClickedMarker,
+      rightClickedMarker
     } = this.props;
 
-    const { mouseDownItem, hoveredItem, mouseX, mouseY } = this.state;
-    const shouldShowTooltip =
-      !isModifyingSelection && !mouseDownItem && !rightClickedMarker;
+    const {
+      mouseDownItem,
+      hoveredItem,
+      mouseX,
+      mouseY
+    } = this.state;
+    const shouldShowTooltip = !isModifyingSelection && !mouseDownItem && !rightClickedMarker;
 
-    return (
-      <div
-        data-testid={testId}
-        className={classNames(
-          'timelineMarkers',
-          additionalClassName,
-          isSelected ? 'selected' : null
-        )}
-      >
+    return <div data-testid={testId} className={classNames('timelineMarkers', additionalClassName, isSelected ? 'selected' : null)}>
         <ContextMenuTrigger id="MarkerContextMenu">
-          <TimelineMarkersCanvas
-            width={this.props.width}
-            height={this.props.height}
-            rangeStart={this.props.rangeStart}
-            rangeEnd={this.props.rangeEnd}
-            getMarker={this.props.getMarker}
-            markerIndexes={this.props.markerIndexes}
-            hoveredItem={hoveredItem}
-            mouseDownItem={mouseDownItem}
-            rightClickedMarker={rightClickedMarker}
-            onMouseDown={this._onMouseDown}
-            onMouseMove={this._onMouseMove}
-            onMouseUp={this._onMouseUp}
-            onMouseOut={this._onMouseOut}
-          />
+          <TimelineMarkersCanvas width={this.props.width} height={this.props.height} rangeStart={this.props.rangeStart} rangeEnd={this.props.rangeEnd} getMarker={this.props.getMarker} markerIndexes={this.props.markerIndexes} hoveredItem={hoveredItem} mouseDownItem={mouseDownItem} rightClickedMarker={rightClickedMarker} onMouseDown={this._onMouseDown} onMouseMove={this._onMouseMove} onMouseUp={this._onMouseUp} onMouseOut={this._onMouseOut} />
         </ContextMenuTrigger>
-        {shouldShowTooltip && hoveredItem ? (
-          <Tooltip mouseX={mouseX} mouseY={mouseY}>
+        {shouldShowTooltip && hoveredItem ? <Tooltip mouseX={mouseX} mouseY={mouseY}>
             <TooltipMarker marker={hoveredItem} threadIndex={threadIndex} />
-          </Tooltip>
-        ) : null}
-      </div>
-    );
+          </Tooltip> : null}
+      </div>;
   }
 }
 
@@ -468,13 +413,11 @@ export const TimelineMarkers = withSize<Props>(TimelineMarkersImplementation);
 /**
  * Create a special connected component for Jank instances.
  */
-export const TimelineMarkersJank = explicitConnect<
-  OwnProps,
-  StateProps,
-  DispatchProps
->({
+export const TimelineMarkersJank = explicitConnect<OwnProps, StateProps, DispatchProps>({
   mapStateToProps: (state, props) => {
-    const { threadIndex } = props;
+    const {
+      threadIndex
+    } = props;
     const selectors = getThreadSelectors(threadIndex);
     const selectedThread = getSelectedThreadIndex(state);
 
@@ -484,56 +427,47 @@ export const TimelineMarkersJank = explicitConnect<
       isSelected: threadIndex === selectedThread,
       isModifyingSelection: getPreviewSelection(state).isModifying,
       testId: 'TimelineMarkersJank',
-      rightClickedMarker: selectors.getRightClickedMarker(state),
+      rightClickedMarker: selectors.getRightClickedMarker(state)
     };
   },
   mapDispatchToProps: { changeRightClickedMarker },
-  component: TimelineMarkers,
+  component: TimelineMarkers
 });
 
 /**
  * Create a connected component for all markers.
  */
-export const TimelineMarkersOverview = explicitConnect<
-  OwnProps,
-  StateProps,
-  DispatchProps
->({
+export const TimelineMarkersOverview = explicitConnect<OwnProps, StateProps, DispatchProps>({
   mapStateToProps: (state, props) => {
-    const { threadIndex } = props;
+    const {
+      threadIndex
+    } = props;
     const selectors = getThreadSelectors(threadIndex);
     const selectedThread = getSelectedThreadIndex(state);
-    const markerIndexes = selectors.getCommittedRangeAndTabFilteredMarkerIndexesForHeader(
-      state
-    );
+    const markerIndexes = selectors.getCommittedRangeAndTabFilteredMarkerIndexesForHeader(state);
 
     return {
-      additionalClassName:
-        selectors.getThread(state).name === 'GeckoMain'
-          ? 'timelineMarkersGeckoMain'
-          : null,
+      additionalClassName: selectors.getThread(state).name === 'GeckoMain' ? 'timelineMarkersGeckoMain' : null,
       getMarker: selectors.getMarkerGetter(state),
       markerIndexes,
       isSelected: threadIndex === selectedThread,
       isModifyingSelection: getPreviewSelection(state).isModifying,
       testId: 'TimelineMarkersOverview',
-      rightClickedMarker: selectors.getRightClickedMarker(state),
+      rightClickedMarker: selectors.getRightClickedMarker(state)
     };
   },
   mapDispatchToProps: { changeRightClickedMarker },
-  component: TimelineMarkers,
+  component: TimelineMarkers
 });
 
 /**
  * FileIO is an optional marker type. Only add these markers if they exist.
  */
-export const TimelineMarkersFileIo = explicitConnect<
-  OwnProps,
-  StateProps,
-  DispatchProps
->({
+export const TimelineMarkersFileIo = explicitConnect<OwnProps, StateProps, DispatchProps>({
   mapStateToProps: (state, props) => {
-    const { threadIndex } = props;
+    const {
+      threadIndex
+    } = props;
     const selectors = getThreadSelectors(threadIndex);
     const selectedThread = getSelectedThreadIndex(state);
 
@@ -543,23 +477,21 @@ export const TimelineMarkersFileIo = explicitConnect<
       isSelected: threadIndex === selectedThread,
       isModifyingSelection: getPreviewSelection(state).isModifying,
       testId: 'TimelineMarkersFileIo',
-      rightClickedMarker: selectors.getRightClickedMarker(state),
+      rightClickedMarker: selectors.getRightClickedMarker(state)
     };
   },
   mapDispatchToProps: { changeRightClickedMarker },
-  component: TimelineMarkers,
+  component: TimelineMarkers
 });
 
 /**
  * Create a component for memory-related markers.
  */
-export const TimelineMarkersMemory = explicitConnect<
-  OwnProps,
-  StateProps,
-  DispatchProps
->({
+export const TimelineMarkersMemory = explicitConnect<OwnProps, StateProps, DispatchProps>({
   mapStateToProps: (state, props) => {
-    const { threadIndex } = props;
+    const {
+      threadIndex
+    } = props;
     const selectors = getThreadSelectors(threadIndex);
     const selectedThread = getSelectedThreadIndex(state);
 
@@ -570,23 +502,21 @@ export const TimelineMarkersMemory = explicitConnect<
       isModifyingSelection: getPreviewSelection(state).isModifying,
       additionalClassName: 'timelineMarkersMemory',
       testId: 'TimelineMarkersMemory',
-      rightClickedMarker: selectors.getRightClickedMarker(state),
+      rightClickedMarker: selectors.getRightClickedMarker(state)
     };
   },
   mapDispatchToProps: { changeRightClickedMarker },
-  component: TimelineMarkers,
+  component: TimelineMarkers
 });
 
 /**
  * Create a component for IPC-related markers.
  */
-export const TimelineMarkersIPC = explicitConnect<
-  OwnProps,
-  StateProps,
-  DispatchProps
->({
+export const TimelineMarkersIPC = explicitConnect<OwnProps, StateProps, DispatchProps>({
   mapStateToProps: (state, props) => {
-    const { threadIndex } = props;
+    const {
+      threadIndex
+    } = props;
     const selectors = getThreadSelectors(threadIndex);
     const selectedThread = getSelectedThreadIndex(state);
 
@@ -597,9 +527,9 @@ export const TimelineMarkersIPC = explicitConnect<
       isModifyingSelection: getPreviewSelection(state).isModifying,
       additionalClassName: 'timelineMarkersIPC',
       testId: 'TimelineMarkersIPC',
-      rightClickedMarker: selectors.getRightClickedMarker(state),
+      rightClickedMarker: selectors.getRightClickedMarker(state)
     };
   },
   mapDispatchToProps: { changeRightClickedMarker },
-  component: TimelineMarkers,
+  component: TimelineMarkers
 });

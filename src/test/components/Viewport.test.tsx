@@ -1,8 +1,9 @@
+import { $Shape } from 'utility-types';
+
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
 import * as React from 'react';
 import { Provider } from 'react-redux';
 import { render, fireEvent } from 'react-testing-library';
@@ -24,7 +25,7 @@ import { storeWithProfile } from '../fixtures/stores';
 import { getBoundingBox } from '../fixtures/utils';
 import { getProfileFromTextSamples } from '../fixtures/profiles/processed-profile';
 
-import type { Milliseconds } from '../../types/units';
+import { Milliseconds } from '../../types/units';
 
 // The following define the magic values used for the mocked bounding box of the
 // the rendered component.

@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
 
 import {
   uintArrayToString,
@@ -23,7 +22,7 @@ import {
 } from './data-structures';
 import { getFunctionName } from './function-info';
 
-import type {
+import {
   Thread,
   FuncTable,
   IndexIntoCategoryList,
@@ -31,17 +30,13 @@ import type {
   IndexIntoStackTable,
   IndexIntoResourceTable,
 } from '../types/profile';
-import type {
+import {
   CallNodePath,
   CallNodeTable,
   StackType,
 } from '../types/profile-derived';
-import type { ImplementationFilter } from '../types/actions';
-import type {
-  Transform,
-  TransformType,
-  TransformStack,
-} from '../types/transforms';
+import { ImplementationFilter } from '../types/actions';
+import { Transform, TransformType, TransformStack } from '../types/transforms';
 
 /**
  * This file contains the functions and logic for working with and applying transforms
@@ -442,24 +437,22 @@ function _collapseResourceInCallNodePath(
   funcTable: FuncTable,
   callNodePath: CallNodePath
 ) {
-  return (
-    callNodePath
-      // Map any collapsed functions into the collapsedFuncIndex
-      .map(pathFuncIndex => {
-        return funcTable.resource[pathFuncIndex] === resourceIndex
-          ? collapsedFuncIndex
-          : pathFuncIndex;
-      })
-      // De-duplicate contiguous collapsed funcs
-      .filter(
-        (pathFuncIndex, pathIndex, path) =>
-          // This function doesn't match the previous one, so keep it.
-          pathFuncIndex !== path[pathIndex - 1] ||
-          // This function matched the previous, only keep it if doesn't match the
-          // collapsed func.
-          pathFuncIndex !== collapsedFuncIndex
-      )
-  );
+  return callNodePath // Map any collapsed functions into the collapsedFuncIndex
+    .map(pathFuncIndex => {
+      return funcTable.resource[pathFuncIndex] === resourceIndex
+        ? collapsedFuncIndex
+        : pathFuncIndex;
+    }) // De-duplicate contiguous collapsed funcs
+    .filter(
+      (
+        pathFuncIndex,
+        pathIndex,
+        path // This function doesn't match the previous one, so keep it.
+      ) =>
+        pathFuncIndex !== path[pathIndex - 1] || // This function matched the previous, only keep it if doesn't match the
+        // collapsed func.
+        pathFuncIndex !== collapsedFuncIndex
+    );
 }
 
 function _collapseDirectRecursionInCallNodePath(
@@ -534,13 +527,9 @@ export function invertCallNodePath(
     children = callTree.getChildren(callNodeIndex);
   } while (children && children.length > 0);
 
-  return (
-    pathToLeaf
-      // Map the CallNodeIndex to FuncIndex.
-      .map(index => callNodeTable.func[index])
-      // Reverse it so that it's in the proper inverted order.
-      .reverse()
-  );
+  return pathToLeaf // Map the CallNodeIndex to FuncIndex.
+    .map(index => callNodeTable.func[index]) // Reverse it so that it's in the proper inverted order.
+    .reverse();
 }
 
 /**
@@ -706,18 +695,16 @@ export function dropFunction(
     const funcIndex = frameTable.func[frameIndex];
     if (
       // This is the function we want to remove.
-      funcIndex === funcIndexToDrop ||
-      // The parent of this stack contained the function.
+      funcIndex === funcIndexToDrop || // The parent of this stack contained the function.
       (prefix !== null && stackContainsFunc[prefix])
     ) {
       stackContainsFunc[stackIndex] = true;
     }
   }
 
-  return updateThreadStacks(thread, stackTable, stack =>
-    // Drop the stacks that contain that function.
-    stack !== null && stackContainsFunc[stack] ? null : stack
-  );
+  return updateThreadStacks(thread, stackTable, (
+    stack // Drop the stacks that contain that function.
+  ) => (stack !== null && stackContainsFunc[stack] ? null : stack));
 }
 
 export function collapseResource(
@@ -903,8 +890,7 @@ export function collapseDirectRecursion(
     if (
       // The previous stacks were collapsed or matched the funcToCollapse, check to see
       // if this is a candidate for collapsing as well.
-      recursiveStacks.has(prefix) &&
-      // Either the function must match, or the implementation must be different.
+      recursiveStacks.has(prefix) && // Either the function must match, or the implementation must be different.
       (funcToCollapse === funcIndex ||
         !funcMatchesImplementation(thread, funcIndex))
     ) {

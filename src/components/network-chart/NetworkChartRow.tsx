@@ -1,28 +1,22 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
 
-import * as React from 'react';
-import classNames from 'classnames';
 
-import { TooltipMarker } from '../tooltip/Marker';
-import Tooltip from '../tooltip/Tooltip';
+import * as React from "react";
+import classNames from "classnames";
 
-import {
-  guessMimeTypeFromNetworkMarker,
-  getColorClassNameForMimeType,
-} from '../../profile-logic/marker-data';
-import { formatNumber } from '../../utils/format-numbers';
-import {
-  TIMELINE_MARGIN_LEFT,
-  TIMELINE_MARGIN_RIGHT,
-} from '../../app-logic/constants';
+import { TooltipMarker } from "../tooltip/Marker";
+import Tooltip from "../tooltip/Tooltip";
 
-import type { CssPixels, Milliseconds, StartEndRange } from '../../types/units';
-import type { ThreadIndex } from '../../types/profile';
-import type { Marker, MarkerIndex } from '../../types/profile-derived';
-import type { NetworkPayload } from '../../types/markers';
+import { guessMimeTypeFromNetworkMarker, getColorClassNameForMimeType } from "../../profile-logic/marker-data";
+import { formatNumber } from "../../utils/format-numbers";
+import { TIMELINE_MARGIN_LEFT, TIMELINE_MARGIN_RIGHT } from "../../app-logic/constants";
+
+import { CssPixels, Milliseconds, StartEndRange } from "../../types/units";
+import { ThreadIndex } from "../../types/profile";
+import { Marker, MarkerIndex } from "../../types/profile-derived";
+import { NetworkPayload } from "../../types/markers";
 
 // This regexp is used to split a pathname into a directory path and a filename.
 // On purpose, when there's no "real" filename, the filename will contain the
@@ -58,59 +52,42 @@ const PATH_SPLIT_RE = /(.*)(\/[^/]+\/?)$/;
 // `endTime` is the timestamp when the response is delivered to the caller. It's
 // not present in this array as it's implicit in the component logic.
 // They may be all missing in a specific marker, that's fine.
-const PROPERTIES_IN_ORDER = [
-  'domainLookupStart',
-  'requestStart',
-  'responseStart',
-  'responseEnd',
-];
+const PROPERTIES_IN_ORDER = ['domainLookupStart', 'requestStart', 'responseStart', 'responseEnd'];
 
-const PHASE_OPACITIES = PROPERTIES_IN_ORDER.reduce(
-  (result, property, i, { length }) => {
-    result[property] = length > 1 ? i / (length - 1) : 0;
-    return result;
-  },
-  {}
-);
+const PHASE_OPACITIES = PROPERTIES_IN_ORDER.reduce((result, property, i, {
+  length
+}) => {
+  result[property] = length > 1 ? i / (length - 1) : 0;
+  return result;
+}, {});
 
-type NetworkPhaseProps = {|
-  +name: string,
-  +previousName: string,
-  +value: number | string,
-  +duration: Milliseconds,
-  +style: Object,
-|};
+type NetworkPhaseProps = {
+  readonly name: string;
+  readonly previousName: string;
+  readonly value: number | string;
+  readonly duration: Milliseconds;
+  readonly style: {[name: string]: number | string };
+};
 
 function NetworkPhase({
   name,
   previousName,
   value,
   duration,
-  style,
+  style
 }: NetworkPhaseProps) {
   // Specifying data attributes makes it easier to debug.
-  return (
-    <div
-      className="networkChartRowItemBarPhase"
-      key={name}
-      data-name={name}
-      data-value={value}
-      style={style}
-      aria-label={`${previousName} to ${name}: ${formatNumber(
-        duration
-      )} milliseconds`}
-    />
-  );
+  return <div className="networkChartRowItemBarPhase" key={name} data-name={name} data-value={value} style={style} aria-label={`${previousName} to ${name}: ${formatNumber(duration)} milliseconds`} />;
 }
 
-export type NetworkChartRowBarProps = {|
-  +marker: Marker,
-  +width: CssPixels,
-  +timeRange: StartEndRange,
+export type NetworkChartRowBarProps = {
+  readonly marker: Marker;
+  readonly width: CssPixels;
+  readonly timeRange: StartEndRange;
   // Pass the payload in as well, since our types can't express a Marker with
   // a specific payload.
-  +networkPayload: NetworkPayload,
-|};
+  readonly networkPayload: NetworkPayload;
+};
 
 // This component splits a network marker duration in different phases,
 // and renders each phase as a differently colored bar.
@@ -121,14 +98,14 @@ class NetworkChartRowBar extends React.PureComponent<NetworkChartRowBarProps> {
    * as passed in by the WithSize component.
    */
   _timeToCssPixels(time: Milliseconds): CssPixels {
-    const { timeRange, width } = this.props;
+    const {
+      timeRange,
+      width
+    } = this.props;
     const timeRangeTotal = timeRange.end - timeRange.start;
-    const innerContainerWidth =
-      width - TIMELINE_MARGIN_LEFT - TIMELINE_MARGIN_RIGHT;
+    const innerContainerWidth = width - TIMELINE_MARGIN_LEFT - TIMELINE_MARGIN_RIGHT;
 
-    const markerPosition =
-      ((time - timeRange.start) / timeRangeTotal) * innerContainerWidth +
-      TIMELINE_MARGIN_LEFT;
+    const markerPosition = (time - timeRange.start) / timeRangeTotal * innerContainerWidth + TIMELINE_MARGIN_LEFT;
 
     return markerPosition;
   }
@@ -138,8 +115,10 @@ class NetworkChartRowBar extends React.PureComponent<NetworkChartRowBarProps> {
    * function returns the latest one so that we can determine if these phases
    * happen in a preconnect session.
    */
-  _getLatestPreconnectEndProperty(): 'connectEnd' | 'domainLookupEnd' | null {
-    const { networkPayload } = this.props;
+  _getLatestPreconnectEndProperty(): "connectEnd" | "domainLookupEnd" | null {
+    const {
+      networkPayload
+    } = this.props;
 
     if (typeof networkPayload.connectEnd === 'number') {
       return 'connectEnd';
@@ -156,8 +135,11 @@ class NetworkChartRowBar extends React.PureComponent<NetworkChartRowBarProps> {
    * This returns the preconnect component, or null if there's no preconnect
    * operation for this marker.
    */
-  _preconnectComponent(): React.Node {
-    const { networkPayload, marker } = this.props;
+  _preconnectComponent(): React.ReactNode {
+    const {
+      networkPayload,
+      marker
+    } = this.props;
 
     const preconnectStart = networkPayload.domainLookupStart;
     if (typeof preconnectStart !== 'number') {
@@ -201,24 +183,22 @@ class NetworkChartRowBar extends React.PureComponent<NetworkChartRowBarProps> {
       style: {
         left: 0,
         width: '100%',
-        opacity: PHASE_OPACITIES.requestStart,
-      },
+        opacity: PHASE_OPACITIES.requestStart
+      }
     };
 
-    return (
-      <div
-        className="networkChartRowItemBar"
-        style={{ width: preconnectWidth, left: preconnectStartPosition }}
-      >
+    return <div className="networkChartRowItemBar" style={{ width: preconnectWidth, left: preconnectStartPosition }}>
         {NetworkPhase(preconnectPhase)}
-      </div>
-    );
+      </div>;
   }
 
   render() {
     const {
-      marker: { start, dur },
-      networkPayload,
+      marker: {
+        start,
+        dur
+      },
+      networkPayload
     } = this.props;
 
     // Compute the positioning of this network marker.
@@ -237,14 +217,10 @@ class NetworkChartRowBar extends React.PureComponent<NetworkChartRowBarProps> {
 
     // If there's a preconnect phase, we remove `domainLookupStart` from the
     // main bar, but we'll draw a separate bar to represent it.
-    const mainBarProperties = preconnectComponent
-      ? PROPERTIES_IN_ORDER.slice(1)
-      : PROPERTIES_IN_ORDER;
+    const mainBarProperties = preconnectComponent ? PROPERTIES_IN_ORDER.slice(1) : PROPERTIES_IN_ORDER;
 
     // Not all properties are always present.
-    const availableProperties = mainBarProperties.filter(
-      property => typeof networkPayload[property] === 'number'
-    );
+    const availableProperties = mainBarProperties.filter(property => typeof networkPayload[property] === 'number');
 
     const mainBarPhases = [];
     let previousValue = start;
@@ -262,11 +238,11 @@ class NetworkChartRowBar extends React.PureComponent<NetworkChartRowBarProps> {
         value,
         duration: value - previousValue,
         style: {
-          left: ((previousValue - start) / dur) * markerWidth,
-          width: Math.max(((value - previousValue) / dur) * markerWidth, 1),
+          left: (previousValue - start) / dur * markerWidth,
+          width: Math.max((value - previousValue) / dur * markerWidth, 1),
           // The first phase is always transparent because this represents the wait time.
-          opacity: i === 0 ? 0 : PHASE_OPACITIES[property],
-        },
+          opacity: i === 0 ? 0 : PHASE_OPACITIES[property]
+        }
       });
       previousValue = value;
       previousName = property;
@@ -280,76 +256,74 @@ class NetworkChartRowBar extends React.PureComponent<NetworkChartRowBarProps> {
       value: start + dur,
       duration: start + dur - previousValue,
       style: {
-        left: ((previousValue - start) / dur) * markerWidth,
-        width: ((start + dur - previousValue) / dur) * markerWidth,
-        opacity: mainBarPhases.length ? 0 : 1,
-      },
+        left: (previousValue - start) / dur * markerWidth,
+        width: (start + dur - previousValue) / dur * markerWidth,
+        opacity: mainBarPhases.length ? 0 : 1
+      }
     });
 
-    return (
-      <>
+    return <>
         {preconnectComponent}
-        <div
-          className="networkChartRowItemBar"
-          style={{ width: markerWidth, left: startPosition }}
-        >
-          {mainBarPhases.map(phaseProps => (
-            <NetworkPhase key={phaseProps.name} {...phaseProps} />
-          ))}
+        <div className="networkChartRowItemBar" style={{ width: markerWidth, left: startPosition }}>
+          {mainBarPhases.map(phaseProps => <NetworkPhase key={phaseProps.name} {...phaseProps} />)}
         </div>
-      </>
-    );
+      </>;
   }
 }
 
-type NetworkChartRowProps = {|
-  +index: number,
-  +marker: Marker,
-  +markerIndex: MarkerIndex,
+type NetworkChartRowProps = {
+  readonly index: number;
+  readonly marker: Marker;
+  readonly markerIndex: MarkerIndex;
   // Pass the payload in as well, since our types can't express a Marker with
   // a specific payload.
-  +networkPayload: NetworkPayload,
-  +timeRange: StartEndRange,
-  +width: CssPixels,
-  +threadIndex: ThreadIndex,
-  +isRightClicked: boolean,
-  +onLeftClick?: MarkerIndex => mixed,
-  +onRightClick?: MarkerIndex => mixed,
-  +shouldDisplayTooltips: () => boolean,
-|};
+  readonly networkPayload: NetworkPayload;
+  readonly timeRange: StartEndRange;
+  readonly width: CssPixels;
+  readonly threadIndex: ThreadIndex;
+  readonly isRightClicked: boolean;
+  readonly onLeftClick?: (arg0: MarkerIndex) => unknown;
+  readonly onRightClick?: (arg0: MarkerIndex) => unknown;
+  readonly shouldDisplayTooltips: () => boolean;
+};
 
-type State = {|
-  pageX: CssPixels,
-  pageY: CssPixels,
-  hovered: ?boolean,
-|};
+type State = {
+  pageX: CssPixels;
+  pageY: CssPixels;
+  hovered: boolean | null | undefined;
+};
 
 class NetworkChartRow extends React.PureComponent<NetworkChartRowProps, State> {
+
   state = {
     pageX: 0,
     pageY: 0,
-    hovered: false,
+    hovered: false
   };
 
-  _hoverIn = (event: SyntheticMouseEvent<>) => {
+  _hoverIn = (event: React.MouseEvent<>) => {
     const pageX = event.pageX;
     const pageY = event.pageY;
 
     this.setState({
       pageX,
       pageY,
-      hovered: true,
+      hovered: true
     });
   };
 
   _hoverOut = () => {
     this.setState({
-      hovered: false,
+      hovered: false
     });
   };
 
-  _onMouseDown = (e: SyntheticMouseEvent<>) => {
-    const { markerIndex, onLeftClick, onRightClick } = this.props;
+  _onMouseDown = (e: React.MouseEvent<>) => {
+    const {
+      markerIndex,
+      onLeftClick,
+      onRightClick
+    } = this.props;
     if (e.button === 0) {
       if (onLeftClick) {
         onLeftClick(markerIndex);
@@ -387,7 +361,7 @@ class NetworkChartRow extends React.PureComponent<NetworkChartRowProps, State> {
 
   // Split markers.name in loadID and parts of URL to highlight domain
   // and filename, shorten the rest if needed.
-  _splitsURI(name: string): React.Node {
+  _splitsURI(name: string): React.ReactNode {
     // Extract URI from markers.name
     const uri = this._extractURI(name);
     if (uri !== null) {
@@ -401,34 +375,26 @@ class NetworkChartRow extends React.PureComponent<NetworkChartRowProps, State> {
         [, uriPath, uriFilename] = extractResult;
       }
 
-      return (
-        <>
+      return <>
           <span className="networkChartRowItemUriOptional">
             {uri.protocol + '//'}
           </span>
           <span className="networkChartRowItemUriRequired">{uri.hostname}</span>
-          {uriPath ? (
-            <span className="networkChartRowItemUriOptional">{uriPath}</span>
-          ) : null}
-          {uriFilename ? (
-            <span className="networkChartRowItemUriRequired">
+          {uriPath ? <span className="networkChartRowItemUriOptional">{uriPath}</span> : null}
+          {uriFilename ? <span className="networkChartRowItemUriRequired">
               {uriFilename}
-            </span>
-          ) : null}
-          {uri.search ? (
-            <span className="networkChartRowItemUriOptional">{uri.search}</span>
-          ) : null}
-          {uri.hash ? (
-            <span className="networkChartRowItemUriOptional">{uri.hash}</span>
-          ) : null}
-        </>
-      );
+            </span> : null}
+          {uri.search ? <span className="networkChartRowItemUriOptional">{uri.search}</span> : null}
+          {uri.hash ? <span className="networkChartRowItemUriOptional">{uri.hash}</span> : null}
+        </>;
     }
     return name;
   }
 
   _getClassNameTypeForMarker() {
-    const { networkPayload } = this.props;
+    const {
+      networkPayload
+    } = this.props;
     const mimeType = guessMimeTypeFromNetworkMarker(networkPayload);
     return getColorClassNameForMimeType(mimeType);
   }
@@ -441,51 +407,29 @@ class NetworkChartRow extends React.PureComponent<NetworkChartRowProps, State> {
       width,
       timeRange,
       isRightClicked,
-      shouldDisplayTooltips,
+      shouldDisplayTooltips
     } = this.props;
 
     if (networkPayload === null) {
       return null;
     }
 
-    const itemClassName = classNames(
-      'networkChartRowItem',
-      this._getClassNameTypeForMarker(),
-      {
-        odd: index % 2 === 1,
-        isRightClicked,
-      }
-    );
+    const itemClassName = classNames('networkChartRowItem', this._getClassNameTypeForMarker(), {
+      odd: index % 2 === 1,
+      isRightClicked
+    });
 
-    return (
-      <div
-        className={itemClassName}
-        onMouseEnter={this._hoverIn}
-        onMouseLeave={this._hoverOut}
-        onMouseDown={this._onMouseDown}
-      >
+    return <div className={itemClassName} onMouseEnter={this._hoverIn} onMouseLeave={this._hoverOut} onMouseDown={this._onMouseDown}>
         <div className="networkChartRowItemLabel">
           {this._splitsURI(marker.name)}
         </div>
-        <NetworkChartRowBar
-          marker={marker}
-          networkPayload={networkPayload}
-          width={width}
-          timeRange={timeRange}
-        />
-        {shouldDisplayTooltips() && this.state.hovered ? (
-          // This magic value "5" avoids the tooltip of being too close of the
-          // row, especially when we mouseEnter the row from the top edge.
-          <Tooltip mouseX={this.state.pageX} mouseY={this.state.pageY + 5}>
-            <TooltipMarker
-              className="tooltipNetwork"
-              marker={marker}
-              threadIndex={this.props.threadIndex}
-            />
-          </Tooltip>
-        ) : null}
-      </div>
-    );
+        <NetworkChartRowBar marker={marker} networkPayload={networkPayload} width={width} timeRange={timeRange} />
+        {shouldDisplayTooltips() && this.state.hovered ? // This magic value "5" avoids the tooltip of being too close of the
+      // row, especially when we mouseEnter the row from the top edge.
+      <Tooltip mouseX={this.state.pageX} mouseY={this.state.pageY + 5}>
+            <TooltipMarker className="tooltipNetwork" marker={marker} threadIndex={this.props.threadIndex} />
+          </Tooltip> : null}
+      </div>;
   }
 }
 

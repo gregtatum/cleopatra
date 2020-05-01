@@ -2,7 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
 import * as React from 'react';
 
 // This module is mocked.
@@ -28,7 +27,7 @@ import {
 import mockRaf from '../fixtures/mocks/request-animation-frame';
 import { ensureExists } from '../../utils/flow';
 
-import type { CssPixels } from '../../types/units';
+import { CssPixels } from '../../types/units';
 
 function setupWithMarkers({ rangeStart, rangeEnd }, ...markersPerThread) {
   const flushRafCalls = mockRaf();
@@ -206,8 +205,7 @@ describe('TimelineMarkers', function() {
       [
         // 2 very close dot markers. They shouldn't be drawn both together.
         ['Marker A', 5000, null],
-        ['Marker B', 5001, null],
-        // This is a longer marker starting at the same place, it should always be drawn
+        ['Marker B', 5001, null], // This is a longer marker starting at the same place, it should always be drawn
         ['Marker C', 5001, { startTime: 5001, endTime: 7000 }],
       ]
     );

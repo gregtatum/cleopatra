@@ -2,16 +2,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
 import * as React from 'react';
 import ButtonWithPanel from '../../shared/ButtonWithPanel';
 import ArrowPanel from '../../shared/ArrowPanel';
 import { MetaOverheadStatistics } from './MetaOverheadStatistics';
 import { formatBytes } from '../../../utils/format-numbers';
 
-import type { Profile, ProfileMeta } from '../../../types/profile';
-import type { SymbolicationStatus } from '../../../types/state';
-import { typeof resymbolicateProfile } from '../../../actions/receive-profile';
+import { Profile, ProfileMeta } from '../../../types/profile';
+import { SymbolicationStatus } from '../../../types/state';
+import { resymbolicateProfile } from '../../../actions/receive-profile';
 import { assertExhaustiveCheck } from '../../../utils/flow';
 
 import './MetaInfo.css';
@@ -233,9 +232,9 @@ export class MenuButtonsMetaInfo extends React.PureComponent<Props> {
               </>
             ) : null}
             {/*
-              Older profiles(before FF 70) don't have any overhead info.
-              Don't show anything if that's the case.
-            */}
+         Older profiles(before FF 70) don't have any overhead info.
+         Don't show anything if that's the case.
+        */}
             {profilerOverhead ? (
               <MetaOverheadStatistics profilerOverhead={profilerOverhead} />
             ) : null}

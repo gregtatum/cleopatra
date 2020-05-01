@@ -1,20 +1,18 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
 
-import * as React from 'react';
 
-import CallTreeSidebar from './CallTreeSidebar';
-import MarkerSidebar from './MarkerSidebar';
+import * as React from "react";
 
-import type { TabSlug } from '../../app-logic/tabs-handling';
+import CallTreeSidebar from "./CallTreeSidebar";
+import MarkerSidebar from "./MarkerSidebar";
 
-import './sidebar.css';
+import { TabSlug } from "../../app-logic/tabs-handling";
 
-export default function selectSidebar(
-  selectedTab: TabSlug
-): React.ComponentType<{||}> | null {
+import "./sidebar.css";
+
+export default function selectSidebar(selectedTab: TabSlug): React.ComponentType<{}> | null {
   return {
     calltree: CallTreeSidebar,
     'flame-graph': CallTreeSidebar,
@@ -22,6 +20,6 @@ export default function selectSidebar(
     'marker-chart': null,
     'marker-table': MarkerSidebar, // MarkerSidebar
     'network-chart': null,
-    'js-tracer': null,
+    'js-tracer': null
   }[selectedTab];
 }

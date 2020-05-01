@@ -1,12 +1,14 @@
+import { $Shape } from "utility-types";
+
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
-import { CallTree } from '../../profile-logic/call-tree';
-import type { IndexIntoCallNodeTable } from '../../types/profile-derived';
-import type { Store, State } from '../../types/store';
-import { ensureExists } from '../../utils/flow';
-import { fireEvent, type RenderResult } from 'react-testing-library';
+
+import { CallTree } from "../../profile-logic/call-tree";
+import { IndexIntoCallNodeTable } from "../../types/profile-derived";
+import { Store, State } from "../../types/store";
+import { ensureExists } from "../../utils/flow";
+import { fireEvent, RenderResult } from "react-testing-library";
 
 export function getBoundingBox(width: number, height: number) {
   return {
@@ -17,7 +19,7 @@ export function getBoundingBox(width: number, height: number) {
     top: 0,
     y: 0,
     right: width,
-    bottom: height,
+    bottom: height
   };
 }
 
@@ -27,32 +29,32 @@ export function getBoundingBox(width: number, height: number) {
  * missing properties in our app code. This fake MouseEvent allows the test code
  * to supply these properties.
  */
-
 type FakeMouseEventInit = $Shape<{
-  bubbles: boolean,
-  cancelable: boolean,
-  composed: boolean,
-  altKey: boolean,
-  button: 0 | 1 | 2 | 3 | 4,
-  buttons: number,
-  clientX: number,
-  clientY: number,
-  ctrlKey: boolean,
-  metaKey: boolean,
-  movementX: number,
-  movementY: number,
-  offsetX: number,
-  offsetY: number,
-  pageX: number,
-  pageY: number,
-  screenX: number,
-  screenY: number,
-  shiftKey: boolean,
-  x: number,
-  y: number,
+  bubbles: boolean;
+  cancelable: boolean;
+  composed: boolean;
+  altKey: boolean;
+  button: 0 | 1 | 2 | 3 | 4;
+  buttons: number;
+  clientX: number;
+  clientY: number;
+  ctrlKey: boolean;
+  metaKey: boolean;
+  movementX: number;
+  movementY: number;
+  offsetX: number;
+  offsetY: number;
+  pageX: number;
+  pageY: number;
+  screenX: number;
+  screenY: number;
+  shiftKey: boolean;
+  x: number;
+  y: number;
 }>;
 
 class FakeMouseEvent extends MouseEvent {
+
   offsetX: number;
   offsetY: number;
   pageX: number;
@@ -61,8 +63,16 @@ class FakeMouseEvent extends MouseEvent {
   y: number;
 
   constructor(type: string, values: FakeMouseEventInit) {
-    const { pageX, pageY, offsetX, offsetY, x, y, ...mouseValues } = values;
-    super(type, (mouseValues: Object));
+    const {
+      pageX,
+      pageY,
+      offsetX,
+      offsetY,
+      x,
+      y,
+      ...mouseValues
+    } = values;
+    super(type, (mouseValues as Object));
 
     Object.assign(this, {
       offsetX: offsetX || 0,
@@ -70,7 +80,7 @@ class FakeMouseEvent extends MouseEvent {
       pageX: pageX || 0,
       pageY: pageY || 0,
       x: x || 0,
-      y: y || 0,
+      y: y || 0
     });
   }
 }
@@ -88,14 +98,11 @@ class FakeMouseEvent extends MouseEvent {
  *   fireEvent.mouseDown(target, { clientX: 5 });
  *
  */
-export function getMouseEvent(
-  type: string,
-  values: FakeMouseEventInit = {}
-): FakeMouseEvent {
+export function getMouseEvent(type: string, values: FakeMouseEventInit = {}): FakeMouseEvent {
   values = {
     bubbles: true,
     cancelable: true,
-    ...values,
+    ...values
   };
   return new FakeMouseEvent(type, values);
 }
@@ -120,30 +127,19 @@ export function getMouseEvent(
  * but the assertion was hidden in another file, which really hurt discoverability
  * and maintainability.
  */
-export function formatTree(
-  callTree: CallTree,
-  includeCategories: boolean = false,
-  children: IndexIntoCallNodeTable[] = callTree.getRoots(),
-  depth: number = 0,
-  lines: string[] = []
-): string[] {
+export function formatTree(callTree: CallTree, includeCategories: boolean = false, children: IndexIntoCallNodeTable[] = callTree.getRoots(), depth: number = 0, lines: string[] = []): string[] {
   const whitespace = Array(depth * 2 + 1).join(' ');
 
   children.forEach(callNodeIndex => {
-    const { name, totalTime, selfTime, categoryName } = callTree.getDisplayData(
-      callNodeIndex
-    );
+    const {
+      name,
+      totalTime,
+      selfTime,
+      categoryName
+    } = callTree.getDisplayData(callNodeIndex);
     const displayName = includeCategories ? `${name} [${categoryName}]` : name;
-    lines.push(
-      `${whitespace}- ${displayName} (total: ${totalTime}, self: ${selfTime})`
-    );
-    formatTree(
-      callTree,
-      includeCategories,
-      callTree.getChildren(callNodeIndex),
-      depth + 1,
-      lines
-    );
+    lines.push(`${whitespace}- ${displayName} (total: ${totalTime}, self: ${selfTime})`);
+    formatTree(callTree, includeCategories, callTree.getChildren(callNodeIndex), depth + 1, lines);
   });
 
   return lines;
@@ -172,10 +168,7 @@ export function formatTreeIncludeCategories(callTree: CallTree): string[] {
  * like when clicking a component link in a test, where there is no Promise to
  * wait on.
  */
-export function waitUntilState(
-  store: Store,
-  predicate: State => boolean
-): Promise<void> {
+export function waitUntilState(store: Store, predicate: (arg0: State) => boolean): Promise<void> {
   return new Promise(resolve => {
     store.subscribe(() => {
       if (predicate(store.getState())) {
@@ -194,22 +187,11 @@ export function waitUntilState(
 export function addRootOverlayElement() {
   const div = document.createElement('div');
   div.id = 'root-overlay';
-  ensureExists(
-    document.body,
-    'Expected the document.body to exist.'
-  ).appendChild(div);
+  ensureExists(document.body, 'Expected the document.body to exist.').appendChild(div);
 }
 
 export function removeRootOverlayElement() {
-  ensureExists(
-    document.body,
-    'Expected the document.body to exist.'
-  ).removeChild(
-    ensureExists(
-      document.querySelector('#root-overlay'),
-      'Expected to find a root overlay element to clean up.'
-    )
-  );
+  ensureExists(document.body, 'Expected the document.body to exist.').removeChild(ensureExists(document.querySelector('#root-overlay'), 'Expected to find a root overlay element to clean up.'));
 }
 
 /**
@@ -220,12 +202,15 @@ export function removeRootOverlayElement() {
  * changeSelect({ from: 'Timing Data', to: 'Deallocations' });
  */
 export function createSelectChanger(renderResult: RenderResult) {
-  return function changeSelect({ from, to }: {| from: string, to: string |}) {
+  return function changeSelect({
+    from,
+    to
+  }: {from: string;to: string;}) {
     // Look up the <option> with the text label.
     const option = renderResult.getByText(to);
     // Fire a change event to the select.
     fireEvent.change(renderResult.getByDisplayValue(from), {
-      target: { value: option.getAttribute('value') },
+      target: { value: option.getAttribute('value') }
     });
   };
 }
@@ -233,13 +218,8 @@ export function createSelectChanger(renderResult: RenderResult) {
 /**
  * Find a single x/y position for a ctx.fillText call.
  */
-export function findFillTextPositionFromDrawLog(
-  drawLog: any[],
-  fillText: string
-): {| x: number, y: number |} {
-  const positions = drawLog
-    .filter(([cmd, text]) => cmd === 'fillText' && text === fillText)
-    .map(([, , x, y]) => ({ x, y }));
+export function findFillTextPositionFromDrawLog(drawLog: any[], fillText: string): {x: number;y: number;} {
+  const positions = drawLog.filter(([cmd, text]) => cmd === 'fillText' && text === fillText).map(([,, x, y]) => ({ x, y }));
 
   if (positions.length === 0) {
     throw new Error('Could not find a fillText command for ' + fillText);

@@ -21,8 +21,10 @@ function hex(buffer: ArrayBuffer): string {
   return hexCodes.join('');
 }
 
-export default function sha1(data: string | Uint8Array): Promise<string> {
+export default async function sha1(data: string | Uint8Array): Promise<string> {
   const arrayData =
     typeof data === 'string' ? new TextEncoder().encode(data) : data;
-  return window.crypto.subtle.digest('SHA-1', arrayData).then(hex);
+  const { digest } = window.crypto.subtle;
+  const buffer = await digest('SHA-1', arrayData);
+  return hex(buffer);
 }

@@ -2,7 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
 import * as React from 'react';
 import { render, fireEvent } from 'react-testing-library';
 import { Provider } from 'react-redux';
@@ -87,8 +86,7 @@ describe('MarkerTable', function() {
                 module: 'nsJarProtocol',
               },
             ],
-          ]
-            // Sort the markers.
+          ] // Sort the markers.
             .sort((a, b) => a[1] - b[1])
     );
 

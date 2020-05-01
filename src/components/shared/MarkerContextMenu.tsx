@@ -2,76 +2,63 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
-import React, { PureComponent } from 'react';
-import { MenuItem } from 'react-contextmenu';
-import ContextMenu from '../shared/ContextMenu';
-import explicitConnect from '../../utils/connect';
-import {
-  setContextMenuVisibility,
-  updatePreviewSelection,
-} from '../../actions/profile-view';
-import {
-  getPreviewSelection,
-  getCommittedRange,
-} from '../../selectors/profile';
-import { getRightClickedMarkerInfo } from '../../selectors/right-clicked-marker';
-import copy from 'copy-to-clipboard';
 
-import type { Marker } from '../../types/profile-derived';
-import type { StartEndRange } from '../../types/units';
-import type {
-  PreviewSelection,
-  ImplementationFilter,
-} from '../../types/actions';
-import type { ConnectedProps } from '../../utils/connect';
-import { getImplementationFilter } from '../../selectors/url-state';
-import type { IndexIntoStackTable, Thread } from '../../types/profile';
-import { filterCallNodePathByImplementation } from '../../profile-logic/transforms';
-import {
-  convertStackToCallNodePath,
-  getFuncNamesAndOriginsForPath,
-} from '../../profile-logic/profile-data';
-import { getMarkerFullDescription } from '../../profile-logic/marker-data';
-import { getThreadSelectors } from '../../selectors/per-thread';
+import React, { PureComponent } from "react";
+import { MenuItem } from "react-contextmenu";
+import ContextMenu from "../shared/ContextMenu";
+import explicitConnect, { ConnectedProps } from "../../utils/connect";
+import { setContextMenuVisibility, updatePreviewSelection } from "../../actions/profile-view";
+import { getPreviewSelection, getCommittedRange } from "../../selectors/profile";
+import { getRightClickedMarkerInfo } from "../../selectors/right-clicked-marker";
+import copy from "copy-to-clipboard";
 
-type StateProps = {|
-  +previewSelection: PreviewSelection,
-  +committedRange: StartEndRange,
-  +rightClickedMarker: Marker | null,
-  +thread: Thread | null,
-  +implementationFilter: ImplementationFilter,
-|};
+import { Marker } from "../../types/profile-derived";
+import { StartEndRange } from "../../types/units";
+import { PreviewSelection, ImplementationFilter } from "../../types/actions";
 
-type DispatchProps = {|
-  +updatePreviewSelection: typeof updatePreviewSelection,
-  +setContextMenuVisibility: typeof setContextMenuVisibility,
-|};
+import { getImplementationFilter } from "../../selectors/url-state";
+import { IndexIntoStackTable, Thread } from "../../types/profile";
+import { filterCallNodePathByImplementation } from "../../profile-logic/transforms";
+import { convertStackToCallNodePath, getFuncNamesAndOriginsForPath } from "../../profile-logic/profile-data";
+import { getMarkerFullDescription } from "../../profile-logic/marker-data";
+import { getThreadSelectors } from "../../selectors/per-thread";
 
-type Props = ConnectedProps<{||}, StateProps, DispatchProps>;
+type StateProps = {
+  readonly previewSelection: PreviewSelection;
+  readonly committedRange: StartEndRange;
+  readonly rightClickedMarker: Marker | null;
+  readonly thread: Thread | null;
+  readonly implementationFilter: ImplementationFilter;
+};
+
+type DispatchProps = {
+  readonly updatePreviewSelection: typeof updatePreviewSelection;
+  readonly setContextMenuVisibility: typeof setContextMenuVisibility;
+};
+
+type Props = ConnectedProps<{}, StateProps, DispatchProps>;
 
 class MarkerContextMenu extends PureComponent<Props> {
+
   setStartRange = () => {
     const {
       rightClickedMarker,
       updatePreviewSelection,
       previewSelection,
-      committedRange,
+      committedRange
     } = this.props;
 
     if (rightClickedMarker === null) {
       return;
     }
 
-    const selectionEnd = previewSelection.hasSelection
-      ? previewSelection.selectionEnd
-      : committedRange.end;
+    const selectionEnd = previewSelection.hasSelection ? previewSelection.selectionEnd : committedRange.end;
 
     updatePreviewSelection({
       hasSelection: true,
       isModifying: false,
       selectionStart: rightClickedMarker.start,
-      selectionEnd,
+      selectionEnd
     });
   };
 
@@ -80,16 +67,14 @@ class MarkerContextMenu extends PureComponent<Props> {
       rightClickedMarker,
       updatePreviewSelection,
       committedRange,
-      previewSelection,
+      previewSelection
     } = this.props;
 
     if (rightClickedMarker === null) {
       return;
     }
 
-    const selectionStart = previewSelection.hasSelection
-      ? previewSelection.selectionStart
-      : committedRange.start;
+    const selectionStart = previewSelection.hasSelection ? previewSelection.selectionStart : committedRange.start;
 
     updatePreviewSelection({
       hasSelection: true,
@@ -97,13 +82,15 @@ class MarkerContextMenu extends PureComponent<Props> {
       selectionStart,
       // For markers without a duration, add an arbitrarily small bit of time at
       // the end to make sure the selected marker doesn't disappear from view.
-      selectionEnd:
-        rightClickedMarker.start + (rightClickedMarker.dur || 0.0001),
+      selectionEnd: rightClickedMarker.start + (rightClickedMarker.dur || 0.0001)
     });
   };
 
   setRangeByDuration = () => {
-    const { rightClickedMarker, updatePreviewSelection } = this.props;
+    const {
+      rightClickedMarker,
+      updatePreviewSelection
+    } = this.props;
 
     if (rightClickedMarker === null) {
       return;
@@ -117,38 +104,37 @@ class MarkerContextMenu extends PureComponent<Props> {
       hasSelection: true,
       isModifying: false,
       selectionStart: rightClickedMarker.start,
-      selectionEnd: rightClickedMarker.start + rightClickedMarker.dur,
+      selectionEnd: rightClickedMarker.start + rightClickedMarker.dur
     });
   };
 
-  _isZeroDurationMarker(marker: ?Marker): boolean {
+  _isZeroDurationMarker(marker: Marker | null | undefined): boolean {
     return !marker || !marker.dur;
   }
 
   _convertStackToString(stack: IndexIntoStackTable): string {
-    const { thread, implementationFilter } = this.props;
+    const {
+      thread,
+      implementationFilter
+    } = this.props;
 
     if (thread === null) {
       return '';
     }
 
-    const callNodePath = filterCallNodePathByImplementation(
-      thread,
-      implementationFilter,
-      convertStackToCallNodePath(thread, stack)
-    );
+    const callNodePath = filterCallNodePathByImplementation(thread, implementationFilter, convertStackToCallNodePath(thread, stack));
 
-    const funcNamesAndOrigins = getFuncNamesAndOriginsForPath(
-      callNodePath,
-      thread
-    );
-    return funcNamesAndOrigins
-      .map(({ funcName, origin }) => `${funcName} [${origin}]`)
-      .join('\n');
+    const funcNamesAndOrigins = getFuncNamesAndOriginsForPath(callNodePath, thread);
+    return funcNamesAndOrigins.map(({
+      funcName,
+      origin
+    }) => `${funcName} [${origin}]`).join('\n');
   }
 
   copyMarkerJSON = () => {
-    const { rightClickedMarker } = this.props;
+    const {
+      rightClickedMarker
+    } = this.props;
 
     if (rightClickedMarker === null) {
       return;
@@ -158,7 +144,9 @@ class MarkerContextMenu extends PureComponent<Props> {
   };
 
   copyMarkerDescription = () => {
-    const { rightClickedMarker } = this.props;
+    const {
+      rightClickedMarker
+    } = this.props;
 
     if (rightClickedMarker === null) {
       return;
@@ -168,28 +156,28 @@ class MarkerContextMenu extends PureComponent<Props> {
   };
 
   copyMarkerCause = () => {
-    const { rightClickedMarker } = this.props;
+    const {
+      rightClickedMarker
+    } = this.props;
 
     if (rightClickedMarker === null) {
       return;
     }
 
     if (rightClickedMarker.data && rightClickedMarker.data.cause) {
-      const stack = this._convertStackToString(
-        rightClickedMarker.data.cause.stack
-      );
+      const stack = this._convertStackToString(rightClickedMarker.data.cause.stack);
       if (stack) {
         copy(stack);
       } else {
-        copy(
-          'The stack is empty because all of its frames are filtered out by the implementation filter. Switch the implementation filter in the call tree to see more frames.'
-        );
+        copy('The stack is empty because all of its frames are filtered out by the implementation filter. Switch the implementation filter in the call tree to see more frames.');
       }
     }
   };
 
   copyUrl = () => {
-    const { rightClickedMarker } = this.props;
+    const {
+      rightClickedMarker
+    } = this.props;
 
     if (rightClickedMarker === null) {
       return;
@@ -239,45 +227,33 @@ class MarkerContextMenu extends PureComponent<Props> {
   };
 
   render() {
-    const { rightClickedMarker } = this.props;
+    const {
+      rightClickedMarker
+    } = this.props;
 
     if (rightClickedMarker === null) {
       return null;
     }
 
-    return (
-      <ContextMenu
-        id="MarkerContextMenu"
-        onShow={this._onShow}
-        onHide={this._onHide}
-      >
+    return <ContextMenu id="MarkerContextMenu" onShow={this._onShow} onHide={this._onHide}>
         <MenuItem onClick={this.setStartRange}>
           Set selection start time here
         </MenuItem>
         <MenuItem onClick={this.setEndRange}>
           Set selection end time here
         </MenuItem>
-        <MenuItem
-          onClick={this.setRangeByDuration}
-          disabled={this._isZeroDurationMarker(rightClickedMarker)}
-        >
+        <MenuItem onClick={this.setRangeByDuration} disabled={this._isZeroDurationMarker(rightClickedMarker)}>
           Set selection from duration
         </MenuItem>
         <MenuItem onClick={this.copyMarkerDescription}>Copy</MenuItem>
-        {rightClickedMarker.data && rightClickedMarker.data.cause ? (
-          <MenuItem onClick={this.copyMarkerCause}>Copy marker cause</MenuItem>
-        ) : null}
-        {rightClickedMarker.data &&
-        rightClickedMarker.data.type === 'Network' ? (
-          <MenuItem onClick={this.copyUrl}>Copy URL</MenuItem>
-        ) : null}
+        {rightClickedMarker.data && rightClickedMarker.data.cause ? <MenuItem onClick={this.copyMarkerCause}>Copy marker cause</MenuItem> : null}
+        {rightClickedMarker.data && rightClickedMarker.data.type === 'Network' ? <MenuItem onClick={this.copyUrl}>Copy URL</MenuItem> : null}
         <MenuItem onClick={this.copyMarkerJSON}>Copy marker JSON</MenuItem>
-      </ContextMenu>
-    );
+      </ContextMenu>;
   }
 }
 
-export default explicitConnect<{||}, StateProps, DispatchProps>({
+export default explicitConnect<{}, StateProps, DispatchProps>({
   mapStateToProps: state => {
     const rightClickedMarkerInfo = getRightClickedMarkerInfo(state);
 
@@ -296,9 +272,9 @@ export default explicitConnect<{||}, StateProps, DispatchProps>({
       committedRange: getCommittedRange(state),
       implementationFilter: getImplementationFilter(state),
       rightClickedMarker,
-      thread,
+      thread
     };
   },
   mapDispatchToProps: { updatePreviewSelection, setContextMenuVisibility },
-  component: MarkerContextMenu,
+  component: MarkerContextMenu
 });
