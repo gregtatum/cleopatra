@@ -25,6 +25,7 @@ import type {
   RightClickedCallNode,
   RightClickedMarker,
   ActiveTabTimeline,
+  CallNodePath,
 } from 'firefox-profiler/types';
 
 const profile: Reducer<Profile | null> = (state = null, action) => {
@@ -216,9 +217,9 @@ const viewOptionsPerThread: Reducer<ThreadViewOptions[]> = (
       ];
     }
     case 'CHANGE_INVERT_CALLSTACK': {
-      const { callTree, callNodeTable, selectedThreadIndex } = action;
+      const { callTree, callNodeTable, selectedThreadIndexes } = action;
       return state.map((viewOptions, threadIndex) => {
-        if (selectedThreadIndex === threadIndex) {
+        if (selectedThreadIndexes.has(threadIndex)) {
           // Only attempt this on the current thread, as we need the transformed thread
           // There is no guarantee that this has been calculated on all the other threads,
           // and we shouldn't attempt to expect it, as that could be quite a perf cost.
@@ -308,7 +309,7 @@ const viewOptionsPerThread: Reducer<ThreadViewOptions[]> = (
     case 'CHANGE_IMPLEMENTATION_FILTER': {
       const {
         transformedThread,
-        threadIndex,
+        threadIndexes,
         previousImplementation,
         implementation,
       } = action;
@@ -317,48 +318,49 @@ const viewOptionsPerThread: Reducer<ThreadViewOptions[]> = (
         return state;
       }
 
-      // This CallNodePath may need to be updated twice.
-      let selectedCallNodePath = state[threadIndex].selectedCallNodePath;
-
-      if (implementation === 'combined') {
-        // Restore the full CallNodePaths
-        selectedCallNodePath = Transforms.restoreAllFunctionsInCallNodePath(
-          transformedThread,
-          previousImplementation,
-          selectedCallNodePath
-        );
-      } else {
-        if (previousImplementation !== 'combined') {
-          // Restore the CallNodePath back to an unfiltered state before re-filtering
-          // it on the next implementation.
+      const newViewOptions = state.slice();
+      for (const threadIndex of threadIndexes) {
+        // This CallNodePath may need to be updated twice.
+        let selectedCallNodePath: CallNodePath =
+          state[threadIndex].selectedCallNodePath;
+        if (implementation === 'combined') {
+          // Restore the full CallNodePaths
           selectedCallNodePath = Transforms.restoreAllFunctionsInCallNodePath(
             transformedThread,
             previousImplementation,
             selectedCallNodePath
           );
+        } else {
+          if (previousImplementation !== 'combined') {
+            // Restore the CallNodePath back to an unfiltered state before re-filtering
+            // it on the next implementation.
+            selectedCallNodePath = Transforms.restoreAllFunctionsInCallNodePath(
+              transformedThread,
+              previousImplementation,
+              selectedCallNodePath
+            );
+          }
+          // Take the full CallNodePath, and strip out anything not in this implementation.
+          selectedCallNodePath = Transforms.filterCallNodePathByImplementation(
+            transformedThread,
+            implementation,
+            selectedCallNodePath
+          );
         }
-        // Take the full CallNodePath, and strip out anything not in this implementation.
-        selectedCallNodePath = Transforms.filterCallNodePathByImplementation(
-          transformedThread,
-          implementation,
-          selectedCallNodePath
-        );
-      }
 
-      const expandedCallNodePaths = new PathSet();
-      for (let i = 1; i < selectedCallNodePath.length; i++) {
-        expandedCallNodePaths.add(selectedCallNodePath.slice(0, i));
-      }
+        const expandedCallNodePaths = new PathSet();
+        for (let i = 1; i < selectedCallNodePath.length; i++) {
+          expandedCallNodePaths.add(selectedCallNodePath.slice(0, i));
+        }
 
-      return [
-        ...state.slice(0, threadIndex),
-        {
+        newViewOptions[threadIndex] = {
           ...state[threadIndex],
           selectedCallNodePath,
           expandedCallNodePaths,
-        },
-        ...state.slice(threadIndex + 1),
-      ];
+        };
+      }
+
+      return newViewOptions;
     }
     default:
       return state;
