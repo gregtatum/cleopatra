@@ -84,12 +84,23 @@ export const getNetworkSearchString: Selector<string> = state =>
 
 export const getSelectedTab: Selector<TabSlug> = state =>
   getUrlState(state).selectedTab;
-export const getSelectedThreadIndexOrNull: Selector<ThreadIndex | null> = state =>
-  getProfileSpecificState(state).selectedThread;
-export const getSelectedThreadIndex: Selector<ThreadIndex> = state =>
+export const getSelectedThreadIndexesOrNull: Selector<Set<ThreadIndex> | null> = state =>
+  getProfileSpecificState(state).selectedThreads;
+export const getSelectedThreadIndexes: Selector<Set<ThreadIndex>> = state =>
   ensureExists(
-    getSelectedThreadIndexOrNull(state),
+    getSelectedThreadIndexesOrNull(state),
     'Attempted to get a thread index before a profile was loaded.'
+  );
+
+/**
+ * This selector is temporary for a migration to multiple selected thread indexes.
+ */
+export const getFirstSelectedThreadIndex: Selector<ThreadIndex> = state =>
+  ensureExists(
+    getSelectedThreadIndexes(state)
+      .values()
+      .next().value,
+    'Expected to find at least one thread index in the selected thread indexes'
   );
 export const getTimelineType: Selector<TimelineType> = state =>
   getFullProfileSpecificState(state).timelineType;

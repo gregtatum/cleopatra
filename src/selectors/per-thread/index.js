@@ -84,7 +84,9 @@ export const selectedThreadSelectors: ThreadSelectors = (() => {
   const result: $Shape<ThreadSelectors> = {};
   for (const key in anyThreadSelectors) {
     result[key] = state =>
-      getThreadSelectors(UrlState.getSelectedThreadIndex(state))[key](state);
+      getThreadSelectors(UrlState.getFirstSelectedThreadIndex(state))[key](
+        state
+      );
   }
   const result2: ThreadSelectors = (result: any);
   return result2;

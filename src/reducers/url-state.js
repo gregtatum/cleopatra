@@ -109,7 +109,10 @@ const committedRanges: Reducer<StartEndRange[]> = (state = [], action) => {
   }
 };
 
-const selectedThread: Reducer<ThreadIndex | null> = (state = null, action) => {
+const selectedThreads: Reducer<Set<ThreadIndex> | null> = (
+  state = null,
+  action
+) => {
   switch (action.type) {
     case 'CHANGE_SELECTED_THREAD':
     case 'SELECT_TRACK':
@@ -476,7 +479,7 @@ const activeTabProfileSpecific = combineReducers({
  * These values are specific to an individual profile.
  */
 const profileSpecific = combineReducers({
-  selectedThread,
+  selectedThreads,
   implementation,
   lastSelectedCallTreeSummaryStrategy,
   invertCallstack,
