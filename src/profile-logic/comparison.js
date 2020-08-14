@@ -118,9 +118,15 @@ export function mergeProfiles(
 
   for (let i = 0; i < profileStates.length; i++) {
     const { profileSpecific } = profileStates[i];
-    const selectedThreadIndex = profileSpecific.selectedThread;
-    if (selectedThreadIndex === null) {
+    const selectedThreadIndexes = profileSpecific.selectedThreads;
+    if (selectedThreadIndexes === null) {
       throw new Error(`No thread has been selected in profile ${i}`);
+    }
+    const selectedThreadIndex = selectedThreadIndexes.values().next().value;
+    if (selectedThreadIndexes.size !== 1 || selectedThreadIndex === undefined) {
+      throw new Error(
+        'Only one thread selection is currently supported for the comparison view.'
+      );
     }
     const profile = profiles[i];
     let thread = profile.threads[selectedThreadIndex];
