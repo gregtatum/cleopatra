@@ -15,7 +15,7 @@ import {
   getScrollToSelectionGeneration,
 } from '../../selectors/profile';
 import { selectedThreadSelectors } from '../../selectors/per-thread';
-import { getSelectedThreadIndex } from '../../selectors/url-state';
+import { getFirstSelectedThreadIndex } from '../../selectors/url-state';
 import {
   changeSelectedMarker,
   changeRightClickedMarker,
@@ -228,7 +228,7 @@ class MarkerTable extends PureComponent<Props> {
 
 export default explicitConnect<{||}, StateProps, DispatchProps>({
   mapStateToProps: state => ({
-    threadIndex: getSelectedThreadIndex(state),
+    threadIndex: getFirstSelectedThreadIndex(state),
     scrollToSelectionGeneration: getScrollToSelectionGeneration(state),
     getMarker: selectedThreadSelectors.getMarkerGetter(state),
     markerIndexes: selectedThreadSelectors.getPreviewFilteredMarkerIndexes(

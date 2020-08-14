@@ -15,7 +15,7 @@ import {
   getInvertCallstack,
   getImplementationFilter,
   getSearchStringsAsRegExp,
-  getSelectedThreadIndex,
+  getFirstSelectedThreadIndex,
 } from '../../selectors/url-state';
 import {
   getScrollToSelectionGeneration,
@@ -304,7 +304,7 @@ class CallTreeComponent extends PureComponent<Props> {
 
 export default explicitConnect<{||}, StateProps, DispatchProps>({
   mapStateToProps: (state: State) => ({
-    threadIndex: getSelectedThreadIndex(state),
+    threadIndex: getFirstSelectedThreadIndex(state),
     scrollToSelectionGeneration: getScrollToSelectionGeneration(state),
     focusCallTreeGeneration: getFocusCallTreeGeneration(state),
     tree: selectedThreadSelectors.getCallTree(state),

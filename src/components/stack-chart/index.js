@@ -22,7 +22,7 @@ import {
 import { selectedThreadSelectors } from '../../selectors/per-thread';
 import {
   getShowUserTimings,
-  getSelectedThreadIndex,
+  getFirstSelectedThreadIndex,
 } from '../../selectors/url-state';
 import StackChartEmptyReasons from './StackChartEmptyReasons';
 import ContextMenuTrigger from '../shared/ContextMenuTrigger';
@@ -239,7 +239,7 @@ export default explicitConnect<{||}, StateProps, DispatchProps>({
       timeRange: getCommittedRange(state),
       interval: getProfileInterval(state),
       previewSelection: getPreviewSelection(state),
-      threadIndex: getSelectedThreadIndex(state),
+      threadIndex: getFirstSelectedThreadIndex(state),
       callNodeInfo: selectedThreadSelectors.getCallNodeInfo(state),
       categories: getCategories(state),
       selectedCallNodeIndex: selectedThreadSelectors.getSelectedCallNodeIndex(

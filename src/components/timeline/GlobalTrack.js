@@ -13,7 +13,7 @@ import {
 } from '../../actions/profile-view';
 import ContextMenuTrigger from '../shared/ContextMenuTrigger';
 import {
-  getSelectedThreadIndex,
+  getSelectedThreadIndexes,
   getLocalTrackOrder,
   getSelectedTab,
   getHiddenGlobalTracks,
@@ -317,7 +317,7 @@ export default explicitConnect<OwnProps, StateProps, DispatchProps>({
           threadIndex = globalTrack.mainThreadIndex;
           const selectors = getThreadSelectors(threadIndex);
           isSelected =
-            threadIndex === getSelectedThreadIndex(state) &&
+            getSelectedThreadIndexes(state).has(threadIndex) &&
             selectedTab !== 'network-chart';
           titleText = selectors.getThreadProcessDetails(state);
         }

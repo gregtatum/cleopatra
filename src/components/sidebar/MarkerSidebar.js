@@ -8,7 +8,7 @@ import * as React from 'react';
 
 import explicitConnect from '../../utils/connect';
 import { selectedThreadSelectors } from '../../selectors/per-thread';
-import { getSelectedThreadIndex } from '../../selectors/url-state';
+import { getFirstSelectedThreadIndex } from '../../selectors/url-state';
 import { TooltipMarker } from '../tooltip/Marker';
 
 import type { ConnectedProps } from '../../utils/connect';
@@ -46,7 +46,7 @@ class MarkerSidebar extends React.PureComponent<Props> {
 export default explicitConnect<{||}, StateProps, {||}>({
   mapStateToProps: state => ({
     marker: selectedThreadSelectors.getSelectedMarker(state),
-    selectedThreadIndex: getSelectedThreadIndex(state),
+    selectedThreadIndex: getFirstSelectedThreadIndex(state),
   }),
   component: MarkerSidebar,
 });

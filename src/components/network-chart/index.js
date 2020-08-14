@@ -20,7 +20,7 @@ import {
   getPreviewSelectionRange,
 } from '../../selectors/profile';
 import { selectedThreadSelectors } from '../../selectors/per-thread';
-import { getSelectedThreadIndex } from '../../selectors/url-state';
+import { getFirstSelectedThreadIndex } from '../../selectors/url-state';
 import { changeRightClickedMarker } from '../../actions/profile-view';
 
 import type { SizeProps } from '../shared/WithSize';
@@ -186,7 +186,7 @@ const ConnectedComponent = explicitConnect<OwnProps, StateProps, DispatchProps>(
       ),
       timeRange: getPreviewSelectionRange(state),
       disableOverscan: getPreviewSelection(state).isModifying,
-      threadIndex: getSelectedThreadIndex(state),
+      threadIndex: getFirstSelectedThreadIndex(state),
     }),
     mapDispatchToProps: { changeRightClickedMarker },
     component: NetworkChart,

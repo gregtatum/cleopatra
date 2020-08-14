@@ -18,7 +18,7 @@ import {
   getPreviewSelection,
 } from '../../selectors/profile';
 import { selectedThreadSelectors } from '../../selectors/per-thread';
-import { getSelectedThreadIndex } from '../../selectors/url-state';
+import { getFirstSelectedThreadIndex } from '../../selectors/url-state';
 import {
   updatePreviewSelection,
   changeRightClickedMarker,
@@ -178,7 +178,7 @@ export default explicitConnect<{||}, StateProps, DispatchProps>({
       markerTimingAndBuckets,
       maxMarkerRows: markerTimingAndBuckets.length,
       timeRange: getCommittedRange(state),
-      threadIndex: getSelectedThreadIndex(state),
+      threadIndex: getFirstSelectedThreadIndex(state),
       previewSelection: getPreviewSelection(state),
       rightClickedMarkerIndex: selectedThreadSelectors.getRightClickedMarkerIndex(
         state

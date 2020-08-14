@@ -13,7 +13,7 @@ import { getProfile } from '../../selectors/profile';
 import { selectedThreadSelectors } from '../../selectors/per-thread';
 import {
   getShowJsTracerSummary,
-  getSelectedThreadIndex,
+  getFirstSelectedThreadIndex,
 } from '../../selectors/url-state';
 import { updatePreviewSelection } from '../../actions/profile-view';
 
@@ -73,7 +73,7 @@ export default explicitConnect<{||}, StateProps, DispatchProps>({
   mapStateToProps: state => {
     return {
       profile: getProfile(state),
-      threadIndex: getSelectedThreadIndex(state),
+      threadIndex: getFirstSelectedThreadIndex(state),
       jsTracerTable: selectedThreadSelectors.getJsTracerTable(state),
       showJsTracerSummary: getShowJsTracerSummary(state),
     };

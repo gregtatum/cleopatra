@@ -17,7 +17,7 @@ import {
   getPreviewSelection,
 } from '../../selectors/profile';
 import { selectedThreadSelectors } from '../../selectors/per-thread';
-import { getSelectedThreadIndex } from '../../selectors/url-state';
+import { getFirstSelectedThreadIndex } from '../../selectors/url-state';
 import { updatePreviewSelection } from '../../actions/profile-view';
 import { ensureExists } from '../../utils/flow';
 
@@ -137,7 +137,7 @@ const JsTracerExpensiveChart = explicitConnect<
   mapStateToProps: (state, ownProps) => ({
     timeRange: getCommittedRange(state),
     stringTable: selectedThreadSelectors.getStringTable(state),
-    threadIndex: getSelectedThreadIndex(state),
+    threadIndex: getFirstSelectedThreadIndex(state),
     previewSelection: getPreviewSelection(state),
     jsTracerTimingRows: ensureExists(
       ownProps.showJsTracerSummary

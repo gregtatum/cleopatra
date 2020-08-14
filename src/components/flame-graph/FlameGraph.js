@@ -16,7 +16,7 @@ import {
 } from '../../selectors/profile';
 import { selectedThreadSelectors } from '../../selectors/per-thread';
 import {
-  getSelectedThreadIndex,
+  getFirstSelectedThreadIndex,
   getInvertCallstack,
 } from '../../selectors/url-state';
 import ContextMenuTrigger from '../shared/ContextMenuTrigger';
@@ -359,7 +359,7 @@ export default explicitConnect<{||}, StateProps, DispatchProps>({
     previewSelection: getPreviewSelection(state),
     callNodeInfo: selectedThreadSelectors.getCallNodeInfo(state),
     categories: getCategories(state),
-    threadIndex: getSelectedThreadIndex(state),
+    threadIndex: getFirstSelectedThreadIndex(state),
     selectedCallNodeIndex: selectedThreadSelectors.getSelectedCallNodeIndex(
       state
     ),
