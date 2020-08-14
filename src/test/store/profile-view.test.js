@@ -292,9 +292,13 @@ describe('actions/ProfileView', function() {
       const { profile } = getProfileFromTextSamples('A', 'B');
       const { dispatch, getState } = storeWithProfile(profile);
 
-      expect(UrlStateSelectors.getSelectedThreadIndex(getState())).toEqual(0);
-      dispatch(ProfileView.changeSelectedThread(1));
-      expect(UrlStateSelectors.getSelectedThreadIndex(getState())).toEqual(1);
+      expect(UrlStateSelectors.getSelectedThreadIndexes(getState())).toEqual(
+        new Set([0])
+      );
+      dispatch(ProfileView.changeSelectedThreads(new Set([1])));
+      expect(UrlStateSelectors.getSelectedThreadIndexes(getState())).toEqual(
+        new Set([1])
+      );
     });
   });
 
@@ -362,24 +366,24 @@ describe('actions/ProfileView', function() {
     describe('with a thread tracks', function() {
       it('starts out with the tab thread selected', function() {
         const { getState, tabTrack } = setup();
-        expect(UrlStateSelectors.getSelectedThreadIndex(getState())).toEqual(
-          tabTrack.mainThreadIndex
+        expect(UrlStateSelectors.getSelectedThreadIndexes(getState())).toEqual(
+          new Set([tabTrack.mainThreadIndex])
         );
       });
 
       it('can switch to another global track', function() {
         const { getState, dispatch, parentTrack } = setup();
         dispatch(ProfileView.selectTrack(parentTrackReference));
-        expect(UrlStateSelectors.getSelectedThreadIndex(getState())).toEqual(
-          parentTrack.mainThreadIndex
+        expect(UrlStateSelectors.getSelectedThreadIndexes(getState())).toEqual(
+          new Set([parentTrack.mainThreadIndex])
         );
       });
 
       it('can switch to a local track', function() {
         const { getState, dispatch, workerTrack } = setup();
         dispatch(ProfileView.selectTrack(workerTrackReference));
-        expect(UrlStateSelectors.getSelectedThreadIndex(getState())).toEqual(
-          workerTrack.threadIndex
+        expect(UrlStateSelectors.getSelectedThreadIndexes(getState())).toEqual(
+          new Set([workerTrack.threadIndex])
         );
       });
     });
@@ -398,7 +402,9 @@ describe('actions/ProfileView', function() {
       it('it starts out with the thread track and call tree selected', function() {
         const profile = getNetworkTrackProfile();
         const { getState } = storeWithProfile(profile);
-        expect(UrlStateSelectors.getSelectedThreadIndex(getState())).toEqual(0);
+        expect(UrlStateSelectors.getSelectedThreadIndexes(getState())).toEqual(
+          new Set([0])
+        );
         expect(UrlStateSelectors.getSelectedTab(getState())).toEqual(
           'calltree'
         );
@@ -407,7 +413,9 @@ describe('actions/ProfileView', function() {
         const profile = getNetworkTrackProfile();
         const { dispatch, getState } = storeWithProfile(profile);
         dispatch(ProfileView.selectTrack(networkTrack));
-        expect(UrlStateSelectors.getSelectedThreadIndex(getState())).toEqual(0);
+        expect(UrlStateSelectors.getSelectedThreadIndexes(getState())).toEqual(
+          new Set([0])
+        );
         expect(UrlStateSelectors.getSelectedTab(getState())).toEqual(
           'network-chart'
         );
@@ -416,17 +424,23 @@ describe('actions/ProfileView', function() {
         const profile = getNetworkTrackProfile();
         const { dispatch, getState } = storeWithProfile(profile);
         dispatch(App.changeSelectedTab('flame-graph'));
-        expect(UrlStateSelectors.getSelectedThreadIndex(getState())).toEqual(0);
+        expect(UrlStateSelectors.getSelectedThreadIndexes(getState())).toEqual(
+          new Set([0])
+        );
         expect(UrlStateSelectors.getSelectedTab(getState())).toEqual(
           'flame-graph'
         );
         dispatch(ProfileView.selectTrack(networkTrack));
-        expect(UrlStateSelectors.getSelectedThreadIndex(getState())).toEqual(0);
+        expect(UrlStateSelectors.getSelectedThreadIndexes(getState())).toEqual(
+          new Set([0])
+        );
         expect(UrlStateSelectors.getSelectedTab(getState())).toEqual(
           'network-chart'
         );
         dispatch(ProfileView.selectTrack(threadTrack));
-        expect(UrlStateSelectors.getSelectedThreadIndex(getState())).toEqual(0);
+        expect(UrlStateSelectors.getSelectedThreadIndexes(getState())).toEqual(
+          new Set([0])
+        );
         expect(UrlStateSelectors.getSelectedTab(getState())).toEqual(
           'flame-graph'
         );
@@ -473,9 +487,13 @@ describe('actions/ProfileView', function() {
 
       it('changes the thread index when selected', function() {
         const { getState, dispatch } = setup();
-        expect(UrlStateSelectors.getSelectedThreadIndex(getState())).toEqual(1);
+        expect(UrlStateSelectors.getSelectedThreadIndexes(getState())).toEqual(
+          new Set([1])
+        );
         dispatch(ProfileView.selectTrack(memoryTrackReference));
-        expect(UrlStateSelectors.getSelectedThreadIndex(getState())).toEqual(0);
+        expect(UrlStateSelectors.getSelectedThreadIndexes(getState())).toEqual(
+          new Set([0])
+        );
       });
 
       it('does not change the tab when selected', function() {
@@ -504,13 +522,17 @@ describe('actions/ProfileView', function() {
         const { getState, dispatch } = storeWithProfile(profile);
 
         dispatch(App.changeSelectedTab('flame-graph'));
-        expect(UrlStateSelectors.getSelectedThreadIndex(getState())).toEqual(0);
+        expect(UrlStateSelectors.getSelectedThreadIndexes(getState())).toEqual(
+          new Set([0])
+        );
         expect(UrlStateSelectors.getSelectedTab(getState())).toEqual(
           'flame-graph'
         );
 
         dispatch(ProfileView.selectTrack(diffingTrackReference));
-        expect(UrlStateSelectors.getSelectedThreadIndex(getState())).toEqual(2);
+        expect(UrlStateSelectors.getSelectedThreadIndexes(getState())).toEqual(
+          new Set([2])
+        );
         expect(UrlStateSelectors.getSelectedTab(getState())).toEqual(
           'calltree'
         );
@@ -606,8 +628,8 @@ describe('actions/ProfileView', function() {
           'marker-chart'
         );
         dispatch(ProfileView.selectTrack(parentTrackReference));
-        expect(UrlStateSelectors.getSelectedThreadIndex(getState())).toEqual(
-          parentTrack.mainThreadIndex
+        expect(UrlStateSelectors.getSelectedThreadIndexes(getState())).toEqual(
+          new Set([parentTrack.mainThreadIndex])
         );
         expect(UrlStateSelectors.getSelectedTab(getState())).toEqual(
           'marker-chart'
@@ -620,8 +642,8 @@ describe('actions/ProfileView', function() {
           'network-chart'
         );
         dispatch(ProfileView.selectTrack(parentTrackReference));
-        expect(UrlStateSelectors.getSelectedThreadIndex(getState())).toEqual(
-          parentTrack.mainThreadIndex
+        expect(UrlStateSelectors.getSelectedThreadIndexes(getState())).toEqual(
+          new Set([parentTrack.mainThreadIndex])
         );
         expect(UrlStateSelectors.getSelectedTab(getState())).toEqual(
           'calltree'
@@ -2851,7 +2873,7 @@ describe('getTimingsForSidebar', () => {
       );
 
       const store = storeWithProfile(profile);
-      store.dispatch(ProfileView.changeSelectedThread(2));
+      store.dispatch(ProfileView.changeSelectedThreads(new Set([2])));
 
       const getTimingsForPath = path => {
         store.dispatch(ProfileView.changeSelectedCallNode(2, path));
