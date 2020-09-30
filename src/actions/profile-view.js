@@ -1361,3 +1361,12 @@ export function setDataSource(dataSource: DataSource): Action {
     dataSource,
   };
 }
+
+export function changeMouseTimePosition(
+  timePosition: Milliseconds | null
+): Action {
+  return {
+    type: 'CHANGE_MOUSE_TIME_POSITION',
+    position,
+  };
+}

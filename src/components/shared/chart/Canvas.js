@@ -28,6 +28,10 @@ type Props<HoveredItem> = {|
   // Applies ctx.scale() to the canvas to draw using CssPixels rather than DevicePixels.
   +scaleCtxToCssPixels: boolean,
   +hitTest: (x: CssPixels, y: CssPixels) => HoveredItem | null,
+
+  // Hook up these props to fire when the canvas is interacted with.
+  +onMouseMove
+  +onMouseLeave
 |};
 
 // The naming of the X and Y coordinates here correspond to the ones

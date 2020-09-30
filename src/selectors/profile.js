@@ -113,6 +113,10 @@ export const getCommittedRange: Selector<StartEndRange> = createSelector(
   }
 );
 
+export const getMouseTimePosition: Selector<null | Milliseconds> = state => {
+  // TODO
+};
+
 export const getPreviewSelection: Selector<PreviewSelection> = state =>
   getProfileViewOptions(state).previewSelection;
 

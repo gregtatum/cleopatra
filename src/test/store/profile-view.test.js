@@ -3611,3 +3611,9 @@ describe('getProcessedEventDelays', function() {
     ]);
   });
 });
+
+describe('mouseTimePosition', function() {
+  it('', function() {
+    // Test just the redux store here.
+  });
+});

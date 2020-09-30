@@ -577,6 +577,17 @@ class MarkerChartCanvas extends React.PureComponent<Props, State> {
         getHoveredItemInfo={this.getHoveredMarkerInfo}
         drawCanvas={this.drawCanvas}
         hitTest={this.hitTest}
+
+        mouseMove={
+          // This will need to handle reporting the current time of the mouse position
+          // This needs the preview selection to do so.
+          // Something like this math will turn a relative CssPixel position of
+          // relativeX, into the unit of time in the profile:
+
+          // relativeX * (width / (preview.end - preview.start)) + preview.start
+         }
+        mouseLeave={ dispatch null to the mouse position }
+
       />
     );
   }

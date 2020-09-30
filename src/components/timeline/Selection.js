@@ -11,6 +11,7 @@ import {
   getPreviewSelection,
   getCommittedRange,
   getZeroAt,
+  getMouseTimePosition,
 } from '../../selectors/profile';
 import {
   updatePreviewSelection,
@@ -372,6 +373,13 @@ class TimelineRulerAndSelection extends React.PureComponent<Props, State> {
               previewSelection.isModifying || hoverLocation === null
                 ? 'hidden'
                 : undefined,
+            // Update this logic to use the mouseTimePosition.
+            // I think it would be best to store the current time in the redux store
+            // and then translate that into CssPixels here.
+
+            // Off the top of my head, I think this may be the math needed:
+
+            // width * (mouseTimePosition - committedRange.start) / (committedRange.end - committedRange.start)
             left: hoverLocation === null ? '0' : `${hoverLocation}px`,
           }}
         />
@@ -385,6 +393,7 @@ export default explicitConnect<OwnProps, StateProps, DispatchProps>({
     previewSelection: getPreviewSelection(state),
     committedRange: getCommittedRange(state),
     zeroAt: getZeroAt(state),
+    mouseTimePosition: getMouseTimePosition(state),
   }),
   mapDispatchToProps: {
     updatePreviewSelection,

@@ -422,3 +422,7 @@ describe('Timeline', function() {
     });
   });
 });
+
+describe('TimelineSelection', function() {
+  // Write a test to make sure the line actually changes positions.
+});

@@ -166,6 +166,10 @@ describe('FlameGraph', function() {
       expect(container.querySelector('.EmptyReasons')).toMatchSnapshot();
     });
   });
+
+  describe('MouseTimePosition', function() {
+    // Add a component test here.
+  });
 });
 
 function setupFlameGraph() {
