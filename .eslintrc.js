@@ -4,13 +4,11 @@ module.exports = {
     es6: true,
     node: true,
   },
-  parser: 'babel-eslint',
+  parser: '@typescript-eslint/parser',
   extends: [
     'eslint:recommended',
     'plugin:react/recommended',
-    'plugin:flowtype/recommended',
     'prettier',
-    'prettier/flowtype',
     'prettier/react',
     'plugin:jest/recommended'
   ],
@@ -22,7 +20,7 @@ module.exports = {
     },
     sourceType: 'module',
   },
-  plugins: ['babel', 'react', 'flowtype', 'import', 'prettier'],
+  plugins: ['babel', 'react', 'import', 'prettier'],
   rules: {
     // Plugin rules:
     'import/no-duplicates': 'error',
@@ -48,11 +46,7 @@ module.exports = {
     // 'react/no-unused-prop-types': 'error',
     'react/no-unused-state': 'error',
     'react/jsx-no-bind': 'error',
-    'flowtype/require-valid-file-annotation': [ 'error', 'always', { annotationStyle: 'line' } ],
     // no-dupe-keys crashes with recent eslint. See
-    // https://github.com/gajus/eslint-plugin-flowtype/pull/266 and
-    // https://github.com/gajus/eslint-plugin-flowtype/pull/302
-    // 'flowtype/no-dupe-keys': 'error',
 
     // overriding recommended rules
     'no-constant-condition': ['error', { checkLoops: false }],
@@ -80,9 +74,6 @@ module.exports = {
     'no-self-compare': 'error',
     'no-throw-literal': 'error',
     'no-unmodified-loop-condition': 'error',
-    // We use the version from the flowtype plugin so that flow assertions don't
-    // output an error.
-    'flowtype/no-unused-expressions': 'error',
     'no-useless-call': 'error',
     'no-useless-computed-key': 'error',
     'no-useless-concat': 'error',
