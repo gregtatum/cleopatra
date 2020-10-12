@@ -2,10 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
-
-
-
 /**
  * Strip any function arguments from the given string.
  *
@@ -15,9 +11,9 @@
 export function stripFunctionArguments(functionCall: string): string {
   // Remove known data that can appear at the start or the end of the string
   const s = functionCall // example: "(anonymous namespace)::get_registry() [clone .8847]"
-  .replace(/ \[clone [^]+\]$/, '') // example: "SkPath::internalGetConvexity() const"
-  .replace(/ const$/, '') // example:" static nsThread::ThreadFunc(void*)"
-  .replace(/^static /, '');
+    .replace(/ \[clone [^]+\]$/, '') // example: "SkPath::internalGetConvexity() const"
+    .replace(/ const$/, '') // example:" static nsThread::ThreadFunc(void*)"
+    .replace(/^static /, '');
 
   if (s[s.length - 1] !== ')') {
     return functionCall;

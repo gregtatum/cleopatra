@@ -2,9 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
-
-
 // This file provides simple utils to deal with JWT tokens.
 export function extractAndDecodePayload(jwtToken: string): any {
   if (!isValidJwtToken(jwtToken)) {
@@ -19,7 +16,10 @@ export function extractAndDecodePayload(jwtToken: string): any {
 
     return jsonPayload;
   } catch (e) {
-    console.error(`We got an unexpected error when trying to decode the JWT token '${jwtToken}':`, e);
+    console.error(
+      `We got an unexpected error when trying to decode the JWT token '${jwtToken}':`,
+      e
+    );
     return null;
   }
 }
@@ -42,7 +42,9 @@ export function decodeJwtBase64Url(base64UrlEncodedValue: string): string {
   // most implementations do.
 
   // We do need to convert the string to a "normal" base64 encoding though.
-  const base64EncodedValue = base64UrlEncodedValue.replace('-', '+').replace('_', '/');
+  const base64EncodedValue = base64UrlEncodedValue
+    .replace('-', '+')
+    .replace('_', '/');
 
   return atob(base64EncodedValue);
 }
@@ -60,14 +62,16 @@ export function extractProfileTokenFromJwt(hashOrToken: string): string {
     // This is a JWT token, let's extract the hash out of it.
     const jwtPayload = extractAndDecodePayload(hashOrToken);
     if (!jwtPayload) {
-      throw new Error(`The JWT token that's been returned by the server is incorrect.`);
+      throw new Error(
+        `The JWT token that's been returned by the server is incorrect.`
+      );
     }
 
-    const {
-      profileToken
-    } = jwtPayload;
+    const { profileToken } = jwtPayload;
     if (!profileToken) {
-      throw new Error(`The JWT token returned by the server doesn't contain a profile token.`);
+      throw new Error(
+        `The JWT token returned by the server doesn't contain a profile token.`
+      );
     }
     return profileToken;
   }

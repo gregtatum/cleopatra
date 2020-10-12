@@ -2,10 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
-import { Thread } from "../types/profile";
-import { Milliseconds } from "../types/units";
-import { CallNodeInfo, CallNodeTable, IndexIntoCallNodeTable } from "../types/profile-derived";
+import { Thread } from '../types/profile';
+import { Milliseconds } from '../types/units';
+import {
+  CallNodeInfo,
+  CallNodeTable,
+  IndexIntoCallNodeTable,
+} from '../types/profile-derived';
 
 /**
  * The StackTimingByDepth data structure organizes stack frames by their depth, and start
@@ -45,37 +48,39 @@ export type StackTimingDepth = number;
 export type IndexIntoStackTiming = number;
 
 export type StackTiming = {
-  start: Milliseconds[];
-  end: Milliseconds[];
-  callNode: IndexIntoCallNodeTable[];
-  length: number;
+  start: Milliseconds[],
+  end: Milliseconds[],
+  callNode: IndexIntoCallNodeTable[],
+  length: number,
 };
 
 export type StackTimingByDepth = Array<StackTiming>;
 
 type LastSeen = {
-  startTimeByDepth: number[];
-  callNodeIndexByDepth: IndexIntoCallNodeTable[];
+  startTimeByDepth: number[],
+  callNodeIndexByDepth: IndexIntoCallNodeTable[],
 };
 
 /**
  * Build a StackTimingByDepth table from a given thread.
  */
-export function getStackTimingByDepth(thread: Thread, callNodeInfo: CallNodeInfo, maxDepth: number, interval: Milliseconds): StackTimingByDepth {
-  const {
-    callNodeTable,
-    stackIndexToCallNodeIndex
-  } = callNodeInfo;
+export function getStackTimingByDepth(
+  thread: Thread,
+  callNodeInfo: CallNodeInfo,
+  maxDepth: number,
+  interval: Milliseconds
+): StackTimingByDepth {
+  const { callNodeTable, stackIndexToCallNodeIndex } = callNodeInfo;
   const stackTimingByDepth = Array.from({ length: maxDepth }, () => ({
     start: [],
     end: [],
     callNode: [],
-    length: 0
+    length: 0,
   }));
 
   const lastSeen: LastSeen = {
     startTimeByDepth: [],
-    callNodeIndexByDepth: []
+    callNodeIndexByDepth: [],
   };
 
   // Go through each sample, and push/pop it on the stack to build up
@@ -95,9 +100,27 @@ export function getStackTimingByDepth(thread: Thread, callNodeInfo: CallNodeInfo
       const depth = callNodeTable.depth[callNodeIndex];
 
       // Find the depth of the nearest shared stack.
-      const depthToPop = _findNearestSharedCallNodeDepth(callNodeTable, callNodeIndex, lastSeen, depth);
-      _popStacks(stackTimingByDepth, lastSeen, depthToPop, previousDepth, sampleTime);
-      _pushStacks(thread, callNodeTable, lastSeen, depth, callNodeIndex, sampleTime);
+      const depthToPop = _findNearestSharedCallNodeDepth(
+        callNodeTable,
+        callNodeIndex,
+        lastSeen,
+        depth
+      );
+      _popStacks(
+        stackTimingByDepth,
+        lastSeen,
+        depthToPop,
+        previousDepth,
+        sampleTime
+      );
+      _pushStacks(
+        thread,
+        callNodeTable,
+        lastSeen,
+        depth,
+        callNodeIndex,
+        sampleTime
+      );
       previousDepth = depth;
     }
   }
@@ -110,7 +133,12 @@ export function getStackTimingByDepth(thread: Thread, callNodeInfo: CallNodeInfo
   return stackTimingByDepth;
 }
 
-function _findNearestSharedCallNodeDepth(callNodeTable: CallNodeTable, callNodeIndex: IndexIntoCallNodeTable, lastSeen: LastSeen, depthStart: number): number {
+function _findNearestSharedCallNodeDepth(
+  callNodeTable: CallNodeTable,
+  callNodeIndex: IndexIntoCallNodeTable,
+  lastSeen: LastSeen,
+  depthStart: number
+): number {
   let nextCallNodeIndex = callNodeIndex;
   for (let depth = depthStart; depth >= 0; depth--) {
     if (lastSeen.callNodeIndexByDepth[depth] === nextCallNodeIndex) {
@@ -121,13 +149,23 @@ function _findNearestSharedCallNodeDepth(callNodeTable: CallNodeTable, callNodeI
   return -1;
 }
 
-function _popStacks(stackTimingByDepth: StackTimingByDepth, lastSeen: LastSeen, depth: number, previousDepth: number, sampleTime: number) {
+function _popStacks(
+  stackTimingByDepth: StackTimingByDepth,
+  lastSeen: LastSeen,
+  depth: number,
+  previousDepth: number,
+  sampleTime: number
+) {
   // "Pop" off the stack, and commit the timing of the frames
   for (let stackDepth = depth + 1; stackDepth <= previousDepth; stackDepth++) {
     // Push on the new information.
-    stackTimingByDepth[stackDepth].start.push(lastSeen.startTimeByDepth[stackDepth]);
+    stackTimingByDepth[stackDepth].start.push(
+      lastSeen.startTimeByDepth[stackDepth]
+    );
     stackTimingByDepth[stackDepth].end.push(sampleTime);
-    stackTimingByDepth[stackDepth].callNode.push(lastSeen.callNodeIndexByDepth[stackDepth]);
+    stackTimingByDepth[stackDepth].callNode.push(
+      lastSeen.callNodeIndexByDepth[stackDepth]
+    );
     stackTimingByDepth[stackDepth].length++;
 
     // Delete that this stack frame has been seen.
@@ -136,11 +174,21 @@ function _popStacks(stackTimingByDepth: StackTimingByDepth, lastSeen: LastSeen, 
   }
 }
 
-function _pushStacks(thread: Thread, callNodeTable: CallNodeTable, lastSeen: LastSeen, depth: number, startingCallNodeIndex: IndexIntoCallNodeTable, sampleTime: number) {
+function _pushStacks(
+  thread: Thread,
+  callNodeTable: CallNodeTable,
+  lastSeen: LastSeen,
+  depth: number,
+  startingCallNodeIndex: IndexIntoCallNodeTable,
+  sampleTime: number
+) {
   let callNodeIndex = startingCallNodeIndex;
   // "Push" onto the stack with new frames
   for (let parentDepth = depth; parentDepth >= 0; parentDepth--) {
-    if (callNodeIndex === -1 || lastSeen.callNodeIndexByDepth[parentDepth] !== undefined) {
+    if (
+      callNodeIndex === -1 ||
+      lastSeen.callNodeIndexByDepth[parentDepth] !== undefined
+    ) {
       break;
     }
     lastSeen.callNodeIndexByDepth[parentDepth] = callNodeIndex;

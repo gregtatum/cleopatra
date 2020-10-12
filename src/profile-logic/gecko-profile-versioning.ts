@@ -2,9 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
-
-
 /**
  * This file deals with old versions of the Gecko profile format, i.e. the
  * format that the Gecko profiler platform outputs. We want to be able to
@@ -12,9 +9,12 @@
  * to be able to load old saved profiles, so this file upgrades old profiles
  * to the current format.
  */
-import { upgradeGCMinorMarker, upgradeGCMajorMarker_Gecko8To9 } from "./convert-markers";
-import { UniqueStringArray } from "../utils/unique-string-array";
-import { GECKO_PROFILE_VERSION } from "../app-logic/constants";
+import {
+  upgradeGCMinorMarker,
+  upgradeGCMajorMarker_Gecko8To9,
+} from './convert-markers';
+import { UniqueStringArray } from '../utils/unique-string-array';
+import { GECKO_PROFILE_VERSION } from '../app-logic/constants';
 
 // Gecko profiles before version 1 did not have a profile.meta.version field.
 // Treat those as version zero.
@@ -32,11 +32,19 @@ export function upgradeGeckoProfileToCurrentVersion(profile: Object) {
   }
 
   if (profileVersion > GECKO_PROFILE_VERSION) {
-    throw new Error(`Unable to parse a Gecko profile of version ${profileVersion}, most likely profiler.firefox.com needs to be refreshed. ` + `The most recent version understood by this version of profiler.firefox.com is version ${GECKO_PROFILE_VERSION}.\n` + 'You can try refreshing this page in case profiler.firefox.com has updated in the meantime.');
+    throw new Error(
+      `Unable to parse a Gecko profile of version ${profileVersion}, most likely profiler.firefox.com needs to be refreshed. ` +
+        `The most recent version understood by this version of profiler.firefox.com is version ${GECKO_PROFILE_VERSION}.\n` +
+        'You can try refreshing this page in case profiler.firefox.com has updated in the meantime.'
+    );
   }
 
   // Convert to GECKO_PROFILE_VERSION, one step at a time.
-  for (let destVersion = profileVersion + 1; destVersion <= GECKO_PROFILE_VERSION; destVersion++) {
+  for (
+    let destVersion = profileVersion + 1;
+    destVersion <= GECKO_PROFILE_VERSION;
+    destVersion++
+  ) {
     if (destVersion in _upgraders) {
       _upgraders[destVersion](profile);
     }
@@ -58,13 +66,19 @@ function _archFromAbi(abi) {
 /* eslint-disable no-useless-computed-key */
 const _upgraders = {
   [1]: () => {
-    throw new Error('Gecko profiles without version numbers are very old and no conversion code has been written for that version of the profile format.');
+    throw new Error(
+      'Gecko profiles without version numbers are very old and no conversion code has been written for that version of the profile format.'
+    );
   },
   [2]: () => {
-    throw new Error('Gecko profile version 1 is very old and no conversion code has been written for that version of the profile format.');
+    throw new Error(
+      'Gecko profile version 1 is very old and no conversion code has been written for that version of the profile format.'
+    );
   },
   [3]: () => {
-    throw new Error('Gecko profile version 2 is very old and no conversion code has been written for that version of the profile format.');
+    throw new Error(
+      'Gecko profile version 2 is very old and no conversion code has been written for that version of the profile format.'
+    );
   },
   [4]: profile => {
     function convertToVersionFourRecursive(p) {
@@ -72,23 +86,27 @@ const _upgraders = {
       // Starting with version 4, libs is an actual array, each lib has
       // "debugName", "debugPath", "breakpadId" and "path" fields, and the
       // array is sorted by start address.
-      p.libs = JSON.parse(p.libs).map(lib => {
-        if ('breakpadId' in lib) {
-          lib.debugName = lib.name.substr(lib.name.lastIndexOf('/') + 1);
-        } else {
-          lib.debugName = lib.pdbName;
-          const pdbSig = lib.pdbSignature.replace(/[{}-]/g, '').toUpperCase();
-          lib.breakpadId = pdbSig + lib.pdbAge;
-        }
-        delete lib.pdbName;
-        delete lib.pdbAge;
-        delete lib.pdbSignature;
-        lib.path = lib.name;
-        lib.name = lib.debugName.endsWith('.pdb') ? lib.debugName.substr(0, lib.debugName.length - 4) : lib.debugName;
-        lib.arch = _archFromAbi(p.meta.abi);
-        lib.debugPath = '';
-        return lib;
-      }).sort((a, b) => a.start - b.start);
+      p.libs = JSON.parse(p.libs)
+        .map(lib => {
+          if ('breakpadId' in lib) {
+            lib.debugName = lib.name.substr(lib.name.lastIndexOf('/') + 1);
+          } else {
+            lib.debugName = lib.pdbName;
+            const pdbSig = lib.pdbSignature.replace(/[{}-]/g, '').toUpperCase();
+            lib.breakpadId = pdbSig + lib.pdbAge;
+          }
+          delete lib.pdbName;
+          delete lib.pdbAge;
+          delete lib.pdbSignature;
+          lib.path = lib.name;
+          lib.name = lib.debugName.endsWith('.pdb')
+            ? lib.debugName.substr(0, lib.debugName.length - 4)
+            : lib.debugName;
+          lib.arch = _archFromAbi(p.meta.abi);
+          lib.debugPath = '';
+          return lib;
+        })
+        .sort((a, b) => a.start - b.start);
 
       for (let threadIndex = 0; threadIndex < p.threads.length; threadIndex++) {
         if (typeof p.threads[threadIndex] === 'string') {
@@ -130,16 +148,20 @@ const _upgraders = {
           convertToVersionFiveRecursive(processProfile);
           return {
             type: 'process',
-            data: processProfile
+            data: processProfile,
           };
         }
         return {
           type: 'thread',
-          data: threadOrProcess
+          data: threadOrProcess,
         };
       });
-      p.processes = allThreadsAndProcesses.filter(x => x.type === 'process').map(p => p.data);
-      p.threads = allThreadsAndProcesses.filter(x => x.type === 'thread').map(t => t.data);
+      p.processes = allThreadsAndProcesses
+        .filter(x => x.type === 'process')
+        .map(p => p.data);
+      p.threads = allThreadsAndProcesses
+        .filter(x => x.type === 'thread')
+        .map(t => t.data);
       p.meta.version = 5;
     }
     convertToVersionFiveRecursive(profile);
@@ -149,7 +171,11 @@ const _upgraders = {
     function convertToVersionSixRecursive(p) {
       for (const thread of p.threads) {
         delete thread.samples.schema.frameNumber;
-        for (let sampleIndex = 0; sampleIndex < thread.samples.data.length; sampleIndex++) {
+        for (
+          let sampleIndex = 0;
+          sampleIndex < thread.samples.data.length;
+          sampleIndex++
+        ) {
           // Truncate the array to a maximum length of 5.
           // The frameNumber used to be the last item, at index 5.
           thread.samples.data[sampleIndex].splice(5);
@@ -237,7 +263,6 @@ const _upgraders = {
                 break;
               default:
                 break;
-
             }
             thread.markers.data[i][dataIndex] = marker;
           }
@@ -257,9 +282,7 @@ const _upgraders = {
     // DOMEvent.
     function convertToVersionTenRecursive(p) {
       for (const thread of p.threads) {
-        const {
-          markers
-        } = thread;
+        const { markers } = thread;
         const stringTable = new UniqueStringArray(thread.stringTable);
         const nameIndex = markers.schema.name;
         const dataIndex = markers.schema.data;
@@ -277,7 +300,7 @@ const _upgraders = {
               timeStamp: data.timeStamp,
               interval: 'end',
               eventType: data.eventType,
-              phase: data.phase
+              phase: data.phase,
             };
             endMarker[timeIndex] = data.endTime;
             endMarker[nameIndex] = marker[nameIndex];
@@ -290,7 +313,7 @@ const _upgraders = {
               timeStamp: data.timeStamp,
               interval: 'start',
               eventType: data.eventType,
-              phase: data.phase
+              phase: data.phase,
             };
           }
         }
@@ -336,67 +359,76 @@ const _upgraders = {
     // https://searchfox.org/mozilla-central/rev/5a744713370ec47969595e369fd5125f123e6d24/js/public/ProfilingStack.h#193-201
     // New category list:
     // [To be inserted once the Gecko change lands in mozilla-central]
-    const categories = [{
-      name: 'Idle',
-      color: 'transparent'
-    }, {
-      name: 'Other',
-      color: 'grey'
-    }, {
-      name: 'JavaScript',
-      color: 'yellow'
-    }, {
-      name: 'Layout',
-      color: 'purple'
-    }, {
-      name: 'Graphics',
-      color: 'green'
-    }, {
-      name: 'DOM',
-      color: 'blue'
-    }, {
-      name: 'GC / CC',
-      color: 'orange'
-    }, {
-      name: 'Network',
-      color: 'lightblue'
-    }];
+    const categories = [
+      {
+        name: 'Idle',
+        color: 'transparent',
+      },
+      {
+        name: 'Other',
+        color: 'grey',
+      },
+      {
+        name: 'JavaScript',
+        color: 'yellow',
+      },
+      {
+        name: 'Layout',
+        color: 'purple',
+      },
+      {
+        name: 'Graphics',
+        color: 'green',
+      },
+      {
+        name: 'DOM',
+        color: 'blue',
+      },
+      {
+        name: 'GC / CC',
+        color: 'orange',
+      },
+      {
+        name: 'Network',
+        color: 'lightblue',
+      },
+    ];
     const oldCategoryToNewCategory = {
-      [1 << 4
-      /* OTHER */
-      ]: 1,
+      [1 << 4]:
+        /* OTHER */
+        1,
       /* Other */
-      [1 << 5
-      /* CSS */
-      ]: 3,
+      [1 << 5]:
+        /* CSS */
+        3,
       /* Layout */
-      [1 << 6
-      /* JS */
-      ]: 2,
+      [1 << 6]:
+        /* JS */
+        2,
       /* JavaScript */
-      [1 << 7
-      /* GC */
-      ]: 6,
+      [1 << 7]:
+        /* GC */
+        6,
       /* GC / CC */
-      [1 << 8
-      /* CC */
-      ]: 6,
+      [1 << 8]:
+        /* CC */
+        6,
       /* GC / CC */
-      [1 << 9
-      /* NETWORK */
-      ]: 7,
+      [1 << 9]:
+        /* NETWORK */
+        7,
       /* Network */
-      [1 << 10
-      /* GRAPHICS */
-      ]: 4,
+      [1 << 10]:
+        /* GRAPHICS */
+        4,
       /* Graphics */
-      [1 << 11
-      /* STORAGE */
-      ]: 1,
+      [1 << 11]:
+        /* STORAGE */
+        1,
       /* Other */
-      [1 << 12
-      /* EVENTS */
-      ]: 1
+      [1 << 12]:
+        /* EVENTS */
+        1,
       /* Other */
     };
     function convertToVersionElevenRecursive(p) {
@@ -407,11 +439,11 @@ const _upgraders = {
           if (schemaIndexCategory in frame) {
             if (frame[schemaIndexCategory] !== null) {
               if (frame[schemaIndexCategory] in oldCategoryToNewCategory) {
-                frame[schemaIndexCategory] = oldCategoryToNewCategory[frame[schemaIndexCategory]];
+                frame[schemaIndexCategory] =
+                  oldCategoryToNewCategory[frame[schemaIndexCategory]];
               } else {
-                frame[schemaIndexCategory] = 1
+                frame[schemaIndexCategory] = 1;
                 /* Other*/
-                ;
               }
             }
           }
@@ -465,13 +497,14 @@ const _upgraders = {
           const name = stringTable.getString(thread.markers.data[i][nameIndex]);
           const data = thread.markers.data[i][dataIndex];
           switch (name) {
-            case 'VsyncTimestamp':case 'LayerTranslation':case 'CompositorScreenshot':
+            case 'VsyncTimestamp':
+            case 'LayerTranslation':
+            case 'CompositorScreenshot':
               data.type = name;
               delete data.category;
               break;
             default:
               break;
-
           }
         }
       }
@@ -506,7 +539,7 @@ const _upgraders = {
           optimizations: 3,
           line: 4,
           column: 5,
-          category: 6
+          category: 6,
         };
         const locationIndex = thread.frameTable.schema.location;
         const relevantForJSIndex = thread.frameTable.schema.relevantForJS;
@@ -518,7 +551,9 @@ const _upgraders = {
           const location = stringTable.getString(frameData[locationIndex]);
           if (location.startsWith('AutoEntryScript ')) {
             frameData[relevantForJSIndex] = true;
-            frameData[locationIndex] = stringTable.indexForString(location.substring('AutoEntryScript '.length));
+            frameData[locationIndex] = stringTable.indexForString(
+              location.substring('AutoEntryScript '.length)
+            );
           } else {
             frameData[relevantForJSIndex] = domCallRegex.test(location);
           }
@@ -572,14 +607,17 @@ const _upgraders = {
         category.subcategories = ['Other'];
       }
       for (const thread of p.threads) {
-        const {
-          frameTable
-        } = thread;
+        const { frameTable } = thread;
         frameTable.schema.subcategory = 7;
-        for (let frameIndex = 0; frameIndex < frameTable.data.length; frameIndex++) {
+        for (
+          let frameIndex = 0;
+          frameIndex < frameTable.data.length;
+          frameIndex++
+        ) {
           // Set a non-null subcategory on every frame that has a non-null category.
           // The subcategory is going to be subcategory 0, the "Other" subcategory.
-          const category = frameTable.data[frameIndex][frameTable.schema.category];
+          const category =
+            frameTable.data[frameIndex][frameTable.schema.category];
           if (category) {
             frameTable.data[frameIndex][frameTable.schema.subcategory] = 0;
           }
@@ -596,40 +634,84 @@ const _upgraders = {
     // This happened sometime before version 16.
 
     // [key, categoryName]
-    const keyToCategoryName = [['DOMEvent', 'DOM'], ['Navigation::DOMComplete', 'DOM'], ['Navigation::DOMInteractive', 'DOM'], ['Navigation::Start', 'DOM'], ['UserTiming', 'DOM'], ['CC', 'GC / CC'], ['GCMajor', 'GC / CC'], ['GCMinor', 'GC / CC'], ['GCSlice', 'GC / CC'], ['Paint', 'Graphics'], ['VsyncTimestamp', 'Graphics'], ['CompositorScreenshot', 'Graphics'], ['JS allocation', 'JavaScript'], ['Styles', 'Layout'], ['nsRefreshDriver::Tick waiting for paint', 'Layout'], ['Navigation', 'Network'], ['Network', 'Network'], // Explicitly 'Other'
-    ['firstLoadURI', 'Other'], ['IPC', 'Other'], ['Text', 'Other'], ['MainThreadLongTask', 'Other'], ['FileIO', 'Other'], ['Log', 'Other'], ['PreferenceRead', 'Other'], ['BHR-detected hang', 'Other'], ['MainThreadLongTask', 'Other']];
+    const keyToCategoryName = [
+      ['DOMEvent', 'DOM'],
+      ['Navigation::DOMComplete', 'DOM'],
+      ['Navigation::DOMInteractive', 'DOM'],
+      ['Navigation::Start', 'DOM'],
+      ['UserTiming', 'DOM'],
+      ['CC', 'GC / CC'],
+      ['GCMajor', 'GC / CC'],
+      ['GCMinor', 'GC / CC'],
+      ['GCSlice', 'GC / CC'],
+      ['Paint', 'Graphics'],
+      ['VsyncTimestamp', 'Graphics'],
+      ['CompositorScreenshot', 'Graphics'],
+      ['JS allocation', 'JavaScript'],
+      ['Styles', 'Layout'],
+      ['nsRefreshDriver::Tick waiting for paint', 'Layout'],
+      ['Navigation', 'Network'],
+      ['Network', 'Network'], // Explicitly 'Other'
+      ['firstLoadURI', 'Other'],
+      ['IPC', 'Other'],
+      ['Text', 'Other'],
+      ['MainThreadLongTask', 'Other'],
+      ['FileIO', 'Other'],
+      ['Log', 'Other'],
+      ['PreferenceRead', 'Other'],
+      ['BHR-detected hang', 'Other'],
+      ['MainThreadLongTask', 'Other'],
+    ];
 
     // Make sure the default categories are present since we may want to refer them.
-    for (const defaultCategory of [{ name: 'Idle', color: 'transparent', subcategories: ['Other'] }, { name: 'Other', color: 'grey', subcategories: ['Other'] }, { name: 'Layout', color: 'purple', subcategories: ['Other'] }, { name: 'JavaScript', color: 'yellow', subcategories: ['Other'] }, { name: 'GC / CC', color: 'orange', subcategories: ['Other'] }, { name: 'Network', color: 'lightblue', subcategories: ['Other'] }, { name: 'Graphics', color: 'green', subcategories: ['Other'] }, { name: 'DOM', color: 'blue', subcategories: ['Other'] }]) {
-      const index = profile.meta.categories.findIndex(category => category.name === defaultCategory.name);
+    for (const defaultCategory of [
+      { name: 'Idle', color: 'transparent', subcategories: ['Other'] },
+      { name: 'Other', color: 'grey', subcategories: ['Other'] },
+      { name: 'Layout', color: 'purple', subcategories: ['Other'] },
+      { name: 'JavaScript', color: 'yellow', subcategories: ['Other'] },
+      { name: 'GC / CC', color: 'orange', subcategories: ['Other'] },
+      { name: 'Network', color: 'lightblue', subcategories: ['Other'] },
+      { name: 'Graphics', color: 'green', subcategories: ['Other'] },
+      { name: 'DOM', color: 'blue', subcategories: ['Other'] },
+    ]) {
+      const index = profile.meta.categories.findIndex(
+        category => category.name === defaultCategory.name
+      );
       if (index === -1) {
         // Add on any unknown categories.
         profile.meta.categories.push(defaultCategory);
       }
     }
 
-    const otherCategory = profile.meta.categories.findIndex(category => category.name === 'Other');
+    const otherCategory = profile.meta.categories.findIndex(
+      category => category.name === 'Other'
+    );
 
-    const keyToCategoryIndex: Map<string, number> = new Map(keyToCategoryName.map(([key, categoryName]) => {
-      const index = profile.meta.categories.findIndex(category => category.name === categoryName);
-      if (index === -1) {
-        throw new Error('Could not find a category index to map to.');
-      }
-      return [key, index];
-    }));
+    const keyToCategoryIndex: Map<string, number> = new Map(
+      keyToCategoryName.map(([key, categoryName]) => {
+        const index = profile.meta.categories.findIndex(
+          category => category.name === categoryName
+        );
+        if (index === -1) {
+          throw new Error('Could not find a category index to map to.');
+        }
+        return [key, index];
+      })
+    );
 
     function addMarkerCategoriesRecursively(p) {
       for (const thread of p.threads) {
-        const {
-          markers,
-          stringTable
-        } = thread;
+        const { markers, stringTable } = thread;
         if (markers.schema.category !== undefined) {
           // There is nothing to upgrade, do not continue.
           return;
         }
         markers.schema.category = 3;
-        for (let markerIndex = 0; markerIndex < markers.data.length; markerIndex++) {
+        for (
+          let markerIndex = 0;
+          markerIndex < markers.data.length;
+          markerIndex++
+        ) {
           const nameIndex = markers.data[markerIndex][markers.schema.name];
           const data = markers.data[markerIndex][markers.schema.data];
 
@@ -671,15 +753,23 @@ const _upgraders = {
 
         for (const page of p.pages) {
           // Constructing our old keys to new key map so we can use it for markers.
-          oldKeysToNewKey.set(`d${page.docshellId}h${page.historyId}`, innerWindowID);
+          oldKeysToNewKey.set(
+            `d${page.docshellId}h${page.historyId}`,
+            innerWindowID
+          );
 
           // There are multiple pages with same DocShell IDs. We are checking to
           // see if we assigned a Browsing Context ID to that DocShell ID
           // before. Otherwise assigning one.
-          let currentBrowsingContextID = docShellIDtoBrowsingContextID.get(page.docshellId);
+          let currentBrowsingContextID = docShellIDtoBrowsingContextID.get(
+            page.docshellId
+          );
           if (!currentBrowsingContextID) {
             currentBrowsingContextID = browsingContextID++;
-            docShellIDtoBrowsingContextID.set(page.docshellId, currentBrowsingContextID);
+            docShellIDtoBrowsingContextID.set(
+              page.docshellId,
+              currentBrowsingContextID
+            );
           }
 
           // Putting DocShell ID to this field. It fully doesn't correspond to a
@@ -699,18 +789,24 @@ const _upgraders = {
         }
 
         for (const thread of p.threads) {
-          const {
-            markers
-          } = thread;
+          const { markers } = thread;
           const dataIndex = markers.schema.data;
           for (let i = 0; i < thread.markers.data.length; i++) {
             const markerData = thread.markers.data[i];
             const payload = markerData[dataIndex];
 
-            if (payload && payload.docShellId !== undefined && payload.docshellHistoryId !== undefined) {
-              const newKey = oldKeysToNewKey.get(`d${payload.docShellId}h${payload.docshellHistoryId}`);
+            if (
+              payload &&
+              payload.docShellId !== undefined &&
+              payload.docshellHistoryId !== undefined
+            ) {
+              const newKey = oldKeysToNewKey.get(
+                `d${payload.docShellId}h${payload.docshellHistoryId}`
+              );
               if (newKey === undefined) {
-                console.error('No page found with given docShellId and historyId');
+                console.error(
+                  'No page found with given docShellId and historyId'
+                );
               } else {
                 // We don't need to add the browsingContextID here because we
                 // only need innerWindowID since it's unique for each page.
@@ -758,9 +854,7 @@ const _upgraders = {
     // We are filling this array with 0 values because we have no idea what that value might be.
     function convertToVersion19Recursive(p) {
       for (const thread of p.threads) {
-        const {
-          frameTable
-        } = thread;
+        const { frameTable } = thread;
         frameTable.schema = {
           location: 0,
           relevantForJS: 1,
@@ -770,9 +864,13 @@ const _upgraders = {
           line: 5,
           column: 6,
           category: 7,
-          subcategory: 8
+          subcategory: 8,
         };
-        for (let frameIndex = 0; frameIndex < frameTable.data.length; frameIndex++) {
+        for (
+          let frameIndex = 0;
+          frameIndex < frameTable.data.length;
+          frameIndex++
+        ) {
           // Adding 0 for every frame.
           const innerWindowIDIndex = frameTable.schema.innerWindowID;
           frameTable.data[frameIndex].splice(innerWindowIDIndex, 0, 0);
@@ -783,6 +881,6 @@ const _upgraders = {
       }
     }
     convertToVersion19Recursive(profile);
-  }
+  },
 };
 /* eslint-enable no-useless-computed-key */

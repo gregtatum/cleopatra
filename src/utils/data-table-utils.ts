@@ -2,9 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
-
-
 /**
  * A "data table" is a JS object of the form:
  * {
@@ -14,9 +11,9 @@
  * }
  */
 type DataTable = {
-
-  length: number;
-  [key: string]: unknown[];};
+  length: number,
+  [key: string]: unknown[],
+};
 
 type compareFn<T> = {};
 
@@ -37,7 +34,11 @@ type compareFn<T> = {};
  *                               Array.prototype.sort.
  * @returns The data table.
  */
-export function sortDataTable<KeyColumnElementType>(table: DataTable, keyColumn: KeyColumnElementType[], comparator: compareFn<KeyColumnElementType>): DataTable {
+export function sortDataTable<KeyColumnElementType>(
+  table: DataTable,
+  keyColumn: KeyColumnElementType[],
+  comparator: compareFn<KeyColumnElementType>
+): DataTable {
   function swap(i, j) {
     if (i !== j) {
       for (const columnName in table) {
@@ -98,7 +99,7 @@ export function sortDataTable<KeyColumnElementType>(table: DataTable, keyColumn:
       // could possibly get; this is a "pessimal", not optimal, choice.
       // Choosing the middle value as the pivot is likely to be much closer to
       // the median.
-      const pivot = left + right >> 1;
+      const pivot = (left + right) >> 1;
       const partitionIndex = partition(pivot, left, right);
 
       // Sort left and right

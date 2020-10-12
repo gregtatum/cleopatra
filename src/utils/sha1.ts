@@ -2,9 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
-
-
 // Copied and adapted from https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest
 function hex(buffer: ArrayBuffer): string {
   const hexCodes = [];
@@ -25,6 +22,7 @@ function hex(buffer: ArrayBuffer): string {
 }
 
 export default function sha1(data: string | Uint8Array): Promise<string> {
-  const arrayData = typeof data === 'string' ? new TextEncoder().encode(data) : data;
+  const arrayData =
+    typeof data === 'string' ? new TextEncoder().encode(data) : data;
   return window.crypto.subtle.digest('SHA-1', arrayData).then(hex);
 }

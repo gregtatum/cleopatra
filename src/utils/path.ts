@@ -2,9 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
-
-import { CallNodePath } from "../types/profile-derived";
+import { CallNodePath } from '../types/profile-derived';
 
 export function arePathsEqual(a: CallNodePath, b: CallNodePath): boolean {
   if (a === b) {
@@ -40,7 +38,6 @@ export function hashPath(a: CallNodePath): string {
 // These CallNodePaths are keyed off of the string value returned by the
 // `hashPath` function above.
 export class PathSet implements Iterable<CallNodePath> {
-
   _table: Map<string, CallNodePath>;
 
   constructor(iterable?: Iterable<CallNodePath>) {
@@ -85,7 +82,10 @@ export class PathSet implements Iterable<CallNodePath> {
     }
   }
 
-  forEach(func: (arg0: CallNodePath, arg1: CallNodePath, arg2: PathSet) => void, thisArg?: any) {
+  forEach(
+    func: (arg0: CallNodePath, arg1: CallNodePath, arg2: PathSet) => void,
+    thisArg?: any
+  ) {
     for (const entry of this) {
       func.call(thisArg, entry, entry, this);
     }

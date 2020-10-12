@@ -2,17 +2,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
-import { getSelectedTab, getDataSource } from "../selectors/url-state";
-import { getTrackThreadHeights } from "../selectors/app";
-import { sendAnalytics } from "../utils/analytics";
-import { stateFromLocation } from "../app-logic/url-handling";
-import { finalizeProfileView } from "./receive-profile";
-import { Profile, ThreadIndex } from "../types/profile";
-import { CssPixels } from "../types/units";
-import { Action, ThunkAction } from "../types/store";
-import { TabSlug } from "../app-logic/tabs-handling";
-import { UrlState } from "../types/state";
+import { getSelectedTab, getDataSource } from '../selectors/url-state';
+import { getTrackThreadHeights } from '../selectors/app';
+import { sendAnalytics } from '../utils/analytics';
+import { stateFromLocation } from '../app-logic/url-handling';
+import { finalizeProfileView } from './receive-profile';
+import { Profile, ThreadIndex } from '../types/profile';
+import { CssPixels } from '../types/units';
+import { Action, ThunkAction } from '../types/store';
+import { TabSlug } from '../app-logic/tabs-handling';
+import { UrlState } from '../types/state';
 
 export function changeSelectedTab(selectedTab: TabSlug): ThunkAction<void> {
   return (dispatch, getState) => {
@@ -20,11 +19,11 @@ export function changeSelectedTab(selectedTab: TabSlug): ThunkAction<void> {
     if (previousTab !== selectedTab) {
       sendAnalytics({
         hitType: 'pageview',
-        page: selectedTab
+        page: selectedTab,
       });
       dispatch({
         type: 'CHANGE_SELECTED_TAB',
-        selectedTab
+        selectedTab,
       });
     }
   };
@@ -33,7 +32,7 @@ export function changeSelectedTab(selectedTab: TabSlug): ThunkAction<void> {
 export function changeProfilesToCompare(profiles: string[]): Action {
   return {
     type: 'CHANGE_PROFILES_TO_COMPARE',
-    profiles
+    profiles,
   };
 }
 
@@ -50,12 +49,12 @@ export function urlSetupDone(): ThunkAction<void> {
     const dataSource = getDataSource(getState());
     sendAnalytics({
       hitType: 'pageview',
-      page: dataSource === 'none' ? 'home' : getSelectedTab(getState())
+      page: dataSource === 'none' ? 'home' : getSelectedTab(getState()),
     });
     sendAnalytics({
       hitType: 'event',
       eventCategory: 'datasource',
-      eventAction: dataSource
+      eventAction: dataSource,
     });
   };
 }
@@ -85,7 +84,10 @@ export function setHasZoomedViaMousewheel() {
  * It takes the location and profile data, converts the location into url
  * state and then dispatches relevant actions to finalize the view.
  */
-export function setupInitialUrlState(location: Location, profile: Profile): ThunkAction<void> {
+export function setupInitialUrlState(
+  location: Location,
+  profile: Profile
+): ThunkAction<void> {
   return dispatch => {
     let urlState;
     try {
@@ -123,7 +125,10 @@ export function updateUrlState(newUrlState: UrlState | null): Action {
   return { type: 'UPDATE_URL_STATE', newUrlState };
 }
 
-export function reportTrackThreadHeight(threadIndex: ThreadIndex, height: CssPixels): ThunkAction<void> {
+export function reportTrackThreadHeight(
+  threadIndex: ThreadIndex,
+  height: CssPixels
+): ThunkAction<void> {
   return (dispatch, getState) => {
     const trackThreadHeights = getTrackThreadHeights(getState());
     const previousHeight = trackThreadHeights[threadIndex];
@@ -132,7 +137,7 @@ export function reportTrackThreadHeight(threadIndex: ThreadIndex, height: CssPix
       dispatch({
         type: 'UPDATE_TRACK_THREAD_HEIGHT',
         height,
-        threadIndex
+        threadIndex,
       });
     }
   };

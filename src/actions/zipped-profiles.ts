@@ -2,25 +2,28 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+import { getZipFileTable, getZipFileState } from '../selectors/zipped-profiles';
+import { unserializeProfileOfArbitraryFormat } from '../profile-logic/process-profile';
+import { loadProfile } from './receive-profile';
 
-import { getZipFileTable, getZipFileState } from "../selectors/zipped-profiles";
-import { unserializeProfileOfArbitraryFormat } from "../profile-logic/process-profile";
-import { loadProfile } from "./receive-profile";
+import { Action, ThunkAction } from '../types/store';
+import { IndexIntoZipFileTable } from '../profile-logic/zip-files';
 
-import { Action, ThunkAction } from "../types/store";
-import { IndexIntoZipFileTable } from "../profile-logic/zip-files";
-
-export function changeSelectedZipFile(selectedZipFileIndex: IndexIntoZipFileTable): Action {
+export function changeSelectedZipFile(
+  selectedZipFileIndex: IndexIntoZipFileTable
+): Action {
   return {
     type: 'CHANGE_SELECTED_ZIP_FILE',
-    selectedZipFileIndex
+    selectedZipFileIndex,
   };
 }
 
-export function changeExpandedZipFile(expandedZipFileIndexes: Array<IndexIntoZipFileTable | null>): Action {
+export function changeExpandedZipFile(
+  expandedZipFileIndexes: Array<IndexIntoZipFileTable | null>
+): Action {
   return {
     type: 'CHANGE_EXPANDED_ZIP_FILES',
-    expandedZipFileIndexes
+    expandedZipFileIndexes,
   };
 }
 
@@ -33,30 +36,42 @@ export function changeExpandedZipFile(expandedZipFileIndexes: Array<IndexIntoZip
  * This ThunkAction needs to properly handle when the UrlState changes faster than it
  * can change the ZipFileState, and not have any race conditions.
  */
-export function viewProfileFromZip(zipFileIndex: IndexIntoZipFileTable, initialLoad: boolean = false): ThunkAction<Promise<void>> {
+export function viewProfileFromZip(
+  zipFileIndex: IndexIntoZipFileTable,
+  initialLoad: boolean = false
+): ThunkAction<Promise<void>> {
   return async (dispatch, getState) => {
     const zipFileTable = getZipFileTable(getState());
     const pathInZipFile = zipFileTable.path[zipFileIndex];
     const file = zipFileTable.file[zipFileIndex];
     if (!file) {
-      throw new Error('Attempted to load a zip file that did not exist or was a directory.');
+      throw new Error(
+        'Attempted to load a zip file that did not exist or was a directory.'
+      );
     }
 
     dispatch({ type: 'PROCESS_PROFILE_FROM_ZIP_FILE', pathInZipFile });
 
     try {
       // Attempt to unserialize the profile.
-      const profile = await unserializeProfileOfArbitraryFormat((await file.async('string')));
+      const profile = await unserializeProfileOfArbitraryFormat(
+        await file.async('string')
+      );
 
       // Since this is an async function, there can be race conditions. Prevent this by
       // comparing this request with the current state of the store. If this result
       // is invalid, don't dispatch anything, and discard the profile.
       const zipFileState = getZipFileState(getState());
-      if (zipFileState.pathInZipFile === pathInZipFile && zipFileState.phase === 'PROCESS_PROFILE_FROM_ZIP_FILE') {
+      if (
+        zipFileState.pathInZipFile === pathInZipFile &&
+        zipFileState.phase === 'PROCESS_PROFILE_FROM_ZIP_FILE'
+      ) {
         await dispatch(loadProfile(profile, { pathInZipFile }, initialLoad));
       }
     } catch (error) {
-      console.error('Failed to process the profile in the zip file with the following error:');
+      console.error(
+        'Failed to process the profile in the zip file with the following error:'
+      );
       console.error(error);
       dispatch({ type: 'FAILED_TO_PROCESS_PROFILE_FROM_ZIP_FILE', error });
     }
@@ -67,7 +82,9 @@ export function viewProfileFromZip(zipFileIndex: IndexIntoZipFileTable, initialL
  * This function can take a zip file path, but the path can come from the URL, so
  * don't really trust it.
  */
-export function viewProfileFromPathInZipFile(pathInZipFile: string): ThunkAction<Promise<void>> {
+export function viewProfileFromPathInZipFile(
+  pathInZipFile: string
+): ThunkAction<Promise<void>> {
   return (dispatch, getState) => {
     const zipFileTable = getZipFileTable(getState());
     const zipFileIndex = zipFileTable.path.indexOf(pathInZipFile);

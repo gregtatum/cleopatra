@@ -2,14 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
-
-
 /**
  * Space-efficient url component compatible encoding for arrays of 32bit
  * unsigned integers. Smaller numbers take up fewer characters.
  */
-const encodingChars: string = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ._';
+const encodingChars: string =
+  '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ._';
 
 function uintToString(value: number): string {
   let x = value;
@@ -159,7 +157,6 @@ function encodingCharToNumber(x: string): number {
       return 63;
     default:
       return 0;
-
   }
 }
 

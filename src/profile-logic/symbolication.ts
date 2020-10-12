@@ -2,17 +2,33 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+import { resourceTypes } from './data-structures';
+import { SymbolsNotFoundError } from './errors';
 
-import { resourceTypes } from "./data-structures";
-import { SymbolsNotFoundError } from "./errors";
-
-import { Profile, Thread, ThreadIndex, Lib, IndexIntoFuncTable } from "../types/profile";
-import { MemoryOffset } from "../types/units";
-import { AbstractSymbolStore, AddressResult, LibSymbolicationRequest } from "./symbol-store";
+import {
+  Profile,
+  Thread,
+  ThreadIndex,
+  Lib,
+  IndexIntoFuncTable,
+} from '../types/profile';
+import { MemoryOffset } from '../types/units';
+import {
+  AbstractSymbolStore,
+  AddressResult,
+  LibSymbolicationRequest,
+} from './symbol-store';
 
 type SymbolicationHandlers = {
-  onMergeFunctions: (threadIndex: ThreadIndex, arg1: Map<IndexIntoFuncTable, IndexIntoFuncTable>) => void;
-  onGotFuncNames: (threadIndex: ThreadIndex, funcIndices: IndexIntoFuncTable[], funcNames: string[]) => void;
+  onMergeFunctions: (
+    threadIndex: ThreadIndex,
+    arg1: Map<IndexIntoFuncTable, IndexIntoFuncTable>
+  ) => void,
+  onGotFuncNames: (
+    threadIndex: ThreadIndex,
+    funcIndices: IndexIntoFuncTable[],
+    funcNames: string[]
+  ) => void,
 };
 
 type LibKey = string; // of the form ${debugName}/${breakpadId}
@@ -23,7 +39,10 @@ type ThreadSymbolicationInfo = Map<LibKey, Map<Address, IndexIntoFuncTable>>;
  * Return the library object that contains the address such that
  * rv.start <= address < rv.end, or null if no such lib object exists.
  */
-export function getContainingLibrary(libs: Lib[], address: MemoryOffset): Lib | null {
+export function getContainingLibrary(
+  libs: Lib[],
+  address: MemoryOffset
+): Lib | null {
   if (isNaN(address)) {
     return null;
   }
@@ -31,7 +50,7 @@ export function getContainingLibrary(libs: Lib[], address: MemoryOffset): Lib | 
   let left = 0;
   let right = libs.length - 1;
   while (left <= right) {
-    const mid = (left + right) / 2 | 0;
+    const mid = ((left + right) / 2) | 0;
     if (address >= libs[mid].end) {
       left = mid + 1;
     } else if (address < libs[mid].start) {
@@ -49,12 +68,7 @@ export function getContainingLibrary(libs: Lib[], address: MemoryOffset): Lib | 
  * for the still unsymbolicated functions.
  */
 function gatherFuncsInThread(thread: Thread): Map<Lib, IndexIntoFuncTable[]> {
-  const {
-    libs,
-    funcTable,
-    stringTable,
-    resourceTable
-  } = thread;
+  const { libs, funcTable, stringTable, resourceTable } = thread;
   const foundAddresses: Map<Lib, IndexIntoFuncTable[]> = new Map();
   for (let funcIndex = 0; funcIndex < funcTable.length; funcIndex++) {
     const resourceIndex = funcTable.resource[funcIndex];
@@ -95,7 +109,11 @@ function gatherFuncsInThread(thread: Thread): Map<Lib, IndexIntoFuncTable[]> {
  * This function adds the func names to the thread's string table and
  * adjusts the funcTable to point to those strings.
  */
-export function setFuncNames(thread: Thread, funcIndices: IndexIntoFuncTable[], funcNames: string[]): Thread {
+export function setFuncNames(
+  thread: Thread,
+  funcIndices: IndexIntoFuncTable[],
+  funcNames: string[]
+): Thread {
   const funcTable = Object.assign({}, thread.funcTable);
   funcTable.name = funcTable.name.slice();
   const stringTable = thread.stringTable;
@@ -117,12 +135,15 @@ export function setFuncNames(thread: Thread, funcIndices: IndexIntoFuncTable[], 
  * is known, different addresses that are inside the same function need to be
  * merged into that same function.
  */
-export function applyFunctionMerging(thread: Thread, oldFuncToNewFuncMap: Map<IndexIntoFuncTable, IndexIntoFuncTable>): Thread {
+export function applyFunctionMerging(
+  thread: Thread,
+  oldFuncToNewFuncMap: Map<IndexIntoFuncTable, IndexIntoFuncTable>
+): Thread {
   const frameTable = Object.assign({}, thread.frameTable, {
     func: thread.frameTable.func.map(oldFunc => {
       const newFunc = oldFuncToNewFuncMap.get(oldFunc);
       return newFunc === undefined ? oldFunc : newFunc;
-    })
+    }),
   });
   return { ...thread, frameTable };
 }
@@ -131,9 +152,7 @@ export function applyFunctionMerging(thread: Thread, oldFuncToNewFuncMap: Map<In
 // libKey -> address relative to lib -> index of the func
 function getThreadSymbolicationInfo(thread: Thread): ThreadSymbolicationInfo {
   const foundFuncMap = gatherFuncsInThread(thread);
-  const {
-    funcTable
-  } = thread;
+  const { funcTable } = thread;
   const libKeyToAddressToFuncMap = new Map();
   for (const [lib, funcsToSymbolicate] of foundFuncMap) {
     const libKey = `${lib.debugName}/${lib.breakpadId}`;
@@ -149,7 +168,9 @@ function getThreadSymbolicationInfo(thread: Thread): ThreadSymbolicationInfo {
 
 // Go through all the threads to gather up the addresses we need to symbolicate
 // for each library.
-function buildLibSymbolicationRequestsForAllThreads(symbolicationInfo: ThreadSymbolicationInfo[]): LibSymbolicationRequest[] {
+function buildLibSymbolicationRequestsForAllThreads(
+  symbolicationInfo: ThreadSymbolicationInfo[]
+): LibSymbolicationRequest[] {
   const libKeyToAddressesMap = new Map();
   for (const threadSymbolicationInfo of symbolicationInfo) {
     for (const [libKey, addressToFuncMap] of threadSymbolicationInfo) {
@@ -175,10 +196,14 @@ function buildLibSymbolicationRequestsForAllThreads(symbolicationInfo: ThreadSym
 // symbolication information eventually makes it into the thread.
 // Most of the work in this function is just munging the data that we have into
 // the shape that the symbolicationHandlers methods expect.
-function finishSymbolicationForLib(profile: Profile, symbolicationInfo: ThreadSymbolicationInfo[], resultsForLib: Map<number, AddressResult>, libKey: string, symbolicationHandlers: SymbolicationHandlers): void {
-  const {
-    threads
-  } = profile;
+function finishSymbolicationForLib(
+  profile: Profile,
+  symbolicationInfo: ThreadSymbolicationInfo[],
+  resultsForLib: Map<number, AddressResult>,
+  libKey: string,
+  symbolicationHandlers: SymbolicationHandlers
+): void {
+  const { threads } = profile;
   for (let threadIndex = 0; threadIndex < threads.length; threadIndex++) {
     const threadSymbolicationInfo = symbolicationInfo[threadIndex];
     const addressToFuncIndexMap = threadSymbolicationInfo.get(libKey);
@@ -197,9 +222,14 @@ function finishSymbolicationForLib(profile: Profile, symbolicationInfo: ThreadSy
           // |funcAddress| is the start of the function, as a library-relative
           // offset.
           const funcAddress = address - addressResult.functionOffset;
-          const canonicalFuncIndexForThisFuncAddress = funcAddressToCanonicalFuncIndexMap.get(funcAddress);
+          const canonicalFuncIndexForThisFuncAddress = funcAddressToCanonicalFuncIndexMap.get(
+            funcAddress
+          );
           if (canonicalFuncIndexForThisFuncAddress !== undefined) {
-            oldFuncToNewFuncMap.set(funcIndex, canonicalFuncIndexForThisFuncAddress);
+            oldFuncToNewFuncMap.set(
+              funcIndex,
+              canonicalFuncIndexForThisFuncAddress
+            );
           } else {
             funcAddressToCanonicalFuncIndexMap.set(funcAddress, funcIndex);
             funcIndices.push(funcIndex);
@@ -222,21 +252,34 @@ function finishSymbolicationForLib(profile: Profile, symbolicationInfo: ThreadSy
  * addresses that share the same function have their FrameTable and FuncTable updated
  * to point to same function.
  */
-export async function symbolicateProfile(profile: Profile, symbolStore: AbstractSymbolStore, symbolicationHandlers: SymbolicationHandlers): Promise<void> {
+export async function symbolicateProfile(
+  profile: Profile,
+  symbolStore: AbstractSymbolStore,
+  symbolicationHandlers: SymbolicationHandlers
+): Promise<void> {
   const symbolicationInfo = profile.threads.map(getThreadSymbolicationInfo);
-  const libSymbolicationRequests = buildLibSymbolicationRequestsForAllThreads(symbolicationInfo);
-  await symbolStore.getSymbols(libSymbolicationRequests, (request, results) => {
-    const {
-      debugName,
-      breakpadId
-    } = request.lib;
-    const libKey = `${debugName}/${breakpadId}`;
-    finishSymbolicationForLib(profile, symbolicationInfo, results, libKey, symbolicationHandlers);
-  }, (request, error) => {
-    if (!(error instanceof SymbolsNotFoundError)) {
-      // rethrow JavaScript programming error
-      throw error;
+  const libSymbolicationRequests = buildLibSymbolicationRequestsForAllThreads(
+    symbolicationInfo
+  );
+  await symbolStore.getSymbols(
+    libSymbolicationRequests,
+    (request, results) => {
+      const { debugName, breakpadId } = request.lib;
+      const libKey = `${debugName}/${breakpadId}`;
+      finishSymbolicationForLib(
+        profile,
+        symbolicationInfo,
+        results,
+        libKey,
+        symbolicationHandlers
+      );
+    },
+    (request, error) => {
+      if (!(error instanceof SymbolsNotFoundError)) {
+        // rethrow JavaScript programming error
+        throw error;
+      }
+      // We could not find symbols for this library.
     }
-    // We could not find symbols for this library.
-  });
+  );
 }

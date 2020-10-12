@@ -2,8 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
-import { sendAnalytics } from "./analytics";
+import { sendAnalytics } from './analytics';
 
 const MAX_TIMINGS_PER_LABEL = 3;
 const _timingsPerLabel = {};
@@ -34,7 +33,11 @@ export function timeCode<T>(label: string, codeAsACallback: () => T): T {
         performance.measure(`TimeCode: ${label}`, markName);
       }
       const style = 'font-weight: bold; color: #f0a';
-      console.log(`[timing]    %c"${label}"`, style, `took ${elapsed}ms to execute.`);
+      console.log(
+        `[timing]    %c"${label}"`,
+        style,
+        `took ${elapsed}ms to execute.`
+      );
     }
 
     // Some portion of users will have timing information sent. Limit this further to
@@ -46,7 +49,7 @@ export function timeCode<T>(label: string, codeAsACallback: () => T): T {
         hitType: 'timing',
         timingCategory: 'timeCode',
         timingVar: label,
-        timingValue: elapsed
+        timingValue: elapsed,
       });
     }
 

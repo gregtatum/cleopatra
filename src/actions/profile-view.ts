@@ -2,23 +2,61 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+import { oneLine } from 'common-tags';
+import { getLastVisibleThreadTabSlug } from '../selectors/app';
+import {
+  getCounterSelectors,
+  getGlobalTracks,
+  getGlobalTrackAndIndexByPid,
+  getLocalTracks,
+  getLocalTrackFromReference,
+  getGlobalTrackFromReference,
+  getPreviewSelection,
+  getComputedHiddenGlobalTracks,
+  getComputedHiddenLocalTracks,
+  getActiveTabHiddenGlobalTracksGetter,
+} from '../selectors/profile';
+import {
+  getThreadSelectors,
+  selectedThreadSelectors,
+} from '../selectors/per-thread';
+import {
+  getImplementationFilter,
+  getSelectedThreadIndex,
+  getHiddenGlobalTracks,
+  getGlobalTrackOrder,
+  getLocalTrackOrder,
+  getSelectedTab,
+} from '../selectors/url-state';
+import {
+  getCallNodePathFromIndex,
+  getSampleIndexToCallNodeIndex,
+  getSampleCategories,
+  findBestAncestorCallNode,
+} from '../profile-logic/profile-data';
+import { ensureExists, assertExhaustiveCheck } from '../utils/flow';
+import { sendAnalytics } from '../utils/analytics';
+import { objectShallowEquals } from '../utils/index';
 
-import { oneLine } from "common-tags";
-import { getLastVisibleThreadTabSlug } from "../selectors/app";
-import { getCounterSelectors, getGlobalTracks, getGlobalTrackAndIndexByPid, getLocalTracks, getLocalTrackFromReference, getGlobalTrackFromReference, getPreviewSelection, getComputedHiddenGlobalTracks, getComputedHiddenLocalTracks, getActiveTabHiddenGlobalTracksGetter } from "../selectors/profile";
-import { getThreadSelectors, selectedThreadSelectors } from "../selectors/per-thread";
-import { getImplementationFilter, getSelectedThreadIndex, getHiddenGlobalTracks, getGlobalTrackOrder, getLocalTrackOrder, getSelectedTab } from "../selectors/url-state";
-import { getCallNodePathFromIndex, getSampleIndexToCallNodeIndex, getSampleCategories, findBestAncestorCallNode } from "../profile-logic/profile-data";
-import { ensureExists, assertExhaustiveCheck } from "../utils/flow";
-import { sendAnalytics } from "../utils/analytics";
-import { objectShallowEquals } from "../utils/index";
-
-import { PreviewSelection, ImplementationFilter, CallTreeSummaryStrategy, TrackReference, TimelineType, DataSource } from "../types/actions";
-import { State } from "../types/state";
-import { Action, ThunkAction } from "../types/store";
-import { ThreadIndex, Pid, IndexIntoSamplesTable } from "../types/profile";
-import { CallNodePath, CallNodeInfo, IndexIntoCallNodeTable, TrackIndex, MarkerIndex } from "../types/profile-derived";
-import { Transform } from "../types/transforms";
+import {
+  PreviewSelection,
+  ImplementationFilter,
+  CallTreeSummaryStrategy,
+  TrackReference,
+  TimelineType,
+  DataSource,
+} from '../types/actions';
+import { State } from '../types/state';
+import { Action, ThunkAction } from '../types/store';
+import { ThreadIndex, Pid, IndexIntoSamplesTable } from '../types/profile';
+import {
+  CallNodePath,
+  CallNodeInfo,
+  IndexIntoCallNodeTable,
+  TrackIndex,
+  MarkerIndex,
+} from '../types/profile-derived';
+import { Transform } from '../types/transforms';
 
 /**
  * This file contains actions that pertain to changing the view on the profile, including
@@ -33,7 +71,11 @@ import { Transform } from "../types/transforms";
  * Note that optionalExpandedToCallNodePath, if specified, must be a descendant call node
  * of selectedCallNodePath.
  */
-export function changeSelectedCallNode(threadIndex: ThreadIndex, selectedCallNodePath: CallNodePath, optionalExpandedToCallNodePath?: CallNodePath): Action {
+export function changeSelectedCallNode(
+  threadIndex: ThreadIndex,
+  selectedCallNodePath: CallNodePath,
+  optionalExpandedToCallNodePath?: CallNodePath
+): Action {
   if (optionalExpandedToCallNodePath) {
     for (let i = 0; i < selectedCallNodePath.length; i++) {
       if (selectedCallNodePath[i] !== optionalExpandedToCallNodePath[i]) {
@@ -49,7 +91,7 @@ export function changeSelectedCallNode(threadIndex: ThreadIndex, selectedCallNod
     type: 'CHANGE_SELECTED_CALL_NODE',
     selectedCallNodePath,
     optionalExpandedToCallNodePath,
-    threadIndex
+    threadIndex,
   };
 }
 
@@ -58,11 +100,14 @@ export function changeSelectedCallNode(threadIndex: ThreadIndex, selectedCallNod
  * as the call tree, the flame chart, or the stack chart). It's especially used
  * to display the context menu.
  */
-export function changeRightClickedCallNode(threadIndex: ThreadIndex, callNodePath: CallNodePath | null) {
+export function changeRightClickedCallNode(
+  threadIndex: ThreadIndex,
+  callNodePath: CallNodePath | null
+) {
   return {
     type: 'CHANGE_RIGHT_CLICKED_CALL_NODE',
     threadIndex,
-    callNodePath
+    callNodePath,
   };
 }
 
@@ -70,15 +115,29 @@ export function changeRightClickedCallNode(threadIndex: ThreadIndex, callNodePat
  * Given a threadIndex and a sampleIndex, select the call node at the top ("leaf")
  * of that sample's stack.
  */
-export function selectLeafCallNode(threadIndex: ThreadIndex, sampleIndex: IndexIntoSamplesTable): ThunkAction<void> {
+export function selectLeafCallNode(
+  threadIndex: ThreadIndex,
+  sampleIndex: IndexIntoSamplesTable
+): ThunkAction<void> {
   return (dispatch, getState) => {
     const threadSelectors = getThreadSelectors(threadIndex);
     const filteredThread = threadSelectors.getFilteredThread(getState());
     const callNodeInfo = threadSelectors.getCallNodeInfo(getState());
 
     const newSelectedStack = filteredThread.samples.stack[sampleIndex];
-    const newSelectedCallNode = newSelectedStack === null ? -1 : callNodeInfo.stackIndexToCallNodeIndex[newSelectedStack];
-    dispatch(changeSelectedCallNode(threadIndex, getCallNodePathFromIndex(newSelectedCallNode, callNodeInfo.callNodeTable)));
+    const newSelectedCallNode =
+      newSelectedStack === null
+        ? -1
+        : callNodeInfo.stackIndexToCallNodeIndex[newSelectedStack];
+    dispatch(
+      changeSelectedCallNode(
+        threadIndex,
+        getCallNodePathFromIndex(
+          newSelectedCallNode,
+          callNodeInfo.callNodeTable
+        )
+      )
+    );
   };
 }
 
@@ -86,7 +145,10 @@ export function selectLeafCallNode(threadIndex: ThreadIndex, sampleIndex: IndexI
  * Given a threadIndex and a sampleIndex, select the call node at the bottom ("root")
  * of that sample's stack.
  */
-export function selectRootCallNode(threadIndex: ThreadIndex, sampleIndex: IndexIntoSamplesTable): ThunkAction<void> {
+export function selectRootCallNode(
+  threadIndex: ThreadIndex,
+  sampleIndex: IndexIntoSamplesTable
+): ThunkAction<void> {
   return (dispatch, getState) => {
     const threadSelectors = getThreadSelectors(threadIndex);
     const filteredThread = threadSelectors.getFilteredThread(getState());
@@ -96,12 +158,22 @@ export function selectRootCallNode(threadIndex: ThreadIndex, sampleIndex: IndexI
     if (newSelectedStack === null || newSelectedStack === undefined) {
       return;
     }
-    const newSelectedCallNode = callNodeInfo.stackIndexToCallNodeIndex[newSelectedStack];
+    const newSelectedCallNode =
+      callNodeInfo.stackIndexToCallNodeIndex[newSelectedStack];
 
-    const selectedCallNodePath = getCallNodePathFromIndex(newSelectedCallNode, callNodeInfo.callNodeTable);
+    const selectedCallNodePath = getCallNodePathFromIndex(
+      newSelectedCallNode,
+      callNodeInfo.callNodeTable
+    );
     const rootCallNodePath = [selectedCallNodePath[0]];
 
-    dispatch(changeSelectedCallNode(threadIndex, rootCallNodePath, selectedCallNodePath));
+    dispatch(
+      changeSelectedCallNode(
+        threadIndex,
+        rootCallNodePath,
+        selectedCallNodePath
+      )
+    );
   };
 }
 
@@ -111,7 +183,10 @@ export function selectRootCallNode(threadIndex: ThreadIndex, sampleIndex: IndexI
  * actual call node that was clicked. See findBestAncestorCallNode for more
  * on the "best" call node.
  */
-export function selectBestAncestorCallNodeAndExpandCallTree(threadIndex: ThreadIndex, sampleIndex: IndexIntoSamplesTable): ThunkAction<boolean> {
+export function selectBestAncestorCallNodeAndExpandCallTree(
+  threadIndex: ThreadIndex,
+  sampleIndex: IndexIntoSamplesTable
+): ThunkAction<boolean> {
   return (dispatch, getState) => {
     const threadSelectors = getThreadSelectors(threadIndex);
     const fullThread = threadSelectors.getRangeFilteredThread(getState());
@@ -123,11 +198,11 @@ export function selectBestAncestorCallNodeAndExpandCallTree(threadIndex: ThreadI
       return false;
     }
 
-    const {
-      callNodeTable,
+    const { callNodeTable, stackIndexToCallNodeIndex } = callNodeInfo;
+    const sampleIndexToCallNodeIndex = getSampleIndexToCallNodeIndex(
+      filteredThread.samples.stack,
       stackIndexToCallNodeIndex
-    } = callNodeInfo;
-    const sampleIndexToCallNodeIndex = getSampleIndexToCallNodeIndex(filteredThread.samples.stack, stackIndexToCallNodeIndex);
+    );
     const clickedCallNode = sampleIndexToCallNodeIndex[sampleIndex];
     const clickedCategory = fullThread.stackTable.category[unfilteredStack];
 
@@ -135,15 +210,28 @@ export function selectBestAncestorCallNodeAndExpandCallTree(threadIndex: ThreadI
       return false;
     }
 
-    const sampleCategories = getSampleCategories(fullThread.samples, fullThread.stackTable);
-    const bestAncestorCallNode = findBestAncestorCallNode(callNodeInfo, sampleIndexToCallNodeIndex, sampleCategories, clickedCallNode, clickedCategory);
+    const sampleCategories = getSampleCategories(
+      fullThread.samples,
+      fullThread.stackTable
+    );
+    const bestAncestorCallNode = findBestAncestorCallNode(
+      callNodeInfo,
+      sampleIndexToCallNodeIndex,
+      sampleCategories,
+      clickedCallNode,
+      clickedCategory
+    );
 
     // In one dispatch, change the selected call node to the best ancestor call node, but
     // also expand out to the clicked call node.
-    dispatch(changeSelectedCallNode(threadIndex, // Select the best ancestor call node.
-    getCallNodePathFromIndex(bestAncestorCallNode, callNodeTable), // Also expand the children nodes out further below it to what was actually
-    // clicked.
-    getCallNodePathFromIndex(clickedCallNode, callNodeTable)));
+    dispatch(
+      changeSelectedCallNode(
+        threadIndex, // Select the best ancestor call node.
+        getCallNodePathFromIndex(bestAncestorCallNode, callNodeTable), // Also expand the children nodes out further below it to what was actually
+        // clicked.
+        getCallNodePathFromIndex(clickedCallNode, callNodeTable)
+      )
+    );
     return true;
   };
 }
@@ -155,7 +243,7 @@ export function selectBestAncestorCallNodeAndExpandCallTree(threadIndex: ThreadI
 export function changeSelectedThread(selectedThreadIndex: ThreadIndex): Action {
   return {
     type: 'CHANGE_SELECTED_THREAD',
-    selectedThreadIndex
+    selectedThreadIndex,
   };
 }
 
@@ -174,81 +262,93 @@ export function selectTrack(trackReference: TrackReference): ThunkAction<void> {
     let selectedTab = currentlySelectedTab;
 
     switch (trackReference.type) {
-      case 'global':
-        {
-          // Handle the case of global tracks.
-          const globalTrack = getGlobalTrackFromReference(getState(), trackReference);
+      case 'global': {
+        // Handle the case of global tracks.
+        const globalTrack = getGlobalTrackFromReference(
+          getState(),
+          trackReference
+        );
 
-          // Go through each type, and determine the selected slug and thread index.
-          switch (globalTrack.type) {
-            case 'process':
-              {
-                if (globalTrack.mainThreadIndex === null) {
-                  // Do not allow selecting process tracks without a thread index.
-                  return;
-                }
-                selectedThreadIndex = globalTrack.mainThreadIndex;
-                // Ensure a relevant thread-based tab is used.
-                if (selectedTab === 'network-chart') {
-                  selectedTab = getLastVisibleThreadTabSlug(getState());
-                }
-                break;
-              }
-            case 'screenshots':case 'visual-progress':case 'perceptual-visual-progress':case 'contentful-visual-progress':
-              // Do not allow selecting these tracks.
+        // Go through each type, and determine the selected slug and thread index.
+        switch (globalTrack.type) {
+          case 'process': {
+            if (globalTrack.mainThreadIndex === null) {
+              // Do not allow selecting process tracks without a thread index.
               return;
-            default:
-              throw assertExhaustiveCheck(globalTrack, `Unhandled GlobalTrack type.`);
-
+            }
+            selectedThreadIndex = globalTrack.mainThreadIndex;
+            // Ensure a relevant thread-based tab is used.
+            if (selectedTab === 'network-chart') {
+              selectedTab = getLastVisibleThreadTabSlug(getState());
+            }
+            break;
           }
-          break;
+          case 'screenshots':
+          case 'visual-progress':
+          case 'perceptual-visual-progress':
+          case 'contentful-visual-progress':
+            // Do not allow selecting these tracks.
+            return;
+          default:
+            throw assertExhaustiveCheck(
+              globalTrack,
+              `Unhandled GlobalTrack type.`
+            );
         }
-      case 'local':
-        {
-          // Handle the case of local tracks.
-          const localTrack = getLocalTrackFromReference(getState(), trackReference);
+        break;
+      }
+      case 'local': {
+        // Handle the case of local tracks.
+        const localTrack = getLocalTrackFromReference(
+          getState(),
+          trackReference
+        );
 
-          // Go through each type, and determine the tab slug and thread index.
-          switch (localTrack.type) {
-            case 'thread':
-              {
-                // Ensure a relevant thread-based tab is used.
-                selectedThreadIndex = localTrack.threadIndex;
-                if (selectedTab === 'network-chart') {
-                  selectedTab = getLastVisibleThreadTabSlug(getState());
-                }
-                break;
-              }
-            case 'network':
-              selectedThreadIndex = localTrack.threadIndex;
-              selectedTab = 'network-chart';
-              break;
-            case 'ipc':
-              selectedThreadIndex = localTrack.threadIndex;
-              selectedTab = 'marker-chart';
-              break;
-            case 'memory':
-              {
-                const {
-                  counterIndex
-                } = localTrack;
-                const counterSelectors = getCounterSelectors(counterIndex);
-                const counter = counterSelectors.getCommittedRangeFilteredCounter(getState());
-                selectedThreadIndex = counter.mainThreadIndex;
-                break;
-              }
-            default:
-              throw assertExhaustiveCheck(localTrack, `Unhandled LocalTrack type.`);
-
+        // Go through each type, and determine the tab slug and thread index.
+        switch (localTrack.type) {
+          case 'thread': {
+            // Ensure a relevant thread-based tab is used.
+            selectedThreadIndex = localTrack.threadIndex;
+            if (selectedTab === 'network-chart') {
+              selectedTab = getLastVisibleThreadTabSlug(getState());
+            }
+            break;
           }
-          break;
+          case 'network':
+            selectedThreadIndex = localTrack.threadIndex;
+            selectedTab = 'network-chart';
+            break;
+          case 'ipc':
+            selectedThreadIndex = localTrack.threadIndex;
+            selectedTab = 'marker-chart';
+            break;
+          case 'memory': {
+            const { counterIndex } = localTrack;
+            const counterSelectors = getCounterSelectors(counterIndex);
+            const counter = counterSelectors.getCommittedRangeFilteredCounter(
+              getState()
+            );
+            selectedThreadIndex = counter.mainThreadIndex;
+            break;
+          }
+          default:
+            throw assertExhaustiveCheck(
+              localTrack,
+              `Unhandled LocalTrack type.`
+            );
         }
+        break;
+      }
       default:
-        throw assertExhaustiveCheck(trackReference, 'Unhandled TrackReference type');
-
+        throw assertExhaustiveCheck(
+          trackReference,
+          'Unhandled TrackReference type'
+        );
     }
 
-    const doesNextTrackHaveSelectedTab = getThreadSelectors(selectedThreadIndex).getUsefulTabs(getState()).includes(selectedTab);
+    const doesNextTrackHaveSelectedTab = getThreadSelectors(selectedThreadIndex)
+      .getUsefulTabs(getState())
+      .includes(selectedTab);
 
     if (!doesNextTrackHaveSelectedTab) {
       // If the user switches to another track that doesn't have the current
@@ -256,21 +356,24 @@ export function selectTrack(trackReference: TrackReference): ThunkAction<void> {
       selectedTab = 'calltree';
     }
 
-    if (currentlySelectedTab === selectedTab && currentlySelectedThreadIndex === selectedThreadIndex) {
+    if (
+      currentlySelectedTab === selectedTab &&
+      currentlySelectedThreadIndex === selectedThreadIndex
+    ) {
       return;
     }
 
     dispatch({
       type: 'SELECT_TRACK',
       selectedThreadIndex,
-      selectedTab
+      selectedTab,
     });
   };
 }
 
 export function focusCallTree(): Action {
   return {
-    type: 'FOCUS_CALL_TREE'
+    type: 'FOCUS_CALL_TREE',
   };
 }
 
@@ -278,17 +381,19 @@ export function focusCallTree(): Action {
  * This action is used when the user right clicks a track, and is especially
  * used to display its context menu.
  */
-export function changeRightClickedTrack(trackReference: TrackReference | null): Action {
+export function changeRightClickedTrack(
+  trackReference: TrackReference | null
+): Action {
   return {
     type: 'CHANGE_RIGHT_CLICKED_TRACK',
-    trackReference
+    trackReference,
   };
 }
 
 export function setContextMenuVisibility(isVisible: boolean): Action {
   return {
     type: 'SET_CONTEXT_MENU_VISIBILITY',
-    isVisible
+    isVisible,
   };
 }
 
@@ -299,11 +404,11 @@ export function changeGlobalTrackOrder(globalTrackOrder: TrackIndex[]): Action {
   sendAnalytics({
     hitType: 'event',
     eventCategory: 'timeline',
-    eventAction: 'change global track order'
+    eventAction: 'change global track order',
   });
   return {
     type: 'CHANGE_GLOBAL_TRACK_ORDER',
-    globalTrackOrder
+    globalTrackOrder,
   };
 }
 
@@ -329,12 +434,19 @@ export function hideGlobalTrack(trackIndex: TrackIndex): ThunkAction<void> {
     if (globalTrackToHide.type === 'process') {
       // This is a process global track, this operation could potentially hide
       // the selectedThreadIndex.
-      let isSelectedThreadIndexHidden = globalTrackToHide.mainThreadIndex === selectedThreadIndex;
+      let isSelectedThreadIndexHidden =
+        globalTrackToHide.mainThreadIndex === selectedThreadIndex;
 
       // Check in the local tracks for the selectedThreadIndex
       if (!isSelectedThreadIndexHidden) {
-        for (const localTrack of getLocalTracks(getState(), globalTrackToHide.pid)) {
-          if (localTrack.type === 'thread' && localTrack.threadIndex === selectedThreadIndex) {
+        for (const localTrack of getLocalTracks(
+          getState(),
+          globalTrackToHide.pid
+        )) {
+          if (
+            localTrack.type === 'thread' &&
+            localTrack.threadIndex === selectedThreadIndex
+          ) {
             isSelectedThreadIndexHidden = true;
             break;
           }
@@ -354,13 +466,13 @@ export function hideGlobalTrack(trackIndex: TrackIndex): ThunkAction<void> {
     sendAnalytics({
       hitType: 'event',
       eventCategory: 'timeline',
-      eventAction: 'hide global track'
+      eventAction: 'hide global track',
     });
 
     dispatch({
       type: 'HIDE_GLOBAL_TRACK',
       trackIndex,
-      selectedThreadIndex
+      selectedThreadIndex,
     });
   };
 }
@@ -373,12 +485,12 @@ export function showGlobalTrack(trackIndex: TrackIndex): ThunkAction<void> {
     sendAnalytics({
       hitType: 'event',
       eventCategory: 'timeline',
-      eventAction: 'show global track'
+      eventAction: 'show global track',
     });
 
     dispatch({
       type: 'SHOW_GLOBAL_TRACK',
-      trackIndex
+      trackIndex,
     });
   };
 }
@@ -386,7 +498,9 @@ export function showGlobalTrack(trackIndex: TrackIndex): ThunkAction<void> {
 /**
  * This function isolates a process global track, and leaves its local tracks visible.
  */
-export function isolateProcess(isolatedTrackIndex: TrackIndex): ThunkAction<void> {
+export function isolateProcess(
+  isolatedTrackIndex: TrackIndex
+): ThunkAction<void> {
   return (dispatch, getState) => {
     const track = getGlobalTracks(getState())[isolatedTrackIndex];
     const trackIndexes = getGlobalTrackOrder(getState());
@@ -398,10 +512,16 @@ export function isolateProcess(isolatedTrackIndex: TrackIndex): ThunkAction<void
 
     let selectedThreadIndex = getSelectedThreadIndex(getState());
     const localTracks = getLocalTracks(getState(), track.pid);
-    const isSelectedThreadInLocalTracks = localTracks.some(track => track.type === 'thread' && track.threadIndex === selectedThreadIndex);
+    const isSelectedThreadInLocalTracks = localTracks.some(
+      track =>
+        track.type === 'thread' && track.threadIndex === selectedThreadIndex
+    );
 
     // Check to see if this selectedThreadIndex will be hidden.
-    if (selectedThreadIndex !== track.mainThreadIndex && !isSelectedThreadInLocalTracks) {
+    if (
+      selectedThreadIndex !== track.mainThreadIndex &&
+      !isSelectedThreadInLocalTracks
+    ) {
       // The selectedThreadIndex will be hidden, reselect another one.
       if (track.mainThreadIndex === null) {
         // Try and select a thread in the local tracks.
@@ -425,14 +545,16 @@ export function isolateProcess(isolatedTrackIndex: TrackIndex): ThunkAction<void
     sendAnalytics({
       hitType: 'event',
       eventCategory: 'timeline',
-      eventAction: 'isolate process'
+      eventAction: 'isolate process',
     });
 
     dispatch({
       type: 'ISOLATE_PROCESS',
-      hiddenGlobalTracks: new Set(trackIndexes.filter(i => i !== isolatedTrackIndex)),
+      hiddenGlobalTracks: new Set(
+        trackIndexes.filter(i => i !== isolatedTrackIndex)
+      ),
       isolatedTrackIndex,
-      selectedThreadIndex
+      selectedThreadIndex,
     });
   };
 }
@@ -440,7 +562,9 @@ export function isolateProcess(isolatedTrackIndex: TrackIndex): ThunkAction<void
 /**
  * This function helps to show only the current screenshot and hide all other screenshots.
  */
-export function isolateScreenshot(isolatedTrackIndex: TrackIndex): ThunkAction<void> {
+export function isolateScreenshot(
+  isolatedTrackIndex: TrackIndex
+): ThunkAction<void> {
   return (dispatch, getState) => {
     const globalTracks = getGlobalTracks(getState());
     const track = globalTracks[isolatedTrackIndex];
@@ -463,12 +587,12 @@ export function isolateScreenshot(isolatedTrackIndex: TrackIndex): ThunkAction<v
     sendAnalytics({
       hitType: 'event',
       eventCategory: 'timeline',
-      eventAction: 'isolate screenshot track'
+      eventAction: 'isolate screenshot track',
     });
 
     dispatch({
       type: 'ISOLATE_SCREENSHOT_TRACK',
-      hiddenGlobalTracks
+      hiddenGlobalTracks,
     });
   };
 }
@@ -476,7 +600,9 @@ export function isolateScreenshot(isolatedTrackIndex: TrackIndex): ThunkAction<v
 /**
  * This function isolates a global track, and hides all of its local tracks.
  */
-export function isolateProcessMainThread(isolatedTrackIndex: TrackIndex): ThunkAction<void> {
+export function isolateProcessMainThread(
+  isolatedTrackIndex: TrackIndex
+): ThunkAction<void> {
   return (dispatch, getState) => {
     const track = getGlobalTracks(getState())[isolatedTrackIndex];
     const trackIndexes = getGlobalTrackOrder(getState());
@@ -495,18 +621,20 @@ export function isolateProcessMainThread(isolatedTrackIndex: TrackIndex): ThunkA
     sendAnalytics({
       hitType: 'event',
       eventCategory: 'timeline',
-      eventAction: 'isolate process main thread'
+      eventAction: 'isolate process main thread',
     });
 
     dispatch({
       type: 'ISOLATE_PROCESS_MAIN_THREAD',
       pid: track.pid,
-      hiddenGlobalTracks: new Set(trackIndexes.filter(i => i !== isolatedTrackIndex)),
+      hiddenGlobalTracks: new Set(
+        trackIndexes.filter(i => i !== isolatedTrackIndex)
+      ),
       isolatedTrackIndex,
       selectedThreadIndex,
       // The local track order contains all of the indexes, and all should be hidden
       // when isolating the main thread.
-      hiddenLocalTracks: new Set(getLocalTrackOrder(getState(), track.pid))
+      hiddenLocalTracks: new Set(getLocalTrackOrder(getState(), track.pid)),
     });
   };
 }
@@ -514,16 +642,19 @@ export function isolateProcessMainThread(isolatedTrackIndex: TrackIndex): ThunkA
 /**
  * This action changes the track order among local tracks only.
  */
-export function changeLocalTrackOrder(pid: Pid, localTrackOrder: TrackIndex[]): Action {
+export function changeLocalTrackOrder(
+  pid: Pid,
+  localTrackOrder: TrackIndex[]
+): Action {
   sendAnalytics({
     hitType: 'event',
     eventCategory: 'timeline',
-    eventAction: 'change local track order'
+    eventAction: 'change local track order',
   });
   return {
     type: 'CHANGE_LOCAL_TRACK_ORDER',
     pid,
-    localTrackOrder
+    localTrackOrder,
   };
 }
 
@@ -536,23 +667,35 @@ export function changeLocalTrackOrder(pid: Pid, localTrackOrder: TrackIndex[]): 
  * need to ignore the local track index that's being hidden, AND the global track
  * that it's attached to, as it's already been checked.
  */
-function _findOtherVisibleThread(getState: () => State, // Either this global track is already hidden, or it has been taken into account.
-globalTrackIndexToIgnore?: TrackIndex, // This is helpful when hiding a new local track index, it won't be selected.
-localTrackIndexToIgnore?: TrackIndex, transitioningToActiveTab?: boolean = false): ThreadIndex | null {
+function _findOtherVisibleThread(
+  getState: () => State, // Either this global track is already hidden, or it has been taken into account.
+  globalTrackIndexToIgnore?: TrackIndex, // This is helpful when hiding a new local track index, it won't be selected.
+  localTrackIndexToIgnore?: TrackIndex,
+  transitioningToActiveTab?: boolean = false
+): ThreadIndex | null {
   const globalTracks = getGlobalTracks(getState());
   const globalTrackOrder = getGlobalTrackOrder(getState());
   const globalHiddenTracks = getComputedHiddenGlobalTracks(getState());
-  const activeTabHiddenGlobalTracksGetter = getActiveTabHiddenGlobalTracksGetter(getState());
+  const activeTabHiddenGlobalTracksGetter = getActiveTabHiddenGlobalTracksGetter(
+    getState()
+  );
 
   for (const globalTrackIndex of globalTrackOrder) {
     const globalTrack = globalTracks[globalTrackIndex];
-    if ( // This track has already been accounted for.
-    (globalTrackIndexToIgnore !== undefined && globalTrackIndex === globalTrackIndexToIgnore) || // This global track is hidden.
-    globalHiddenTracks.has(globalTrackIndex) || globalTrack.type !== 'process') {
+    if (
+      // This track has already been accounted for.
+      (globalTrackIndexToIgnore !== undefined &&
+        globalTrackIndex === globalTrackIndexToIgnore) || // This global track is hidden.
+      globalHiddenTracks.has(globalTrackIndex) ||
+      globalTrack.type !== 'process'
+    ) {
       continue;
     }
 
-    if (transitioningToActiveTab && activeTabHiddenGlobalTracksGetter().has(globalTrackIndex)) {
+    if (
+      transitioningToActiveTab &&
+      activeTabHiddenGlobalTracksGetter().has(globalTrackIndex)
+    ) {
       // We are transitioning to the active tab view. We should be able to select
       // the track that is not hidden by it as well.
       continue;
@@ -565,7 +708,10 @@ localTrackIndexToIgnore?: TrackIndex, transitioningToActiveTab?: boolean = false
 
     const localTracks = getLocalTracks(getState(), globalTrack.pid);
     const localTrackOrder = getLocalTrackOrder(getState(), globalTrack.pid);
-    const hiddenLocalTracks = getComputedHiddenLocalTracks(getState(), globalTrack.pid);
+    const hiddenLocalTracks = getComputedHiddenLocalTracks(
+      getState(),
+      globalTrack.pid
+    );
 
     for (const trackIndex of localTrackOrder) {
       const track = localTracks[trackIndex];
@@ -589,23 +735,30 @@ localTrackIndexToIgnore?: TrackIndex, transitioningToActiveTab?: boolean = false
  * is the selected thread we also take care to select another thread.  We also
  * prevent from hiding the last thread.
  */
-export function hideLocalTrack(pid: Pid, trackIndexToHide: TrackIndex): ThunkAction<void> {
+export function hideLocalTrack(
+  pid: Pid,
+  trackIndexToHide: TrackIndex
+): ThunkAction<void> {
   return (dispatch, getState) => {
     const localTracks = getLocalTracks(getState(), pid);
     const hiddenLocalTracks = getComputedHiddenLocalTracks(getState(), pid);
     const localTrackToHide = localTracks[trackIndexToHide];
     const selectedThreadIndex = getSelectedThreadIndex(getState());
-    let nextSelectedThreadIndex: ThreadIndex | null = localTrackToHide.type === 'thread' && localTrackToHide.threadIndex === selectedThreadIndex ? null : selectedThreadIndex;
+    let nextSelectedThreadIndex: ThreadIndex | null =
+      localTrackToHide.type === 'thread' &&
+      localTrackToHide.threadIndex === selectedThreadIndex
+        ? null
+        : selectedThreadIndex;
 
     if (hiddenLocalTracks.has(trackIndexToHide)) {
       // This is attempting to hide an already hidden track, don't do anything.
       return;
     }
 
-    const {
-      globalTrack,
-      globalTrackIndex
-    } = getGlobalTrackAndIndexByPid(getState(), pid);
+    const { globalTrack, globalTrackIndex } = getGlobalTrackAndIndexByPid(
+      getState(),
+      pid
+    );
 
     if (hiddenLocalTracks.size + 1 === localTracks.length) {
       // Hiding one more local track will hide all of the tracks for this process.
@@ -645,14 +798,22 @@ export function hideLocalTrack(pid: Pid, trackIndexToHide: TrackIndex): ThunkAct
         }
       }
 
-      if (nextSelectedThreadIndex === null && globalTrack.mainThreadIndex !== null && globalTrack.mainThreadIndex !== undefined) {
+      if (
+        nextSelectedThreadIndex === null &&
+        globalTrack.mainThreadIndex !== null &&
+        globalTrack.mainThreadIndex !== undefined
+      ) {
         // Case 2a: Use the current process's main thread.
         nextSelectedThreadIndex = globalTrack.mainThreadIndex;
       }
 
       if (nextSelectedThreadIndex === null) {
         // Case 2b: Try and find another threadIndex.
-        nextSelectedThreadIndex = _findOtherVisibleThread(getState, globalTrackIndex, trackIndexToHide);
+        nextSelectedThreadIndex = _findOtherVisibleThread(
+          getState,
+          globalTrackIndex,
+          trackIndexToHide
+        );
       }
 
       if (nextSelectedThreadIndex === null) {
@@ -664,14 +825,14 @@ export function hideLocalTrack(pid: Pid, trackIndexToHide: TrackIndex): ThunkAct
     sendAnalytics({
       hitType: 'event',
       eventCategory: 'timeline',
-      eventAction: 'hide local track'
+      eventAction: 'hide local track',
     });
 
     dispatch({
       type: 'HIDE_LOCAL_TRACK',
       pid,
       trackIndex: trackIndexToHide,
-      selectedThreadIndex: nextSelectedThreadIndex
+      selectedThreadIndex: nextSelectedThreadIndex,
     });
   };
 }
@@ -679,18 +840,21 @@ export function hideLocalTrack(pid: Pid, trackIndexToHide: TrackIndex): ThunkAct
 /**
  * This action simply displays a local track from its track index and its Pid.
  */
-export function showLocalTrack(pid: Pid, trackIndex: TrackIndex): ThunkAction<void> {
+export function showLocalTrack(
+  pid: Pid,
+  trackIndex: TrackIndex
+): ThunkAction<void> {
   return dispatch => {
     sendAnalytics({
       hitType: 'event',
       eventCategory: 'timeline',
-      eventAction: 'show local track'
+      eventAction: 'show local track',
     });
 
     dispatch({
       type: 'SHOW_LOCAL_TRACK',
       trackIndex,
-      pid
+      pid,
     });
   };
 }
@@ -698,13 +862,18 @@ export function showLocalTrack(pid: Pid, trackIndex: TrackIndex): ThunkAction<vo
 /**
  * This action isolates a local track. This means we will hide all other tracks.
  */
-export function isolateLocalTrack(pid: Pid, isolatedTrackIndex: TrackIndex): ThunkAction<void> {
+export function isolateLocalTrack(
+  pid: Pid,
+  isolatedTrackIndex: TrackIndex
+): ThunkAction<void> {
   return (dispatch, getState) => {
-    const localTrackToIsolate = getLocalTracks(getState(), pid)[isolatedTrackIndex];
-    const {
-      globalTrack,
-      globalTrackIndex
-    } = getGlobalTrackAndIndexByPid(getState(), pid);
+    const localTrackToIsolate = getLocalTracks(getState(), pid)[
+      isolatedTrackIndex
+    ];
+    const { globalTrack, globalTrackIndex } = getGlobalTrackAndIndexByPid(
+      getState(),
+      pid
+    );
     // The track order is merely a convenient way to get a list of track indexes.
     const globalTrackIndexes = getGlobalTrackOrder(getState());
     const localTrackIndexes = getLocalTrackOrder(getState(), pid);
@@ -713,7 +882,10 @@ export function isolateLocalTrack(pid: Pid, isolatedTrackIndex: TrackIndex): Thu
     let selectedThreadIndex = null;
     if (localTrackToIsolate.type === 'thread') {
       selectedThreadIndex = localTrackToIsolate.threadIndex;
-    } else if (globalTrack.type === 'process' && globalTrack.mainThreadIndex !== null) {
+    } else if (
+      globalTrack.type === 'process' &&
+      globalTrack.mainThreadIndex !== null
+    ) {
       selectedThreadIndex = globalTrack.mainThreadIndex;
     }
 
@@ -726,15 +898,19 @@ export function isolateLocalTrack(pid: Pid, isolatedTrackIndex: TrackIndex): Thu
     sendAnalytics({
       hitType: 'event',
       eventCategory: 'timeline',
-      eventAction: 'isolate local track'
+      eventAction: 'isolate local track',
     });
 
     dispatch({
       type: 'ISOLATE_LOCAL_TRACK',
       pid,
-      hiddenGlobalTracks: new Set(globalTrackIndexes.filter(i => i !== globalTrackIndex)),
-      hiddenLocalTracks: new Set(localTrackIndexes.filter(i => i !== isolatedTrackIndex)),
-      selectedThreadIndex
+      hiddenGlobalTracks: new Set(
+        globalTrackIndexes.filter(i => i !== globalTrackIndex)
+      ),
+      hiddenLocalTracks: new Set(
+        localTrackIndexes.filter(i => i !== isolatedTrackIndex)
+      ),
+      selectedThreadIndex,
     });
   };
 }
@@ -748,18 +924,24 @@ export function changeCallTreeSearchString(searchString: string): Action {
     sendAnalytics({
       hitType: 'event',
       eventCategory: 'profile',
-      eventAction: 'call tree search string'
+      eventAction: 'call tree search string',
     });
   }
   return {
     type: 'CHANGE_CALL_TREE_SEARCH_STRING',
-    searchString
+    searchString,
   };
 }
 
-export function expandAllCallNodeDescendants(threadIndex: ThreadIndex, callNodeIndex: IndexIntoCallNodeTable, callNodeInfo: CallNodeInfo): ThunkAction<void> {
+export function expandAllCallNodeDescendants(
+  threadIndex: ThreadIndex,
+  callNodeIndex: IndexIntoCallNodeTable,
+  callNodeInfo: CallNodeInfo
+): ThunkAction<void> {
   return (dispatch, getState) => {
-    const expandedCallNodeIndexes = selectedThreadSelectors.getExpandedCallNodeIndexes(getState());
+    const expandedCallNodeIndexes = selectedThreadSelectors.getExpandedCallNodeIndexes(
+      getState()
+    );
     const tree = selectedThreadSelectors.getCallTree(getState());
 
     // Create a set with the selected call node and its descendants
@@ -772,24 +954,32 @@ export function expandAllCallNodeDescendants(threadIndex: ThreadIndex, callNodeI
       }
     });
 
-    const expandedCallNodePaths = [...descendants].map(callNodeIndex => getCallNodePathFromIndex(callNodeIndex, callNodeInfo.callNodeTable));
+    const expandedCallNodePaths = [...descendants].map(callNodeIndex =>
+      getCallNodePathFromIndex(callNodeIndex, callNodeInfo.callNodeTable)
+    );
     dispatch(changeExpandedCallNodes(threadIndex, expandedCallNodePaths));
   };
 }
 
-export function changeExpandedCallNodes(threadIndex: ThreadIndex, expandedCallNodePaths: Array<CallNodePath>): Action {
+export function changeExpandedCallNodes(
+  threadIndex: ThreadIndex,
+  expandedCallNodePaths: Array<CallNodePath>
+): Action {
   return {
     type: 'CHANGE_EXPANDED_CALL_NODES',
     threadIndex,
-    expandedCallNodePaths
+    expandedCallNodePaths,
   };
 }
 
-export function changeSelectedMarker(threadIndex: ThreadIndex, selectedMarker: MarkerIndex | null): Action {
+export function changeSelectedMarker(
+  threadIndex: ThreadIndex,
+  selectedMarker: MarkerIndex | null
+): Action {
   return {
     type: 'CHANGE_SELECTED_MARKER',
     selectedMarker,
-    threadIndex
+    threadIndex,
   };
 }
 
@@ -797,39 +987,49 @@ export function changeSelectedMarker(threadIndex: ThreadIndex, selectedMarker: M
  * This action is used when the user right clicks a marker, and is especially
  * used to display its context menu.
  */
-export function changeRightClickedMarker(threadIndex: ThreadIndex, markerIndex: MarkerIndex | null): Action {
+export function changeRightClickedMarker(
+  threadIndex: ThreadIndex,
+  markerIndex: MarkerIndex | null
+): Action {
   return {
     type: 'CHANGE_RIGHT_CLICKED_MARKER',
     threadIndex,
-    markerIndex
+    markerIndex,
   };
 }
 
 export function changeMarkersSearchString(searchString: string): Action {
   return {
     type: 'CHANGE_MARKER_SEARCH_STRING',
-    searchString
+    searchString,
   };
 }
 
 export function changeNetworkSearchString(searchString: string): Action {
   return {
     type: 'CHANGE_NETWORK_SEARCH_STRING',
-    searchString
+    searchString,
   };
 }
 
-export function changeImplementationFilter(implementation: ImplementationFilter): ThunkAction<void> {
+export function changeImplementationFilter(
+  implementation: ImplementationFilter
+): ThunkAction<void> {
   return (dispatch, getState) => {
     const previousImplementation = getImplementationFilter(getState());
-    const threadIndex = ensureExists(getSelectedThreadIndex(getState()), 'Attempting to add an implementation filter when no thread is currently selected.');
-    const transformedThread = selectedThreadSelectors.getRangeAndTransformFilteredThread(getState());
+    const threadIndex = ensureExists(
+      getSelectedThreadIndex(getState()),
+      'Attempting to add an implementation filter when no thread is currently selected.'
+    );
+    const transformedThread = selectedThreadSelectors.getRangeAndTransformFilteredThread(
+      getState()
+    );
 
     sendAnalytics({
       hitType: 'event',
       eventCategory: 'profile',
       eventAction: 'change implementation filter',
-      eventLabel: implementation
+      eventLabel: implementation,
     });
 
     dispatch({
@@ -837,7 +1037,7 @@ export function changeImplementationFilter(implementation: ImplementationFilter)
       implementation,
       threadIndex,
       transformedThread,
-      previousImplementation
+      previousImplementation,
     });
   };
 }
@@ -847,47 +1047,54 @@ export function changeImplementationFilter(implementation: ImplementationFilter)
  * use sample data, or build a new call tree based off of allocation information stored
  * in markers.
  */
-export function changeCallTreeSummaryStrategy(callTreeSummaryStrategy: CallTreeSummaryStrategy): Action {
+export function changeCallTreeSummaryStrategy(
+  callTreeSummaryStrategy: CallTreeSummaryStrategy
+): Action {
   sendAnalytics({
     hitType: 'event',
     eventCategory: 'profile',
     eventAction: 'change call tree summary strategy',
-    eventLabel: callTreeSummaryStrategy
+    eventLabel: callTreeSummaryStrategy,
   });
 
   return {
     type: 'CHANGE_CALL_TREE_SUMMARY_STRATEGY',
-    callTreeSummaryStrategy
+    callTreeSummaryStrategy,
   };
 }
 
-export function changeInvertCallstack(invertCallstack: boolean): ThunkAction<void> {
+export function changeInvertCallstack(
+  invertCallstack: boolean
+): ThunkAction<void> {
   return (dispatch, getState) => {
     sendAnalytics({
       hitType: 'event',
       eventCategory: 'profile',
-      eventAction: 'change invert callstack'
+      eventAction: 'change invert callstack',
     });
     dispatch({
       type: 'CHANGE_INVERT_CALLSTACK',
       invertCallstack,
       selectedThreadIndex: getSelectedThreadIndex(getState()),
       callTree: selectedThreadSelectors.getCallTree(getState()),
-      callNodeTable: selectedThreadSelectors.getCallNodeInfo(getState()).callNodeTable
+      callNodeTable: selectedThreadSelectors.getCallNodeInfo(getState())
+        .callNodeTable,
     });
   };
 }
 
-export function changeShowUserTimings(showUserTimings: boolean): ThunkAction<void> {
+export function changeShowUserTimings(
+  showUserTimings: boolean
+): ThunkAction<void> {
   return dispatch => {
     sendAnalytics({
       hitType: 'event',
       eventCategory: 'profile',
-      eventAction: 'toggle user timings'
+      eventAction: 'toggle user timings',
     });
     dispatch({
       type: 'CHANGE_SHOW_USER_TIMINGS',
-      showUserTimings
+      showUserTimings,
     });
   };
 }
@@ -897,21 +1104,27 @@ export function changeShowUserTimings(showUserTimings: boolean): ThunkAction<voi
  * for the JS tracer data, and a stack-based view (similar to the stack chart) for the
  * JS Tracer panel.
  */
-export function changeShowJsTracerSummary(showSummary: boolean): ThunkAction<void> {
+export function changeShowJsTracerSummary(
+  showSummary: boolean
+): ThunkAction<void> {
   return dispatch => {
     sendAnalytics({
       hitType: 'event',
       eventCategory: 'profile',
-      eventAction: showSummary ? 'show JS tracer summary' : 'show JS tracer stacks'
+      eventAction: showSummary
+        ? 'show JS tracer summary'
+        : 'show JS tracer stacks',
     });
     dispatch({
       type: 'CHANGE_SHOW_JS_TRACER_SUMMARY',
-      showSummary
+      showSummary,
     });
   };
 }
 
-export function updatePreviewSelection(previewSelection: PreviewSelection): ThunkAction<void> {
+export function updatePreviewSelection(
+  previewSelection: PreviewSelection
+): ThunkAction<void> {
   return (dispatch, getState) => {
     const currentPreviewSelection = getPreviewSelection(getState());
     if (!objectShallowEquals(currentPreviewSelection, previewSelection)) {
@@ -919,7 +1132,7 @@ export function updatePreviewSelection(previewSelection: PreviewSelection): Thun
       // and this check saves a dispatch.
       dispatch({
         type: 'UPDATE_PREVIEW_SELECTION',
-        previewSelection
+        previewSelection,
       });
     }
   };
@@ -933,43 +1146,50 @@ export function commitRange(start: number, end: number): Action {
   return {
     type: 'COMMIT_RANGE',
     start,
-    end
+    end,
   };
 }
 
 export function popCommittedRanges(firstPoppedFilterIndex: number): Action {
   return {
     type: 'POP_COMMITTED_RANGES',
-    firstPoppedFilterIndex
+    firstPoppedFilterIndex,
   };
 }
 
-export function addTransformToStack(threadIndex: ThreadIndex, transform: Transform): ThunkAction<void> {
+export function addTransformToStack(
+  threadIndex: ThreadIndex,
+  transform: Transform
+): ThunkAction<void> {
   return (dispatch, getState) => {
-    const transformedThread = getThreadSelectors(threadIndex).getRangeAndTransformFilteredThread(getState());
+    const transformedThread = getThreadSelectors(
+      threadIndex
+    ).getRangeAndTransformFilteredThread(getState());
 
     dispatch({
       type: 'ADD_TRANSFORM_TO_STACK',
       threadIndex,
       transform,
-      transformedThread
+      transformedThread,
     });
     sendAnalytics({
       hitType: 'event',
       eventCategory: 'profile',
       eventAction: 'add transform',
-      eventLabel: transform.type
+      eventLabel: transform.type,
     });
   };
 }
 
-export function popTransformsFromStack(firstPoppedFilterIndex: number): ThunkAction<void> {
+export function popTransformsFromStack(
+  firstPoppedFilterIndex: number
+): ThunkAction<void> {
   return (dispatch, getState) => {
     const threadIndex = getSelectedThreadIndex(getState());
     dispatch({
       type: 'POP_TRANSFORMS_FROM_STACK',
       threadIndex,
-      firstPoppedFilterIndex
+      firstPoppedFilterIndex,
     });
   };
 }
@@ -977,20 +1197,20 @@ export function popTransformsFromStack(firstPoppedFilterIndex: number): ThunkAct
 export function changeTimelineType(timelineType: TimelineType): Action {
   return {
     type: 'CHANGE_TIMELINE_TYPE',
-    timelineType
+    timelineType,
   };
 }
 
 export function changeProfileName(profileName: string): Action {
   return {
     type: 'CHANGE_PROFILE_NAME',
-    profileName
+    profileName,
   };
 }
 
 export function setDataSource(dataSource: DataSource): Action {
   return {
     type: 'SET_DATA_SOURCE',
-    dataSource
+    dataSource,
   };
 }

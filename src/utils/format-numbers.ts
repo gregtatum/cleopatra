@@ -2,12 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+import memoize from 'memoize-immutable';
+import NamedTupleMap from 'namedtuplemap';
 
-
-import memoize from "memoize-immutable";
-import NamedTupleMap from "namedtuplemap";
-
-import { Microseconds, Milliseconds, Nanoseconds } from "../types/units";
+import { Microseconds, Milliseconds, Nanoseconds } from '../types/units';
 
 // Calling `toLocalestring` repeatedly in a tight loop can be a performance
 // problem. It's much better to reuse an instance of `Intl.NumberFormat`.
@@ -16,20 +14,20 @@ import { Microseconds, Milliseconds, Nanoseconds } from "../types/units";
 // It's probably OK to keep all instances because their number is finite.
 function _getNumberFormat({
   places,
-  style
+  style,
 }: {
-  places: number;
-  style: "decimal" | "percent";
+  places: number,
+  style: 'decimal' | 'percent',
 }) {
   return new Intl.NumberFormat(undefined, {
     minimumFractionDigits: places,
     maximumFractionDigits: places,
-    style: style
+    style: style,
   });
 }
 
 const _memoizedGetNumberFormat = memoize(_getNumberFormat, {
-  cache: new NamedTupleMap()
+  cache: new NamedTupleMap(),
 });
 
 /**
@@ -48,7 +46,12 @@ const _memoizedGetNumberFormat = memoize(_getNumberFormat, {
  * formatNumber(1.23   ) =   "1.2"
  * formatNumber(0.01234) =   "0.012"
  */
-export function formatNumber(value: number, significantDigits: number = 2, maxFractionalDigits: number = 3, style: "decimal" | "percent" = 'decimal'): string {
+export function formatNumber(
+  value: number,
+  significantDigits: number = 2,
+  maxFractionalDigits: number = 3,
+  style: 'decimal' | 'percent' = 'decimal'
+): string {
   /*
    * Note that numDigitsOnLeft can be negative when the first non-zero digit
    * is on the right of the decimal point.  0.01 = -1
@@ -73,7 +76,11 @@ export function formatNumber(value: number, significantDigits: number = 2, maxFr
 /**
  * Format call node numbers consistently.
  */
-export function formatCallNodeNumber(interval: number, isHighPrecision: boolean, number: number): string {
+export function formatCallNodeNumber(
+  interval: number,
+  isHighPrecision: boolean,
+  number: number
+): string {
   // If the interval is an integer, display the number as an integer.
   let precision = Number.isInteger(interval) ? 0 : 1;
 
@@ -86,11 +93,14 @@ export function formatCallNodeNumber(interval: number, isHighPrecision: boolean,
 }
 
 export function formatPercent(value: number): string {
-  return formatNumber(value,
-  /* significantDigits */
-  2,
-  /* maxFractionalDigits */
-  1, 'percent');
+  return formatNumber(
+    value,
+    /* significantDigits */
+    2,
+    /* maxFractionalDigits */
+    1,
+    'percent'
+  );
 }
 
 export function formatBytes(bytes: number): string {
@@ -117,20 +127,38 @@ export function formatSI(num: number): string {
   return formatNumber(num / (1000 * 1000 * 1000), 3, 2) + 'G';
 }
 
-export function formatNanoseconds(time: Nanoseconds, significantDigits: number = 3, maxFractionalDigits: number = 4) {
+export function formatNanoseconds(
+  time: Nanoseconds,
+  significantDigits: number = 3,
+  maxFractionalDigits: number = 4
+) {
   return formatNumber(time, significantDigits, maxFractionalDigits) + 'ns';
 }
 
-export function formatMicroseconds(time: Microseconds, significantDigits: number = 2, maxFractionalDigits: number = 3) {
+export function formatMicroseconds(
+  time: Microseconds,
+  significantDigits: number = 2,
+  maxFractionalDigits: number = 3
+) {
   return formatNumber(time, significantDigits, maxFractionalDigits) + 'μs';
 }
 
-export function formatMilliseconds(time: Milliseconds, significantDigits: number = 2, maxFractionalDigits: number = 3) {
+export function formatMilliseconds(
+  time: Milliseconds,
+  significantDigits: number = 2,
+  maxFractionalDigits: number = 3
+) {
   return formatNumber(time, significantDigits, maxFractionalDigits) + 'ms';
 }
 
-export function formatSeconds(time: Milliseconds, significantDigits: number = 5, maxFractionalDigits: number = 3) {
-  return formatNumber(time / 1000, significantDigits, maxFractionalDigits) + 's';
+export function formatSeconds(
+  time: Milliseconds,
+  significantDigits: number = 5,
+  maxFractionalDigits: number = 3
+) {
+  return (
+    formatNumber(time / 1000, significantDigits, maxFractionalDigits) + 's'
+  );
 }
 
 /*
@@ -139,7 +167,12 @@ export function formatSeconds(time: Milliseconds, significantDigits: number = 5,
  * individual numbers and includePercent may be set to false if you do not
  * wish to print the percentage.
  */
-export function formatValueTotal(a: number, b: number, formatNum: (arg0: number) => string = String, includePercent: boolean = true) {
+export function formatValueTotal(
+  a: number,
+  b: number,
+  formatNum: (arg0: number) => string = String,
+  includePercent: boolean = true
+) {
   const value_total = formatNum(a) + ' / ' + formatNum(b);
   let percent = '';
   if (includePercent) {

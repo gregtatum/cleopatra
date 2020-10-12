@@ -2,20 +2,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
-
-
-
 /**
  * Measure the size of text for drawing within a 2d context. This will allow text
  * to be drawn in a constrained space. This class uses a variety of heuristics and
  * caching to make this process fast.
  */
 class TextMeasurement {
-
   _ctx: CanvasRenderingContext2D;
   _cache: {
-    [id: string]: number;
+    [id: string]: number,
   };
   _averageCharWidth: number;
   overflowChar: string;
@@ -39,7 +34,8 @@ class TextMeasurement {
    * @return {number} The average letter width.
    */
   _calcAverageCharWidth(): number {
-    const string = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.()< /:-_';
+    const string =
+      'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.()< /:-_';
     return this.getTextWidth(string) / string.length;
   }
 

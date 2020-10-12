@@ -2,10 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
-import { Store as ReduxStore } from "redux"; // eslint-disable-line import/named
-import { Action as ActionsRef } from "./actions";
-import { State as StateRef } from "./state";
+import { Store as ReduxStore } from 'redux'; // eslint-disable-line import/named
+import { Action as ActionsRef } from './actions';
+import { State as StateRef } from './state';
 
 /**
  * This file contains type definitions for the Redux store. Unlike the definitions
@@ -52,7 +51,12 @@ export type Selector<T> = (arg0: State) => T;
  *
  * See: https://github.com/reduxjs/reselect/blob/master/README.md#q-how-do-i-create-a-selector-that-takes-an-argument
  */
-export type DangerousSelectorWithArguments<T, A1, A2 = void, A3 = void> = (arg0: State, arg1: A1, arg2: A2, arg3: A3) => T;
+export type DangerousSelectorWithArguments<T, A1, A2 = void, A3 = void> = (
+  arg0: State,
+  arg1: A1,
+  arg2: A2,
+  arg3: A3
+) => T;
 
 type ThunkDispatch = <Returns>(action: ThunkAction<Returns>) => Returns;
 type PlainDispatch = (action: Action) => Action;
@@ -61,7 +65,10 @@ export type GetState = () => State;
 /**
  * A thunk action
  */
-export type ThunkAction<Returns> = (dispatch: Dispatch, arg1: GetState) => Returns;
+export type ThunkAction<Returns> = (
+  dispatch: Dispatch,
+  arg1: GetState
+) => Returns;
 
 /**
  * The `dispatch` function can accept either a plain action or a thunk action.

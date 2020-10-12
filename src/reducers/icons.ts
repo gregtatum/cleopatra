@@ -2,16 +2,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
-import { Reducer } from "../types/state";
+import { Reducer } from '../types/state';
 
 const favicons: Reducer<Set<string>> = (state = new Set(), action) => {
   switch (action.type) {
     case 'ICON_HAS_LOADED':
       return new Set([...state, action.icon]);
-    case 'ICON_IN_ERROR':default:
+    case 'ICON_IN_ERROR':
+    default:
       return state;
-
   }
 };
 

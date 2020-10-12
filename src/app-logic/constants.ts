@@ -2,9 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
-
-
 // The current version of the Gecko profile format.
 export const GECKO_PROFILE_VERSION = 19;
 
@@ -25,12 +22,14 @@ export const TRACK_SCREENSHOT_HEIGHT = 50;
 // The following values are for network track.
 export const TRACK_NETWORK_ROW_HEIGHT = 5;
 export const TRACK_NETWORK_ROW_REPEAT = 7;
-export const TRACK_NETWORK_HEIGHT = TRACK_NETWORK_ROW_HEIGHT * TRACK_NETWORK_ROW_REPEAT;
+export const TRACK_NETWORK_HEIGHT =
+  TRACK_NETWORK_ROW_HEIGHT * TRACK_NETWORK_ROW_REPEAT;
 
 // The following values are for memory track.
 export const TRACK_MEMORY_GRAPH_HEIGHT = 25;
 export const TRACK_MEMORY_MARKERS_HEIGHT = 15;
-export const TRACK_MEMORY_HEIGHT = TRACK_MEMORY_GRAPH_HEIGHT + TRACK_MEMORY_MARKERS_HEIGHT;
+export const TRACK_MEMORY_HEIGHT =
+  TRACK_MEMORY_GRAPH_HEIGHT + TRACK_MEMORY_MARKERS_HEIGHT;
 export const TRACK_MEMORY_LINE_WIDTH = 2;
 
 // The following values are for IPC track.

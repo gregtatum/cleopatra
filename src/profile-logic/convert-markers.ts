@@ -2,9 +2,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
-import { GCMinorMarkerPayload, GCMajorMarkerPayload, GCMajorMarkerPayload_Gecko, GCMajorCompleted, PhaseTimes } from "../types/markers";
-import { Milliseconds, Microseconds } from "../types/units";
+import {
+  GCMinorMarkerPayload,
+  GCMajorMarkerPayload,
+  GCMajorMarkerPayload_Gecko,
+  GCMajorCompleted,
+  PhaseTimes,
+} from '../types/markers';
+import { Milliseconds, Microseconds } from '../types/units';
 
 export function upgradeGCMinorMarker(marker8: Object): GCMinorMarkerPayload {
   if ('nursery' in marker8) {
@@ -30,8 +35,8 @@ export function upgradeGCMinorMarker(marker8: Object): GCMinorMarkerPayload {
         bytes_used: marker8.nursery.nursery_bytes,
         // cur_capacity cannot be filled in.
         new_capacity: marker8.nursery.new_nursery_bytes,
-        phase_times: marker8.nursery.timings
-      })
+        phase_times: marker8.nursery.timings,
+      }),
     });
     delete marker.nursery.nursery_bytes;
     delete marker.nursery.new_nursery_bytes;
@@ -44,7 +49,9 @@ export function upgradeGCMinorMarker(marker8: Object): GCMinorMarkerPayload {
 /*
  * Fix the units for GCMajor and GCSlice phase times.
  */
-export function convertPhaseTimes(old_phases: PhaseTimes<Milliseconds>): PhaseTimes<Microseconds> {
+export function convertPhaseTimes(
+  old_phases: PhaseTimes<Milliseconds>
+): PhaseTimes<Microseconds> {
   const phases = {};
   for (const phase in old_phases) {
     phases[phase] = old_phases[phase] * 1000;
@@ -55,7 +62,9 @@ export function convertPhaseTimes(old_phases: PhaseTimes<Milliseconds>): PhaseTi
 /*
  * Upgrade a GCMajor marker in the Gecko profile format.
  */
-export function upgradeGCMajorMarker_Gecko8To9(marker: Object): GCMajorMarkerPayload_Gecko {
+export function upgradeGCMajorMarker_Gecko8To9(
+  marker: Object
+): GCMajorMarkerPayload_Gecko {
   if ('timings' in marker) {
     if (!('status' in marker.timings)) {
       /*
@@ -83,42 +92,38 @@ export function upgradeGCMajorMarker_Gecko8To9(marker: Object): GCMajorMarkerPay
   return marker;
 }
 
-export function upgradeGCMajorMarker_Processed8to9(marker8: Object): GCMajorMarkerPayload {
+export function upgradeGCMajorMarker_Processed8to9(
+  marker8: Object
+): GCMajorMarkerPayload {
   // The Processed 8-to-9 upgrade is a superset of the gecko 8-to-9 upgrade.
   const marker9 = upgradeGCMajorMarker_Gecko8To9(marker8);
   const mt = marker9.timings;
   switch (mt.status) {
-    case 'completed':
-      {
-        const {
-          totals,
-          ...partialMt
-        } = mt;
-        const timings: GCMajorCompleted = {
-          ...partialMt,
-          phase_times: convertPhaseTimes(totals),
-          mmu_20ms: mt.mmu_20ms / 100,
-          mmu_50ms: mt.mmu_50ms / 100
-        };
-        return {
-          type: 'GCMajor',
-          startTime: marker9.startTime,
-          endTime: marker9.endTime,
-          timings: timings
-        };
-      }
-    case 'aborted':
-      {
-        return {
-          type: 'GCMajor',
-          startTime: marker9.startTime,
-          endTime: marker9.endTime,
-          timings: { status: 'aborted' }
-        };
-      }
+    case 'completed': {
+      const { totals, ...partialMt } = mt;
+      const timings: GCMajorCompleted = {
+        ...partialMt,
+        phase_times: convertPhaseTimes(totals),
+        mmu_20ms: mt.mmu_20ms / 100,
+        mmu_50ms: mt.mmu_50ms / 100,
+      };
+      return {
+        type: 'GCMajor',
+        startTime: marker9.startTime,
+        endTime: marker9.endTime,
+        timings: timings,
+      };
+    }
+    case 'aborted': {
+      return {
+        type: 'GCMajor',
+        startTime: marker9.startTime,
+        endTime: marker9.endTime,
+        timings: { status: 'aborted' },
+      };
+    }
     default:
       console.log('Unknown GCMajor status');
       throw new Error('Unknown GCMajor status');
-
   }
 }

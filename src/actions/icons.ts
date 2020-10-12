@@ -2,26 +2,25 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
-import { Action, ThunkAction } from "../types/store";
+import { Action, ThunkAction } from '../types/store';
 
 export function iconHasLoaded(icon: string): Action {
   return {
     type: 'ICON_HAS_LOADED',
-    icon
+    icon,
   };
 }
 
 export function iconIsInError(icon: string): Action {
   return {
     type: 'ICON_IN_ERROR',
-    icon
+    icon,
   };
 }
 
 const icons: Set<string> = new Set();
 
-type IconRequestResult = "loaded" | "error" | "cached";
+type IconRequestResult = 'loaded' | 'error' | 'cached';
 
 function _getIcon(icon: string): Promise<IconRequestResult> {
   if (icons.has(icon)) {
@@ -60,7 +59,6 @@ export function iconStartLoading(icon: string): ThunkAction<Promise<void>> {
           break;
         default:
           throw new Error(`Unknown icon load result ${result}`);
-
       }
     });
   };

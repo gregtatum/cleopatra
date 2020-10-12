@@ -5,14 +5,12 @@
 // Fixed the interfaces, especially added some genericity,
 // and changed so that it can be simply `import`ed.
 
-
-
 // Implemented by window & worker
 export interface IDBEnvironment {
   indexedDB: IDBFactory;
 }
 
-export type IDBDirection = "next" | "nextunique" | "prev" | "prevunique";
+export type IDBDirection = 'next' | 'nextunique' | 'prev' | 'prevunique';
 
 export interface IDBVersionChangeEvent extends Event {
   oldVersion: number;
@@ -29,26 +27,37 @@ export interface IDBFactory {
 export interface IDBRequest<V> extends EventTarget {
   result: V;
   error: Error;
-  source: (IDBIndex<any, any, V> | IDBObjectStore<any, V> | IDBCursor<any, any, V>) | null | undefined;
+  source:
+    | (IDBIndex<any, any, V> | IDBObjectStore<any, V> | IDBCursor<any, any, V>)
+    | null
+    | undefined;
   transaction: IDBTransaction;
-  readyState: "pending" | "done";
-  onerror: (e: Event & {target: IDBRequest<V>;}) => unknown;
-  onsuccess: (e: Event & {target: IDBRequest<V>;}) => unknown;
+  readyState: 'pending' | 'done';
+  onerror: (e: Event & { target: IDBRequest<V> }) => unknown;
+  onsuccess: (e: Event & { target: IDBRequest<V> }) => unknown;
 }
 
 export interface IDBOpenDBRequest extends IDBRequest<IDBDatabase> {
-  onblocked: (e: IDBVersionChangeEvent & {target: IDBDatabase;}) => unknown;
-  onupgradeneeded: (e: IDBVersionChangeEvent & {target: IDBDatabase;}) => unknown;
+  onblocked: (e: IDBVersionChangeEvent & { target: IDBDatabase }) => unknown;
+  onupgradeneeded: (
+    e: IDBVersionChangeEvent & { target: IDBDatabase }
+  ) => unknown;
 }
 
 export interface IDBDatabase extends EventTarget {
   close(): void;
-  createObjectStore<K, V>(name: string, options?: {
-    keyPath?: (string | string[]) | null | undefined;
-    autoIncrement?: boolean;
-  }): IDBObjectStore<K, V>;
+  createObjectStore<K, V>(
+    name: string,
+    options?: {
+      keyPath?: (string | string[]) | null | undefined,
+      autoIncrement?: boolean,
+    }
+  ): IDBObjectStore<K, V>;
   deleteObjectStore(name: string): void;
-  transaction(storeNames: string | string[], mode?: "readonly" | "readwrite" | "versionchange"): IDBTransaction;
+  transaction(
+    storeNames: string | string[],
+    mode?: 'readonly' | 'readwrite' | 'versionchange'
+  ): IDBTransaction;
   name: string;
   version: number;
   objectStoreNames: string[];
@@ -61,7 +70,7 @@ export interface IDBTransaction extends EventTarget {
   abort(): void;
   db: IDBDatabase;
   error: Error;
-  mode: "readonly" | "readwrite" | "versionchange";
+  mode: 'readonly' | 'readwrite' | 'versionchange';
   name: string;
   objectStore<K, V>(name: string): IDBObjectStore<K, V>;
   onabort: (e: Event) => unknown;
@@ -73,10 +82,14 @@ export interface IDBObjectStore<K, V> {
   add(value: V, key?: K | null): IDBRequest<void>;
   autoIncrement: boolean;
   clear(): IDBRequest<void>;
-  createIndex<L>(indexName: string, keyPath: string | string[], optionalParameter?: {
-    unique?: boolean;
-    multiEntry?: boolean;
-  }): IDBIndex<K, L, V>;
+  createIndex<L>(
+    indexName: string,
+    keyPath: string | string[],
+    optionalParameter?: {
+      unique?: boolean,
+      multiEntry?: boolean,
+    }
+  ): IDBIndex<K, L, V>;
   count(keyRange?: K | IDBKeyRange<K>): IDBRequest<number>;
   delete(key: K): IDBRequest<void>;
   deleteIndex(indexName: string): void;
@@ -86,8 +99,14 @@ export interface IDBObjectStore<K, V> {
   indexNames: string[];
   name: string;
   keyPath: string | string[] | null;
-  openCursor(range?: K | IDBKeyRange<K>, direction?: IDBDirection): IDBRequest<IDBCursorWithValue<K, K, V> | null>;
-  openKeyCursor(range?: K | IDBKeyRange<K>, direction?: IDBDirection): IDBRequest<IDBCursor<K, K, V> | null>;
+  openCursor(
+    range?: K | IDBKeyRange<K>,
+    direction?: IDBDirection
+  ): IDBRequest<IDBCursorWithValue<K, K, V> | null>;
+  openKeyCursor(
+    range?: K | IDBKeyRange<K>,
+    direction?: IDBDirection
+  ): IDBRequest<IDBCursor<K, K, V> | null>;
   put(value: V, key?: K): IDBRequest<void>;
   transaction: IDBTransaction;
 }
@@ -96,8 +115,14 @@ export interface IDBIndex<K, L, V> extends EventTarget {
   count(key?: L | IDBKeyRange<L>): IDBRequest<number>;
   get(key: L | IDBKeyRange<L>): IDBRequest<V>;
   getKey(key: L | IDBKeyRange<L>): IDBRequest<K>;
-  openCursor(range?: L | IDBKeyRange<L>, direction?: IDBDirection): IDBRequest<IDBCursorWithValue<K, L, V> | null>;
-  openKeyCursor(range?: L | IDBKeyRange<L>, direction?: IDBDirection): IDBRequest<IDBCursor<K, L, V> | null>;
+  openCursor(
+    range?: L | IDBKeyRange<L>,
+    direction?: IDBDirection
+  ): IDBRequest<IDBCursorWithValue<K, L, V> | null>;
+  openKeyCursor(
+    range?: L | IDBKeyRange<L>,
+    direction?: IDBDirection
+  ): IDBRequest<IDBCursor<K, L, V> | null>;
   name: string;
   objectStore: IDBObjectStore<K, V>;
   keyPath: string | string[] | null;
@@ -108,7 +133,12 @@ export interface IDBIndex<K, L, V> extends EventTarget {
 // TODO - Investigate for correctness, see:
 // https://github.com/firefox-devtools/profiler/issues/718
 export interface IDBKeyRange<K> {
-  bound<J>(lower: J, upper: J, lowerOpen?: boolean, upperOpen?: boolean): IDBKeyRange<J>;
+  bound<J>(
+    lower: J,
+    upper: J,
+    lowerOpen?: boolean,
+    upperOpen?: boolean
+  ): IDBKeyRange<J>;
   only<J>(value: J): IDBKeyRange<J>;
   lowerBound<J>(bound: J, open?: boolean): IDBKeyRange<J>;
   upperBound<J>(bound: J, open?: boolean): IDBKeyRange<J>;

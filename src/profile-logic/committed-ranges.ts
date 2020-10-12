@@ -2,8 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
-import { StartEndRange } from "../types/units";
+import { StartEndRange } from '../types/units';
 
 /**
  * Users can make preview range selections on the profile, and then can commit these
@@ -15,7 +14,9 @@ import { StartEndRange } from "../types/units";
  * Parse URL encoded committed ranges with the form: "start-end~start-end", where
  * `start` and `end` are positive or negative float numbers.
  */
-export function parseCommittedRanges(stringValue: string = ''): StartEndRange[] {
+export function parseCommittedRanges(
+  stringValue: string = ''
+): StartEndRange[] {
   if (!stringValue) {
     return [];
   }
@@ -40,15 +41,16 @@ export function parseCommittedRanges(stringValue: string = ''): StartEndRange[] 
  * Stringify committed ranges into the following form: "start-end~start-end", where
  * `start` and `end` are float numbers.
  */
-export function stringifyCommittedRanges(arrayValue: StartEndRange[] = []): string {
-  return arrayValue.map(({
-    start,
-    end
-  }) => {
-    const startStr = (start / 1000).toFixed(4);
-    const endStr = (end / 1000).toFixed(4);
-    return `${startStr}_${endStr}`;
-  }).join('~');
+export function stringifyCommittedRanges(
+  arrayValue: StartEndRange[] = []
+): string {
+  return arrayValue
+    .map(({ start, end }) => {
+      const startStr = (start / 1000).toFixed(4);
+      const endStr = (end / 1000).toFixed(4);
+      return `${startStr}_${endStr}`;
+    })
+    .join('~');
 }
 
 export function getFormattedTimeLength(length: number): string {
@@ -61,7 +63,11 @@ export function getFormattedTimeLength(length: number): string {
   return `${length.toFixed(0)} ms`;
 }
 
-export function getCommittedRangeLabels(committedRanges: StartEndRange[]): string[] {
-  const labels = committedRanges.map(range => getFormattedTimeLength(range.end - range.start));
+export function getCommittedRangeLabels(
+  committedRanges: StartEndRange[]
+): string[] {
+  const labels = committedRanges.map(range =>
+    getFormattedTimeLength(range.end - range.start)
+  );
   return labels;
 }

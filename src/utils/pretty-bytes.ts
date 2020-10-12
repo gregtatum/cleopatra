@@ -3,11 +3,9 @@
 // Copied here because we needed it in ES2015 module form. Also flow-typed.
 // Otherwise not modified.
 
-
-
 const UNITS = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 
-export default ((num: number): string => {
+export default (num: number): string => {
   if (!Number.isFinite(num)) {
     throw new TypeError(`Expected a finite number, got ${typeof num}: ${num}`);
   }
@@ -27,4 +25,4 @@ export default ((num: number): string => {
   const unit = UNITS[exponent];
 
   return (neg ? '-' : '') + numStr + ' ' + unit;
-});
+};

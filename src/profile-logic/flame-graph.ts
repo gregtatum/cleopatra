@@ -2,11 +2,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
-import { UnitIntervalOfProfileRange } from "../types/units";
-import { Thread } from "../types/profile";
-import { CallNodeInfo, CallNodeTable, IndexIntoCallNodeTable } from "../types/profile-derived";
-import { CallTreeCountsAndTimings } from "./call-tree";
+import { UnitIntervalOfProfileRange } from '../types/units';
+import { Thread } from '../types/profile';
+import {
+  CallNodeInfo,
+  CallNodeTable,
+  IndexIntoCallNodeTable,
+} from '../types/profile-derived';
+import { CallTreeCountsAndTimings } from './call-tree';
 
 export type FlameGraphDepth = number;
 export type IndexIntoFlameGraphTiming = number;
@@ -27,11 +30,11 @@ export type IndexIntoFlameGraphTiming = number;
  * which is used to color the drawn functions.
  */
 export type FlameGraphTiming = Array<{
-  start: UnitIntervalOfProfileRange[];
-  end: UnitIntervalOfProfileRange[];
-  selfTimeRelative: Array<number>;
-  callNode: IndexIntoCallNodeTable[];
-  length: number;
+  start: UnitIntervalOfProfileRange[],
+  end: UnitIntervalOfProfileRange[],
+  selfTimeRelative: Array<number>,
+  callNode: IndexIntoCallNodeTable[],
+  length: number,
 }>;
 
 type RootsAndChildren = {
@@ -57,14 +60,14 @@ type RootsAndChildren = {
   children: {
     // Array of IndexIntoCallNodeTable. This is a concatenation of all
     // children sub-arrays.
-    array: Uint32Array;
+    array: Uint32Array,
     // This array maps a given IndexIntoCallNodeTable to a slice
     // within `array` by providing start and end indices.
-    offsets: Uint32Array;
-  };
+    offsets: Uint32Array,
+  },
 
   // A list of every root CallNodeIndex in the call tree.
-  roots: IndexIntoCallNodeTable[];
+  roots: IndexIntoCallNodeTable[],
 };
 
 /**
@@ -75,7 +78,12 @@ type RootsAndChildren = {
  * for all children of the call tree. Along with the children array is
  * an offset array used to index into it.
  */
-export function getRootsAndChildren(thread: Thread, callNodeTable: CallNodeTable, callNodeChildCount: Uint32Array, totalTime: Float32Array): RootsAndChildren {
+export function getRootsAndChildren(
+  thread: Thread,
+  callNodeTable: CallNodeTable,
+  callNodeChildCount: Uint32Array,
+  totalTime: Float32Array
+): RootsAndChildren {
   const roots = [];
   const array = new Uint32Array(callNodeTable.length);
   const offsets = new Uint32Array(callNodeTable.length + 1);
@@ -108,7 +116,9 @@ export function getRootsAndChildren(thread: Thread, callNodeTable: CallNodeTable
       continue;
     }
 
-    const funcName = thread.stringTable.getString(thread.funcTable.name[callNodeTable.func[callNodeIndex]]);
+    const funcName = thread.stringTable.getString(
+      thread.funcTable.name[callNodeTable.func[callNodeIndex]]
+    );
 
     /* From the parent, we can now know the slice allotted for all
      * its children. */
@@ -131,7 +141,13 @@ export function getRootsAndChildren(thread: Thread, callNodeTable: CallNodeTable
      */
     let i = start;
     while (i < end) {
-      if (array[i + 1] !== 0 && funcName > thread.stringTable.getString(thread.funcTable.name[callNodeTable.func[array[i + 1]]])) {
+      if (
+        array[i + 1] !== 0 &&
+        funcName >
+          thread.stringTable.getString(
+            thread.funcTable.name[callNodeTable.func[array[i + 1]]]
+          )
+      ) {
         // We've found our spot if the next slot in the array is
         // occupied with a callnode whose function name is less than
         // ours.
@@ -150,34 +166,37 @@ export function getRootsAndChildren(thread: Thread, callNodeTable: CallNodeTable
 /**
  * Build a FlameGraphTiming table from a call tree.
  */
-export function getFlameGraphTiming(thread: Thread, callNodeInfo: CallNodeInfo, callTreeCountsAndTimings: CallTreeCountsAndTimings): FlameGraphTiming {
+export function getFlameGraphTiming(
+  thread: Thread,
+  callNodeInfo: CallNodeInfo,
+  callTreeCountsAndTimings: CallTreeCountsAndTimings
+): FlameGraphTiming {
   const {
     callNodeChildCount,
     callNodeTimes,
-    rootTotalTime
+    rootTotalTime,
   } = callTreeCountsAndTimings;
 
-  const {
-    roots,
-    children
-  } = getRootsAndChildren(thread, callNodeInfo.callNodeTable, callNodeChildCount, callNodeTimes.totalTime);
+  const { roots, children } = getRootsAndChildren(
+    thread,
+    callNodeInfo.callNodeTable,
+    callNodeChildCount,
+    callNodeTimes.totalTime
+  );
   const timing = [];
 
   // Array of call nodes to recursively process in the loop below.
   // Start with the roots of the call tree.
   const stack: Array<{
-    depth: number;
-    nodeIndex: IndexIntoCallNodeTable;
+    depth: number,
+    nodeIndex: IndexIntoCallNodeTable,
   }> = roots.map(nodeIndex => ({ nodeIndex, depth: 0 }));
 
   // Keep track of time offset by depth level.
   const timeOffset = [0.0];
 
   while (stack.length) {
-    const {
-      depth,
-      nodeIndex
-    } = stack.pop();
+    const { depth, nodeIndex } = stack.pop();
 
     // Select an existing row, or create a new one.
     let row = timing[depth];
@@ -187,14 +206,18 @@ export function getFlameGraphTiming(thread: Thread, callNodeInfo: CallNodeInfo, 
         end: [],
         selfTimeRelative: [],
         callNode: [],
-        length: 0
+        length: 0,
       };
       timing[depth] = row;
     }
 
     // Take the absolute time, as native deallocations can be negative.
-    const totalTimeRelative = Math.abs(callNodeTimes.totalTime[nodeIndex] / rootTotalTime);
-    const selfTimeRelative = Math.abs(callNodeTimes.selfTime[nodeIndex] / rootTotalTime);
+    const totalTimeRelative = Math.abs(
+      callNodeTimes.totalTime[nodeIndex] / rootTotalTime
+    );
+    const selfTimeRelative = Math.abs(
+      callNodeTimes.selfTime[nodeIndex] / rootTotalTime
+    );
 
     // Compute the timing information.
     row.start.push(timeOffset[depth]);
@@ -212,7 +235,11 @@ export function getFlameGraphTiming(thread: Thread, callNodeInfo: CallNodeInfo, 
     // The items in the children array are sorted in descending order,
     // but since they are popped from the stack at the top of the
     // while loop they'll be processed in ascending order.
-    for (let offset = children.offsets[nodeIndex]; offset < children.offsets[nodeIndex + 1]; offset++) {
+    for (
+      let offset = children.offsets[nodeIndex];
+      offset < children.offsets[nodeIndex + 1];
+      offset++
+    ) {
       stack.push({ nodeIndex: children.array[offset], depth: depth + 1 });
     }
   }

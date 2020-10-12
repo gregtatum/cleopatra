@@ -2,12 +2,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+import { combineReducers } from 'redux';
+import { getShouldSanitizeByDefault } from '../profile-logic/sanitize';
 
-import { combineReducers } from "redux";
-import { getShouldSanitizeByDefault } from "../profile-logic/sanitize";
-
-import { CheckedSharingOptions } from "../types/actions";
-import { PublishState, UploadState, UploadPhase, Reducer, State } from "../types/state";
+import { CheckedSharingOptions } from '../types/actions';
+import {
+  PublishState,
+  UploadState,
+  UploadPhase,
+  Reducer,
+  State,
+} from '../types/state';
 
 function _getDefaultSharingOptions(): CheckedSharingOptions {
   return {
@@ -16,31 +21,32 @@ function _getDefaultSharingOptions(): CheckedSharingOptions {
     includeScreenshots: false,
     includeUrls: false,
     includeExtension: false,
-    includePreferenceValues: false
+    includePreferenceValues: false,
   };
 }
 
-const checkedSharingOptions: Reducer<CheckedSharingOptions> = (state = _getDefaultSharingOptions(), action) => {
+const checkedSharingOptions: Reducer<CheckedSharingOptions> = (
+  state = _getDefaultSharingOptions(),
+  action
+) => {
   switch (action.type) {
-    case 'PROFILE_LOADED':
-      {
-        const newState = _getDefaultSharingOptions();
-        if (!getShouldSanitizeByDefault(action.profile)) {
-          // Flip the sharing options.
-          for (const key of Object.keys(newState)) {
-            newState[key] = true;
-          }
+    case 'PROFILE_LOADED': {
+      const newState = _getDefaultSharingOptions();
+      if (!getShouldSanitizeByDefault(action.profile)) {
+        // Flip the sharing options.
+        for (const key of Object.keys(newState)) {
+          newState[key] = true;
         }
-        return newState;
       }
+      return newState;
+    }
     case 'TOGGLE_CHECKED_SHARING_OPTION':
       return {
         ...state,
-        [action.slug]: !state[action.slug]
+        [action.slug]: !state[action.slug],
       };
     default:
       return state;
-
   }
 };
 
@@ -63,15 +69,16 @@ const phase: Reducer<UploadPhase> = (state = 'local', action) => {
       return 'compressing';
     case 'UPLOAD_STARTED':
       return 'uploading';
-    case 'PROFILE_PUBLISHED':case 'SANITIZED_PROFILE_PUBLISHED':
+    case 'PROFILE_PUBLISHED':
+    case 'SANITIZED_PROFILE_PUBLISHED':
       return 'uploaded';
     case 'UPLOAD_FAILED':
       return 'error';
-    case 'UPLOAD_ABORTED':case 'UPLOAD_RESET':
+    case 'UPLOAD_ABORTED':
+    case 'UPLOAD_RESET':
       return 'local';
     default:
       return state;
-
   }
 };
 
@@ -81,11 +88,16 @@ const uploadProgress: Reducer<number> = (state = 0, action) => {
       return action.uploadProgress;
     // Not all of these upload actions really need to be here, but it's nice to
     // explicitly list them all here.
-    case 'UPLOAD_STARTED':case 'UPLOAD_ABORTED':case 'UPLOAD_RESET':case 'PROFILE_PUBLISHED':case 'SANITIZED_PROFILE_PUBLISHED':case 'UPLOAD_COMPRESSION_STARTED':case 'UPLOAD_FAILED':
+    case 'UPLOAD_STARTED':
+    case 'UPLOAD_ABORTED':
+    case 'UPLOAD_RESET':
+    case 'PROFILE_PUBLISHED':
+    case 'SANITIZED_PROFILE_PUBLISHED':
+    case 'UPLOAD_COMPRESSION_STARTED':
+    case 'UPLOAD_FAILED':
       return 0;
     default:
       return state;
-
   }
 };
 
@@ -98,20 +110,21 @@ const error: Reducer<Error | unknown> = (state = null, action) => {
       return null;
     default:
       return state;
-
   }
 };
 
 const noop = () => {};
 const abortFunction: Reducer<() => void> = (state = noop, action) => {
   switch (action.type) {
-    case 'UPLOAD_ABORTED':case 'PROFILE_PUBLISHED':case 'SANITIZED_PROFILE_PUBLISHED':case 'UPLOAD_FAILED':
+    case 'UPLOAD_ABORTED':
+    case 'PROFILE_PUBLISHED':
+    case 'SANITIZED_PROFILE_PUBLISHED':
+    case 'UPLOAD_FAILED':
       return noop;
     case 'UPLOAD_STARTED':
       return action.abortFunction;
     default:
       return state;
-
   }
 };
 
@@ -120,12 +133,14 @@ const abortFunction: Reducer<() => void> = (state = noop, action) => {
  */
 const generation: Reducer<number> = (state = 0, action) => {
   switch (action.type) {
-    case 'PROFILE_PUBLISHED':case 'SANITIZED_PROFILE_PUBLISHED':case 'UPLOAD_ABORTED':case 'UPLOAD_FAILED':
+    case 'PROFILE_PUBLISHED':
+    case 'SANITIZED_PROFILE_PUBLISHED':
+    case 'UPLOAD_ABORTED':
+    case 'UPLOAD_FAILED':
       // Increment the generation value when exiting out of the profile uploading.
       return state + 1;
     default:
       return state;
-
   }
 };
 
@@ -134,7 +149,7 @@ const upload: Reducer<UploadState> = combineReducers({
   uploadProgress,
   abortFunction,
   error,
-  generation
+  generation,
 });
 
 /**
@@ -143,13 +158,13 @@ const upload: Reducer<UploadState> = combineReducers({
  */
 const prePublishedState: Reducer<null | State> = (state = null, action) => {
   switch (action.type) {
-    case 'SANITIZED_PROFILE_PUBLISHED':case 'PROFILE_PUBLISHED':
+    case 'SANITIZED_PROFILE_PUBLISHED':
+    case 'PROFILE_PUBLISHED':
       return action.prePublishedState;
     case 'REVERT_TO_PRE_PUBLISHED_STATE':
       return null;
     default:
       return state;
-
   }
 };
 
@@ -164,11 +179,11 @@ const isHidingStaleProfile: Reducer<boolean> = (state = false, action) => {
   switch (action.type) {
     case 'HIDE_STALE_PROFILE':
       return true;
-    case 'VIEW_FULL_PROFILE':case 'VIEW_ACTIVE_TAB_PROFILE':
+    case 'VIEW_FULL_PROFILE':
+    case 'VIEW_ACTIVE_TAB_PROFILE':
       return false;
     default:
       return state;
-
   }
 };
 
@@ -182,7 +197,6 @@ const hasSanitizedProfile: Reducer<boolean> = (state = false, action) => {
       return true;
     default:
       return state;
-
   }
 };
 
@@ -191,7 +205,7 @@ const publishReducer: Reducer<PublishState> = combineReducers({
   upload,
   isHidingStaleProfile,
   hasSanitizedProfile,
-  prePublishedState
+  prePublishedState,
 });
 
 export default publishReducer;

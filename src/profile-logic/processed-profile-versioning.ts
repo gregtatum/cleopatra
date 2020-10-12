@@ -2,9 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
-
-
 /**
  * This file deals with old versions of the "processed" profile format,
  * i.e. the format that profiler.firefox.com uses internally. Profiles in this format
@@ -13,12 +10,16 @@
  * past, regardless of their version. So this file upgrades old profiles to
  * the current format.
  */
-import { sortDataTable } from "../utils/data-table-utils";
-import { resourceTypes } from "./data-structures";
-import { upgradeGCMinorMarker, upgradeGCMajorMarker_Processed8to9, convertPhaseTimes } from "./convert-markers";
-import { UniqueStringArray } from "../utils/unique-string-array";
-import { timeCode } from "../utils/time-code";
-import { PROCESSED_PROFILE_VERSION } from "../app-logic/constants";
+import { sortDataTable } from '../utils/data-table-utils';
+import { resourceTypes } from './data-structures';
+import {
+  upgradeGCMinorMarker,
+  upgradeGCMajorMarker_Processed8to9,
+  convertPhaseTimes,
+} from './convert-markers';
+import { UniqueStringArray } from '../utils/unique-string-array';
+import { timeCode } from '../utils/time-code';
+import { PROCESSED_PROFILE_VERSION } from '../app-logic/constants';
 
 // Processed profiles before version 1 did not have a profile.meta.preprocessedProfileVersion
 // field. Treat those as version zero.
@@ -32,7 +33,11 @@ export function isProcessedProfile(profile: Object): boolean {
   }
 
   // This could also be a pre-version 1 profile.
-  return ('threads' in profile && profile.threads.length >= 1 && 'stringArray' in profile.threads[0]);
+  return (
+    'threads' in profile &&
+    profile.threads.length >= 1 &&
+    'stringArray' in profile.threads[0]
+  );
 }
 
 /**
@@ -42,17 +47,26 @@ export function isProcessedProfile(profile: Object): boolean {
  *                         i.e. stringArray instead of stringTable.
  */
 export function upgradeProcessedProfileToCurrentVersion(profile: Object) {
-  const profileVersion = profile.meta.preprocessedProfileVersion || UNANNOTATED_VERSION;
+  const profileVersion =
+    profile.meta.preprocessedProfileVersion || UNANNOTATED_VERSION;
   if (profileVersion === PROCESSED_PROFILE_VERSION) {
     return;
   }
 
   if (profileVersion > PROCESSED_PROFILE_VERSION) {
-    throw new Error(`Unable to parse a processed profile of version ${profileVersion}, most likely profiler.firefox.com needs to be refreshed. ` + `The most recent version understood by this version of profiler.firefox.com is version ${PROCESSED_PROFILE_VERSION}.\n` + 'You can try refreshing this page in case profiler.firefox.com has updated in the meantime.');
+    throw new Error(
+      `Unable to parse a processed profile of version ${profileVersion}, most likely profiler.firefox.com needs to be refreshed. ` +
+        `The most recent version understood by this version of profiler.firefox.com is version ${PROCESSED_PROFILE_VERSION}.\n` +
+        'You can try refreshing this page in case profiler.firefox.com has updated in the meantime.'
+    );
   }
 
   // Convert to PROCESSED_PROFILE_VERSION, one step at a time.
-  for (let destVersion = profileVersion + 1; destVersion <= PROCESSED_PROFILE_VERSION; destVersion++) {
+  for (
+    let destVersion = profileVersion + 1;
+    destVersion <= PROCESSED_PROFILE_VERSION;
+    destVersion++
+  ) {
     if (destVersion in _upgraders) {
       _upgraders[destVersion](profile);
     }
@@ -80,16 +94,23 @@ function _mutateProfileToEnsureCauseBacktraces(profile) {
   for (const thread of profile.threads) {
     for (let i = 0; i < thread.markers.length; i++) {
       const marker = thread.markers.data[i];
-      const adjustTimestampBy = thread.processType === 'default' ? 0 : thread.processStartupTime;
+      const adjustTimestampBy =
+        thread.processType === 'default' ? 0 : thread.processStartupTime;
       if (marker) {
-        if ('stack' in marker && marker.stack && marker.stack.samples.data.length > 0) {
+        if (
+          'stack' in marker &&
+          marker.stack &&
+          marker.stack.samples.data.length > 0
+        ) {
           const syncProfile = marker.stack;
-          const stackIndex = syncProfile.samples.data[0][syncProfile.samples.schema.stack];
-          const timeRelativeToProcess = syncProfile.samples.data[0][syncProfile.samples.schema.time];
+          const stackIndex =
+            syncProfile.samples.data[0][syncProfile.samples.schema.stack];
+          const timeRelativeToProcess =
+            syncProfile.samples.data[0][syncProfile.samples.schema.time];
           if (stackIndex !== null) {
             marker.cause = {
               time: timeRelativeToProcess + adjustTimestampBy,
-              stack: stackIndex
+              stack: stackIndex,
             };
           }
         }
@@ -104,33 +125,73 @@ function _mutateProfileToEnsureCauseBacktraces(profile) {
  */
 function _guessMarkerCategories(profile: Object) {
   // [key, categoryName]
-  const keyToCategoryName = [['DOMEvent', 'DOM'], ['Navigation::DOMComplete', 'DOM'], ['Navigation::DOMInteractive', 'DOM'], ['Navigation::Start', 'DOM'], ['UserTiming', 'DOM'], ['CC', 'GC / CC'], ['GCMajor', 'GC / CC'], ['GCMinor', 'GC / CC'], ['GCSlice', 'GC / CC'], ['Paint', 'Graphics'], ['VsyncTimestamp', 'Graphics'], ['CompositorScreenshot', 'Graphics'], ['JS allocation', 'JavaScript'], ['Styles', 'Layout'], ['nsRefreshDriver::Tick waiting for paint', 'Layout'], ['Navigation', 'Network'], ['Network', 'Network'], // Explicitly 'Other'
-  ['firstLoadURI', 'Other'], ['IPC', 'Other'], ['Text', 'Other'], ['MainThreadLongTask', 'Other'], ['FileIO', 'Other'], ['Log', 'Other'], ['PreferenceRead', 'Other'], ['BHR-detected hang', 'Other'], ['MainThreadLongTask', 'Other']];
+  const keyToCategoryName = [
+    ['DOMEvent', 'DOM'],
+    ['Navigation::DOMComplete', 'DOM'],
+    ['Navigation::DOMInteractive', 'DOM'],
+    ['Navigation::Start', 'DOM'],
+    ['UserTiming', 'DOM'],
+    ['CC', 'GC / CC'],
+    ['GCMajor', 'GC / CC'],
+    ['GCMinor', 'GC / CC'],
+    ['GCSlice', 'GC / CC'],
+    ['Paint', 'Graphics'],
+    ['VsyncTimestamp', 'Graphics'],
+    ['CompositorScreenshot', 'Graphics'],
+    ['JS allocation', 'JavaScript'],
+    ['Styles', 'Layout'],
+    ['nsRefreshDriver::Tick waiting for paint', 'Layout'],
+    ['Navigation', 'Network'],
+    ['Network', 'Network'], // Explicitly 'Other'
+    ['firstLoadURI', 'Other'],
+    ['IPC', 'Other'],
+    ['Text', 'Other'],
+    ['MainThreadLongTask', 'Other'],
+    ['FileIO', 'Other'],
+    ['Log', 'Other'],
+    ['PreferenceRead', 'Other'],
+    ['BHR-detected hang', 'Other'],
+    ['MainThreadLongTask', 'Other'],
+  ];
 
   // Make sure the default categories are present since we may want to refer them.
-  for (const defaultCategory of [{ name: 'Idle', color: 'transparent', subcategories: ['Other'] }, { name: 'Other', color: 'grey', subcategories: ['Other'] }, { name: 'Layout', color: 'purple', subcategories: ['Other'] }, { name: 'JavaScript', color: 'yellow', subcategories: ['Other'] }, { name: 'GC / CC', color: 'orange', subcategories: ['Other'] }, { name: 'Network', color: 'lightblue', subcategories: ['Other'] }, { name: 'Graphics', color: 'green', subcategories: ['Other'] }, { name: 'DOM', color: 'blue', subcategories: ['Other'] }]) {
-    const index = profile.meta.categories.findIndex(category => category.name === defaultCategory.name);
+  for (const defaultCategory of [
+    { name: 'Idle', color: 'transparent', subcategories: ['Other'] },
+    { name: 'Other', color: 'grey', subcategories: ['Other'] },
+    { name: 'Layout', color: 'purple', subcategories: ['Other'] },
+    { name: 'JavaScript', color: 'yellow', subcategories: ['Other'] },
+    { name: 'GC / CC', color: 'orange', subcategories: ['Other'] },
+    { name: 'Network', color: 'lightblue', subcategories: ['Other'] },
+    { name: 'Graphics', color: 'green', subcategories: ['Other'] },
+    { name: 'DOM', color: 'blue', subcategories: ['Other'] },
+  ]) {
+    const index = profile.meta.categories.findIndex(
+      category => category.name === defaultCategory.name
+    );
     if (index === -1) {
       // Add on any unknown categories.
       profile.meta.categories.push(defaultCategory);
     }
   }
 
-  const otherCategory = profile.meta.categories.findIndex(category => category.name === 'Other');
+  const otherCategory = profile.meta.categories.findIndex(
+    category => category.name === 'Other'
+  );
 
-  const keyToCategoryIndex: Map<string, number> = new Map(keyToCategoryName.map(([key, categoryName]) => {
-    const index = profile.meta.categories.findIndex(category => category.name === categoryName);
-    if (index === -1) {
-      throw new Error('Could not find a category index to map to.');
-    }
-    return [key, index];
-  }));
+  const keyToCategoryIndex: Map<string, number> = new Map(
+    keyToCategoryName.map(([key, categoryName]) => {
+      const index = profile.meta.categories.findIndex(
+        category => category.name === categoryName
+      );
+      if (index === -1) {
+        throw new Error('Could not find a category index to map to.');
+      }
+      return [key, index];
+    })
+  );
 
   for (const thread of profile.threads) {
-    const {
-      markers,
-      stringArray
-    } = thread;
+    const { markers, stringArray } = thread;
     if (!markers.category) {
       // Only create the category if it's needed.
       markers.category = [];
@@ -191,7 +252,9 @@ const _upgraders = {
         if (!('debugName' in lib)) {
           lib.debugName = lib.pdbName;
           lib.path = lib.name;
-          lib.name = lib.debugName.endsWith('.pdb') ? lib.debugName.substr(0, lib.debugName.length - 4) : lib.debugName;
+          lib.name = lib.debugName.endsWith('.pdb')
+            ? lib.debugName.substr(0, lib.debugName.length - 4)
+            : lib.debugName;
           lib.arch = _archFromAbi(profile.meta.abi);
           delete lib.pdbName;
           delete lib.pdbAge;
@@ -212,11 +275,7 @@ const _upgraders = {
   },
   [4]: profile => {
     profile.threads.forEach(thread => {
-      const {
-        funcTable,
-        stringArray,
-        resourceTable
-      } = thread;
+      const { funcTable, stringArray, resourceTable } = thread;
       const stringTable = new UniqueStringArray(stringArray);
 
       // resourceTable gains a new field ("host") and a new resourceType:
@@ -234,7 +293,7 @@ const _upgraders = {
         lib: [],
         icon: [],
         addonId: [],
-        host: []
+        host: [],
       };
       function addLibResource(name, lib) {
         const index = newResourceTable.length++;
@@ -255,12 +314,24 @@ const _upgraders = {
       }
       const oldResourceToNewResourceMap = new Map();
       const originToResourceIndex = new Map();
-      for (let resourceIndex = 0; resourceIndex < resourceTable.length; resourceIndex++) {
+      for (
+        let resourceIndex = 0;
+        resourceIndex < resourceTable.length;
+        resourceIndex++
+      ) {
         if (resourceTable.type[resourceIndex] === resourceTypes.library) {
-          oldResourceToNewResourceMap.set(resourceIndex, newResourceTable.length);
-          addLibResource(resourceTable.name[resourceIndex], resourceTable.lib[resourceIndex]);
+          oldResourceToNewResourceMap.set(
+            resourceIndex,
+            newResourceTable.length
+          );
+          addLibResource(
+            resourceTable.name[resourceIndex],
+            resourceTable.lib[resourceIndex]
+          );
         } else if (resourceTable.type[resourceIndex] === resourceTypes.url) {
-          const scriptURI = stringTable.getString(resourceTable.name[resourceIndex]);
+          const scriptURI = stringTable.getString(
+            resourceTable.name[resourceIndex]
+          );
           let newResourceIndex = null;
           let origin, host;
           try {
@@ -300,13 +371,17 @@ const _upgraders = {
       for (let funcIndex = 0; funcIndex < funcTable.length; funcIndex++) {
         const oldResourceIndex = funcTable.resource[funcIndex];
         if (oldResourceToNewResourceMap.has(oldResourceIndex)) {
-          funcTable.resource[funcIndex] = oldResourceToNewResourceMap.get(oldResourceIndex);
+          funcTable.resource[funcIndex] = oldResourceToNewResourceMap.get(
+            oldResourceIndex
+          );
         }
         let fileName = null;
         let lineNumber = null;
         if (funcTable.isJS[funcIndex]) {
           const funcName = stringTable.getString(funcTable.name[funcIndex]);
-          const match = /^(.*) \((.*):([0-9]+)\)$/.exec(funcName) || /^()(.*):([0-9]+)$/.exec(funcName);
+          const match =
+            /^(.*) \((.*):([0-9]+)\)$/.exec(funcName) ||
+            /^()(.*):([0-9]+)$/.exec(funcName);
           if (match) {
             const scriptURI = _getRealScriptURI(match[2]);
             if (match[1]) {
@@ -335,10 +410,7 @@ const _upgraders = {
   [6]: profile => {
     // The type field for DOMEventMarkerPayload was renamed to eventType.
     for (const thread of profile.threads) {
-      const {
-        stringArray,
-        markers
-      } = thread;
+      const { stringArray, markers } = thread;
       const stringTable = new UniqueStringArray(stringArray);
       const newDataArray = [];
       for (let i = 0; i < markers.length; i++) {
@@ -350,7 +422,7 @@ const _upgraders = {
             startTime: data.startTime,
             endTime: data.endTime,
             eventType: data.type,
-            phase: data.phase
+            phase: data.phase,
           };
         } else {
           newDataArray[i] = data;
@@ -398,10 +470,7 @@ const _upgraders = {
       if (thread.processType === 'default') {
         continue;
       }
-      const {
-        stringArray,
-        markers
-      } = thread;
+      const { stringArray, markers } = thread;
       const stringTable = new UniqueStringArray(stringArray);
       const newDataArray = [];
       for (let i = 0; i < markers.length; i++) {
@@ -414,7 +483,7 @@ const _upgraders = {
             endTime: data.endTime,
             timeStamp: data.timeStamp + thread.processStartupTime,
             eventType: data.eventType,
-            phase: data.phase
+            phase: data.phase,
           };
         } else {
           newDataArray[i] = data;
@@ -435,7 +504,9 @@ const _upgraders = {
               break;
             case 'GCSlice':
               if (marker.timings && marker.timings.times) {
-                marker.timings.phase_times = convertPhaseTimes(marker.timings.times);
+                marker.timings.phase_times = convertPhaseTimes(
+                  marker.timings.times
+                );
                 delete marker.timings.times;
               }
 
@@ -445,7 +516,6 @@ const _upgraders = {
               break;
             default:
               break;
-
           }
           thread.markers.data[i] = marker;
         }
@@ -471,10 +541,7 @@ const _upgraders = {
     // to change the old DOMEvent marker and also create an end marker for each
     // DOMEvent.
     for (const thread of profile.threads) {
-      const {
-        stringArray,
-        markers
-      } = thread;
+      const { stringArray, markers } = thread;
       if (markers.length === 0) {
         continue;
       }
@@ -491,7 +558,7 @@ const _upgraders = {
             timeStamp: data.timeStamp,
             interval: 'start',
             eventType: data.eventType,
-            phase: data.phase
+            phase: data.phase,
           };
 
           extraMarkers.push({
@@ -501,10 +568,10 @@ const _upgraders = {
               timeStamp: data.timeStamp,
               interval: 'end',
               eventType: data.eventType,
-              phase: data.phase
+              phase: data.phase,
             },
             time: data.endTime,
-            name: markers.name[i]
+            name: markers.name[i],
           });
         }
       }
@@ -518,7 +585,7 @@ const _upgraders = {
           length: 0,
           name: [],
           time: [],
-          data: []
+          data: [],
         };
 
         // We compute the new markers list by doing one forward pass. Both the
@@ -529,7 +596,10 @@ const _upgraders = {
         let nextOldMarkerTime = markers.time[0];
         let nextExtraMarkerIndex = 0;
         let nextExtraMarkerTime = extraMarkers[0].time;
-        while (nextOldMarkerIndex < markers.length || nextExtraMarkerIndex < extraMarkers.length) {
+        while (
+          nextOldMarkerIndex < markers.length ||
+          nextExtraMarkerIndex < extraMarkers.length
+        ) {
           // Pick the next marker based on its timestamp.
           if (nextOldMarkerTime <= nextExtraMarkerTime) {
             newMarkers.name.push(markers.name[nextOldMarkerIndex]);
@@ -537,14 +607,20 @@ const _upgraders = {
             newMarkers.data.push(markers.data[nextOldMarkerIndex]);
             newMarkers.length++;
             nextOldMarkerIndex++;
-            nextOldMarkerTime = nextOldMarkerIndex < markers.length ? markers.time[nextOldMarkerIndex] : Infinity;
+            nextOldMarkerTime =
+              nextOldMarkerIndex < markers.length
+                ? markers.time[nextOldMarkerIndex]
+                : Infinity;
           } else {
             newMarkers.name.push(extraMarkers[nextExtraMarkerIndex].name);
             newMarkers.time.push(extraMarkers[nextExtraMarkerIndex].time);
             newMarkers.data.push(extraMarkers[nextExtraMarkerIndex].data);
             newMarkers.length++;
             nextExtraMarkerIndex++;
-            nextExtraMarkerTime = nextExtraMarkerIndex < extraMarkers.length ? extraMarkers[nextExtraMarkerIndex].time : Infinity;
+            nextExtraMarkerTime =
+              nextExtraMarkerIndex < extraMarkers.length
+                ? extraMarkers[nextExtraMarkerIndex].time
+                : Infinity;
           }
         }
 
@@ -569,31 +645,40 @@ const _upgraders = {
     // "best guess" approach, that may not get the information completely correct.
     // This list can safely be updated in the future, if needed, to help better refine
     // the categories.
-    profile.meta.categories = [{
-      name: 'Idle',
-      color: 'transparent'
-    }, {
-      name: 'Other',
-      color: 'grey'
-    }, {
-      name: 'JavaScript',
-      color: 'yellow'
-    }, {
-      name: 'Layout',
-      color: 'purple'
-    }, {
-      name: 'Graphics',
-      color: 'green'
-    }, {
-      name: 'DOM',
-      color: 'blue'
-    }, {
-      name: 'GC / CC',
-      color: 'orange'
-    }, {
-      name: 'Network',
-      color: 'lightblue'
-    }];
+    profile.meta.categories = [
+      {
+        name: 'Idle',
+        color: 'transparent',
+      },
+      {
+        name: 'Other',
+        color: 'grey',
+      },
+      {
+        name: 'JavaScript',
+        color: 'yellow',
+      },
+      {
+        name: 'Layout',
+        color: 'purple',
+      },
+      {
+        name: 'Graphics',
+        color: 'green',
+      },
+      {
+        name: 'DOM',
+        color: 'blue',
+      },
+      {
+        name: 'GC / CC',
+        color: 'orange',
+      },
+      {
+        name: 'Network',
+        color: 'lightblue',
+      },
+    ];
     const IDLE = 0;
     const OTHER = 1;
     const JS = 2;
@@ -603,38 +688,83 @@ const _upgraders = {
     const GCCC = 6;
     const NETWORK = 7;
     const oldCategoryToNewCategory = {
-      [1 << 4
-      /* OTHER */
-      ]: OTHER,
-      [1 << 5
-      /* CSS */
-      ]: LAYOUT,
-      [1 << 6
-      /* JS */
-      ]: JS,
-      [1 << 7
-      /* GC */
-      ]: GCCC,
-      [1 << 8
-      /* CC */
-      ]: GCCC,
-      [1 << 9
-      /* NETWORK */
-      ]: NETWORK,
-      [1 << 10
-      /* GRAPHICS */
-      ]: GRAPHICS,
-      [1 << 11
-      /* STORAGE */
-      ]: OTHER,
-      [1 << 12
-      /* EVENTS */
-      ]: OTHER
+      [1 << 4]:
+        /* OTHER */
+        OTHER,
+      [1 << 5]:
+        /* CSS */
+        LAYOUT,
+      [1 << 6]:
+        /* JS */
+        JS,
+      [1 << 7]:
+        /* GC */
+        GCCC,
+      [1 << 8]:
+        /* CC */
+        GCCC,
+      [1 << 9]:
+        /* NETWORK */
+        NETWORK,
+      [1 << 10]:
+        /* GRAPHICS */
+        GRAPHICS,
+      [1 << 11]:
+        /* STORAGE */
+        OTHER,
+      [1 << 12]:
+        /* EVENTS */
+        OTHER,
     };
     // This is the list of function names that are used to map to categories.
-    const exactMatches = new Map([['-[GeckoNSApplication nextEventMatchingMask:untilDate:inMode:dequeue:]', IDLE], ['base::MessagePumpDefault::Run(base::MessagePump::Delegate*)', IDLE], ['mozilla::widget::WinUtils::WaitForMessage(unsigned long)', IDLE], ['mozilla::ThreadEventQueue<mozilla::PrioritizedEventQueue<mozilla::LabeledEventQueue> >::GetEvent(bool,mozilla::EventPriority *)', IDLE], ['mozilla::ThreadEventQueue<mozilla::PrioritizedEventQueue<mozilla::EventQueue> >::GetEvent(bool,mozilla::EventPriority *)', IDLE], ['mozilla::ThreadEventQueue<mozilla::EventQueue>::GetEvent(bool,mozilla::EventPriority *)', IDLE], ['mozilla::layers::PaintThread::AsyncPaintContents(mozilla::layers::CompositorBridgeChild *,mozilla::layers::CapturedPaintState *,bool (*)(mozilla::layers::CapturedPaintState *))', GRAPHICS], ['PresShell::DoFlushPendingNotifications InterruptibleLayout', LAYOUT], ['nsRefreshDriver::Tick', LAYOUT], ['nsLayoutUtils::GetFrameForPoint', LAYOUT], ['nsAppShell::ProcessGeckoEvents', OTHER], ['PollWrapper(_GPollFD*, unsigned int, int)', IDLE], ['mozilla::image::DecodePoolImpl::PopWorkLocked(bool)', IDLE], ['nsCCUncollectableMarker::Observe(nsISupports*, char const*, char16_t const*)', GCCC], ['g_main_context_dispatch', OTHER], ['Events::ProcessGeckoEvents', OTHER], ['widget::ChildView::drawUsingOpenGL', OTHER], ['nsContentSink::StartLayout(bool)', LAYOUT], ['Paint::PresShell::Paint', GRAPHICS], ['JS::EvaluateString', JS], ['js::RunScript', JS]]);
+    const exactMatches = new Map([
+      [
+        '-[GeckoNSApplication nextEventMatchingMask:untilDate:inMode:dequeue:]',
+        IDLE,
+      ],
+      ['base::MessagePumpDefault::Run(base::MessagePump::Delegate*)', IDLE],
+      ['mozilla::widget::WinUtils::WaitForMessage(unsigned long)', IDLE],
+      [
+        'mozilla::ThreadEventQueue<mozilla::PrioritizedEventQueue<mozilla::LabeledEventQueue> >::GetEvent(bool,mozilla::EventPriority *)',
+        IDLE,
+      ],
+      [
+        'mozilla::ThreadEventQueue<mozilla::PrioritizedEventQueue<mozilla::EventQueue> >::GetEvent(bool,mozilla::EventPriority *)',
+        IDLE,
+      ],
+      [
+        'mozilla::ThreadEventQueue<mozilla::EventQueue>::GetEvent(bool,mozilla::EventPriority *)',
+        IDLE,
+      ],
+      [
+        'mozilla::layers::PaintThread::AsyncPaintContents(mozilla::layers::CompositorBridgeChild *,mozilla::layers::CapturedPaintState *,bool (*)(mozilla::layers::CapturedPaintState *))',
+        GRAPHICS,
+      ],
+      ['PresShell::DoFlushPendingNotifications InterruptibleLayout', LAYOUT],
+      ['nsRefreshDriver::Tick', LAYOUT],
+      ['nsLayoutUtils::GetFrameForPoint', LAYOUT],
+      ['nsAppShell::ProcessGeckoEvents', OTHER],
+      ['PollWrapper(_GPollFD*, unsigned int, int)', IDLE],
+      ['mozilla::image::DecodePoolImpl::PopWorkLocked(bool)', IDLE],
+      [
+        'nsCCUncollectableMarker::Observe(nsISupports*, char const*, char16_t const*)',
+        GCCC,
+      ],
+      ['g_main_context_dispatch', OTHER],
+      ['Events::ProcessGeckoEvents', OTHER],
+      ['widget::ChildView::drawUsingOpenGL', OTHER],
+      ['nsContentSink::StartLayout(bool)', LAYOUT],
+      ['Paint::PresShell::Paint', GRAPHICS],
+      ['JS::EvaluateString', JS],
+      ['js::RunScript', JS],
+    ]);
 
-    const upToFirstSpaceMatches = new Map([['PresShell::DoFlushPendingNotifications', LAYOUT], ['PresShell::DoReflow', LAYOUT], ['layout::DoReflow', LAYOUT], ['JS::Compile', JS]]);
+    const upToFirstSpaceMatches = new Map([
+      ['PresShell::DoFlushPendingNotifications', LAYOUT],
+      ['PresShell::DoReflow', LAYOUT],
+      ['layout::DoReflow', LAYOUT],
+      ['JS::Compile', JS],
+    ]);
 
     function truncateAtFirstSpace(s: string): string {
       const spacePos = s.indexOf(' ');
@@ -647,7 +777,9 @@ const _upgraders = {
         return exactMatch;
       }
 
-      const truncatedMatch = upToFirstSpaceMatches.get(truncateAtFirstSpace(funcName));
+      const truncatedMatch = upToFirstSpaceMatches.get(
+        truncateAtFirstSpace(funcName)
+      );
       return truncatedMatch;
     }
 
@@ -656,11 +788,7 @@ const _upgraders = {
     // Go through all of the threads and their frames and attempt to deduce
     // the categories by looking at the function names.
     for (const thread of profile.threads) {
-      const {
-        frameTable,
-        funcTable,
-        stringArray
-      } = thread;
+      const { frameTable, funcTable, stringArray } = thread;
       const stringTable = new UniqueStringArray(stringArray);
       for (let i = 0; i < frameTable.length; i++) {
         const funcIndex = frameTable.func[i];
@@ -674,7 +802,10 @@ const _upgraders = {
             if (!funcTable.isJS[funcIndex] && domCallRegex.test(funcName)) {
               frameTable.category[i] = DOM;
             } else {
-              const newCategory = oldCategory in oldCategoryToNewCategory ? oldCategoryToNewCategory[oldCategory] : 1;
+              const newCategory =
+                oldCategory in oldCategoryToNewCategory
+                  ? oldCategoryToNewCategory[oldCategory]
+                  : 1;
               /* Other */
               frameTable.category[i] = newCategory;
             }
@@ -691,17 +822,11 @@ const _upgraders = {
     // The same algorithm is used in profile processing, when the processed
     // profile's category column is derived from the gecko profile (which does
     // not have a category column in its stack table).
-    const {
-      meta,
-      threads
-    } = profile;
+    const { meta, threads } = profile;
     const defaultCategory = meta.categories.findIndex(c => c.color === 'grey');
 
     for (const thread of threads) {
-      const {
-        stackTable,
-        frameTable
-      } = thread;
+      const { stackTable, frameTable } = thread;
       stackTable.category = new Array(stackTable.length);
       for (let i = 0; i < stackTable.length; i++) {
         const frameIndex = stackTable.frame[i];
@@ -723,9 +848,7 @@ const _upgraders = {
     // Profiles are now required to have either a string or number pid. If the pid
     // is a string, then it is a generated name, if it is a number, it's the pid
     // generated by the system.
-    const {
-      threads
-    } = profile;
+    const { threads } = profile;
     for (let threadIndex = 0; threadIndex < threads.length; threadIndex++) {
       const thread = threads[threadIndex];
       if (thread.pid === null || thread.pid === undefined) {
@@ -750,10 +873,7 @@ const _upgraders = {
     // since we don't use that field and have a timestamp for them already.
     // Old profiles might still have this property.
     for (const thread of profile.threads) {
-      const {
-        stringArray,
-        markers
-      } = thread;
+      const { stringArray, markers } = thread;
       const stringTable = new UniqueStringArray(stringArray);
       const newDataArray = [];
       for (let i = 0; i < markers.length; i++) {
@@ -763,7 +883,7 @@ const _upgraders = {
           case 'VsyncTimestamp':
             newDataArray[i] = {
               type: 'VsyncTimestamp',
-              vsync: data.vsync
+              vsync: data.vsync,
             };
             break;
           case 'LayerTranslation':
@@ -771,7 +891,7 @@ const _upgraders = {
               type: 'LayerTranslation',
               layer: data.layer,
               x: data.x,
-              y: data.y
+              y: data.y,
             };
             break;
           case 'CompositorScreenshot':
@@ -780,13 +900,12 @@ const _upgraders = {
               url: data.url,
               windowID: data.windowID,
               windowWidth: data.windowWidth,
-              windowHeight: data.windowHeight
+              windowHeight: data.windowHeight,
             };
             break;
           default:
             newDataArray[i] = data;
             break;
-
         }
       }
       thread.markers.data = newDataArray;
@@ -809,16 +928,15 @@ const _upgraders = {
     // set CSS2Properties.height
     const domCallRegex = /^(get |set )?\w+(\.\w+| constructor)$/;
     for (const thread of profile.threads) {
-      const {
-        funcTable,
-        stringArray
-      } = thread;
+      const { funcTable, stringArray } = thread;
       const stringTable = new UniqueStringArray(stringArray);
       funcTable.relevantForJS = new Array(funcTable.length);
       for (let i = 0; i < funcTable.length; i++) {
         const location = stringTable.getString(funcTable.name[i]);
         if (location.startsWith('AutoEntryScript ')) {
-          funcTable.name[i] = stringTable.indexForString(location.substring('AutoEntryScript '.length));
+          funcTable.name[i] = stringTable.indexForString(
+            location.substring('AutoEntryScript '.length)
+          );
           funcTable.relevantForJS[i] = true;
         } else {
           funcTable.relevantForJS[i] = domCallRegex.test(location);
@@ -834,13 +952,14 @@ const _upgraders = {
     // `lineNumber` property.
     // We update the func table with right values of 'fileName', 'lineNumber' and 'columnNumber'.
     for (const thread of profile.threads) {
-      const {
-        funcTable,
-        stringArray
-      } = thread;
+      const { funcTable, stringArray } = thread;
       const stringTable = new UniqueStringArray(stringArray);
       funcTable.columnNumber = [];
-      for (let funcIndex = 0; funcIndex < thread.funcTable.length; funcIndex++) {
+      for (
+        let funcIndex = 0;
+        funcIndex < thread.funcTable.length;
+        funcIndex++
+      ) {
         funcTable.columnNumber[funcIndex] = null;
         if (funcTable.isJS[funcIndex]) {
           const fileNameIndex = funcTable.fileName[funcIndex];
@@ -850,8 +969,11 @@ const _upgraders = {
             if (match) {
               // If this regexp matches, this means that this is a lineNumber, and that the
               // value in `lineNumber` is actually the column number.
-              funcTable.columnNumber[funcIndex] = funcTable.lineNumber[funcIndex];
-              funcTable.fileName[funcIndex] = stringTable.indexForString(match[1]);
+              funcTable.columnNumber[funcIndex] =
+                funcTable.lineNumber[funcIndex];
+              funcTable.fileName[funcIndex] = stringTable.indexForString(
+                match[1]
+              );
               funcTable.lineNumber[funcIndex] = parseInt(match[2], 10);
             }
           }
@@ -867,7 +989,11 @@ const _upgraders = {
     for (const thread of profile.threads) {
       const markers = thread.markers;
       const delta = thread.processStartupTime;
-      for (let markerIndex = 0; markerIndex < thread.markers.length; markerIndex++) {
+      for (
+        let markerIndex = 0;
+        markerIndex < thread.markers.length;
+        markerIndex++
+      ) {
         const data = markers.data[markerIndex];
         if (data && 'type' in data && data.type === 'Network') {
           if (data.domainLookupStart) {
@@ -901,7 +1027,8 @@ const _upgraders = {
       }
     }
   },
-  [20]: _profile => {// rss and uss was removed from the SamplesTable. The version number was bumped
+  [20]: _profile => {
+    // rss and uss was removed from the SamplesTable. The version number was bumped
     // to help catch errors of using an outdated version of profiler.firefox.com with a newer
     // profile. There's no good reason to remove the values for upgrading profiles though.
   },
@@ -950,12 +1077,13 @@ const _upgraders = {
       category.subcategories = ['Other'];
     }
     for (const thread of profile.threads) {
-      const {
-        frameTable,
-        stackTable
-      } = thread;
-      frameTable.subcategory = frameTable.category.map(c => c === null ? null : 0);
-      stackTable.subcategory = stackTable.category.map(c => c === null ? null : 0);
+      const { frameTable, stackTable } = thread;
+      frameTable.subcategory = frameTable.category.map(c =>
+        c === null ? null : 0
+      );
+      stackTable.subcategory = stackTable.category.map(c =>
+        c === null ? null : 0
+      );
     }
   },
   [24]: profile => {
@@ -978,15 +1106,23 @@ const _upgraders = {
 
       for (const page of profile.pages) {
         // Constructing our old keys to new key map so we can use it for markers.
-        oldKeysToNewKey.set(`d${page.docshellId}h${page.historyId}`, innerWindowID);
+        oldKeysToNewKey.set(
+          `d${page.docshellId}h${page.historyId}`,
+          innerWindowID
+        );
 
         // There are multiple pages with same DocShell IDs. We are checking to
         // see if we assigned a Browsing Context ID to that DocShell ID
         // before. Otherwise assigning one.
-        let currentBrowsingContextID = docShellIDtoBrowsingContextID.get(page.docshellId);
+        let currentBrowsingContextID = docShellIDtoBrowsingContextID.get(
+          page.docshellId
+        );
         if (!currentBrowsingContextID) {
           currentBrowsingContextID = browsingContextID++;
-          docShellIDtoBrowsingContextID.set(page.docshellId, currentBrowsingContextID);
+          docShellIDtoBrowsingContextID.set(
+            page.docshellId,
+            currentBrowsingContextID
+          );
         }
 
         // Putting DocShell ID to this field. It fully doesn't correspond to a
@@ -1006,14 +1142,20 @@ const _upgraders = {
       }
 
       for (const thread of profile.threads) {
-        const {
-          markers
-        } = thread;
+        const { markers } = thread;
         markers.data = markers.data.map(data => {
-          if (data && data.docShellId !== undefined && data.docshellHistoryId !== undefined) {
-            const newKey = oldKeysToNewKey.get(`d${data.docShellId}h${data.docshellHistoryId}`);
+          if (
+            data &&
+            data.docShellId !== undefined &&
+            data.docshellHistoryId !== undefined
+          ) {
+            const newKey = oldKeysToNewKey.get(
+              `d${data.docShellId}h${data.docshellHistoryId}`
+            );
             if (newKey === undefined) {
-              console.error('No page found with given docShellId and historyId');
+              console.error(
+                'No page found with given docShellId and historyId'
+              );
             } else {
               // We don't need to add the browsingContextID here because we only
               // need innerWindowID since it's unique for each page.
@@ -1043,24 +1185,20 @@ const _upgraders = {
     // Profiles now have an innerWindowID property in the frameTable.
     // We are filling this array with 0 values because we have no idea what that value might be.
     for (const thread of profile.threads) {
-      const {
-        frameTable
-      } = thread;
+      const { frameTable } = thread;
       frameTable.innerWindowID = new Array(frameTable.length).fill(0);
     }
   },
   [28]: profile => {
     // There was a bug where some markers got a null category during sanitization.
     for (const thread of profile.threads) {
-      const {
-        markers
-      } = thread;
+      const { markers } = thread;
       if (markers.category[0] === null) {
         // This profile contains null markers, guess them here to fix it.
         _guessMarkerCategories(profile);
         return;
       }
     }
-  }
+  },
 };
 /* eslint-enable no-useless-computed-key */

@@ -2,22 +2,21 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+export * from './app';
+export * from './per-thread';
+export * from './profile';
+export * from './url-state';
+export * from './icons';
+export * from './publish';
+export * from './zipped-profiles';
 
-export * from "./app";
-export * from "./per-thread";
-export * from "./profile";
-export * from "./url-state";
-export * from "./icons";
-export * from "./publish";
-export * from "./zipped-profiles";
-
-import * as app from "./app";
-import { selectedThreadSelectors as selectedThread } from "./per-thread";
-import * as profile from "./profile";
-import * as urlState from "./url-state";
-import * as icons from "./icons";
-import * as publish from "./publish";
-import * as zippedProfiles from "./zipped-profiles";
+import * as app from './app';
+import { selectedThreadSelectors as selectedThread } from './per-thread';
+import * as profile from './profile';
+import * as urlState from './url-state';
+import * as icons from './icons';
+import * as publish from './publish';
+import * as zippedProfiles from './zipped-profiles';
 
 const _selectorsForConsole = {
   app,
@@ -26,7 +25,7 @@ const _selectorsForConsole = {
   icons,
   publish,
   zippedProfiles,
-  selectedThread
+  selectedThread,
 };
 
 // Exports require explicit typing. Deduce the type with typeof.

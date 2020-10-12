@@ -1,35 +1,43 @@
-import { $Keys } from "utility-types";
+import { $Keys } from 'utility-types';
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+import { uploadBinaryProfileData } from '../profile-logic/profile-store';
+import { sendAnalytics } from '../utils/analytics';
+import {
+  getAbortFunction,
+  getUploadGeneration,
+  getSanitizedProfile,
+  getSanitizedProfileData,
+  getRemoveProfileInformation,
+  getPrePublishedState,
+} from '../selectors/publish';
+import { getDataSource } from '../selectors/url-state';
+import { viewProfile } from './receive-profile';
+import { ensureExists } from '../utils/flow';
+import { extractProfileTokenFromJwt } from '../utils/jwt';
+import { setHistoryReplaceState } from '../app-logic/url-handling';
 
-import { uploadBinaryProfileData } from "../profile-logic/profile-store";
-import { sendAnalytics } from "../utils/analytics";
-import { getAbortFunction, getUploadGeneration, getSanitizedProfile, getSanitizedProfileData, getRemoveProfileInformation, getPrePublishedState } from "../selectors/publish";
-import { getDataSource } from "../selectors/url-state";
-import { viewProfile } from "./receive-profile";
-import { ensureExists } from "../utils/flow";
-import { extractProfileTokenFromJwt } from "../utils/jwt";
-import { setHistoryReplaceState } from "../app-logic/url-handling";
+import { Action, ThunkAction } from '../types/store';
+import { CheckedSharingOptions } from '../types/actions';
+import { StartEndRange } from '../types/units';
+import { ThreadIndex } from '../types/profile';
+import { State } from '../types/state';
 
-import { Action, ThunkAction } from "../types/store";
-import { CheckedSharingOptions } from "../types/actions";
-import { StartEndRange } from "../types/units";
-import { ThreadIndex } from "../types/profile";
-import { State } from "../types/state";
-
-export function toggleCheckedSharingOptions(slug: $Keys<CheckedSharingOptions>): Action {
+export function toggleCheckedSharingOptions(
+  slug: $Keys<CheckedSharingOptions>
+): Action {
   return {
     type: 'TOGGLE_CHECKED_SHARING_OPTION',
-    slug
+    slug,
   };
 }
 
 export function uploadCompressionStarted(): Action {
   return {
-    type: 'UPLOAD_COMPRESSION_STARTED'
+    type: 'UPLOAD_COMPRESSION_STARTED',
   };
 }
 
@@ -39,7 +47,7 @@ export function uploadCompressionStarted(): Action {
 export function uploadStarted(abortFunction: () => void): Action {
   return {
     type: 'UPLOAD_STARTED',
-    abortFunction
+    abortFunction,
   };
 }
 
@@ -50,7 +58,7 @@ export function uploadStarted(abortFunction: () => void): Action {
 export function updateUploadProgress(uploadProgress: number): Action {
   return {
     type: 'UPDATE_UPLOAD_PROGRESS',
-    uploadProgress
+    uploadProgress,
   };
 }
 
@@ -79,7 +87,7 @@ export function attemptToPublish(): ThunkAction<Promise<boolean>> {
       sendAnalytics({
         hitType: 'event',
         eventCategory: 'profile upload',
-        eventAction: 'start'
+        eventAction: 'start',
       });
       // Grab the original pre-published state, so that we can revert back to it if needed.
       const prePublishedState = getState();
@@ -96,10 +104,7 @@ export function attemptToPublish(): ThunkAction<Promise<boolean>> {
         return false;
       }
 
-      const {
-        abortFunction,
-        startUpload
-      } = uploadBinaryProfileData();
+      const { abortFunction, startUpload } = uploadBinaryProfileData();
       dispatch(uploadStarted(abortFunction));
 
       if (uploadGeneration !== getUploadGeneration(getState())) {
@@ -125,13 +130,20 @@ export function attemptToPublish(): ThunkAction<Promise<boolean>> {
         const {
           committedRanges,
           oldThreadIndexToNew,
-          profile
+          profile,
         } = getSanitizedProfile(getState());
         // Hide the old UI gracefully.
         await dispatch(hideStaleProfile());
 
         // Update the UrlState so that we are sanitized.
-        dispatch(profileSanitized(hash, committedRanges, oldThreadIndexToNew, prePublishedState));
+        dispatch(
+          profileSanitized(
+            hash,
+            committedRanges,
+            oldThreadIndexToNew,
+            prePublishedState
+          )
+        );
         // Swap out the URL state, since the view profile calculates all of the default
         // settings. If we don't do this then we can go back in history to where we
         // are trying to view a profile without valid view settings.
@@ -142,23 +154,29 @@ export function attemptToPublish(): ThunkAction<Promise<boolean>> {
         dispatch(viewProfile(profile));
         setHistoryReplaceState(false);
       } else {
-        dispatch(profilePublished(hash, // Only include the pre-published state if we want to be able to revert
-        // the profile. If we are viewing from-addon, then it's only a single
-        // profile.
-        getDataSource(getState()) === 'from-addon' ? null : prePublishedState));
+        dispatch(
+          profilePublished(
+            hash, // Only include the pre-published state if we want to be able to revert
+            // the profile. If we are viewing from-addon, then it's only a single
+            // profile.
+            getDataSource(getState()) === 'from-addon'
+              ? null
+              : prePublishedState
+          )
+        );
       }
 
       sendAnalytics({
         hitType: 'event',
         eventCategory: 'profile upload',
-        eventAction: 'succeeded'
+        eventAction: 'succeeded',
       });
     } catch (error) {
       dispatch(uploadFailed(error));
       sendAnalytics({
         hitType: 'event',
         eventCategory: 'profile upload',
-        eventAction: 'failed'
+        eventAction: 'failed',
       });
       return false;
     }
@@ -178,14 +196,14 @@ export function abortUpload(): ThunkAction<Promise<void>> {
     sendAnalytics({
       hitType: 'event',
       eventCategory: 'profile upload',
-      eventAction: 'aborted'
+      eventAction: 'aborted',
     });
   };
 }
 
 export function resetUploadState(): Action {
   return {
-    type: 'UPLOAD_RESET'
+    type: 'UPLOAD_RESET',
   };
 }
 
@@ -193,38 +211,48 @@ export function resetUploadState(): Action {
  * Report to the UrlState that the profile was sanitized. This will re-map any stored
  * indexes or information that has been sanitized away.
  */
-export function profileSanitized(hash: string, committedRanges: StartEndRange[] | null, oldThreadIndexToNew: Map<ThreadIndex, ThreadIndex> | null, prePublishedState: State): Action {
+export function profileSanitized(
+  hash: string,
+  committedRanges: StartEndRange[] | null,
+  oldThreadIndexToNew: Map<ThreadIndex, ThreadIndex> | null,
+  prePublishedState: State
+): Action {
   return {
     type: 'SANITIZED_PROFILE_PUBLISHED',
     hash,
     committedRanges,
     oldThreadIndexToNew,
-    prePublishedState
+    prePublishedState,
   };
 }
 
 /**
  * Report that the profile was published, but not sanitized.
  */
-export function profilePublished(hash: string, // If we're publishing from a URL or Zip file, then offer to revert to the previous
-// state.
-prePublishedState: State | null): Action {
+export function profilePublished(
+  hash: string, // If we're publishing from a URL or Zip file, then offer to revert to the previous
+  // state.
+  prePublishedState: State | null
+): Action {
   return {
     type: 'PROFILE_PUBLISHED',
     hash,
-    prePublishedState
+    prePublishedState,
   };
 }
 
 export function revertToPrePublishedState(): ThunkAction<Promise<void>> {
   return async (dispatch, getState) => {
-    const prePublishedState = ensureExists(getPrePublishedState(getState()), 'Expected to find an original profile when reverting to it.');
+    const prePublishedState = ensureExists(
+      getPrePublishedState(getState()),
+      'Expected to find an original profile when reverting to it.'
+    );
 
     await dispatch(hideStaleProfile());
 
     dispatch({
       type: 'REVERT_TO_PRE_PUBLISHED_STATE',
-      prePublishedState: prePublishedState
+      prePublishedState: prePublishedState,
     });
   };
 }
