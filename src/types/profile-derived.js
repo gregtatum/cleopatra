@@ -144,7 +144,7 @@ export type MarkerTiming = {|
   // Start time in milliseconds.
   start: number[],
   // End time in milliseconds.
-  end: number[],
+  end: Array<number | null>,
   index: MarkerIndex[],
   label: string[],
   name: string,

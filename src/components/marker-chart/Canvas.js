@@ -22,6 +22,7 @@ import { TIMELINE_MARGIN_LEFT } from '../../app-logic/constants';
 import type {
   Milliseconds,
   CssPixels,
+  DevicePixels,
   UnitIntervalOfProfileRange,
   ThreadsKey,
   Marker,
@@ -36,9 +37,7 @@ import type { WrapFunctionInDispatch } from '../../utils/connect';
 type MarkerDrawingInformation = {
   x: CssPixels,
   y: CssPixels,
-  w: CssPixels,
-  h: CssPixels,
-  uncutWidth: CssPixels,
+  w: CssPixels | null,
   text: string,
 };
 
@@ -93,9 +92,9 @@ type State = {|
 
 const TEXT_OFFSET_TOP = 11;
 const TWO_PI = Math.PI * 2;
-const MARKER_DOT_RADIUS = 0.25;
+// This radius is in terms of the ratio to the row height.
+const MARKER_DOT_RADIUS = 0.2;
 const TEXT_OFFSET_START = 3;
-const DOT_WIDTH = 10;
 const LABEL_PADDING = 5;
 
 class MarkerChartCanvasImpl extends React.PureComponent<Props, State> {
@@ -258,50 +257,74 @@ class MarkerChartCanvasImpl extends React.PureComponent<Props, State> {
 
   // Note: we used a long argument list instead of an object parameter on
   // purpose, to reduce GC pressure while drawing.
-  drawOneMarker(
+  drawIntervalMarker(
     ctx: CanvasRenderingContext2D,
     x: CssPixels,
     y: CssPixels,
     w: CssPixels,
-    h: CssPixels,
-    uncutWidth: CssPixels,
     text: string,
-    backgroundColor: string = BLUE_40,
-    foregroundColor: string = 'white'
+    backgroundColor: string,
+    foregroundColor: string
   ) {
+    const { rowHeight } = this.props;
     ctx.fillStyle = backgroundColor;
 
     const textMeasurement = this._getTextMeasurement(ctx);
 
-    if (uncutWidth >= h) {
-      // We want the rectangle to have a clear margin, that's why we increment y
-      // and decrement h (twice, for both margins).
-      this.drawRoundedRect(ctx, x, y + 1, w, h - 2, 1);
-
-      // Draw the text label
-      // TODO - L10N RTL.
-      // Constrain the x coordinate to the leftmost area.
-      const x2: CssPixels = x + TEXT_OFFSET_START;
-      const w2: CssPixels = Math.max(0, w - (x2 - x));
-
-      if (w2 > textMeasurement.minWidth) {
-        const fittedText = textMeasurement.getFittedText(text, w2);
-        if (fittedText) {
-          ctx.fillStyle = foregroundColor;
-          ctx.fillText(fittedText, x2, y + TEXT_OFFSET_TOP);
-        }
-      }
-    } else {
-      ctx.beginPath();
-      ctx.arc(
-        x + w / 2, // x
-        y + h / 2, // y
-        h * MARKER_DOT_RADIUS, // radius
-        0, // arc start
-        TWO_PI // arc end
-      );
-      ctx.fill();
+    // 1 pixel top margin = 1
+    const drawnY = y + 1;
+    // 1 pixel top margin + 1 pixel bottom margin + 1 pixel border = 3
+    const drawnH = rowHeight - 3;
+    const wDevicePixels: DevicePixels = w * window.devicePixelRatio;
+    let drawnW = w;
+    if (wDevicePixels < 1) {
+      // Ensure at least 1 DevicePixel is drawn. The magic value of 0.75 ensures
+      // that this bar is at least drawn at 75% opacity. The canvas API quickly
+      // and automatically will antialias half-drawn pixels.
+      drawnW = Math.min(1) / window.devicePixelRatio;
     }
+
+    ctx.fillRect(x, drawnY, drawnW, drawnH);
+
+    // Draw the text label
+    // TODO - L10N RTL.
+    // Constrain the x coordinate to the leftmost area.
+    const x2: CssPixels = x + TEXT_OFFSET_START;
+    const w2: CssPixels = Math.max(0, w - (x2 - x));
+
+    if (w2 > textMeasurement.minWidth) {
+      const fittedText = textMeasurement.getFittedText(text, w2);
+      if (fittedText) {
+        ctx.fillStyle = foregroundColor;
+        ctx.fillText(fittedText, x2, y + TEXT_OFFSET_TOP);
+      }
+    }
+  }
+
+  // Note: we used a long argument list instead of an object parameter on
+  // purpose, to reduce GC pressure while drawing.
+  drawInstantMarker(
+    ctx: CanvasRenderingContext2D,
+    x: CssPixels,
+    y: CssPixels,
+    text: string,
+    backgroundColor: string
+  ) {
+    if (ctx.fillStyle !== backgroundColor) {
+      ctx.fillStyle = backgroundColor;
+    }
+    const { rowHeight } = this.props;
+    ctx.beginPath();
+    const radius = rowHeight * MARKER_DOT_RADIUS;
+    const middleOfRow = rowHeight * 0.5;
+    ctx.arc(
+      x, // x
+      y + middleOfRow, // y
+      radius,
+      0, // arc start
+      TWO_PI // arc end
+    );
+    ctx.fill();
   }
 
   drawMarkers(
@@ -352,38 +375,43 @@ class MarkerChartCanvasImpl extends React.PureComponent<Props, State> {
       }
 
       // Track the last drawn marker X position, so that we can avoid overdrawing.
-      let previousMarkerDrawnAtX: number | null = null;
+      let previousInstantMarkerDrawnAtX: number | null = null;
+      let previousIntervalMarkerDrawnAtX: number | null = null;
 
       for (let i = 0; i < markerTiming.length; i++) {
+        // Figure out the end of the marker based on if it's an instant or interval
+        // marker. TODO - maybe take into account the dot radius here.
+        const timingEndForViewportCheck =
+          markerTiming.end[i] === null
+            ? markerTiming.start[i]
+            : markerTiming.end[i];
+
         // Only draw samples that are in bounds.
         if (
-          markerTiming.end[i] >= timeAtViewportLeft &&
+          timingEndForViewportCheck >= timeAtViewportLeft &&
           markerTiming.start[i] < timeAtViewportRightPlusMargin
         ) {
           const startTime: UnitIntervalOfProfileRange =
             (markerTiming.start[i] - rangeStart) / rangeLength;
-          const endTime: UnitIntervalOfProfileRange =
-            (markerTiming.end[i] - rangeStart) / rangeLength;
 
           let x: CssPixels =
             ((startTime - viewportLeft) * markerContainerWidth) /
               viewportLength +
             marginLeft;
           const y: CssPixels = rowIndex * rowHeight - viewportTop;
-          const uncutWidth: CssPixels =
-            ((endTime - startTime) * markerContainerWidth) / viewportLength;
-          const h: CssPixels = rowHeight - 1;
+          let w: CssPixels | null = null;
 
-          let w = uncutWidth;
-          if (x < marginLeft) {
+          if (markerTiming.end[i] !== null) {
+            // This is an interval marker, create a width for it.
+            const endTime: UnitIntervalOfProfileRange =
+              (markerTiming.end[i] - rangeStart) / rangeLength;
+            w = ((endTime - startTime) * markerContainerWidth) / viewportLength;
+          }
+
+          if (x < marginLeft && w !== null) {
             // Adjust markers that are before the left margin.
             w = w - marginLeft + x;
             x = marginLeft;
-          }
-          if (uncutWidth < DOT_WIDTH) {
-            // Ensure that small durations render as a dot, but markers cut by the margins
-            // are rendered as squares.
-            w = DOT_WIDTH;
           }
 
           x = Math.round(x * devicePixelRatio) / devicePixelRatio;
@@ -396,16 +424,22 @@ class MarkerChartCanvasImpl extends React.PureComponent<Props, State> {
             hoveredItem === markerIndex;
 
           if (isHighlighted) {
-            highlightedMarkers.push({ x, y, w, h, uncutWidth, text });
-          } else if (
-            // Always render non-dot markers.
-            uncutWidth > DOT_WIDTH ||
-            // Do not render dot markers that occupy the same pixel, as this can take
-            // a lot of time, and not change the visual display of the chart.
-            x !== previousMarkerDrawnAtX
-          ) {
-            previousMarkerDrawnAtX = x;
-            this.drawOneMarker(ctx, x, y, w, h, uncutWidth, text);
+            highlightedMarkers.push({ x, y, w, text });
+          } else if (w === null) {
+            // This is an Instant marker.
+            if (x !== previousInstantMarkerDrawnAtX) {
+              // Do not render dot markers that occupy the same pixel, as this can take
+              // a lot of time, and not change the visual display of the chart.
+              this.drawInstantMarker(ctx, x, y, text, BLUE_40);
+              previousInstantMarkerDrawnAtX = x;
+            }
+          } else {
+            // This is an Inteval marker
+            if (w > 1 || x !== previousIntervalMarkerDrawnAtX) {
+              // Do not over-render small width marker.
+              this.drawIntervalMarker(ctx, x, y, w, text, BLUE_40, 'white');
+              previousIntervalMarkerDrawnAtX = x;
+            }
           }
         }
       }
@@ -413,18 +447,20 @@ class MarkerChartCanvasImpl extends React.PureComponent<Props, State> {
 
     // We draw highlighted markers after the normal markers so that they stand
     // out more.
-    highlightedMarkers.forEach(highlightedMarker => {
-      this.drawOneMarker(
-        ctx,
-        highlightedMarker.x,
-        highlightedMarker.y,
-        highlightedMarker.w,
-        highlightedMarker.h,
-        highlightedMarker.uncutWidth,
-        highlightedMarker.text,
-        'Highlight', //    background color
-        'HighlightText' // foreground color
-      );
+    highlightedMarkers.forEach(({ x, y, w, text }) => {
+      if (w === null) {
+        this.drawInstantMarker(ctx, x, y, text, 'Highlight');
+      } else {
+        this.drawIntervalMarker(
+          ctx,
+          x,
+          y,
+          w,
+          text,
+          'Highlight',
+          'HighlightText'
+        );
+      }
     });
   }
 
@@ -574,10 +610,29 @@ class MarkerChartCanvasImpl extends React.PureComponent<Props, State> {
       return null;
     }
 
+    // Transform pixel units into Milliseconds. Each duration is a minimum for either
+    // Instant or Interval markers respectively.
+    const dotRadiusDuration =
+      rangeLength *
+      viewportLength *
+      ((MARKER_DOT_RADIUS * rowHeight) / markerContainerWidth);
+    const onePixelDuration =
+      (rangeLength * viewportLength) / markerContainerWidth;
     for (let i = 0; i < markerTiming.length; i++) {
-      const start = markerTiming.start[i];
-      // Ensure that really small markers are hoverable with a minDuration.
-      const end = Math.max(start + minDuration, markerTiming.end[i]);
+      let start = markerTiming.start[i];
+      let end;
+
+      const markerTimingEnd = markerTiming.end[i];
+      if (markerTimingEnd === null) {
+        // Handle instant markers.
+        end = start + dotRadiusDuration;
+        start = start - dotRadiusDuration;
+      } else {
+        // Handle interval markers.
+        // Ensure that really small markers are hoverable with a minDuration.
+        end = Math.max(start + onePixelDuration, markerTimingEnd);
+      }
+
       if (start < time && end > time) {
         markerIndex = markerTiming.index[i];
       }

@@ -110,14 +110,13 @@ export function getMarkerTimingAndBuckets(
 
       // Since the markers are sorted, look at the last added marker in this row. If
       // the new marker fits, go ahead and insert it.
-      const otherEnd = markerTiming.end[markerTiming.length - 1];
+      let otherEnd = markerTiming.end[markerTiming.length - 1];
+      if (otherEnd === null) {
+        otherEnd = markerTiming.start[markerTiming.length - 1];
+      }
       if (otherEnd === undefined || otherEnd <= marker.start) {
         markerTiming.start.push(marker.start);
-        markerTiming.end.push(
-          // If this is an instant marker, the start time and end time will match.
-          // The chart will then be responsible for drawing this as a dot.
-          marker.end === null ? marker.start : marker.end
-        );
+        markerTiming.end.push(marker.end);
         markerTiming.label.push(getLabel(markerIndex));
         markerTiming.index.push(markerIndex);
         markerTiming.length++;
