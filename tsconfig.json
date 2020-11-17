@@ -10,9 +10,15 @@
     "lib": ["esnext", "dom"],
     // Do not modify the output, allow eslint to do so.
     "jsx": "preserve",
-    "noEmit": true
+    "noEmit": true,
+    // Paths are relative to this:
+    "baseUrl": ".",
+    "paths": {
+      // Map paths like "firefox-profiler/path/to/file.s" to "src/path/to/file.js"
+      "firefox-profiler": ["src"]
+    }
   },
-  "include": ["./src/**/*.ts","./src/**/*.tsx"],
+  "include": ["./src/actions/**/*.ts","./src/actions/**/*.tsx"],
   "exclude": [
     "node_modules",
     "bin"
