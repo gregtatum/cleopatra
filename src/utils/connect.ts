@@ -119,7 +119,7 @@ export type ConnectedProps<
   OwnProps: Object,
   StateProps: Object,
   DispatchProps: Object
-> = $ReadOnly<{
+> = Readonly<{
   ...OwnProps,
   ...StateProps,
   ...DispatchProps,

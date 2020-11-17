@@ -186,7 +186,7 @@ export type WithChartViewport<
   ChartOwnProps: Object,
   // The chart component's props are given the viewport object, as well as the original
   // ChartOwnProps.
-  ChartProps: $ReadOnly<{
+  ChartProps: Readonly<{
     ...ChartOwnProps,
     viewport: Viewport,
   }>

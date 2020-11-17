@@ -69,7 +69,7 @@ type OwnProps = {
   +marginLeft: CssPixels,
 };
 
-type Props = $ReadOnly<{
+type Props = Readonly<{
   ...OwnProps,
   +viewport: Viewport,
 }>;

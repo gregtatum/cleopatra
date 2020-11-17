@@ -120,7 +120,7 @@ export type CallNodeData = {
 };
 
 export type CallNodeDisplayData = $Exact<
-  $ReadOnly<{
+  Readonly<{
     total: string,
     totalWithUnit: string,
     totalPercent: string,

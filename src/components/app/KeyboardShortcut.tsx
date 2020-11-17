@@ -250,7 +250,7 @@ export class KeyboardShortcut extends React.PureComponent<Props, State> {
   }
 }
 
-type ShortcutProps = $ReadOnly<{
+type ShortcutProps = Readonly<{
   label: string,
   shortcut: string,
   macShortcut?: string,

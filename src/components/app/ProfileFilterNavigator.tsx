@@ -32,7 +32,7 @@ type Props = {
 type DispatchProps = {
   +onPop: $PropertyType<Props, 'onPop'>,
 };
-type StateProps = $ReadOnly<$Exact<$Diff<Props, DispatchProps>>>;
+type StateProps = Readonly<$Exact<$Diff<Props, DispatchProps>>>;
 
 class ProfileFilterNavigatorBarImpl extends React.PureComponent<Props> {
   _getItemsWithFirstElement = memoize(
