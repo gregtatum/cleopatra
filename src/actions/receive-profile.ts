@@ -962,7 +962,7 @@ function _wait(delayMs: number): Promise<void> {
 
 type FetchProfileArgs = {
   url: string,
-  onTemporaryError: TemporaryError => void,
+  onTemporaryError: (error: TemporaryError) => void,
   // Allow tests to capture the reported error, but normally use console.error.
   reportError?: (...data: Array<any>) => void,
 };
