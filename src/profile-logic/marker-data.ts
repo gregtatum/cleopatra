@@ -15,7 +15,7 @@ import {
 } from 'firefox-profiler/app-logic/constants';
 import { getMarkerSchemaName } from './marker-schema';
 
-import type {
+import {
   Thread,
   SamplesTable,
   RawMarkerTable,
@@ -39,7 +39,7 @@ import type {
   MarkerDisplayLocation,
 } from 'firefox-profiler/types';
 
-import type { UniqueStringArray } from '../utils/unique-string-array';
+import { UniqueStringArray } from '../utils/unique-string-array';
 
 /**
  * Jank instances are created from responsiveness values. Responsiveness is a profiler

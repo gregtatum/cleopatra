@@ -4,7 +4,7 @@
 
 
 import * as React from 'react';
-import type {
+import {
   IndexIntoSamplesTable,
   CategoryList,
   Thread,

@@ -19,7 +19,7 @@ import {
 } from 'firefox-profiler/actions/profile-view';
 import { BLUE_40 } from 'firefox-profiler/utils/colors';
 import { TIMELINE_MARGIN_LEFT } from 'firefox-profiler/app-logic/constants';
-import type {
+import {
   Milliseconds,
   CssPixels,
   UnitIntervalOfProfileRange,
@@ -31,8 +31,8 @@ import type {
 } from 'firefox-profiler/types';
 import { getStartEndRangeForMarker } from 'firefox-profiler/utils';
 
-import type { Viewport } from 'firefox-profiler/components/shared/chart/Viewport';
-import type { WrapFunctionInDispatch } from 'firefox-profiler/utils/connect';
+import { Viewport } from 'firefox-profiler/components/shared/chart/Viewport';
+import { WrapFunctionInDispatch } from 'firefox-profiler/utils/connect';
 type MarkerDrawingInformation = {
   x: CssPixels,
   y: CssPixels,

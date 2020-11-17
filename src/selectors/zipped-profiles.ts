@@ -8,13 +8,13 @@ import { getProfileUrl } from './url-state';
 import { ensureExists } from '../utils/flow';
 import * as ZipFiles from '../profile-logic/zip-files';
 
-import type {
+import {
   ZipFileState,
   ZippedProfilesState,
   Selector,
 } from 'firefox-profiler/types';
 
-import type { IndexIntoZipFileTable } from '../profile-logic/zip-files';
+import { IndexIntoZipFileTable } from '../profile-logic/zip-files';
 import type JSZip from 'jszip';
 
 /**

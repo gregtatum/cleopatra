@@ -45,7 +45,7 @@ import mockRaf from '../fixtures/mocks/request-animation-frame';
 import { changeTimelineTrackOrganization } from '../../actions/receive-profile';
 import { getPreviewSelection } from '../../selectors/profile';
 
-import type {
+import {
   UserTimingMarkerPayload,
   CssPixels,
 } from 'firefox-profiler/types';

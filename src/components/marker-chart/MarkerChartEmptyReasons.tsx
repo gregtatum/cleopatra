@@ -12,7 +12,7 @@ import explicitConnect, {
   type ConnectedProps,
 } from 'firefox-profiler/utils/connect';
 
-import type { State } from 'firefox-profiler/types';
+import { State } from 'firefox-profiler/types';
 
 type StateProps = {
   +threadName: string,

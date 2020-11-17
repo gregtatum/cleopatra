@@ -8,7 +8,7 @@ import { isMainThread } from './tracks';
 import { getThreadsKey } from './profile-data';
 import { ensureExists } from '../utils/flow';
 
-import type {
+import {
   State,
   ThreadIndex,
   Profile,

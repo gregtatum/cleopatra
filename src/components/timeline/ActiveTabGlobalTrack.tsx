@@ -22,8 +22,8 @@ import TimelineTrackScreenshots from './TrackScreenshots';
 import ActiveTabResourcesPanel from './ActiveTabResourcesPanel';
 import { assertExhaustiveCheck } from 'firefox-profiler/utils/flow';
 
-import type { TabSlug } from 'firefox-profiler/app-logic/tabs-handling';
-import type {
+import { TabSlug } from 'firefox-profiler/app-logic/tabs-handling';
+import {
   GlobalTrackReference,
   TrackIndex,
   ActiveTabGlobalTrack,
@@ -31,7 +31,7 @@ import type {
   ActiveTabResourceTrack,
 } from 'firefox-profiler/types';
 
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 type OwnProps = {
   +trackReference: GlobalTrackReference,

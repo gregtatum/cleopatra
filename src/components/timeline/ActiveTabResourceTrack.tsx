@@ -15,14 +15,14 @@ import explicitConnect from 'firefox-profiler/utils/connect';
 import TrackThread from './TrackThread';
 import { assertExhaustiveCheck } from 'firefox-profiler/utils/flow';
 
-import type {
+import {
   ActiveTabTrackReference,
   TrackIndex,
   ActiveTabResourceTrack,
   InitialSelectedTrackReference,
 } from 'firefox-profiler/types';
 
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 type OwnProps = {
   +resourceTrack: ActiveTabResourceTrack,

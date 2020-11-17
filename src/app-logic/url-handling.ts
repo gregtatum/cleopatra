@@ -20,7 +20,7 @@ import {
 } from 'firefox-profiler/utils/flow';
 import { toValidCallTreeSummaryStrategy } from 'firefox-profiler/profile-logic/profile-data';
 import { oneLine } from 'common-tags';
-import type {
+import {
   UrlState,
   TimelineTrackOrganization,
   DataSource,

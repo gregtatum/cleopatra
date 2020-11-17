@@ -14,7 +14,7 @@ import { VirtualList } from './VirtualList';
 
 import { ContextMenuTrigger } from './ContextMenuTrigger';
 
-import type { CssPixels } from 'firefox-profiler/types';
+import { CssPixels } from 'firefox-profiler/types';
 
 import './TreeView.css';
 

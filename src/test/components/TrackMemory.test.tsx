@@ -4,7 +4,7 @@
 
 
 
-import type { IndexIntoSamplesTable, CssPixels } from 'firefox-profiler/types';
+import { IndexIntoSamplesTable, CssPixels } from 'firefox-profiler/types';
 
 import * as React from 'react';
 import { Provider } from 'react-redux';

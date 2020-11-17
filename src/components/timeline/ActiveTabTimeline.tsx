@@ -22,8 +22,8 @@ import {
 import './index.css';
 import './ActiveTabTimeline.css';
 
-import type { SizeProps } from 'firefox-profiler/components/shared/WithSize';
-import type {
+import { SizeProps } from 'firefox-profiler/components/shared/WithSize';
+import {
   ActiveTabGlobalTrack,
   InitialSelectedTrackReference,
   GlobalTrackReference,
@@ -31,7 +31,7 @@ import type {
   StartEndRange,
 } from 'firefox-profiler/types';
 
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 type StateProps = {
   +committedRange: StartEndRange,

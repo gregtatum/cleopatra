@@ -34,7 +34,7 @@ import TimelineTrackContextMenu from './TrackContextMenu';
 
 import './index.css';
 
-import type { SizeProps } from 'firefox-profiler/components/shared/WithSize';
+import { SizeProps } from 'firefox-profiler/components/shared/WithSize';
 
 import {
   changeGlobalTrackOrder,
@@ -43,7 +43,7 @@ import {
 } from 'firefox-profiler/actions/profile-view';
 import { changeTimelineTrackOrganization } from 'firefox-profiler/actions/receive-profile';
 
-import type {
+import {
   BrowsingContextID,
   TrackIndex,
   GlobalTrack,
@@ -56,7 +56,7 @@ import type {
   StartEndRange,
 } from 'firefox-profiler/types';
 
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 type StateProps = {
   +committedRange: StartEndRange,

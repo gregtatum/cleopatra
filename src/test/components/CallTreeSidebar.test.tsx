@@ -21,7 +21,7 @@ import {
   getMergedProfileFromTextSamples,
 } from '../fixtures/profiles/processed-profile';
 
-import type { CallNodePath } from 'firefox-profiler/types';
+import { CallNodePath } from 'firefox-profiler/types';
 import { ensureExists } from '../../utils/flow';
 import { fireFullClick } from '../fixtures/utils';
 

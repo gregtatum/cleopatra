@@ -4,7 +4,7 @@
 
 
 
-import type {
+import {
   Action,
   DataSource,
   PreviewSelection,
@@ -15,11 +15,11 @@ import type {
   TimelineType,
   CheckedSharingOptions,
 } from './actions';
-import type { TabSlug } from '../app-logic/tabs-handling';
-import type { StartEndRange, CssPixels, Milliseconds } from './units';
-import type { Profile, ThreadIndex, Pid, BrowsingContextID } from './profile';
+import { TabSlug } from '../app-logic/tabs-handling';
+import { StartEndRange, CssPixels, Milliseconds } from './units';
+import { Profile, ThreadIndex, Pid, BrowsingContextID } from './profile';
 
-import type {
+import {
   CallNodePath,
   GlobalTrack,
   LocalTrack,
@@ -29,11 +29,11 @@ import type {
   OriginsTimeline,
   ThreadsKey,
 } from './profile-derived';
-import type { Attempt } from '../utils/errors';
-import type { TransformStacksPerThread } from './transforms';
+import { Attempt } from '../utils/errors';
+import { TransformStacksPerThread } from './transforms';
 import type JSZip from 'jszip';
-import type { IndexIntoZipFileTable } from '../profile-logic/zip-files';
-import type { PathSet } from '../utils/path.js';
+import { IndexIntoZipFileTable } from '../profile-logic/zip-files';
+import { PathSet } from '../utils/path.js';
 
 export type Reducer<T> = (T | void, Action) => T;
 

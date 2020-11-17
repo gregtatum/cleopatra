@@ -5,7 +5,7 @@
 
 /* eslint-disable no-unused-vars */
 
-import type {
+import {
   $ReplaceCauseWithStack,
   CauseBacktrace,
   GeckoMarkerStack,

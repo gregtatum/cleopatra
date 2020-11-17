@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { CallTree } from '../../profile-logic/call-tree';
-import type {
+import {
   IndexIntoCallNodeTable,
   Store,
   State,

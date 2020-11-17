@@ -19,7 +19,7 @@ import {
 import { updatePreviewSelection } from 'firefox-profiler/actions/profile-view';
 import { createPortal } from 'react-dom';
 
-import type {
+import {
   ScreenshotPayload,
   ThreadIndex,
   Thread,
@@ -27,7 +27,7 @@ import type {
   Milliseconds,
 } from 'firefox-profiler/types';
 
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 import { ensureExists } from 'firefox-profiler/utils/flow';
 import './TrackScreenshots.css';

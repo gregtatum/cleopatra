@@ -54,7 +54,7 @@ import { setDataSource } from './profile-view';
 import { fatalError } from './errors';
 import { GOOGLE_STORAGE_BUCKET } from 'firefox-profiler/app-logic/constants';
 
-import type {
+import {
   RequestedLib,
   ImplementationFilter,
   TransformStacksPerThread,
@@ -71,7 +71,7 @@ import type {
   OriginsTimelineRoot,
 } from 'firefox-profiler/types';
 
-import type { SymbolicationStepInfo } from 'firefox-profiler/profile-logic/symbolication';
+import { SymbolicationStepInfo } from 'firefox-profiler/profile-logic/symbolication';
 import {
   assertExhaustiveCheck,
   ensureExists,

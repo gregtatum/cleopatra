@@ -5,7 +5,7 @@
 
 //
 import { STATUS_CODES } from 'http';
-import type { MixedObject } from 'firefox-profiler/types';
+import { MixedObject } from 'firefox-profiler/types';
 
 // This is a partial implementation of the Fetch API's Response object,
 // implementing just what we need for these tests.

@@ -27,9 +27,9 @@ import { getPathInZipFileFromUrl } from '../../selectors/url-state';
 import { TreeView } from '../shared/TreeView';
 import { ProfileViewer } from './ProfileViewer';
 
-import type { ConnectedProps } from '../../utils/connect';
-import type { ZipFileState } from 'firefox-profiler/types';
-import type {
+import { ConnectedProps } from '../../utils/connect';
+import { ZipFileState } from 'firefox-profiler/types';
+import {
   ZipFileTable,
   ZipDisplayData,
   ZipFileTree,

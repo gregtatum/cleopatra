@@ -15,13 +15,13 @@ import { ACTIVE_TAB_TIMELINE_RESOURCES_HEADER_HEIGHT } from 'firefox-profiler/ap
 import ActiveTabTimelineResourceTrack from './ActiveTabResourceTrack';
 import TrackThread from './TrackThread';
 
-import type { SizeProps } from 'firefox-profiler/components/shared/WithSize';
-import type {
+import { SizeProps } from 'firefox-profiler/components/shared/WithSize';
+import {
   ActiveTabResourceTrack,
   InitialSelectedTrackReference,
   ThreadsKey,
 } from 'firefox-profiler/types';
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 type OwnProps = {
   +resourceTracks: ActiveTabResourceTrack[],

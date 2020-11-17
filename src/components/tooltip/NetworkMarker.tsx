@@ -18,7 +18,7 @@ import {
   formatMilliseconds,
 } from 'firefox-profiler/utils/format-numbers';
 
-import type { NetworkPayload, Milliseconds } from 'firefox-profiler/types';
+import { NetworkPayload, Milliseconds } from 'firefox-profiler/types';
 
 import './NetworkMarker.css';
 

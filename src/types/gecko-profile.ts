@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 
-import type {
+import {
   Lib,
   IndexIntoStringTable,
   IndexIntoCategoryList,
@@ -15,9 +15,9 @@ import type {
   VisualMetrics,
   ProfilerConfiguration,
 } from './profile';
-import type { MarkerPayload_Gecko, MarkerSchema } from './markers';
-import type { Milliseconds, Nanoseconds } from './units';
-import type { MixedObject } from './utils';
+import { MarkerPayload_Gecko, MarkerSchema } from './markers';
+import { Milliseconds, Nanoseconds } from './units';
+import { MixedObject } from './utils';
 
 export type IndexIntoGeckoFrameTable = number;
 export type IndexIntoGeckoStackTable = number;

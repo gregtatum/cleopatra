@@ -6,7 +6,7 @@
 import { resourceTypes, shallowCloneFuncTable } from './data-structures';
 import { SymbolsNotFoundError } from './errors';
 
-import type {
+import {
   Profile,
   Thread,
   ThreadIndex,
@@ -18,7 +18,7 @@ import type {
   Address,
 } from 'firefox-profiler/types';
 
-import type {
+import {
   AbstractSymbolStore,
   AddressResult,
   LibSymbolicationRequest,

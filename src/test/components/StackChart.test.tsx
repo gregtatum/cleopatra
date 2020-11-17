@@ -47,7 +47,7 @@ import {
   getProfileWithMarkers,
 } from '../fixtures/profiles/processed-profile';
 
-import type {
+import {
   Profile,
   UserTimingMarkerPayload,
   CssPixels,

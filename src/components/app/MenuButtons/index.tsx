@@ -35,7 +35,7 @@ import {
 
 import { resymbolicateProfile } from 'firefox-profiler/actions/receive-profile';
 
-import type {
+import {
   StartEndRange,
   Profile,
   DataSource,
@@ -43,7 +43,7 @@ import type {
   SymbolicationStatus,
 } from 'firefox-profiler/types';
 
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 type OwnProps = {
   // This is for injecting a URL shortener for tests. Normally we would use a Jest mock

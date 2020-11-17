@@ -32,7 +32,7 @@ import {
 } from 'firefox-profiler/actions/profile-view';
 import { assertExhaustiveCheck } from 'firefox-profiler/utils/flow';
 
-import type {
+import {
   State,
   ImplementationFilter,
   ThreadsKey,
@@ -41,10 +41,10 @@ import type {
   CallNodeDisplayData,
   WeightType,
 } from 'firefox-profiler/types';
-import type { CallTree as CallTreeType } from 'firefox-profiler/profile-logic/call-tree';
+import { CallTree as CallTreeType } from 'firefox-profiler/profile-logic/call-tree';
 
-import type { Column } from 'firefox-profiler/components/shared/TreeView';
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { Column } from 'firefox-profiler/components/shared/TreeView';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 type StateProps = {
   +threadsKey: ThreadsKey,

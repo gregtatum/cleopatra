@@ -18,7 +18,7 @@ import {
 } from '../profile-logic/marker-data';
 import { markerSchemaFrontEndOnly } from '../profile-logic/marker-schema';
 
-import type {
+import {
   Profile,
   CategoryList,
   IndexIntoCategoryList,

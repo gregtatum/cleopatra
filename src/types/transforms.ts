@@ -16,9 +16,9 @@
  * This combination of information will provide a stable reference to a call node for a
  * given view into a call tree.
  */
-import type { IndexIntoFuncTable, IndexIntoResourceTable } from './profile';
-import type { CallNodePath, ThreadsKey } from './profile-derived';
-import type { ImplementationFilter } from './actions';
+import { IndexIntoFuncTable, IndexIntoResourceTable } from './profile';
+import { CallNodePath, ThreadsKey } from './profile-derived';
+import { ImplementationFilter } from './actions';
 
 /*
  * Define all of the transforms on an object to conveniently access $ObjMap and do

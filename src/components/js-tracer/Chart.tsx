@@ -21,8 +21,8 @@ import { getSelectedThreadsKey } from 'firefox-profiler/selectors/url-state';
 import { updatePreviewSelection } from 'firefox-profiler/actions/profile-view';
 import { ensureExists } from 'firefox-profiler/utils/flow';
 
-import type { UniqueStringArray } from 'firefox-profiler/utils/unique-string-array';
-import type {
+import { UniqueStringArray } from 'firefox-profiler/utils/unique-string-array';
+import {
   JsTracerTable,
   ThreadsKey,
   Profile,
@@ -33,7 +33,7 @@ import type {
   PreviewSelection,
 } from 'firefox-profiler/types';
 
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 import './index.css';
 

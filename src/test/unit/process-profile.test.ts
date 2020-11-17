@@ -17,7 +17,7 @@ import {
   createGeckoProfilerOverhead,
 } from '../fixtures/profiles/gecko-profile';
 import { ensureExists } from '../../utils/flow';
-import type {
+import {
   JsAllocationPayload_Gecko,
   NativeAllocationPayload_Gecko,
   GeckoThread,

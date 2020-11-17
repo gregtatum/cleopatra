@@ -26,7 +26,7 @@ import {
 } from 'firefox-profiler/app-logic/web-channel';
 import { assertExhaustiveCheck } from 'firefox-profiler/utils/flow';
 
-import type {
+import {
   ConnectedProps,
   WrapFunctionInDispatch,
 } from 'firefox-profiler/utils/connect';

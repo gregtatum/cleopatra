@@ -26,7 +26,7 @@ import { formatSeconds, formatTimestamp } from '../../utils/format-numbers';
 
 import './index.css';
 
-import type {
+import {
   ThreadsKey,
   Marker,
   MarkerIndex,
@@ -34,7 +34,7 @@ import type {
   MarkerSchemaByName,
 } from 'firefox-profiler/types';
 
-import type { ConnectedProps } from '../../utils/connect';
+import { ConnectedProps } from '../../utils/connect';
 import { getMarkerSchemaName } from '../../profile-logic/marker-schema';
 
 // Limit how many characters in the description get sent to the DOM.

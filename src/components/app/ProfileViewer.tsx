@@ -33,8 +33,8 @@ import { BackgroundImageStyleDef } from '../shared/StyleDef';
 import classNames from 'classnames';
 import { DebugWarning } from '../app/DebugWarning';
 
-import type { CssPixels, IconWithClassName } from 'firefox-profiler/types';
-import type { ConnectedProps } from '../../utils/connect';
+import { CssPixels, IconWithClassName } from 'firefox-profiler/types';
+import { ConnectedProps } from '../../utils/connect';
 
 import './ProfileViewer.css';
 

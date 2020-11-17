@@ -18,7 +18,7 @@ import { UniqueStringArray } from '../utils/unique-string-array';
 import { timeCode } from '../utils/time-code';
 import { PROCESSED_PROFILE_VERSION } from '../app-logic/constants';
 import { coerce } from '../utils/flow';
-import type { SerializableProfile } from 'firefox-profiler/types';
+import { SerializableProfile } from 'firefox-profiler/types';
 
 // Processed profiles before version 1 did not have a profile.meta.preprocessedProfileVersion
 // field. Treat those as version zero.

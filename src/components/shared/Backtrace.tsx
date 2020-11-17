@@ -12,7 +12,7 @@ import {
   convertStackToCallNodePath,
 } from 'firefox-profiler/profile-logic/profile-data';
 
-import type {
+import {
   Thread,
   IndexIntoStackTable,
   ImplementationFilter,

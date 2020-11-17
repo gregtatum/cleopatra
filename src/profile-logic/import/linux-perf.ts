@@ -4,7 +4,7 @@
 
 
 
-import type { MixedObject } from 'firefox-profiler/types';
+import { MixedObject } from 'firefox-profiler/types';
 
 /**
  * The "perf script" format is the plain text format that is output by an

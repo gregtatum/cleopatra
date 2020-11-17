@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 
-import type { IndexIntoStringTable } from 'firefox-profiler/types';
+import { IndexIntoStringTable } from 'firefox-profiler/types';
 
 export class UniqueStringArray {
   _array: string[];

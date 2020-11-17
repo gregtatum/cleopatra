@@ -43,7 +43,7 @@ import {
   addTransformToStack,
 } from '../../actions/profile-view';
 
-import type { Profile } from 'firefox-profiler/types';
+import { Profile } from 'firefox-profiler/types';
 
 beforeEach(() => {
   // Mock out the 2d canvas for the loupe view.

@@ -14,7 +14,7 @@ import { getThreadSelectors } from '../../selectors/per-thread';
 import { Tooltip } from '../tooltip/Tooltip';
 import EmptyThreadIndicator from './EmptyThreadIndicator';
 
-import type {
+import {
   Thread,
   ThreadIndex,
   Milliseconds,
@@ -22,7 +22,7 @@ import type {
   StartEndRange,
   EventDelayInfo,
 } from 'firefox-profiler/types';
-import type { ConnectedProps } from '../../utils/connect';
+import { ConnectedProps } from '../../utils/connect';
 
 import './TrackEventDelay.css';
 

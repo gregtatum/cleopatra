@@ -10,7 +10,7 @@ import {
   getEmptyRawMarkerTable,
 } from './data-structures';
 import { ensureExists } from '../utils/flow';
-import type {
+import {
   JsTracerTable,
   IndexIntoStringTable,
   IndexIntoJsTracerEvents,
@@ -23,8 +23,8 @@ import type {
   Microseconds,
 } from 'firefox-profiler/types';
 
-import type { UniqueStringArray } from '../utils/unique-string-array';
-import type { JsImplementation } from '../profile-logic/profile-data';
+import { UniqueStringArray } from '../utils/unique-string-array';
+import { JsImplementation } from '../profile-logic/profile-data';
 
 // See the function below for more information.
 type ScriptLocationToFuncIndex = Map<string, IndexIntoFuncTable | null>;

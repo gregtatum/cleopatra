@@ -6,7 +6,7 @@
 import { createSelector } from 'reselect';
 import { getProfileViewOptions } from './profile';
 
-import type { Selector, RightClickedMarkerInfo } from 'firefox-profiler/types';
+import { Selector, RightClickedMarkerInfo } from 'firefox-profiler/types';
 
 export const getRightClickedMarkerInfo: Selector<RightClickedMarkerInfo | null> = createSelector(
   getProfileViewOptions,

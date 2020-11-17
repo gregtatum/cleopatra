@@ -29,7 +29,7 @@ import {
   handleCallNodeTransformShortcut,
 } from 'firefox-profiler/actions/profile-view';
 
-import type {
+import {
   Thread,
   CategoryList,
   PageList,
@@ -45,11 +45,11 @@ import type {
   ThreadsKey,
 } from 'firefox-profiler/types';
 
-import type { FlameGraphTiming } from 'firefox-profiler/profile-logic/flame-graph';
+import { FlameGraphTiming } from 'firefox-profiler/profile-logic/flame-graph';
 
-import type { CallTree } from 'firefox-profiler/profile-logic/call-tree';
+import { CallTree } from 'firefox-profiler/profile-logic/call-tree';
 
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 import './FlameGraph.css';
 

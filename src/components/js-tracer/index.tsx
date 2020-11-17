@@ -17,12 +17,12 @@ import {
 } from 'firefox-profiler/selectors/url-state';
 import { updatePreviewSelection } from 'firefox-profiler/actions/profile-view';
 
-import type {
+import {
   Profile,
   JsTracerTable,
   ThreadsKey,
 } from 'firefox-profiler/types';
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 import './index.css';
 

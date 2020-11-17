@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 
-import type { TabSlug } from '../../app-logic/tabs-handling';
+import { TabSlug } from '../../app-logic/tabs-handling';
 
 import {
   getProfileFromTextSamples,
@@ -51,7 +51,7 @@ import {
   type BreakdownByCategory,
 } from '../../profile-logic/profile-data';
 
-import type {
+import {
   TrackReference,
   Milliseconds,
   BrowsingContextID,

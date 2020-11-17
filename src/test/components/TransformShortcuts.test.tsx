@@ -14,7 +14,7 @@ import { selectedThreadSelectors } from 'firefox-profiler/selectors';
 import { ensureExists } from '../../utils/flow';
 import { fireFullKeyPress } from '../fixtures/utils';
 import { ProfileCallTreeView } from '../../components/calltree/ProfileCallTreeView';
-import type { TransformType } from 'firefox-profiler/types';
+import { TransformType } from 'firefox-profiler/types';
 
 type KeyPressOptions = { key: string, ... };
 

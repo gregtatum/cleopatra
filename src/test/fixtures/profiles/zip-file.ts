@@ -7,7 +7,7 @@ import { getProfileFromTextSamples } from '../../fixtures/profiles/processed-pro
 import { serializeProfile } from '../../../profile-logic/process-profile';
 import { receiveZipFile } from '../../../actions/receive-profile';
 import { setDataSource } from '../../../actions/profile-view';
-import type { ZipFileTable } from '../../../profile-logic/zip-files';
+import { ZipFileTable } from '../../../profile-logic/zip-files';
 import createStore from '../../../app-logic/create-store';
 import JSZip from 'jszip';
 import { objectValues } from '../../../utils/flow';

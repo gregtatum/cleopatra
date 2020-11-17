@@ -4,7 +4,7 @@
 
 
 import { TextEncoder } from 'util';
-import type { SymbolTableAsTuple } from '../../profile-logic/symbol-store-db';
+import { SymbolTableAsTuple } from '../../profile-logic/symbol-store-db';
 
 const completeSyms = {
   addresses: [0, 0xf00, 0x1a00, 0x2000],

@@ -3,10 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 
-import type { Milliseconds, Microseconds, Seconds, Bytes } from './units';
-import type { GeckoMarkerStack } from './gecko-profile';
-import type { IndexIntoStackTable, IndexIntoStringTable, Tid } from './profile';
-import type { ObjectMap } from './utils';
+import { Milliseconds, Microseconds, Seconds, Bytes } from './units';
+import { GeckoMarkerStack } from './gecko-profile';
+import { IndexIntoStackTable, IndexIntoStringTable, Tid } from './profile';
+import { ObjectMap } from './utils';
 
 // Provide different formatting options for strings.
 export type MarkerFormatType =

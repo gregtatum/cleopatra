@@ -18,8 +18,8 @@ import { getFormattedTimeLength } from 'firefox-profiler/profile-logic/committed
 import { FilterNavigatorBar } from 'firefox-profiler/components/shared/FilterNavigatorBar';
 import { Icon } from 'firefox-profiler/components/shared/Icon';
 
-import type { ElementProps } from 'react';
-import type {
+import { ElementProps } from 'react';
+import {
   ProfileFilterPageData,
   StartEndRange,
 } from 'firefox-profiler/types';

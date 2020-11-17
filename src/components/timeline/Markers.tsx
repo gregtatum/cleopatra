@@ -23,7 +23,7 @@ import { ContextMenuTrigger } from 'firefox-profiler/components/shared/ContextMe
 import { hasThreadKeys } from 'firefox-profiler/profile-logic/profile-data';
 import './Markers.css';
 
-import type {
+import {
   Milliseconds,
   CssPixels,
   Marker,
@@ -31,8 +31,8 @@ import type {
   ThreadsKey,
 } from 'firefox-profiler/types';
 
-import type { SizeProps } from 'firefox-profiler/components/shared/WithSize';
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { SizeProps } from 'firefox-profiler/components/shared/WithSize';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 import { getStartEndRangeForMarker } from 'firefox-profiler/utils';
 
 // Exported for tests.

@@ -3,14 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 
-import type {
+import {
   UnitIntervalOfProfileRange,
   CallNodeInfo,
   CallNodeTable,
   IndexIntoCallNodeTable,
   Thread,
 } from 'firefox-profiler/types';
-import type { CallTreeCountsAndSummary } from './call-tree';
+import { CallTreeCountsAndSummary } from './call-tree';
 
 export type FlameGraphDepth = number;
 export type IndexIntoFlameGraphTiming = number;

@@ -4,7 +4,7 @@
 
 
 import { createSelector } from 'reselect';
-import type {
+import {
   IconWithClassName,
   IconState,
   Selector,

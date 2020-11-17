@@ -46,7 +46,7 @@ import { getTrackSelectionModifier } from 'firefox-profiler/utils';
 import { assertExhaustiveCheck } from 'firefox-profiler/utils/flow';
 import './TrackThread.css';
 
-import type {
+import {
   TimelineType,
   Thread,
   ThreadIndex,
@@ -62,7 +62,7 @@ import type {
   ThreadsKey,
 } from 'firefox-profiler/types';
 
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 type OwnProps = {
   +threadsKey: ThreadsKey,

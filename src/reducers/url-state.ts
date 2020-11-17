@@ -7,7 +7,7 @@ import { combineReducers } from 'redux';
 import { oneLine } from 'common-tags';
 import { objectEntries } from '../utils/flow';
 
-import type {
+import {
   ThreadIndex,
   Pid,
   TrackIndex,
@@ -22,7 +22,7 @@ import type {
   TimelineTrackOrganization,
 } from 'firefox-profiler/types';
 
-import type { TabSlug } from '../app-logic/tabs-handling';
+import { TabSlug } from '../app-logic/tabs-handling';
 
 /*
  * This state file governs the state that comes from, and alters, the window

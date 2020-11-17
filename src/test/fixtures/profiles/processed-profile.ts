@@ -23,7 +23,7 @@ import {
   INTERVAL_END,
 } from 'firefox-profiler/app-logic/constants';
 
-import type {
+import {
   Profile,
   Thread,
   ThreadIndex,

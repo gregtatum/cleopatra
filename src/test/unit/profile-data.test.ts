@@ -39,7 +39,7 @@ import {
 } from '../fixtures/profiles/processed-profile';
 import { funcHasRecursiveCall } from '../../profile-logic/transforms';
 
-import type { Thread, IndexIntoStackTable } from 'firefox-profiler/types';
+import { Thread, IndexIntoStackTable } from 'firefox-profiler/types';
 
 describe('unique-string-array', function() {
   const u = new UniqueStringArray(['foo', 'bar', 'baz']);

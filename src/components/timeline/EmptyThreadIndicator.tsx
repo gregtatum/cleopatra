@@ -8,13 +8,13 @@ import { withSize } from 'firefox-profiler/components/shared/WithSize';
 import { DivWithTooltip } from 'firefox-profiler/components/tooltip/DivWithTooltip';
 import { oneLine } from 'common-tags';
 
-import type {
+import {
   Thread,
   Milliseconds,
   StartEndRange,
 } from 'firefox-profiler/types';
 
-import type { SizeProps } from 'firefox-profiler/components/shared/WithSize';
+import { SizeProps } from 'firefox-profiler/components/shared/WithSize';
 
 import './EmptyThreadIndicator.css';
 

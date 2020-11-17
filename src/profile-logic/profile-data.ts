@@ -12,7 +12,7 @@ import {
   getEmptyBalancedNativeAllocationsTable,
 } from './data-structures';
 
-import type {
+import {
   Profile,
   Thread,
   SamplesTable,
@@ -58,7 +58,7 @@ import { assertExhaustiveCheck, ensureExists } from '../utils/flow';
 import { timeCode } from '../utils/time-code';
 import { hashPath } from '../utils/path';
 
-import type { UniqueStringArray } from '../utils/unique-string-array';
+import { UniqueStringArray } from '../utils/unique-string-array';
 
 /**
  * Various helpers for dealing with the profile as a data structure.

@@ -7,7 +7,7 @@ import { createSelector } from 'reselect';
 
 import { getProfileViewOptions } from './profile';
 
-import type {
+import {
   ThreadsKey,
   CallNodePath,
   Selector,

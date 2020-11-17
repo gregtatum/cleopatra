@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 
-import type { MarkerSchema } from 'firefox-profiler/types';
+import { MarkerSchema } from 'firefox-profiler/types';
 
 export const markerSchemaForTests: MarkerSchema[] = [
   {

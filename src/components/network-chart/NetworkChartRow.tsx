@@ -20,7 +20,7 @@ import {
 } from '../../app-logic/constants';
 import { ensureExists } from '../../utils/flow';
 
-import type {
+import {
   CssPixels,
   Milliseconds,
   StartEndRange,

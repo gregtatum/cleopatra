@@ -18,7 +18,7 @@ import {
 } from 'firefox-profiler/app-logic/published-profiles-store';
 import { formatSeconds } from 'firefox-profiler/utils/format-numbers';
 
-import type { Milliseconds, StartEndRange } from 'firefox-profiler/types/units';
+import { Milliseconds, StartEndRange } from 'firefox-profiler/types/units';
 
 import './ListOfPublishedProfiles.css';
 

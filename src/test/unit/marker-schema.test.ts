@@ -7,7 +7,7 @@ import {
   parseLabel,
   markerSchemaFrontEndOnly,
 } from '../../profile-logic/marker-schema';
-import type { MarkerSchema, Marker } from 'firefox-profiler/types';
+import { MarkerSchema, Marker } from 'firefox-profiler/types';
 import { getDefaultCategories } from '../../profile-logic/data-structures';
 import { storeWithProfile } from '../fixtures/stores';
 import { getMarkerSchema } from '../../selectors/profile';

@@ -14,7 +14,7 @@ import * as ProfileSelectors from '../profile';
 import { getRightClickedCallNodeInfo } from '../right-clicked-call-node';
 import { assertExhaustiveCheck } from '../../utils/flow';
 
-import type {
+import {
   Thread,
   ThreadIndex,
   SamplesLikeTable,
@@ -33,7 +33,7 @@ import type {
   ThreadsKey,
 } from 'firefox-profiler/types';
 
-import type { ThreadSelectorsPerThread } from './thread';
+import { ThreadSelectorsPerThread } from './thread';
 
 /**
  * Infer the return type from the getStackAndSampleSelectorsPerThread function. This

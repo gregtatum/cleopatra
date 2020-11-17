@@ -14,7 +14,7 @@ import { SampleTooltipContents } from 'firefox-profiler/components/shared/Sample
 
 import './ActivityGraph.css';
 
-import type {
+import {
   Thread,
   CategoryList,
   IndexIntoSamplesTable,
@@ -23,7 +23,7 @@ import type {
   CssPixels,
 } from 'firefox-profiler/types';
 
-import type { ActivityFillGraphQuerier } from './ActivityGraphFills';
+import { ActivityFillGraphQuerier } from './ActivityGraphFills';
 
 export type Props = {
   +className: string,

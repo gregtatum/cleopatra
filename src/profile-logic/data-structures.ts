@@ -9,7 +9,7 @@ import {
   PROCESSED_PROFILE_VERSION,
 } from '../app-logic/constants';
 
-import type {
+import {
   Thread,
   SamplesTable,
   FrameTable,

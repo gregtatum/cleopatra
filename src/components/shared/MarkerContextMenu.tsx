@@ -20,7 +20,7 @@ import {
 import { getRightClickedMarkerInfo } from 'firefox-profiler/selectors/right-clicked-marker';
 import copy from 'copy-to-clipboard';
 
-import type {
+import {
   Marker,
   MarkerIndex,
   StartEndRange,
@@ -31,7 +31,7 @@ import type {
   RightClickedMarkerInfo,
 } from 'firefox-profiler/types';
 
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 import { getImplementationFilter } from 'firefox-profiler/selectors/url-state';
 
 import { filterCallNodePathByImplementation } from 'firefox-profiler/profile-logic/transforms';

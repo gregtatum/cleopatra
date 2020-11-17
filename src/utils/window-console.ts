@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { stripIndent } from 'common-tags';
-import type { GetState, Dispatch, MixedObject } from 'firefox-profiler/types';
+import { GetState, Dispatch, MixedObject } from 'firefox-profiler/types';
 import { selectorsForConsole } from 'firefox-profiler/selectors';
 import actions from '../actions';
 

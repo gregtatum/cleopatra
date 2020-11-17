@@ -11,8 +11,8 @@ import { getDataSource } from '../../selectors/url-state';
 import { getView } from '../../selectors/app';
 import { getSymbolicationStatus } from '../../selectors/profile';
 
-import type { ConnectedProps } from '../../utils/connect';
-import type {
+import { ConnectedProps } from '../../utils/connect';
+import {
   DataSource,
   Phase,
   SymbolicationStatus,

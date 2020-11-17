@@ -25,9 +25,9 @@ import {
 import * as ProfileSelectors from '../profile';
 import { ensureExists } from '../../utils/flow';
 
-import type { ThreadIndex, Selector, ThreadsKey } from 'firefox-profiler/types';
+import { ThreadIndex, Selector, ThreadsKey } from 'firefox-profiler/types';
 
-import type { TimingsForPath } from '../../profile-logic/profile-data';
+import { TimingsForPath } from '../../profile-logic/profile-data';
 
 /**
  * Traditional selectors only take one parameter, the `State` object. The selectors

@@ -12,7 +12,7 @@ import {
 import { storeWithProfile } from '../stores';
 import { oneLine } from 'common-tags';
 
-import type {
+import {
   OriginsTimelineTrack,
   Profile,
   State,

@@ -14,7 +14,7 @@ import {
   formatPlatform,
 } from 'firefox-profiler/profile-logic/profile-metainfo';
 
-import type { Profile, SymbolicationStatus } from 'firefox-profiler/types';
+import { Profile, SymbolicationStatus } from 'firefox-profiler/types';
 
 import { typeof resymbolicateProfile } from 'firefox-profiler/actions/receive-profile';
 import { assertExhaustiveCheck } from 'firefox-profiler/utils/flow';

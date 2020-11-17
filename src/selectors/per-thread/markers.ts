@@ -14,8 +14,8 @@ import { getRightClickedMarkerInfo } from '../right-clicked-marker';
 import { getLabelGetter } from '../../profile-logic/marker-schema';
 import { assertExhaustiveCheck } from '../../utils/flow';
 
-import type { ThreadSelectorsPerThread } from './thread';
-import type {
+import { ThreadSelectorsPerThread } from './thread';
+import {
   RawMarkerTable,
   ThreadIndex,
   MarkerIndex,

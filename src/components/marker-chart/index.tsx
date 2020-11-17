@@ -26,7 +26,7 @@ import {
 } from 'firefox-profiler/actions/profile-view';
 import { ContextMenuTrigger } from 'firefox-profiler/components/shared/ContextMenuTrigger';
 
-import type {
+import {
   Marker,
   MarkerIndex,
   MarkerTimingAndBuckets,
@@ -38,7 +38,7 @@ import type {
   TimelineTrackOrganization,
 } from 'firefox-profiler/types';
 
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 import './index.css';
 

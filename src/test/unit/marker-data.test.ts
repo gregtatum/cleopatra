@@ -35,7 +35,7 @@ import {
 } from '../fixtures/profiles/processed-profile';
 import { storeWithProfile } from '../fixtures/stores';
 
-import type {
+import {
   IndexIntoRawMarkerTable,
   Milliseconds,
 } from 'firefox-profiler/types';

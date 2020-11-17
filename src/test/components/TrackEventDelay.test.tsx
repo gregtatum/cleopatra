@@ -22,8 +22,8 @@ import {
 import { enableEventDelayTracks } from '../../actions/app';
 import { getProfileWithEventDelays } from '../fixtures/profiles/processed-profile';
 
-import type { IndexIntoSamplesTable } from 'firefox-profiler/types';
-import type { CssPixels } from '../../types/units';
+import { IndexIntoSamplesTable } from 'firefox-profiler/types';
+import { CssPixels } from '../../types/units';
 
 // The following constants determine the size of the drawn graph.
 const SAMPLE_COUNT = 8;

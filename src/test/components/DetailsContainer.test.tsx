@@ -13,7 +13,7 @@ import { storeWithProfile } from '../fixtures/stores';
 import { getProfileFromTextSamples } from '../fixtures/profiles/processed-profile';
 
 import { tabSlugs } from '../../app-logic/tabs-handling';
-import type { TabSlug } from '../../app-logic/tabs-handling';
+import { TabSlug } from '../../app-logic/tabs-handling';
 
 jest.mock('../../components/app/Details', () => ({
   Details: 'details-viewer',

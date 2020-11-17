@@ -4,15 +4,15 @@
 
 
 
-import type {
+import {
   Milliseconds,
   MemoryOffset,
   Address,
   Microseconds,
   Bytes,
 } from './units';
-import type { UniqueStringArray } from '../utils/unique-string-array';
-import type { MarkerPayload, MarkerSchema } from './markers';
+import { UniqueStringArray } from '../utils/unique-string-array';
+import { MarkerPayload, MarkerSchema } from './markers';
 export type IndexIntoStackTable = number;
 export type IndexIntoSamplesTable = number;
 export type IndexIntoRawMarkerTable = number;

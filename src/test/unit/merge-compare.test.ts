@@ -12,7 +12,7 @@ import {
   getProfileWithMarkers,
 } from '../fixtures/profiles/processed-profile';
 
-import type { Thread } from 'firefox-profiler/types';
+import { Thread } from 'firefox-profiler/types';
 
 describe('mergeProfilesForDiffing function', function() {
   it('merges the various tables properly in the diffing profile', function() {

@@ -20,7 +20,7 @@ import { mapCategoryColorNameToStackChartStyles } from '../../utils/colors';
 import { TooltipCallNode } from '../tooltip/CallNode';
 import { TooltipMarker } from '../tooltip/Marker';
 
-import type {
+import {
   Thread,
   CategoryList,
   PageList,
@@ -38,12 +38,12 @@ import type {
   Marker,
 } from 'firefox-profiler/types';
 
-import type {
+import {
   StackTimingDepth,
   IndexIntoStackTiming,
 } from '../../profile-logic/stack-timing';
-import type { Viewport } from '../shared/chart/Viewport';
-import type { WrapFunctionInDispatch } from '../../utils/connect';
+import { Viewport } from '../shared/chart/Viewport';
+import { WrapFunctionInDispatch } from '../../utils/connect';
 
 type OwnProps = {
   +thread: Thread,

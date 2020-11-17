@@ -15,8 +15,8 @@ import {
   getFormattedMetaInfoString,
 } from 'firefox-profiler/selectors';
 
-import type { Profile } from 'firefox-profiler/types';
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { Profile } from 'firefox-profiler/types';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 type StateProps = {
   +profile: Profile,

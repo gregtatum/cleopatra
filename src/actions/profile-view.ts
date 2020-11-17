@@ -42,7 +42,7 @@ import { assertExhaustiveCheck } from 'firefox-profiler/utils/flow';
 import { sendAnalytics } from 'firefox-profiler/utils/analytics';
 import { objectShallowEquals } from 'firefox-profiler/utils/index';
 
-import type {
+import {
   PreviewSelection,
   ImplementationFilter,
   CallTreeSummaryStrategy,

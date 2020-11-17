@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 
-import type { AddressResult, LibSymbolicationRequest } from './symbol-store';
+import { AddressResult, LibSymbolicationRequest } from './symbol-store';
 import { SymbolsNotFoundError } from './errors';
 
 // This file handles requesting symbolication information from the Mozilla

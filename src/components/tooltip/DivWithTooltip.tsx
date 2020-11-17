@@ -5,7 +5,7 @@
 
 import * as React from 'react';
 import { Tooltip } from './Tooltip';
-import type { CssPixels } from 'firefox-profiler/types';
+import { CssPixels } from 'firefox-profiler/types';
 
 type Props = {
   +tooltip: React.Node,

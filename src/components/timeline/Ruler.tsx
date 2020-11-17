@@ -9,7 +9,7 @@ import { TIMELINE_RULER_HEIGHT } from 'firefox-profiler/app-logic/constants';
 
 import './Ruler.css';
 
-import type { Milliseconds, CssPixels } from 'firefox-profiler/types';
+import { Milliseconds, CssPixels } from 'firefox-profiler/types';
 
 type Props = {
   +zeroAt: Milliseconds,

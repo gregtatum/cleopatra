@@ -8,7 +8,7 @@ import { timeCode } from 'firefox-profiler/utils/time-code';
 import classNames from 'classnames';
 import { Tooltip } from 'firefox-profiler/components/tooltip/Tooltip';
 
-import type { CssPixels, DevicePixels } from 'firefox-profiler/types';
+import { CssPixels, DevicePixels } from 'firefox-profiler/types';
 
 type Props<HoveredItem> = {
   +containerWidth: CssPixels,

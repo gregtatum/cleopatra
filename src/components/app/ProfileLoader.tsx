@@ -21,8 +21,8 @@ import {
 } from 'firefox-profiler/selectors/url-state';
 import { assertExhaustiveCheck } from 'firefox-profiler/utils/flow';
 
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
-import type { DataSource } from 'firefox-profiler/types';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { DataSource } from 'firefox-profiler/types';
 
 type StateProps = {
   +dataSource: DataSource,

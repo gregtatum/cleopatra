@@ -6,12 +6,12 @@
 import * as React from 'react';
 import explicitConnect from '../../utils/connect';
 
-import type {
+import {
   ConnectedProps,
   WrapDispatchProps,
   WrapFunctionInDispatch,
 } from '../../utils/connect';
-import type {
+import {
   State,
   Action,
   ThunkAction,

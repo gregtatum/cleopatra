@@ -31,7 +31,7 @@ import { extractProfileTokenFromJwt } from 'firefox-profiler/utils/jwt';
 import { withHistoryReplaceStateSync } from 'firefox-profiler/app-logic/url-handling';
 import { storeProfileData } from 'firefox-profiler/app-logic/published-profiles-store';
 
-import type {
+import {
   Action,
   ThunkAction,
   CheckedSharingOptions,

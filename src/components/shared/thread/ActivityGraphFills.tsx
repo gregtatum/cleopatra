@@ -9,7 +9,7 @@ import { bisectionRight } from 'firefox-profiler/utils/bisect';
 
 import './ActivityGraph.css';
 
-import type {
+import {
   IndexIntoSamplesTable,
   IndexIntoCategoryList,
   Thread,

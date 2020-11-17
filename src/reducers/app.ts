@@ -6,8 +6,8 @@
 import { combineReducers } from 'redux';
 import { tabSlugs } from '../app-logic/tabs-handling';
 
-import type { TabSlug } from '../app-logic/tabs-handling';
-import type {
+import { TabSlug } from '../app-logic/tabs-handling';
+import {
   AppState,
   AppViewState,
   IsSidebarOpenPerPanelState,

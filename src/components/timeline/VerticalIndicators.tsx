@@ -9,8 +9,8 @@ import { withSize } from 'firefox-profiler/components/shared/WithSize';
 import { displayNiceUrl } from 'firefox-profiler/utils';
 import { formatSeconds } from 'firefox-profiler/utils/format-numbers';
 
-import type { SizeProps } from 'firefox-profiler/components/shared/WithSize';
-import type {
+import { SizeProps } from 'firefox-profiler/components/shared/WithSize';
+import {
   PageList,
   Marker,
   MarkerIndex,

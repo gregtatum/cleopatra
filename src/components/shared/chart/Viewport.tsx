@@ -17,14 +17,14 @@ import {
 import { setHasZoomedViaMousewheel } from 'firefox-profiler/actions/app';
 import { updatePreviewSelection } from 'firefox-profiler/actions/profile-view';
 
-import type {
+import {
   CssPixels,
   UnitIntervalOfProfileRange,
   StartEndRange,
   PreviewSelection,
 } from 'firefox-profiler/types';
 
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 import {
   getObjectValuesAsUnion,
   assertExhaustiveCheck,

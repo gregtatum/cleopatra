@@ -3,9 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 
-import type { Store as ReduxStore } from 'redux';
-import type { Action as ActionsRef } from './actions';
-import type { State as StateRef } from './state';
+import { Store as ReduxStore } from 'redux';
+import { Action as ActionsRef } from './actions';
+import { State as StateRef } from './state';
 
 /**
  * This file contains type definitions for the Redux store. Unlike the definitions

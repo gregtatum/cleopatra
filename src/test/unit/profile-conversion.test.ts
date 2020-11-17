@@ -5,7 +5,7 @@
 
 import { unserializeProfileOfArbitraryFormat } from '../../profile-logic/process-profile';
 import { GECKO_PROFILE_VERSION } from '../../app-logic/constants';
-import type {
+import {
   TracingEventUnion,
   CpuProfileEvent,
 } from '../../profile-logic/import/chrome';

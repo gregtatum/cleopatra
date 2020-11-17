@@ -10,8 +10,8 @@ import { openDB, deleteDB } from 'idb';
 import { stripIndent } from 'common-tags';
 import { ensureExists } from 'firefox-profiler/utils/flow';
 
-import type { DB as Database } from 'idb';
-import type { StartEndRange } from 'firefox-profiler/types';
+import { DB as Database } from 'idb';
+import { StartEndRange } from 'firefox-profiler/types';
 
 export type ProfileData = {
   +profileToken: string, // This is the primary key.

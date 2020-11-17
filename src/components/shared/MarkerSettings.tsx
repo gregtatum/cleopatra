@@ -11,7 +11,7 @@ import { changeMarkersSearchString } from 'firefox-profiler/actions/profile-view
 import { getMarkersSearchString } from 'firefox-profiler/selectors/url-state';
 import { PanelSearch } from './PanelSearch';
 
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 import './MarkerSettings.css';
 

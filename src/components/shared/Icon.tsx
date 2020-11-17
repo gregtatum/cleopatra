@@ -9,8 +9,8 @@ import explicitConnect from 'firefox-profiler/utils/connect';
 import { getIconClassName } from 'firefox-profiler/selectors/icons';
 import { iconStartLoading } from 'firefox-profiler/actions/icons';
 
-import type { CallNodeDisplayData } from 'firefox-profiler/types';
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { CallNodeDisplayData } from 'firefox-profiler/types';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 import './Icon.css';
 

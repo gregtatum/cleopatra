@@ -19,7 +19,7 @@ import { ORANGE_50 } from 'photon-colors';
 import { Tooltip } from 'firefox-profiler/components/tooltip/Tooltip';
 import EmptyThreadIndicator from './EmptyThreadIndicator';
 
-import type {
+import {
   CounterIndex,
   Counter,
   Thread,
@@ -30,8 +30,8 @@ import type {
   StartEndRange,
 } from 'firefox-profiler/types';
 
-import type { SizeProps } from 'firefox-profiler/components/shared/WithSize';
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { SizeProps } from 'firefox-profiler/components/shared/WithSize';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 import './TrackMemory.css';
 

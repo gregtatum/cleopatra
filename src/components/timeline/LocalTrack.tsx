@@ -29,7 +29,7 @@ import TrackNetwork from './TrackNetwork';
 import { TrackMemory } from './TrackMemory';
 import { TrackIPC } from './TrackIPC';
 import { getTrackSelectionModifier } from 'firefox-profiler/utils';
-import type {
+import {
   TrackReference,
   Pid,
   TrackIndex,
@@ -37,7 +37,7 @@ import type {
   MixedObject,
 } from 'firefox-profiler/types';
 
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 type OwnProps = {
   +pid: Pid,

@@ -36,7 +36,7 @@ import {
 
 import { getCallNodePathFromIndex } from '../../profile-logic/profile-data';
 
-import type {
+import {
   Thread,
   CategoryList,
   PageList,
@@ -54,7 +54,7 @@ import type {
   CssPixels,
 } from 'firefox-profiler/types';
 
-import type { ConnectedProps } from '../../utils/connect';
+import { ConnectedProps } from '../../utils/connect';
 
 import './index.css';
 

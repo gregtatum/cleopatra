@@ -23,7 +23,7 @@ import {
 } from './data-structures';
 import { getFunctionName } from './function-info';
 
-import type {
+import {
   Thread,
   FuncTable,
   IndexIntoCategoryList,

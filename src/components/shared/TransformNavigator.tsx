@@ -9,8 +9,8 @@ import { selectedThreadSelectors } from 'firefox-profiler/selectors/per-thread';
 import { FilterNavigatorBar } from './FilterNavigatorBar';
 import { popTransformsFromStack } from 'firefox-profiler/actions/profile-view';
 
-import type { State } from 'firefox-profiler/types';
-import type { ElementProps } from 'react';
+import { State } from 'firefox-profiler/types';
+import { ElementProps } from 'react';
 
 import './TransformNavigator.css';
 

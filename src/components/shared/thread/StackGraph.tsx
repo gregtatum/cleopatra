@@ -16,7 +16,7 @@ import { bisectionRight } from 'firefox-profiler/utils/bisect';
 import { BLUE_70, BLUE_40 } from 'photon-colors';
 import './StackGraph.css';
 
-import type {
+import {
   Thread,
   CategoryList,
   IndexIntoSamplesTable,

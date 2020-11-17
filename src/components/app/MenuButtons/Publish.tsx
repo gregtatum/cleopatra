@@ -35,7 +35,7 @@ import explicitConnect, {
   type ConnectedProps,
 } from 'firefox-profiler/utils/connect';
 
-import type {
+import {
   Profile,
   CheckedSharingOptions,
   StartEndRange,

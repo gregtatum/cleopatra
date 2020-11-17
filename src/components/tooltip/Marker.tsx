@@ -37,7 +37,7 @@ import {
   getSchemaFromMarker,
 } from 'firefox-profiler/profile-logic/marker-schema';
 
-import type {
+import {
   Milliseconds,
   Marker,
   ImplementationFilter,
@@ -48,7 +48,7 @@ import type {
   MarkerIndex,
 } from 'firefox-profiler/types';
 
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 import {
   getGCMinorDetails,
   getGCMajorDetails,

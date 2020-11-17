@@ -5,7 +5,7 @@
 
 import * as React from 'react';
 import ReactDOM from 'react-dom';
-import type { CssPixels } from 'firefox-profiler/types';
+import { CssPixels } from 'firefox-profiler/types';
 
 import { ensureExists } from 'firefox-profiler/utils/flow';
 require('./Tooltip.css');

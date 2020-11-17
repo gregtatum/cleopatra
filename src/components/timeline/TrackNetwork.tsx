@@ -20,7 +20,7 @@ import {
   TRACK_NETWORK_HEIGHT,
 } from 'firefox-profiler/app-logic/constants';
 
-import type {
+import {
   ThreadIndex,
   PageList,
   Marker,
@@ -29,8 +29,8 @@ import type {
   Milliseconds,
 } from 'firefox-profiler/types';
 
-import type { SizeProps } from 'firefox-profiler/components/shared/WithSize';
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { SizeProps } from 'firefox-profiler/components/shared/WithSize';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 import './TrackNetwork.css';
 

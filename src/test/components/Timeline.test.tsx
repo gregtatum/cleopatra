@@ -30,7 +30,7 @@ import {
 } from '../fixtures/profiles/tracks';
 import { ensureExists } from '../../utils/flow';
 
-import type { Profile } from 'firefox-profiler/types';
+import { Profile } from 'firefox-profiler/types';
 
 describe('Timeline multiple thread selection', function() {
   autoMockDomRect();

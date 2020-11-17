@@ -12,7 +12,7 @@ import { AppViewRouter } from './AppViewRouter';
 import { ProfileLoader } from './ProfileLoader';
 import { ServiceWorkerManager } from './ServiceWorkerManager';
 
-import type { Store } from 'firefox-profiler/types';
+import { Store } from 'firefox-profiler/types';
 
 import './Root.css';
 

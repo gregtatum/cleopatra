@@ -4,7 +4,7 @@
 
 
 
-import type { ProfileMeta } from 'firefox-profiler/types';
+import { ProfileMeta } from 'firefox-profiler/types';
 
 // This extracts the version number out of the 'misc' value we have in the
 // profile.

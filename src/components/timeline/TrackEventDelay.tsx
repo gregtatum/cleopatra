@@ -11,7 +11,7 @@ import {
   TRACK_EVENT_DELAY_LINE_WIDTH,
 } from 'firefox-profiler/app-logic/constants';
 
-import type { ThreadIndex } from 'firefox-profiler/types';
+import { ThreadIndex } from 'firefox-profiler/types';
 
 import './TrackEventDelay.css';
 

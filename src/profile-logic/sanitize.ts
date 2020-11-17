@@ -18,7 +18,7 @@ import {
   sanitizeTextMarker,
 } from './marker-data';
 import { filterThreadSamplesToRange } from './profile-data';
-import type {
+import {
   Profile,
   Thread,
   ThreadIndex,

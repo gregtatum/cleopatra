@@ -4,7 +4,7 @@
 
 
 
-import type { CallNodePath } from 'firefox-profiler/types';
+import { CallNodePath } from 'firefox-profiler/types';
 
 export function arePathsEqual(a: CallNodePath, b: CallNodePath): boolean {
   if (a === b) {

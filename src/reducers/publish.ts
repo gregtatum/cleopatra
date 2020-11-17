@@ -6,7 +6,7 @@
 import { combineReducers } from 'redux';
 import { getShouldSanitizeByDefault } from '../profile-logic/sanitize';
 
-import type {
+import {
   CheckedSharingOptions,
   PublishState,
   UploadState,

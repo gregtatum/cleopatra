@@ -6,7 +6,7 @@
 
 import { bisectionRight } from 'firefox-profiler/utils/bisect';
 
-import type {
+import {
   LibSymbolicationRequest,
   AddressResult,
 } from '../../profile-logic/symbol-store';

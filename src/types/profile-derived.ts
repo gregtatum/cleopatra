@@ -3,9 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 
-import type { Milliseconds, StartEndRange } from './units';
-import type { MarkerPayload } from './markers';
-import type {
+import { Milliseconds, StartEndRange } from './units';
+import { MarkerPayload } from './markers';
+import {
   IndexIntoFuncTable,
   ThreadIndex,
   Pid,
@@ -16,8 +16,8 @@ import type {
   Page,
   IndexIntoRawMarkerTable,
 } from './profile';
-import type { IndexedArray } from './utils';
-import type { StackTiming } from '../profile-logic/stack-timing';
+import { IndexedArray } from './utils';
+import { StackTiming } from '../profile-logic/stack-timing';
 export type IndexIntoCallNodeTable = number;
 
 /**

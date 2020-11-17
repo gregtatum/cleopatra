@@ -14,8 +14,8 @@ import { getSelectedTab } from 'firefox-profiler/selectors/url-state';
 import { getIsSidebarOpen } from 'firefox-profiler/selectors/app';
 import explicitConnect from 'firefox-profiler/utils/connect';
 
-import type { TabSlug } from 'firefox-profiler/app-logic/tabs-handling';
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { TabSlug } from 'firefox-profiler/app-logic/tabs-handling';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 import './DetailsContainer.css';
 

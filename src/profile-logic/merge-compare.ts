@@ -36,7 +36,7 @@ import {
 import { UniqueStringArray } from '../utils/unique-string-array';
 import { ensureExists } from '../utils/flow';
 
-import type {
+import {
   Profile,
   Thread,
   IndexIntoCategoryList,

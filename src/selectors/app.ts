@@ -36,8 +36,8 @@ import {
   ACTIVE_TAB_TIMELINE_MARGIN_LEFT,
 } from '../app-logic/constants';
 
-import type { TabSlug } from '../app-logic/tabs-handling';
-import type {
+import { TabSlug } from '../app-logic/tabs-handling';
+import {
   AppState,
   AppViewState,
   UrlSetupPhase,

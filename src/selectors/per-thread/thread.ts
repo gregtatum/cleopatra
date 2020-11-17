@@ -12,7 +12,7 @@ import * as ProfileData from '../../profile-logic/profile-data';
 import * as ProfileSelectors from '../profile';
 import * as JsTracer from '../../profile-logic/js-tracer';
 
-import type {
+import {
   Thread,
   ThreadIndex,
   JsTracerTable,
@@ -29,7 +29,7 @@ import type {
   ThreadsKey,
 } from 'firefox-profiler/types';
 
-import type { UniqueStringArray } from '../../utils/unique-string-array';
+import { UniqueStringArray } from '../../utils/unique-string-array';
 import { ensureExists } from '../../utils/flow';
 import { mergeThreads } from '../../profile-logic/merge-compare';
 import { defaultThreadViewOptions } from '../../reducers/profile-view';

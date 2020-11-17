@@ -30,8 +30,8 @@ import { CallNodeContextMenu } from 'firefox-profiler/components/shared/CallNode
 import { MaybeMarkerContextMenu } from 'firefox-profiler/components/shared/MarkerContextMenu';
 import { toValidTabSlug } from 'firefox-profiler/utils/flow';
 
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
-import type { TabSlug } from 'firefox-profiler/app-logic/tabs-handling';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { TabSlug } from 'firefox-profiler/app-logic/tabs-handling';
 
 import './Details.css';
 

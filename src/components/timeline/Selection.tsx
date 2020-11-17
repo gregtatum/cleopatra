@@ -22,15 +22,15 @@ import { Draggable } from 'firefox-profiler/components/shared/Draggable';
 import { getFormattedTimeLength } from 'firefox-profiler/profile-logic/committed-ranges';
 import './Selection.css';
 
-import type { OnMove } from 'firefox-profiler/components/shared/Draggable';
-import type {
+import { OnMove } from 'firefox-profiler/components/shared/Draggable';
+import {
   Milliseconds,
   CssPixels,
   StartEndRange,
   PreviewSelection,
 } from 'firefox-profiler/types';
 
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 type MouseHandler = (event: MouseEvent) => void;
 

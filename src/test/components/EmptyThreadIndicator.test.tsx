@@ -14,7 +14,7 @@ import { getProfileFromTextSamples } from '../fixtures/profiles/processed-profil
 import { getBoundingBox } from '../fixtures/utils';
 import mockRaf from '../fixtures/mocks/request-animation-frame';
 
-import type { StartEndRange } from 'firefox-profiler/types';
+import { StartEndRange } from 'firefox-profiler/types';
 
 describe('EmptyThreadIndicator', function() {
   beforeEach(() => {

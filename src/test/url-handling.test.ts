@@ -28,7 +28,7 @@ import {
   viewProfile,
   changeTimelineTrackOrganization,
 } from '../actions/receive-profile';
-import type { Profile, StartEndRange } from 'firefox-profiler/types';
+import { Profile, StartEndRange } from 'firefox-profiler/types';
 import getProfile from './fixtures/profiles/call-nodes';
 import queryString from 'query-string';
 import {

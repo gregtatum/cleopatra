@@ -3,10 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 
-import type { IDBFactory, IDBKeyRange } from '../indexeddb';
-import type { SymbolTableAsTuple } from '../../profile-logic/symbol-store-db';
-import type { GoogleAnalytics } from '../../utils/analytics';
-import type { MixedObject } from '../utils';
+import { IDBFactory, IDBKeyRange } from '../indexeddb';
+import { SymbolTableAsTuple } from '../../profile-logic/symbol-store-db';
+import { GoogleAnalytics } from '../../utils/analytics';
+import { MixedObject } from '../utils';
 
 // Because this type isn't an existing Global type, but still it's useful to
 // have it available, we define it with a $ as prfix.

@@ -8,7 +8,7 @@ import * as Transforms from '../profile-logic/transforms';
 import * as ProfileData from '../profile-logic/profile-data';
 import { arePathsEqual, PathSet } from '../utils/path';
 
-import type {
+import {
   Profile,
   Pid,
   LocalTrack,

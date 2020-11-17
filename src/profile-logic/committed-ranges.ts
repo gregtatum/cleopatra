@@ -4,7 +4,7 @@
 
 
 import { formatTimestamp } from 'firefox-profiler/utils/format-numbers';
-import type { StartEndRange } from 'firefox-profiler/types';
+import { StartEndRange } from 'firefox-profiler/types';
 
 /**
  * Users can make preview range selections on the profile, and then can commit these

@@ -7,7 +7,7 @@
 import * as React from 'react';
 import classNames from 'classnames';
 import { retrieveProfileFromFile } from 'firefox-profiler/actions/receive-profile';
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 import explicitConnect from 'firefox-profiler/utils/connect';
 
 import {

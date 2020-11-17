@@ -33,7 +33,7 @@ import {
 } from 'firefox-profiler/profile-logic/tracks';
 import { selectedThreadSelectors } from 'firefox-profiler/selectors/per-thread';
 
-import type {
+import {
   Profile,
   ThreadsKey,
   CssPixels,
@@ -41,7 +41,7 @@ import type {
   ThunkAction,
   UrlState,
 } from 'firefox-profiler/types';
-import type { TabSlug } from 'firefox-profiler/app-logic/tabs-handling';
+import { TabSlug } from 'firefox-profiler/app-logic/tabs-handling';
 
 export function changeSelectedTab(selectedTab: TabSlug): ThunkAction<void> {
   return (dispatch, getState) => {

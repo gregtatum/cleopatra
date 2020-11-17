@@ -30,7 +30,7 @@ import {
 import mockRaf from '../fixtures/mocks/request-animation-frame';
 import { ensureExists } from '../../utils/flow';
 
-import type { CssPixels } from 'firefox-profiler/types';
+import { CssPixels } from 'firefox-profiler/types';
 
 function setupWithMarkers({ rangeStart, rangeEnd }, ...markersPerThread) {
   const flushRafCalls = mockRaf();

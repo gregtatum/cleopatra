@@ -12,7 +12,7 @@ import { changeInvertCallstack } from '../../actions/profile-view';
 import { FlameGraphEmptyReasons } from './FlameGraphEmptyReasons';
 import { FlameGraph } from './FlameGraph';
 
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 import './MaybeFlameGraph.css';
 

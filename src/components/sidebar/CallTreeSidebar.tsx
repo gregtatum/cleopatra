@@ -21,8 +21,8 @@ import {
 } from 'firefox-profiler/profile-logic/profile-data';
 import { CanSelectContent } from './CanSelectContent';
 
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
-import type {
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
+import {
   ThreadsKey,
   CategoryList,
   CallNodeTable,
@@ -32,7 +32,7 @@ import type {
   WeightType,
 } from 'firefox-profiler/types';
 
-import type {
+import {
   BreakdownByImplementation,
   BreakdownByCategory,
   StackImplementation,

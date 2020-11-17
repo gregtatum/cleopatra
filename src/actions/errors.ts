@@ -6,7 +6,7 @@
 
 // This file contains actions related to error handling.
 
-import type { Action } from 'firefox-profiler/types';
+import { Action } from 'firefox-profiler/types';
 
 export function fatalError(error: Error): Action {
   return {

@@ -16,7 +16,7 @@ import { autoMockFullNavigation } from '../fixtures/mocks/window-navigation';
 import { coerceMatchingShape } from '../../utils/flow';
 import { makeProfileSerializable } from '../../profile-logic/process-profile';
 
-import type { SerializableProfile } from 'firefox-profiler/types';
+import { SerializableProfile } from 'firefox-profiler/types';
 
 // ListOfPublishedProfiles depends on IDB and renders asynchronously, so we'll
 // just test we want to render it, but otherwise test it more fully in a

@@ -4,7 +4,7 @@
 
 
 
-import type {
+import {
   TrackReference,
   Store,
   ThreadIndex,

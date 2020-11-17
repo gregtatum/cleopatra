@@ -10,7 +10,7 @@ import { urlFromState } from '../app-logic/url-handling';
 import * as CommittedRanges from '../profile-logic/committed-ranges';
 import { getThreadsKey } from '../profile-logic/profile-data';
 
-import type {
+import {
   ThreadIndex,
   Pid,
   TransformStack,
@@ -31,7 +31,7 @@ import type {
   ActiveTabSpecificProfileUrlState,
 } from 'firefox-profiler/types';
 
-import type { TabSlug } from '../app-logic/tabs-handling';
+import { TabSlug } from '../app-logic/tabs-handling';
 
 import urlStateReducer from '../reducers/url-state';
 import { formatMetaInfoString } from '../profile-logic/profile-metainfo';

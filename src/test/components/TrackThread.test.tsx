@@ -4,7 +4,7 @@
 
 
 
-import type { Profile, FileIoPayload } from 'firefox-profiler/types';
+import { Profile, FileIoPayload } from 'firefox-profiler/types';
 
 import * as React from 'react';
 import { Provider } from 'react-redux';

@@ -32,7 +32,7 @@ import { selectedThreadSelectors } from 'firefox-profiler/selectors/per-thread';
 
 import './StackSettings.css';
 
-import type {
+import {
   ImplementationFilter,
   CallTreeSummaryStrategy,
 } from 'firefox-profiler/types';

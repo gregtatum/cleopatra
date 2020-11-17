@@ -24,7 +24,7 @@ import { storeWithProfile } from '../fixtures/stores';
 import { getBoundingBox } from '../fixtures/utils';
 import { getProfileFromTextSamples } from '../fixtures/profiles/processed-profile';
 
-import type {
+import {
   Milliseconds,
   MixedObject,
   PreviewSelection,

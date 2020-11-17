@@ -12,8 +12,8 @@ import ActiveTabTimeline from 'firefox-profiler/components/timeline/ActiveTabTim
 import OriginsTimelineView from 'firefox-profiler/components/timeline/OriginsTimeline';
 import { assertExhaustiveCheck } from 'firefox-profiler/utils/flow';
 
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
-import type { TimelineTrackOrganization } from 'firefox-profiler/types';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { TimelineTrackOrganization } from 'firefox-profiler/types';
 
 type StateProps = {
   +timelineTrackOrganization: TimelineTrackOrganization,

@@ -9,7 +9,7 @@ import explicitConnect from 'firefox-profiler/utils/connect';
 import { getProfileNameWithDefault } from 'firefox-profiler/selectors';
 import { changeProfileName } from 'firefox-profiler/actions/profile-view';
 
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 import './ProfileName.css';
 

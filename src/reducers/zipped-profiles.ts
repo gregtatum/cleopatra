@@ -8,7 +8,7 @@ import { oneLine } from 'common-tags';
 import { ensureExists } from '../utils/flow';
 import * as ZipFiles from '../profile-logic/zip-files';
 
-import type {
+import {
   ZipFileState,
   Reducer,
   ZippedProfilesState,

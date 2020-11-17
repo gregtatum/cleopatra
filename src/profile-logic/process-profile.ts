@@ -29,7 +29,7 @@ import {
 } from '../profile-logic/profile-data';
 import { convertJsTracerToThread } from '../profile-logic/js-tracer';
 
-import type {
+import {
   Profile,
   Thread,
   Counter,

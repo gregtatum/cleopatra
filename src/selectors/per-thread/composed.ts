@@ -8,7 +8,7 @@ import { createSelector } from 'reselect';
 import { tabSlugs, type TabSlug } from '../../app-logic/tabs-handling';
 import { getTimelineTrackOrganization } from '../url-state';
 
-import type {
+import {
   Selector,
   $ReturnType,
   Thread,
@@ -18,7 +18,7 @@ import type {
   MarkerTiming,
 } from 'firefox-profiler/types';
 
-import type {
+import {
   StackTiming,
   StackTimingByDepth,
 } from '../../profile-logic/stack-timing';

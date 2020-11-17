@@ -12,7 +12,7 @@ import {
 import { timeCode } from 'firefox-profiler/utils/time-code';
 import { mapCategoryColorNameToStyles } from 'firefox-profiler/utils/colors';
 
-import type {
+import {
   Thread,
   Milliseconds,
   SelectedState,
@@ -20,7 +20,7 @@ import type {
   CategoryList,
 } from 'firefox-profiler/types';
 
-import type { CategoryDrawStyles } from './ActivityGraphFills';
+import { CategoryDrawStyles } from './ActivityGraphFills';
 
 type CanvasProps = {
   +className: string,

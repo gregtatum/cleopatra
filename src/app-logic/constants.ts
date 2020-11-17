@@ -4,7 +4,7 @@
 
 
 
-import type { MarkerPhase } from 'firefox-profiler/types';
+import { MarkerPhase } from 'firefox-profiler/types';
 
 // The current version of the Gecko profile format.
 export const GECKO_PROFILE_VERSION = 22;

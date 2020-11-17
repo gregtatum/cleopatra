@@ -11,8 +11,8 @@ import {
 } from '../../selectors/profile';
 import explicitConnect from '../../utils/connect';
 
-import type { RequestedLib } from 'firefox-profiler/types';
-import type { ConnectedProps } from '../../utils/connect';
+import { RequestedLib } from 'firefox-profiler/types';
+import { ConnectedProps } from '../../utils/connect';
 
 import './SymbolicationStatusOverlay.css';
 

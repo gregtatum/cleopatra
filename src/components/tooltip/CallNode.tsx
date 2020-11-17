@@ -13,8 +13,8 @@ import {
   getCategoryPairLabel,
 } from 'firefox-profiler/profile-logic/profile-data';
 
-import type { CallTree } from 'firefox-profiler/profile-logic/call-tree';
-import type {
+import { CallTree } from 'firefox-profiler/profile-logic/call-tree';
+import {
   Thread,
   CategoryList,
   PageList,
@@ -26,7 +26,7 @@ import type {
   CallTreeSummaryStrategy,
 } from 'firefox-profiler/types';
 
-import type { TimingsForPath } from 'firefox-profiler/profile-logic/profile-data';
+import { TimingsForPath } from 'firefox-profiler/profile-logic/profile-data';
 
 import './CallNode.css';
 

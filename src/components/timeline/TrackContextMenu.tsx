@@ -35,7 +35,7 @@ import {
 } from 'firefox-profiler/selectors/url-state';
 import classNames from 'classnames';
 
-import type {
+import {
   Thread,
   ThreadIndex,
   Pid,
@@ -46,7 +46,7 @@ import type {
   TrackReference,
 } from 'firefox-profiler/types';
 
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 type StateProps = {
   +threads: Thread[],

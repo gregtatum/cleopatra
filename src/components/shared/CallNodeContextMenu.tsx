@@ -30,7 +30,7 @@ import {
   assertExhaustiveCheck,
 } from 'firefox-profiler/utils/flow';
 
-import type {
+import {
   TransformType,
   ImplementationFilter,
   IndexIntoCallNodeTable,
@@ -40,8 +40,8 @@ import type {
   ThreadsKey,
 } from 'firefox-profiler/types';
 
-import type { TabSlug } from 'firefox-profiler/app-logic/tabs-handling';
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { TabSlug } from 'firefox-profiler/app-logic/tabs-handling';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 type StateProps = {
   +thread: Thread | null,

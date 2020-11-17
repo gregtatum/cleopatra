@@ -6,7 +6,7 @@
 
 import { SymbolsNotFoundError } from './errors';
 
-import type {
+import {
   IDBFactory,
   IDBDatabase,
   IDBObjectStore,

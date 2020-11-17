@@ -20,7 +20,7 @@ import { TooltipCallNode } from 'firefox-profiler/components/tooltip/CallNode';
 import { getTimingsForCallNodeIndex } from 'firefox-profiler/profile-logic/profile-data';
 import MixedTupleMap from 'mixedtuplemap';
 
-import type {
+import {
   Thread,
   CategoryList,
   PageList,
@@ -34,14 +34,14 @@ import type {
   TracedTiming,
 } from 'firefox-profiler/types';
 
-import type {
+import {
   FlameGraphTiming,
   FlameGraphDepth,
   IndexIntoFlameGraphTiming,
 } from 'firefox-profiler/profile-logic/flame-graph';
 
-import type { CallTree } from 'firefox-profiler/profile-logic/call-tree';
-import type { Viewport } from 'firefox-profiler/components/shared/chart/Viewport';
+import { CallTree } from 'firefox-profiler/profile-logic/call-tree';
+import { Viewport } from 'firefox-profiler/components/shared/chart/Viewport';
 
 export type OwnProps = {
   +thread: Thread,

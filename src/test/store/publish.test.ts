@@ -55,7 +55,7 @@ import {
   listAllProfileData,
 } from 'firefox-profiler/app-logic/published-profiles-store';
 
-import type { Store } from 'firefox-profiler/types';
+import { Store } from 'firefox-profiler/types';
 
 // We mock profile-store but we want the real error, so that we can simulate it.
 import { uploadBinaryProfileData } from '../../profile-logic/profile-store';

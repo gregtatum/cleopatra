@@ -20,7 +20,7 @@ import { FastFillStyle } from 'firefox-profiler/utils';
 import { updatePreviewSelection } from 'firefox-profiler/actions/profile-view';
 import { BLUE_40 } from 'firefox-profiler/utils/colors';
 
-import type {
+import {
   Milliseconds,
   CssPixels,
   UnitIntervalOfProfileRange,
@@ -31,8 +31,8 @@ import type {
   JsTracerTiming,
 } from 'firefox-profiler/types';
 
-import type { Viewport } from 'firefox-profiler/components/shared/chart/Viewport';
-import type { WrapFunctionInDispatch } from 'firefox-profiler/utils/connect';
+import { Viewport } from 'firefox-profiler/components/shared/chart/Viewport';
+import { WrapFunctionInDispatch } from 'firefox-profiler/utils/connect';
 
 type OwnProps = {
   +rangeStart: Milliseconds,

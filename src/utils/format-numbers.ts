@@ -7,7 +7,7 @@
 import memoize from 'memoize-immutable';
 import NamedTupleMap from 'namedtuplemap';
 
-import type {
+import {
   Microseconds,
   Milliseconds,
   Nanoseconds,

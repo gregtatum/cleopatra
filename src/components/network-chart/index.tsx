@@ -26,8 +26,8 @@ import {
   changeSelectedNetworkMarker,
   changeRightClickedMarker,
 } from '../../actions/profile-view';
-import type { SizeProps } from '../shared/WithSize';
-import type {
+import { SizeProps } from '../shared/WithSize';
+import {
   NetworkPayload,
   Marker,
   MarkerIndex,
@@ -35,7 +35,7 @@ import type {
   ThreadsKey,
 } from 'firefox-profiler/types';
 
-import type { ConnectedProps } from '../../utils/connect';
+import { ConnectedProps } from '../../utils/connect';
 
 import './index.css';
 

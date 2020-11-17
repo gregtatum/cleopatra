@@ -4,7 +4,7 @@
 
 
 import React, { PureComponent } from 'react';
-import type { ElementConfig } from 'react';
+import { ElementConfig } from 'react';
 import ReactDOM from 'react-dom';
 import { ContextMenu as ReactContextMenu } from 'react-contextmenu';
 

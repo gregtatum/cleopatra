@@ -19,7 +19,7 @@ import {
 import { createGeckoProfile } from '../fixtures/profiles/gecko-profile';
 import { processGeckoProfile } from '../../profile-logic/process-profile';
 import { fireFullClick } from '../fixtures/utils';
-import type { Profile, SymbolicationStatus } from 'firefox-profiler/types';
+import { Profile, SymbolicationStatus } from 'firefox-profiler/types';
 
 // We mock profile-store but we want the real error, so that we can simulate it.
 import { uploadBinaryProfileData } from '../../profile-logic/profile-store';

@@ -26,11 +26,11 @@ import {
 import { ProfileLoaderAnimation } from './ProfileLoaderAnimation';
 import { assertExhaustiveCheck } from '../../utils/flow';
 
-import type {
+import {
   ConnectedProps,
   WrapFunctionInDispatch,
 } from '../../utils/connect';
-import type { UrlState, Phase, UrlSetupPhase } from 'firefox-profiler/types';
+import { UrlState, Phase, UrlSetupPhase } from 'firefox-profiler/types';
 
 type StateProps = {
   +phase: Phase,

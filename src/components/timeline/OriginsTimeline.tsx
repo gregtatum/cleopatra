@@ -22,8 +22,8 @@ import {
 import { getFriendlyThreadName } from 'firefox-profiler/profile-logic/profile-data';
 import { changeSelectedThreads } from 'firefox-profiler/actions/profile-view';
 
-import type { SizeProps } from 'firefox-profiler/components/shared/WithSize';
-import type {
+import { SizeProps } from 'firefox-profiler/components/shared/WithSize';
+import {
   Thread,
   ThreadIndex,
   InitialSelectedTrackReference,
@@ -33,7 +33,7 @@ import type {
   StartEndRange,
 } from 'firefox-profiler/types';
 
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 import './OriginsTimeline.css';
 

@@ -12,7 +12,7 @@ import {
 } from './profile-data';
 import { resourceTypes } from './data-structures';
 import { UniqueStringArray } from '../utils/unique-string-array';
-import type {
+import {
   CategoryList,
   Thread,
   FuncTable,
@@ -34,7 +34,7 @@ import ExtensionIcon from '../../res/img/svg/extension.svg';
 import { formatCallNodeNumber, formatPercent } from '../utils/format-numbers';
 import { assertExhaustiveCheck, ensureExists } from '../utils/flow';
 import * as ProfileData from './profile-data';
-import type { CallTreeSummaryStrategy } from '../types/actions';
+import { CallTreeSummaryStrategy } from '../types/actions';
 
 type CallNodeChildren = IndexIntoCallNodeTable[];
 type CallNodeSummary = {

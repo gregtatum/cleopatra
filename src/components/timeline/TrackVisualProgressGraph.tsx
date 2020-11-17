@@ -16,14 +16,14 @@ import {
 import { Tooltip } from 'firefox-profiler/components/tooltip/Tooltip';
 import { BLUE_50, BLUE_60 } from 'photon-colors';
 
-import type {
+import {
   ProgressGraphData,
   Milliseconds,
   CssPixels,
 } from 'firefox-profiler/types';
 
-import type { SizeProps } from 'firefox-profiler/components/shared/WithSize';
-import type { ConnectedProps } from 'firefox-profiler/utils/connect';
+import { SizeProps } from 'firefox-profiler/components/shared/WithSize';
+import { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 import './TrackVisualProgress.css';
 

@@ -4,7 +4,7 @@
 
 import * as colors from 'photon-colors';
 
-import type { CssPixels, Marker } from 'firefox-profiler/types';
+import { CssPixels, Marker } from 'firefox-profiler/types';
 
 type MarkerStyle = {
   +top: CssPixels,

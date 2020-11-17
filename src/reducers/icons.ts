@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 
-import type { Reducer } from 'firefox-profiler/types';
+import { Reducer } from 'firefox-profiler/types';
 
 const favicons: Reducer<Set<string>> = (state = new Set(), action) => {
   switch (action.type) {

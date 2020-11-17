@@ -12,7 +12,7 @@ import explicitConnect, {
   type ConnectedProps,
 } from 'firefox-profiler/utils/connect';
 
-import type { DataSource } from 'firefox-profiler/types';
+import { DataSource } from 'firefox-profiler/types';
 
 type OwnProps = {
   +className?: string,

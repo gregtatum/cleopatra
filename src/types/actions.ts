@@ -5,14 +5,14 @@
 
 import { CallTree } from '../profile-logic/call-tree';
 import type JSZip from 'jszip';
-import type {
+import {
   Profile,
   Thread,
   ThreadIndex,
   Pid,
   BrowsingContextID,
 } from './profile';
-import type {
+import {
   CallNodePath,
   CallNodeTable,
   GlobalTrack,
@@ -23,13 +23,13 @@ import type {
   ActiveTabTimeline,
   ThreadsKey,
 } from './profile-derived';
-import type { FuncToFuncMap } from '../profile-logic/symbolication';
-import type { TemporaryError } from '../utils/errors';
-import type { Transform, TransformStacksPerThread } from './transforms';
-import type { IndexIntoZipFileTable } from '../profile-logic/zip-files';
-import type { TabSlug } from '../app-logic/tabs-handling';
-import type { UrlState, UploadState, State } from './state';
-import type { CssPixels, StartEndRange, Milliseconds } from './units';
+import { FuncToFuncMap } from '../profile-logic/symbolication';
+import { TemporaryError } from '../utils/errors';
+import { Transform, TransformStacksPerThread } from './transforms';
+import { IndexIntoZipFileTable } from '../profile-logic/zip-files';
+import { TabSlug } from '../app-logic/tabs-handling';
+import { UrlState, UploadState, State } from './state';
+import { CssPixels, StartEndRange, Milliseconds } from './units';
 
 export type DataSource =
   | 'none'

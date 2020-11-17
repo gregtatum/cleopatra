@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 
-import type { Action, ThunkAction } from 'firefox-profiler/types';
+import { Action, ThunkAction } from 'firefox-profiler/types';
 
 export function iconHasLoaded(icon: string): Action {
   return {
