@@ -162,7 +162,7 @@ function _buildThreadSelectors(
  */
 export const selectedThreadSelectors: ThreadSelectors = (() => {
   const anyThreadSelectors: ThreadSelectors = getThreadSelectors(0);
-  const result: $Shape<ThreadSelectors> = {};
+  const result: Partial<ThreadSelectors> = {};
   for (const key in anyThreadSelectors) {
     result[key] = state =>
       getThreadSelectors(UrlState.getSelectedThreadIndexes(state))[key](state);

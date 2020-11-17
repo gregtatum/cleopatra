@@ -32,7 +32,7 @@ export function getBoundingBox(width: number, height: number) {
  * to supply these properties.
  */
 
-type FakeMouseEventInit = $Shape<{
+type FakeMouseEventInit = Partial<{
   bubbles: boolean,
   cancelable: boolean,
   composed: boolean,

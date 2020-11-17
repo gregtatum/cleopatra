@@ -29,7 +29,7 @@ beforeEach(resetIndexedDb);
 afterEach(resetIndexedDb);
 
 describe('published-profiles-store', function() {
-  async function storeGenericProfileData(overrides: $Shape<ProfileData>) {
+  async function storeGenericProfileData(overrides: Partial<ProfileData>) {
     const basicProfileData = {
       profileToken: 'PROFILE-1',
       jwtToken: null,

@@ -1357,7 +1357,7 @@ const _upgraders = {
     const INTERVAL_START = 2;
     const INTERVAL_END = 3;
 
-    type Payload = $Shape<{
+    type Payload = Partial<{
       startTime: number,
       endTime: number,
       type: string,

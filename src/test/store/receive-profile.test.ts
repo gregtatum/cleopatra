@@ -1463,7 +1463,7 @@ describe('actions/receive-profile', function() {
       url2: string,
     };
 
-    type SetupOptionsParams = $Shape<{|
+    type SetupOptionsParams = Partial<{|
       +skipMarkers: boolean,
     }>;
 
@@ -1745,7 +1745,7 @@ describe('actions/receive-profile', function() {
     }
 
     async function setup(
-      location: $Shape<Location>,
+      location: Partial<Location>,
       requiredProfile: number = 1
     ) {
       const profile = _getSimpleProfile();

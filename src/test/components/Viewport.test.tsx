@@ -598,7 +598,7 @@ type BoundingBoxOverride = {
   offsetY: number,
 };
 
-function getBoundingBoxForViewport(override: $Shape<BoundingBoxOverride> = {}) {
+function getBoundingBoxForViewport(override: Partial<BoundingBoxOverride> = {}) {
   const values: BoundingBoxOverride = Object.assign(
     {
       width: BOUNDING_BOX_WIDTH,
@@ -748,7 +748,7 @@ function setup(profileOverrides: MixedObject = {}) {
     flushRafCalls();
   }
 
-  function setBoundingBoxMock(override: $Shape<BoundingBoxOverride>): void {
+  function setBoundingBoxMock(override: Partial<BoundingBoxOverride>): void {
     HTMLElement.prototype.getBoundingClientRect.mockImplementation(() =>
       getBoundingBoxForViewport(override)
     );

@@ -321,7 +321,7 @@ export function getEmptyJsTracerTable(): JsTracerTable {
   };
 }
 
-export function getEmptyThread(overrides?: $Shape<Thread>): Thread {
+export function getEmptyThread(overrides?: Partial<Thread>): Thread {
   const defaultThread: Thread = {
     processType: 'default',
     processStartupTime: 0,

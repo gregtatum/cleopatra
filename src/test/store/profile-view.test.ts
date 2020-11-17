@@ -2953,7 +2953,7 @@ describe('getTimingsForSidebar', () => {
 // Verify that getFriendlyThreadName gives the expected names for threads with or without processName.
 describe('getFriendlyThreadName', function() {
   // Setup a profile with threads based on the given overrides.
-  function setup(threadOverrides: Array<$Shape<Thread>>) {
+  function setup(threadOverrides: Array<Partial<Thread>>) {
     const profile = getEmptyProfile();
     for (const threadOverride of threadOverrides) {
       profile.threads.push(getEmptyThread(threadOverride));

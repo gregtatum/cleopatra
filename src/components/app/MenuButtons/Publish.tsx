@@ -399,7 +399,7 @@ class DownloadButton extends React.PureComponent<
   static getDerivedStateFromProps(
     props: DownloadButtonProps,
     state: DownloadButtonState
-  ): $Shape<DownloadButtonState> | null {
+  ): Partial<DownloadButtonState> | null {
     if (state.prevPromise !== props.compressedProfileBlobPromise) {
       return {
         // Invalidate the old download size.

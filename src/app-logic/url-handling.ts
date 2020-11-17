@@ -209,25 +209,25 @@ type Query =
 
 type $MakeOptional = <T>(T) => T | void;
 // Base query shape is needed for the typechecking during the URL query initialization.
-type BaseQueryShape = $Shape<$ObjMap<BaseQuery, $MakeOptional>>;
+type BaseQueryShape = Partial<$ObjMap<BaseQuery, $MakeOptional>>;
 // Full profile view and active tab profile view query shapes are for also
 // typechecking during the query object initialization.
-type FullProfileSpecificBaseQueryShape = $Shape<
+type FullProfileSpecificBaseQueryShape = Partial<
   $ObjMap<FullProfileSpecificBaseQuery, $MakeOptional>
 >;
-type ActiveTabProfileSpecificBaseQueryShape = $Shape<
+type ActiveTabProfileSpecificBaseQueryShape = Partial<
   $ObjMap<ActiveTabProfileSpecificBaseQuery, $MakeOptional>
 >;
-type OriginsProfileSpecificBaseQueryShape = $Shape<
+type OriginsProfileSpecificBaseQueryShape = Partial<
   $ObjMap<OriginsProfileSpecificBaseQuery, $MakeOptional>
 >;
 
 // Query shapes for individual query paths. These are needed for QueryShape union type.
-type CallTreeQueryShape = $Shape<$ObjMap<CallTreeQuery, $MakeOptional>>;
-type MarkersQueryShape = $Shape<$ObjMap<MarkersQuery, $MakeOptional>>;
-type NetworkQueryShape = $Shape<$ObjMap<NetworkQuery, $MakeOptional>>;
-type StackChartQueryShape = $Shape<$ObjMap<StackChartQuery, $MakeOptional>>;
-type JsTracerQueryShape = $Shape<$ObjMap<JsTracerQuery, $MakeOptional>>;
+type CallTreeQueryShape = Partial<$ObjMap<CallTreeQuery, $MakeOptional>>;
+type MarkersQueryShape = Partial<$ObjMap<MarkersQuery, $MakeOptional>>;
+type NetworkQueryShape = Partial<$ObjMap<NetworkQuery, $MakeOptional>>;
+type StackChartQueryShape = Partial<$ObjMap<StackChartQuery, $MakeOptional>>;
+type JsTracerQueryShape = Partial<$ObjMap<JsTracerQuery, $MakeOptional>>;
 
 type QueryShape =
   | CallTreeQueryShape

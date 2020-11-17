@@ -101,13 +101,13 @@ export function waitingForProfileFromAddon(): Action {
  */
 export function loadProfile(
   profile: Profile,
-  config: $Shape<{|
+  config: Partial<{
     timelineTrackOrganization: TimelineTrackOrganization,
     pathInZipFile: string,
     implementationFilter: ImplementationFilter,
     transformStacks: TransformStacksPerThread,
     geckoProfiler?: $GeckoProfiler,
-  }> = {},
+  > = {},
   initialLoad: boolean = false
 ): ThunkAction<Promise<void>> {
   return async dispatch => {
@@ -630,7 +630,7 @@ export function resymbolicateProfile(): ThunkAction<Promise<void>> {
 // `loadProfile`) and wait until symbolication finishes.
 export function viewProfile(
   profile: Profile,
-  config: $Shape<{|
+  config: Partial<{|
     timelineTrackOrganization: TimelineTrackOrganization,
     pathInZipFile: string,
     implementationFilter: ImplementationFilter,

@@ -54,7 +54,7 @@ export class KeyboardShortcut extends React.PureComponent<Props, State> {
     });
   }
 
-  _open = (state: State): $Shape<State> => {
+  _open = (state: State): Partial<State> => {
     if (state.isOpen) {
       // Do nothing.
       return {};
@@ -65,7 +65,7 @@ export class KeyboardShortcut extends React.PureComponent<Props, State> {
     return { isOpen: true, focusAfterClosed };
   };
 
-  _close = (state: State): $Shape<State> => {
+  _close = (state: State): Partial<State> => {
     const { focusAfterClosed, isOpen } = state;
 
     if (!isOpen) {

@@ -944,7 +944,7 @@ const _upgraders = {
     // It also removes the startTime and endTime from payloads, except for IPC and
     // Network markers.
     type OldSchema = {| name: 0, time: 1, category: 2, data: 3 };
-    type Payload = $Shape<{
+    type Payload = Partial<{
       startTime: number,
       endTime: number,
       type: string,

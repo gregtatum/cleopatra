@@ -453,7 +453,7 @@ type PublishAction =
     }
   | {|
       +type: 'CHANGE_UPLOAD_STATE',
-      +changes: $Shape<UploadState>,
+      +changes: Partial<UploadState>,
     }
   | {|
       +type: 'REVERT_TO_PRE_PUBLISHED_STATE',

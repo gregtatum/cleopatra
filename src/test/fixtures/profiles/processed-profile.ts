@@ -865,10 +865,10 @@ type NetworkMarkersOptions = {|
   startTime: number,
   fetchStart: number,
   endTime: number,
-  payload: $Shape<NetworkPayload>,
+  payload: Partial<NetworkPayload>,
 };
 
-export function getNetworkMarkers(options: $Shape<NetworkMarkersOptions> = {}) {
+export function getNetworkMarkers(options: Partial<NetworkMarkersOptions> = {}) {
   // Default values
   const { uri, id, startTime, fetchStart, endTime, payload } = {
     uri: 'https://mozilla.org',
@@ -991,7 +991,7 @@ type IPCMarkersOptions = {|
 };
 
 function _getIPCMarkers(
-  options: $Shape<IPCMarkersOptions> = {}
+  options: Partial<IPCMarkersOptions> = {}
 ): TestDefinedMarkers {
   const payload: IPCMarkerPayload = {
     type: 'IPC',

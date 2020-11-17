@@ -152,7 +152,7 @@ function _getThreadViewOptions(
 function _updateThreadViewOptions(
   state: ThreadViewOptionsPerThreads,
   threadsKey: ThreadsKey,
-  updates: $Shape<ThreadViewOptions>
+  updates: Partial<ThreadViewOptions>
 ): ThreadViewOptionsPerThreads {
   const newState = { ...state };
   newState[threadsKey] = {
