@@ -91,7 +91,7 @@ class ActiveTabGlobalTrackComponent extends PureComponent<Props> {
       default:
         console.error(
           'Unhandled active tab globalTrack type',
-          (globalTrack: empty)
+          (globalTrack as empty)
         );
         return null;
     }

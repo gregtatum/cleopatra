@@ -101,7 +101,7 @@ class ActiveTabResourceTrackComponent extends PureComponent<Props, State> {
           />
         );
       default:
-        console.error('Unhandled resourceTrack type', (resourceTrack: empty));
+        console.error('Unhandled resourceTrack type', (resourceTrack as empty));
         return null;
     }
   }

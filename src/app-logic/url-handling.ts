@@ -960,7 +960,7 @@ function validateTimelineTrackOrganization(
       return { type: 'origins' };
     default:
       // Type assert we've checked everythign:
-      (timelineTrackOrganization: empty);
+      (timelineTrackOrganization as empty);
 
       return { type: 'full' };
   }

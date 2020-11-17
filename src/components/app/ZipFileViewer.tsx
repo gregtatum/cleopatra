@@ -329,7 +329,7 @@ class ZipFileViewerImpl extends React.PureComponent<Props> {
       case 'VIEW_PROFILE_IN_ZIP_FILE':
         return <ProfileViewer />;
       default:
-        (phase: empty);
+        (phase as empty);
         throw new Error('Unknown zip file phase.');
     }
   }

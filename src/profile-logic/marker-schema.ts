@@ -379,7 +379,7 @@ export function formatFromMarkerSchema(
       return formatPercent(value);
     default:
       console.error(
-        `A marker schema of type "${markerType}" had an unknown format "${(format: empty)}"`
+        `A marker schema of type "${markerType}" had an unknown format "${(format as empty)}"`
       );
       return value;
   }

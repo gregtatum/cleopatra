@@ -53,7 +53,7 @@ export function toValidTabSlug(tabSlug as any): TabSlug | null {
     default: {
       // The coerced type SHOULD be empty here. If in reality we get
       // here, then it's not a valid transform type, so return null.
-      (coercedTabSlug: empty);
+      (coercedTabSlug as empty);
       return null;
     }
   }
@@ -95,7 +95,7 @@ export function convertToTransformType(type: string): TransformType | null {
     default: {
       // The coerced type SHOULD be empty here. If in reality we get
       // here, then it's not a valid transform type, so return null.
-      (coercedType: empty);
+      (coercedType as empty);
       return null;
     }
   }

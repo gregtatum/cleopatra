@@ -141,7 +141,7 @@ class LocalTrackComponent extends PureComponent<Props> {
       case 'event-delay':
         return <TrackEventDelay threadIndex={localTrack.threadIndex} />;
       default:
-        console.error('Unhandled localTrack type', (localTrack: empty));
+        console.error('Unhandled localTrack type', (localTrack as empty));
         return null;
     }
   }

@@ -171,7 +171,7 @@ function _validateStateTransition(
       expectedNextPhases = ['LIST_FILES_IN_ZIP_FILE'];
       break;
     default:
-      throw new Error(`Unhandled ZipFileState “${(prevPhase: empty)}”`);
+      throw new Error(`Unhandled ZipFileState “${(prevPhase as empty)}”`);
   }
   if (!expectedNextPhases.includes(next.phase)) {
     console.error('Previous ZipFileState:', prev);
