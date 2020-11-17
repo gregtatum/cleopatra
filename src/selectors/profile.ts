@@ -656,7 +656,7 @@ export const getPagesMap: Selector<Map<
  * This is useful for operations that require the whole Page object instead of
  * only the InnerWindowIDs. If you only need the InnerWindowID array of the active
  * tab, please use getRelevantInnerWindowIDsForActiveTab selector. Returns
- * _emptyRelevantPagesForActiveTab array as empty array to return the same array
+ * _emptyRelevantPagesForActiveTab array as never array to return the same array
  * every time the selector inputs are invalidated. That eliminates the re-render
  * of the components.
  */

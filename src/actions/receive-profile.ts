@@ -1079,7 +1079,7 @@ async function _extractProfileOrZipFromResponse(
         ),
       };
     default:
-      throw new Error(`Unhandled file type: ${(contentType as empty)}`);
+      throw new Error(`Unhandled file type: ${(contentType as never)}`);
   }
 }
 

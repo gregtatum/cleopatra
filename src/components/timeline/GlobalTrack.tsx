@@ -206,7 +206,7 @@ class GlobalTrackComponent extends PureComponent<Props> {
         );
       }
       default:
-        console.error('Unhandled globalTrack type', (globalTrack as empty));
+        console.error('Unhandled globalTrack type', (globalTrack as never));
         return null;
     }
   }
@@ -380,7 +380,7 @@ export default explicitConnect<OwnProps, StateProps, DispatchProps>({
         progressGraphData = getContentfulSpeedIndexProgress(state);
         break;
       default:
-        throw new Error(`Unhandled GlobalTrack type ${(globalTrack as empty)}`);
+        throw new Error(`Unhandled GlobalTrack type ${(globalTrack as never)}`);
     }
 
     return {
