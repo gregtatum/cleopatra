@@ -11,7 +11,7 @@ import { tabsWithTitle, type TabSlug } from '../../app-logic/tabs-handling';
 
 import './TabBar.css';
 
-type Props = {|
+type Props = {
   +className?: string,
   +selectedTabSlug: string,
   +visibleTabs: $ReadOnlyArray<TabSlug>,

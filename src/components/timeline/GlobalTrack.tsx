@@ -52,14 +52,14 @@ import type {
 
 import type { ConnectedProps } from 'firefox-profiler/utils/connect';
 
-type OwnProps = {|
+type OwnProps = {
   +trackReference: GlobalTrackReference,
   +trackIndex: TrackIndex,
   +style?: MixedObject /* This is used by Reorderable */,
   +setInitialSelected: (el: InitialSelectedTrackReference) => void,
 };
 
-type StateProps = {|
+type StateProps = {
   +trackName: string,
   +globalTrack: GlobalTrack,
   +isSelected: boolean,
@@ -73,7 +73,7 @@ type StateProps = {|
   +progressGraphData: ProgressGraphData[] | null,
 };
 
-type DispatchProps = {|
+type DispatchProps = {
   +changeRightClickedTrack: typeof changeRightClickedTrack,
   +changeLocalTrackOrder: typeof changeLocalTrackOrder,
   +selectTrack: typeof selectTrack,

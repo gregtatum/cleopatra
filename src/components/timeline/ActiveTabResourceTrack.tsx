@@ -24,7 +24,7 @@ import type {
 
 import type { ConnectedProps } from 'firefox-profiler/utils/connect';
 
-type OwnProps = {|
+type OwnProps = {
   +resourceTrack: ActiveTabResourceTrack,
   +trackIndex: TrackIndex,
   +setInitialSelected: (
@@ -33,17 +33,17 @@ type OwnProps = {|
   ) => void,
 };
 
-type StateProps = {|
+type StateProps = {
   +isSelected: boolean,
 };
 
-type DispatchProps = {|
+type DispatchProps = {
   +selectActiveTabTrack: typeof selectActiveTabTrack,
 };
 
 type Props = ConnectedProps<OwnProps, StateProps, DispatchProps>;
 
-type State = {|
+type State = {
   isOpen: boolean,
   prevIsSelected?: boolean,
 };

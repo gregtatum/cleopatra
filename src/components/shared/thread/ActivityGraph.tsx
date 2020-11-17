@@ -25,7 +25,7 @@ import type {
 
 import type { ActivityFillGraphQuerier } from './ActivityGraphFills';
 
-export type Props = {|
+export type Props = {
   +className: string,
   +trackName: string,
   +fullThread: Thread,

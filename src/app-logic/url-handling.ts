@@ -130,7 +130,7 @@ function getPathParts(urlState: UrlState): string[] {
 }
 
 // Base query that only applies to full profile view.
-type FullProfileSpecificBaseQuery = {|
+type FullProfileSpecificBaseQuery = {
   globalTrackOrder: string, // "3-2-0-1"
   hiddenGlobalTracks: string, // "0-1"
   hiddenLocalTracksByPid: string,
@@ -144,17 +144,17 @@ type FullProfileSpecificBaseQuery = {|
 };
 
 // Base query that only applies to active tab profile view.
-type ActiveTabProfileSpecificBaseQuery = {|
+type ActiveTabProfileSpecificBaseQuery = {
   resources: null | void,
   ctxId: BrowsingContextID | void,
 };
 
 // Base query that only applies to origins profile view.
-type OriginsProfileSpecificBaseQuery = {|};
+type OriginsProfileSpecificBaseQuery = {};
 
 // "null | void" in the query objects are flags which map to true for null, and false
 // for void. False flags do not show up the URL.
-type BaseQuery = {|
+type BaseQuery = {
   v: number,
   range: string, //
   thread: string, // "3"
@@ -168,7 +168,7 @@ type BaseQuery = {|
   ...OriginsProfileSpecificBaseQuery,
 };
 
-type CallTreeQuery = {|
+type CallTreeQuery = {
   ...BaseQuery,
   search: string, // "js::RunScript"
   invertCallstack: null | void,
@@ -176,17 +176,17 @@ type CallTreeQuery = {|
   ctSummary: string,
 };
 
-type MarkersQuery = {|
+type MarkersQuery = {
   ...BaseQuery,
   markerSearch: string, // "DOMEvent"
 };
 
-type NetworkQuery = {|
+type NetworkQuery = {
   ...BaseQuery,
   networkSearch?: string, // "DOMEvent"
 };
 
-type StackChartQuery = {|
+type StackChartQuery = {
   ...BaseQuery,
   search: string, // "js::RunScript"
   invertCallstack: null | void,
@@ -195,7 +195,7 @@ type StackChartQuery = {|
   ctSummary: string,
 };
 
-type JsTracerQuery = {|
+type JsTracerQuery = {
   ...BaseQuery,
   summary: null | void,
 };
@@ -647,13 +647,13 @@ export class UrlUpgradeError extends Error {
   name = 'UrlUpgradeError';
 }
 
-type ProcessedLocation = {|
+type ProcessedLocation = {
   pathname: string,
   hash: string,
   query: Query,
 };
 
-type ProcessedLocationBeforeUpgrade = {|
+type ProcessedLocationBeforeUpgrade = {
   ...ProcessedLocation,
   query: any,
 };

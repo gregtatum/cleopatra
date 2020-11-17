@@ -26,7 +26,7 @@ jest.mock('../../components/app/ListOfPublishedProfiles', () => ({
 }));
 
 describe('Root with history', function() {
-  type TestConfig = {|
+  type TestConfig = {
     profileHash?: string,
   };
 
@@ -68,7 +68,7 @@ describe('Root with history', function() {
     async function waitForTab({
       name,
       selected,
-    }: {|
+    }: {
       +name: string,
       +selected: boolean,
     }): Promise<HTMLElement> {

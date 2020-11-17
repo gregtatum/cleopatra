@@ -8,7 +8,7 @@ import classNames from 'classnames';
 
 import './IdleSearchField.css';
 
-type Props = {|
+type Props = {
   +onIdleAfterChange: string => void,
   +onFocus?: () => void,
   +onBlur?: (Element | null) => void,

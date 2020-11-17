@@ -20,7 +20,7 @@ import type {
 
 import './Backtrace.css';
 
-type Props = {|
+type Props = {
   +thread: Thread,
   // Tooltips will want to only show a certain number of stacks, while the sidebars
   // can show all of the stacks.

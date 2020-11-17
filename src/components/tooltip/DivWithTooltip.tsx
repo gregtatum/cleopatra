@@ -12,7 +12,7 @@ type Props = {
   +children?: React.Node,
 };
 
-type State = {|
+type State = {
   isMouseOver: boolean,
   mouseX: CssPixels,
   mouseY: CssPixels,

@@ -40,7 +40,7 @@ export type TracingEventUnion =
   | ThreadSortIndexEvent
   | ScreenshotEvent;
 
-type TracingEvent<Event> = {|
+type TracingEvent<Event> = {
   cat: string,
   // List out all known phase values, but then also allow strings. This will get
   // overwritten by the `...Event` line, which will put in the exact phase.
@@ -53,7 +53,7 @@ type TracingEvent<Event> = {|
   ...Event,
 };
 
-type ProfileEvent = TracingEvent<{|
+type ProfileEvent = TracingEvent<{
   name: 'Profile',
   args: {
     data: {
@@ -64,7 +64,7 @@ type ProfileEvent = TracingEvent<{|
   id: string,
 }>;
 
-type ProfileChunkEvent = TracingEvent<{|
+type ProfileChunkEvent = TracingEvent<{
   name: 'ProfileChunk',
   args: {
     data: {
@@ -96,7 +96,7 @@ type ProfileChunkEvent = TracingEvent<{|
 //  - The parent <-> child relationship between nodes is indicated in the
 //    opposite direction: ProfileChunkEvent has a "parent" field on each nodes,
 //    CpuProfileEvent has a "children" field on each node.
-export type CpuProfileEvent = TracingEvent<{|
+export type CpuProfileEvent = TracingEvent<{
   name: 'CpuProfile',
   args: {
     data: {
@@ -125,37 +125,37 @@ type CpuProfileData = {
   endTime: number,
 };
 
-type ThreadNameEvent = TracingEvent<{|
+type ThreadNameEvent = TracingEvent<{
   name: 'thread_name',
   ph: 'm' | 'M',
   args: { name: string },
 }>;
 
-type ProcessNameEvent = TracingEvent<{|
+type ProcessNameEvent = TracingEvent<{
   name: 'process_name',
   ph: 'm' | 'M',
   args: { name: string },
 }>;
 
-type ProcessLabelsEvent = TracingEvent<{|
+type ProcessLabelsEvent = TracingEvent<{
   name: 'process_labels',
   ph: 'm' | 'M',
   args: { labels: string },
 }>;
 
-type ProcessSortIndexEvent = TracingEvent<{|
+type ProcessSortIndexEvent = TracingEvent<{
   name: 'process_sort_index',
   ph: 'm' | 'M',
   args: { sort_index: number },
 }>;
 
-type ThreadSortIndexEvent = TracingEvent<{|
+type ThreadSortIndexEvent = TracingEvent<{
   name: 'thread_sort_index',
   ph: 'm' | 'M',
   args: { sort_index: number },
 }>;
 
-type ScreenshotEvent = TracingEvent<{|
+type ScreenshotEvent = TracingEvent<{
   name: 'Screenshot',
   ph: 'O',
   args: { snapshot: string },
@@ -771,7 +771,7 @@ async function extractScreenshots(
  */
 function getImageSize(
   url: string
-): Promise<null | {| width: number, height: number }> {
+): Promise<null | { width: number, height: number }> {
   return new Promise(resolve => {
     const image = new Image();
     image.src = url;

@@ -9,7 +9,7 @@ import classNames from 'classnames';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import './FilterNavigatorBar.css';
 
-type Props = {|
+type Props = {
   +className: string,
   +items: $ReadOnlyArray<
     | {

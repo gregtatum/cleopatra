@@ -49,7 +49,7 @@ function _stopPropagation(e: TransitionEvent) {
 /**
  * When adding properties to these props, please consider the comment above the component.
  */
-type CanvasProps = {|
+type CanvasProps = {
   +rangeStart: Milliseconds,
   +rangeEnd: Milliseconds,
   +width: CssPixels,
@@ -87,7 +87,7 @@ function _drawRoundedRect(
  * in the props that are needed for the canvas draw call.
  */
 class TimelineMarkersCanvas extends React.PureComponent<CanvasProps> {
-  _canvas: {| current: HTMLCanvasElement | null } = React.createRef();
+  _canvas: { current: HTMLCanvasElement | null } = React.createRef();
   _requestedAnimationFrame: boolean = false;
 
   _getMarkerState(marker: Marker): MarkerState {
@@ -260,14 +260,14 @@ class TimelineMarkersCanvas extends React.PureComponent<CanvasProps> {
  * );
  */
 
-export type OwnProps = {|
+export type OwnProps = {
   +rangeStart: Milliseconds,
   +rangeEnd: Milliseconds,
   +threadsKey: ThreadsKey,
   +onSelect: (Milliseconds, Milliseconds) => mixed,
 };
 
-export type StateProps = {|
+export type StateProps = {
   +additionalClassName?: ?string,
   +getMarker: MarkerIndex => Marker,
   +markerIndexes: MarkerIndex[],
@@ -277,11 +277,11 @@ export type StateProps = {|
   +rightClickedMarker: Marker | null,
 };
 
-export type DispatchProps = {|
+export type DispatchProps = {
   +changeRightClickedMarker: typeof changeRightClickedMarker,
 };
 
-type Props = {|
+type Props = {
   ...ConnectedProps<OwnProps, StateProps, DispatchProps>,
   ...SizeProps,
 };

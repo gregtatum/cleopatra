@@ -25,7 +25,7 @@ import type {
   IndexIntoCallNodeTable,
 } from 'firefox-profiler/types';
 
-type Props = {|
+type Props = {
   +className: string,
   +thread: Thread,
   +tabFilteredThread: Thread,

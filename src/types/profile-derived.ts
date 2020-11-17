@@ -83,7 +83,7 @@ export type CallNodePath = IndexIntoFuncTable[];
  * This type contains the first derived `Marker[]` information, plus an IndexedArray
  * to get back to the RawMarkerTable.
  */
-export type DerivedMarkerInfo = {|
+export type DerivedMarkerInfo = {
   markers: Marker[],
   markerIndexToRawMarkerIndexes: IndexedArray<
     MarkerIndex,
@@ -91,7 +91,7 @@ export type DerivedMarkerInfo = {|
   >,
 };
 
-export type Marker = {|
+export type Marker = {
   start: Milliseconds,
   end: Milliseconds | null,
   name: string,
@@ -141,7 +141,7 @@ export type CallNodeDisplayData = $Exact<
  * The marker timing contains the necessary information to draw markers very quickly
  * in the marker chart. It represents a single row of markers in the chart.
  */
-export type MarkerTiming = {|
+export type MarkerTiming = {
   // Start time in milliseconds.
   start: number[],
   // End time in milliseconds.
@@ -190,7 +190,7 @@ export type JsTracerTiming = {
  * The memory counter contains relative offsets of memory. This type provides a data
  * structure that can be used to see the total range of change over all the samples.
  */
-export type AccumulatedCounterSamples = {|
+export type AccumulatedCounterSamples = {
   +minCount: number,
   +maxCount: number,
   +countRange: number,
@@ -203,18 +203,18 @@ export type AccumulatedCounterSamples = {|
 export type StackType = 'js' | 'native' | 'unsymbolicated';
 
 export type GlobalTrack =
-  | {| +type: 'process', +pid: Pid, +mainThreadIndex: ThreadIndex | null }
-  | {| +type: 'screenshots', +id: string, +threadIndex: ThreadIndex }
-  | {| +type: 'visual-progress' }
-  | {| +type: 'perceptual-visual-progress' }
-  | {| +type: 'contentful-visual-progress' };
+  | { +type: 'process', +pid: Pid, +mainThreadIndex: ThreadIndex | null }
+  | { +type: 'screenshots', +id: string, +threadIndex: ThreadIndex }
+  | { +type: 'visual-progress' }
+  | { +type: 'perceptual-visual-progress' }
+  | { +type: 'contentful-visual-progress' };
 
 export type LocalTrack =
-  | {| +type: 'thread', +threadIndex: ThreadIndex }
-  | {| +type: 'network', +threadIndex: ThreadIndex }
-  | {| +type: 'memory', +counterIndex: CounterIndex }
-  | {| +type: 'ipc', +threadIndex: ThreadIndex }
-  | {| +type: 'event-delay', +threadIndex: ThreadIndex };
+  | { +type: 'thread', +threadIndex: ThreadIndex }
+  | { +type: 'network', +threadIndex: ThreadIndex }
+  | { +type: 'memory', +counterIndex: CounterIndex }
+  | { +type: 'ipc', +threadIndex: ThreadIndex }
+  | { +type: 'event-delay', +threadIndex: ThreadIndex };
 
 export type Track = GlobalTrack | LocalTrack;
 export type TrackIndex = number;
@@ -227,7 +227,7 @@ export type TrackIndex = number;
 /**
  * This origin was loaded as a sub-frame to another one. It will be nested in the view.
  */
-export type OriginsTimelineEntry = {|
+export type OriginsTimelineEntry = {
   type: 'sub-origin',
   innerWindowID: InnerWindowID,
   threadIndex: ThreadIndex,
@@ -238,7 +238,7 @@ export type OriginsTimelineEntry = {|
 /**
  * This is a "root" origin, which is viewed at the top level in a tab.
  */
-export type OriginsTimelineRoot = {|
+export type OriginsTimelineRoot = {
   type: 'origin',
   innerWindowID: InnerWindowID,
   threadIndex: ThreadIndex,
@@ -252,7 +252,7 @@ export type OriginsTimelineRoot = {|
  * it may be listed as a child of another "root" timeline origin if it is in the
  * same process as that thread.
  */
-export type OriginsTimelineNoOrigin = {|
+export type OriginsTimelineNoOrigin = {
   type: 'no-origin',
   threadIndex: ThreadIndex,
 };
@@ -276,26 +276,26 @@ export type OriginsTimeline = Array<
  * places require a single thread index instead of thread indexes array.
  * This will go away soon.
  */
-export type ActiveTabMainTrack = {|
+export type ActiveTabMainTrack = {
   type: 'tab',
   mainThreadIndex: ThreadIndex,
   threadIndexes: Set<ThreadIndex>,
   threadsKey: ThreadsKey,
 };
 
-export type ActiveTabScreenshotTrack = {|
+export type ActiveTabScreenshotTrack = {
   +type: 'screenshots',
   +id: string,
   +threadIndex: ThreadIndex,
 };
 
 export type ActiveTabResourceTrack =
-  | {|
+  | {
       +type: 'sub-frame',
       +threadIndex: ThreadIndex,
       +name: string,
     }
-  | {|
+  | {
       +type: 'thread',
       +threadIndex: ThreadIndex,
       +name: string,
@@ -369,7 +369,7 @@ export type InitialSelectedTrackReference = HTMLElement;
 /**
  * Page data for ProfileFilterNavigator component.
  */
-export type ProfileFilterPageData = {|
+export type ProfileFilterPageData = {
   origin: string,
   hostname: string,
   favicon: string,
@@ -381,7 +381,7 @@ export type ProfileFilterPageData = {|
  * traced timing is computed by summing the distance between samples for a given call
  * node. See the `computeTracedTiming` for more details.
  */
-export type TracedTiming = {|
+export type TracedTiming = {
   +self: Float32Array,
   +running: Float32Array,
 };
@@ -393,7 +393,7 @@ export type TracedTiming = {|
  * to make a calculation to find out their real values. Also see:
  * https://searchfox.org/mozilla-central/rev/3811b11b5773c1dccfe8228bfc7143b10a9a2a99/tools/profiler/core/platform.cpp#3000-3186
  */
-export type EventDelayInfo = {|
+export type EventDelayInfo = {
   +eventDelays: Float32Array,
   +minDelay: Milliseconds,
   +maxDelay: Milliseconds,

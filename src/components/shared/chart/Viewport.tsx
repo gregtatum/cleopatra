@@ -99,7 +99,7 @@ const CTRL_KEYMAP: { [string]: NavigationKey } = {
 
 // These viewport values (most of which are computed dynamically by
 // the HOC) are passed into the props of the wrapped component.
-export type Viewport = {|
+export type Viewport = {
   +containerWidth: CssPixels,
   +containerHeight: CssPixels,
   +viewportLeft: UnitIntervalOfProfileRange,
@@ -111,20 +111,20 @@ export type Viewport = {|
   +isSizeSet: boolean,
 };
 
-type ViewportStateProps = {|
+type ViewportStateProps = {
   +panelLayoutGeneration: number,
   +hasZoomedViaMousewheel?: boolean,
 };
 
-type ViewportDispatchProps = {|
+type ViewportDispatchProps = {
   +updatePreviewSelection: typeof updatePreviewSelection,
   +setHasZoomedViaMousewheel?: typeof setHasZoomedViaMousewheel,
 };
 
 // These are the props consumed by this Higher-Order Component (HOC), but can be
 // optionally used by the wrapped component.
-type ViewportOwnProps<ChartProps> = {|
-  +viewportProps: {|
+type ViewportOwnProps<ChartProps> = {
+  +viewportProps: {
     +timeRange: StartEndRange,
     +maxViewportHeight: number,
     +startsAtBottom?: boolean,
@@ -150,12 +150,12 @@ type ViewportOwnProps<ChartProps> = {|
   +chartProps: ChartProps,
 };
 
-type HorizontalViewport = {|
+type HorizontalViewport = {
   viewportLeft: UnitIntervalOfProfileRange,
   viewportRight: UnitIntervalOfProfileRange,
 };
 
-type State = {|
+type State = {
   containerWidth: CssPixels,
   containerHeight: CssPixels,
   containerLeft: CssPixels,
@@ -186,7 +186,7 @@ export type WithChartViewport<
   ChartOwnProps: Object,
   // The chart component's props are given the viewport object, as well as the original
   // ChartOwnProps.
-  ChartProps: $ReadOnly<{|
+  ChartProps: $ReadOnly<{
     ...ChartOwnProps,
     viewport: Viewport,
   }>

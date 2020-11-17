@@ -48,7 +48,7 @@ import type {
 
 import type { ConnectedProps } from 'firefox-profiler/utils/connect';
 
-type StateProps = {|
+type StateProps = {
   +threads: Thread[],
   +globalTrackOrder: TrackIndex[],
   +hiddenGlobalTracks: Set<TrackIndex>,
@@ -62,7 +62,7 @@ type StateProps = {|
   +localTrackNamesByPid: Map<Pid, string[]>,
 };
 
-type DispatchProps = {|
+type DispatchProps = {
   +hideGlobalTrack: typeof hideGlobalTrack,
   +showGlobalTrack: typeof showGlobalTrack,
   +isolateProcess: typeof isolateProcess,
@@ -73,7 +73,7 @@ type DispatchProps = {|
   +isolateScreenshot: typeof isolateScreenshot,
 };
 
-type Props = ConnectedProps<{|}, StateProps, DispatchProps>;
+type Props = ConnectedProps<{}, StateProps, DispatchProps>;
 
 class TimelineTrackContextMenu extends PureComponent<Props> {
   _toggleGlobalTrackVisibility = (
@@ -591,7 +591,7 @@ class TimelineTrackContextMenu extends PureComponent<Props> {
   }
 }
 
-export default explicitConnect<{|}, StateProps, DispatchProps>({
+export default explicitConnect<{}, StateProps, DispatchProps>({
   mapStateToProps: (state: State) => ({
     threads: getThreads(state),
     globalTrackOrder: getGlobalTrackOrder(state),

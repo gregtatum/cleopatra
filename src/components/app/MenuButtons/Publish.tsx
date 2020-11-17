@@ -44,11 +44,11 @@ import type {
 
 import './Publish.css';
 
-type OwnProps = {|
+type OwnProps = {
   +isRepublish?: boolean,
 };
 
-type StateProps = {|
+type StateProps = {
   +profile: Profile,
   +rootRange: StartEndRange,
   +shouldShowPreferenceOption: boolean,
@@ -64,7 +64,7 @@ type StateProps = {|
   +abortFunction: () => mixed,
 };
 
-type DispatchProps = {|
+type DispatchProps = {
   +toggleCheckedSharingOptions: typeof toggleCheckedSharingOptions,
   +attemptToPublish: typeof attemptToPublish,
   +resetUploadState: typeof resetUploadState,
@@ -318,11 +318,11 @@ export const MenuButtonsPublish = explicitConnect<
   component: MenuButtonsPublishImpl,
 });
 
-type DownloadSizeProps = {|
+type DownloadSizeProps = {
   +downloadSizePromise: Promise<string>,
 };
 
-type DownloadSizeState = {|
+type DownloadSizeState = {
   downloadSize: string | null,
 };
 
@@ -372,13 +372,13 @@ class DownloadSize extends React.PureComponent<
   }
 }
 
-type DownloadButtonProps = {|
+type DownloadButtonProps = {
   +compressedProfileBlobPromise: Promise<Blob>,
   +downloadSizePromise: Promise<string>,
   +downloadFileName: string,
 };
 
-type DownloadButtonState = {|
+type DownloadButtonState = {
   compressedProfileBlob: Blob | null,
   prevPromise: Promise<Blob> | null,
 };

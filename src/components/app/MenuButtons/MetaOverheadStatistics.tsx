@@ -16,7 +16,7 @@ import './MetaOverheadStatistics.css';
 // Profiler overhead statistics keys that have max/min/mean values.
 type StatKeys = 'Overhead' | 'Cleaning' | 'Counter' | 'Interval' | 'Lockings';
 
-type Props = {|
+type Props = {
   +profilerOverhead: ProfilerOverhead[],
 };
 

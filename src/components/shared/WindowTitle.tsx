@@ -18,7 +18,7 @@ import {
 import type { Profile } from 'firefox-profiler/types';
 import type { ConnectedProps } from 'firefox-profiler/utils/connect';
 
-type StateProps = {|
+type StateProps = {
   +profile: Profile,
   +profileNameFromUrl: string | null,
   +fileNameInZipFilePath: string | null,
@@ -26,7 +26,7 @@ type StateProps = {|
   +dataSource: string,
 };
 
-type Props = ConnectedProps<{|}, StateProps, {|}>;
+type Props = ConnectedProps<{}, StateProps, {}>;
 
 const SEPARATOR = ' – ';
 const PRODUCT = 'Firefox Profiler';
@@ -86,7 +86,7 @@ function _formatDateTime(timestamp: number): string {
   return dateTimeLabel;
 }
 
-export const WindowTitle = explicitConnect<{|}, StateProps, {|}>({
+export const WindowTitle = explicitConnect<{}, StateProps, {}>({
   mapStateToProps: state => ({
     profileNameFromUrl: getProfileNameFromUrl(state),
     fileNameInZipFilePath: getFileNameInZipFilePath(state),

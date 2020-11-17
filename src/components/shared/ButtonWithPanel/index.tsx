@@ -31,7 +31,7 @@ import { ArrowPanel } from './ArrowPanel';
 
 import './ButtonWithPanel.css';
 
-type Props = {|
+type Props = {
   +className?: string,
   +label: string,
   +panelContent: React.Node,
@@ -46,7 +46,7 @@ type Props = {|
   +title?: string,
 };
 
-type State = {|
+type State = {
   +open: boolean,
 };
 

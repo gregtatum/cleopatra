@@ -14,7 +14,7 @@ import {
 } from 'firefox-profiler/utils/css-geometry-tools';
 import { bisectionRight } from 'firefox-profiler/utils/bisect';
 
-type Props = {|
+type Props = {
   orient: 'horizontal' | 'vertical',
   tagName: string,
   className: string,
@@ -29,7 +29,7 @@ type Props = {|
   children: React.ChildrenArray<React.Element<any>>,
 };
 
-type State = {|
+type State = {
   phase: 'RESTING' | 'FINISHING' | 'MANIPULATING',
   manipulatingIndex: number,
   destinationIndex: number,
@@ -39,7 +39,7 @@ type State = {|
   finalOffset: number,
 };
 
-type XY = {|
+type XY = {
   pageXY: 'pageX' | 'pageY',
   translateXY: 'translateX' | 'translateY',
   lefttop: 'left' | 'top',
@@ -49,7 +49,7 @@ type XY = {|
 type EventWithPageProperties = { pageX: number, pageY: number };
 
 export class Reorderable extends React.PureComponent<Props, State> {
-  _xy: {| horizontal: XY, vertical: XY } = {
+  _xy: { horizontal: XY, vertical: XY } = {
     horizontal: {
       pageXY: 'pageX',
       translateXY: 'translateX',

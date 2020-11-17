@@ -379,7 +379,7 @@ describe('MarkerChart', function() {
 
       function findFillTextPosition(
         fillText: string
-      ): {| x: number, y: number } {
+      ): { x: number, y: number } {
         return findFillTextPositionFromDrawLog(drawLog, fillText);
       }
 

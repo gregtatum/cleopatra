@@ -12,7 +12,7 @@ export type IndexIntoZipFileTable = number;
  * maps it into a hierarchical table that can be used by the TreeView component to
  * generate a file tree.
  */
-export type ZipFileTable = {|
+export type ZipFileTable = {
   prefix: Array<IndexIntoZipFileTable | null>,
   path: string[], // e.g. "profile_tresize/tresize/cycle_0.profile"
   partName: string[], // e.g. "cycle_0.profile" or "tresize"
@@ -21,7 +21,7 @@ export type ZipFileTable = {|
   length: number,
 };
 
-export type ZipDisplayData = {|
+export type ZipDisplayData = {
   +name: string,
   +url: null | string,
   +zipTableIndex: IndexIntoZipFileTable,

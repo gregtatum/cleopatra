@@ -10,7 +10,7 @@ import { Tooltip } from 'firefox-profiler/components/tooltip/Tooltip';
 
 import type { CssPixels, DevicePixels } from 'firefox-profiler/types';
 
-type Props<HoveredItem> = {|
+type Props<HoveredItem> = {
   +containerWidth: CssPixels,
   +containerHeight: CssPixels,
   +className: string,

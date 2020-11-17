@@ -34,26 +34,26 @@ import type { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 type MouseHandler = (event: MouseEvent) => void;
 
-type OwnProps = {|
+type OwnProps = {
   +width: number,
   +children: React.Node,
   +className?: string,
 };
 
-type StateProps = {|
+type StateProps = {
   +previewSelection: PreviewSelection,
   +committedRange: StartEndRange,
   +zeroAt: Milliseconds,
 };
 
-type DispatchProps = {|
+type DispatchProps = {
   +commitRange: typeof commitRange,
   +updatePreviewSelection: typeof updatePreviewSelection,
 };
 
 type Props = ConnectedProps<OwnProps, StateProps, DispatchProps>;
 
-type State = {|
+type State = {
   hoverLocation: null | CssPixels,
 };
 

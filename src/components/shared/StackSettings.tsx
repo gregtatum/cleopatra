@@ -37,12 +37,12 @@ import type {
   CallTreeSummaryStrategy,
 } from 'firefox-profiler/types';
 
-type OwnProps = {|
+type OwnProps = {
   +hideInvertCallstack?: true,
   +disableCallTreeSummaryButtons?: true,
 };
 
-type StateProps = {|
+type StateProps = {
   +implementationFilter: ImplementationFilter,
   +callTreeSummaryStrategy: CallTreeSummaryStrategy,
   +selectedTab: string,
@@ -54,7 +54,7 @@ type StateProps = {|
   +canShowRetainedMemory: boolean,
 };
 
-type DispatchProps = {|
+type DispatchProps = {
   +changeImplementationFilter: typeof changeImplementationFilter,
   +changeInvertCallstack: typeof changeInvertCallstack,
   +changeShowUserTimings: typeof changeShowUserTimings,

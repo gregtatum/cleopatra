@@ -21,7 +21,7 @@ import { markerSchemaForTests } from '../fixtures/profiles/marker-schema';
  * code branches, especially parse errors.
  */
 describe('marker schema labels', function() {
-  type LabelOptions = {|
+  type LabelOptions = {
     schemaData: $PropertyType<MarkerSchema, 'data'>,
     label: string,
     payload: any,

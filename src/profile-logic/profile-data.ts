@@ -329,19 +329,19 @@ export type JsImplementation =
   | 'unknown';
 export type StackImplementation = 'native' | JsImplementation;
 export type BreakdownByImplementation = { [StackImplementation]: Milliseconds };
-export type OneCategoryBreakdown = {|
+export type OneCategoryBreakdown = {
   entireCategoryValue: Milliseconds,
   subcategoryBreakdown: Milliseconds[], // { [IndexIntoSubcategoryList]: Milliseconds }
 };
 export type BreakdownByCategory = OneCategoryBreakdown[]; // { [IndexIntoCategoryList]: OneCategoryBreakdown }
-type ItemTimings = {|
-  selfTime: {|
+type ItemTimings = {
+  selfTime: {
     // time spent excluding children
     value: Milliseconds,
     breakdownByImplementation: BreakdownByImplementation | null,
     breakdownByCategory: BreakdownByCategory | null,
   },
-  totalTime: {|
+  totalTime: {
     // time spent including children
     value: Milliseconds,
     breakdownByImplementation: BreakdownByImplementation | null,
@@ -349,7 +349,7 @@ type ItemTimings = {|
   },
 };
 
-export type TimingsForPath = {|
+export type TimingsForPath = {
   // timings for this path
   forPath: ItemTimings,
   // timings for this func across the tree

@@ -65,7 +65,7 @@ export type GeckoMarkers = {
  * processed format. See `docs-developer/gecko-profile-format.md` for more
  * information.
  */
-export type GeckoMarkerStruct = {|
+export type GeckoMarkerStruct = {
   name: IndexIntoStringTable[],
   startTime: Milliseconds[],
   endTime: Milliseconds[],
@@ -75,7 +75,7 @@ export type GeckoMarkerStruct = {|
   length: number,
 };
 
-export type GeckoMarkerStack = {|
+export type GeckoMarkerStack = {
   name: 'SyncProfile',
   registerTime: null,
   unregisterTime: null,
@@ -86,14 +86,14 @@ export type GeckoMarkerStack = {|
   samples: GeckoSamples,
 };
 
-export type GeckoSamples = {|
+export type GeckoSamples = {
   schema:
-    | {|
+    | {
         stack: 0,
         time: 1,
         responsiveness: 2,
       }
-    | {|
+    | {
         stack: 0,
         time: 1,
         eventDelay: 2,
@@ -110,7 +110,7 @@ export type GeckoSamples = {|
 };
 
 // Older profiles have samples with `responsiveness` values.
-export type GeckoSampleStructWithResponsiveness = {|
+export type GeckoSampleStructWithResponsiveness = {
   stack: Array<null | IndexIntoGeckoStackTable>,
   time: Milliseconds[],
   responsiveness: Array<?Milliseconds>,
@@ -118,7 +118,7 @@ export type GeckoSampleStructWithResponsiveness = {|
 };
 
 // Newer profiles have the improved version of `responsiveness`, `eventDelay`.
-export type GeckoSampleStructWithEventDelay = {|
+export type GeckoSampleStructWithEventDelay = {
   stack: Array<null | IndexIntoGeckoStackTable>,
   time: Milliseconds[],
   eventDelay: Array<?Milliseconds>,
@@ -129,8 +129,8 @@ export type GeckoSampleStruct =
   | GeckoSampleStructWithResponsiveness
   | GeckoSampleStructWithEventDelay;
 
-export type GeckoFrameTable = {|
-  schema: {|
+export type GeckoFrameTable = {
+  schema: {
     location: 0,
     relevantForJS: 1,
     innerWindowID: 2,
@@ -168,7 +168,7 @@ export type GeckoFrameTable = {|
   >,
 };
 
-export type GeckoFrameStruct = {|
+export type GeckoFrameStruct = {
   location: IndexIntoStringTable[],
   relevantForJS: Array<boolean>,
   implementation: Array<null | IndexIntoStringTable>,
@@ -181,21 +181,21 @@ export type GeckoFrameStruct = {|
   length: number,
 };
 
-export type GeckoStackTable = {|
-  schema: {|
+export type GeckoStackTable = {
+  schema: {
     prefix: 0,
     frame: 1,
   },
   data: Array<[IndexIntoGeckoStackTable | null, IndexIntoGeckoFrameTable]>,
 };
 
-export type GeckoStackStruct = {|
+export type GeckoStackStruct = {
   frame: IndexIntoGeckoFrameTable[],
   prefix: Array<IndexIntoGeckoStackTable | null>,
   length: number,
 };
 
-export type GeckoThread = {|
+export type GeckoThread = {
   name: string,
   registerTime: number,
   processType: string,
@@ -211,8 +211,8 @@ export type GeckoThread = {|
   jsTracerEvents?: JsTracerTable,
 };
 
-export type GeckoExtensionMeta = {|
-  schema: {|
+export type GeckoExtensionMeta = {
+  schema: {
     id: 0,
     name: 1,
     baseURL: 2,
@@ -220,14 +220,14 @@ export type GeckoExtensionMeta = {|
   data: Array<[string, string, string]>,
 };
 
-export type GeckoCounter = {|
+export type GeckoCounter = {
   name: string,
   category: string,
   description: string,
-  sample_groups: $ReadOnlyArray<{|
+  sample_groups: $ReadOnlyArray<{
     id: number,
-    samples: {|
-      schema: {|
+    samples: {
+      schema: {
         time: 0,
         number: 1,
         count: 2,
@@ -237,9 +237,9 @@ export type GeckoCounter = {|
   }>,
 };
 
-export type GeckoProfilerOverhead = {|
-  samples: {|
-    schema: {|
+export type GeckoProfilerOverhead = {
+  samples: {
+    schema: {
       time: 0,
       locking: 1,
       expiredMarkerCleaning: 2,
@@ -258,7 +258,7 @@ export type GeckoProfilerOverhead = {|
  * Using https://searchfox.org/mozilla-central/rev/7556a400affa9eb99e522d2d17c40689fa23a729/tools/profiler/core/platform.cpp#1829
  * as source of truth. (Please update the link whenever there's a new property).
  * */
-export type GeckoProfileShortMeta = {|
+export type GeckoProfileShortMeta = {
   version: number,
   startTime: Milliseconds,
   shutdownTime: Milliseconds | null,
@@ -270,7 +270,7 @@ export type GeckoProfileShortMeta = {|
  * Using https://searchfox.org/mozilla-central/rev/7556a400affa9eb99e522d2d17c40689fa23a729/tools/profiler/core/platform.cpp#1829
  * as source of truth. (Please update the link whenever there's a new property).
  * */
-export type GeckoProfileFullMeta = {|
+export type GeckoProfileFullMeta = {
   ...GeckoProfileShortMeta,
   interval: Milliseconds,
   stackwalk: 0 | 1,
@@ -331,7 +331,7 @@ export type GeckoProfileFullMeta = {|
   configuration?: ProfilerConfiguration,
 };
 
-export type GeckoProfileWithMeta<Meta> = {|
+export type GeckoProfileWithMeta<Meta> = {
   counters?: GeckoCounter[],
   // Optional because older Firefox versions may not have that data and
   // no upgrader was necessary.

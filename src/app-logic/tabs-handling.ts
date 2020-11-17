@@ -20,7 +20,7 @@ export const tabsWithTitle = {
 };
 
 export type TabSlug = $Keys<typeof tabsWithTitle>;
-export type TabWithTitle = {| name: TabSlug, title: string };
+export type TabWithTitle = { name: TabSlug, title: string };
 
 /**
  * This array contains the list of all tab slugs that we use as codes throughout

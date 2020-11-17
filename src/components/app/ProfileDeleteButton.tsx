@@ -20,7 +20,7 @@ import './ProfileDeleteButton.css';
  * If you're interested by the panel displayed when clicking on this button,
  * you'll want to use ProfileDeletePanel defined below.
  */
-type ButtonProps = {|
+type ButtonProps = {
   /* This string will be used in a title */
   +profileName: string,
   /* This string will be used in longer sentence in a tooltip */
@@ -99,7 +99,7 @@ export class ProfileDeleteButton extends PureComponent<ButtonProps> {
  * This Panel implements a confirmation dialog to delete a profile, as well as
  * calling the deletion process when the user confirms.
  */
-type PanelProps = {|
+type PanelProps = {
   +profileName: string,
   /* This identifies the profile we want to delete. This is also commonly known as the "hash" of the profile. */
   +profileToken: string,
@@ -109,7 +109,7 @@ type PanelProps = {|
   +onProfileDeleteCanceled: () => mixed,
 };
 
-type PanelState = {|
+type PanelState = {
   +status: 'idle' | 'working' | 'deleted',
   +error: Error | null,
 };

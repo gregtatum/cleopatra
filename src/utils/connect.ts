@@ -100,7 +100,7 @@ type ExplicitConnectOptions<
   OwnProps: Object,
   StateProps: Object,
   DispatchProps: Object
-> = {|
+> = {
   mapStateToProps?: MapStateToProps<OwnProps, StateProps>,
   mapDispatchToProps?: MapDispatchToProps<OwnProps, DispatchProps>,
   mergeProps?: MergeProps<
@@ -119,7 +119,7 @@ export type ConnectedProps<
   OwnProps: Object,
   StateProps: Object,
   DispatchProps: Object
-> = $ReadOnly<{|
+> = $ReadOnly<{
   ...OwnProps,
   ...StateProps,
   ...DispatchProps,

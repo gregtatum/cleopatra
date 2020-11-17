@@ -32,13 +32,13 @@ import type {
 } from '../../utils/connect';
 import type { UrlState, Phase, UrlSetupPhase } from 'firefox-profiler/types';
 
-type StateProps = {|
+type StateProps = {
   +phase: Phase,
   +urlState: UrlState,
   +urlSetupPhase: UrlSetupPhase,
 };
 
-type DispatchProps = {|
+type DispatchProps = {
   +updateUrlState: typeof updateUrlState,
   +startFetchingProfiles: typeof startFetchingProfiles,
   +urlSetupDone: typeof urlSetupDone,
@@ -47,7 +47,7 @@ type DispatchProps = {|
   +setupInitialUrlState: typeof setupInitialUrlState,
 };
 
-type OwnProps = {|
+type OwnProps = {
   +children: React.Node,
 };
 

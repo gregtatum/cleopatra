@@ -29,7 +29,7 @@ import type {
  * immutable values. This object makes it easy to share these values between different
  * classes and functions.
  */
-type RenderedComponentSettings = {|
+type RenderedComponentSettings = {
   +canvasPixelWidth: DevicePixels,
   +canvasPixelHeight: DevicePixels,
   +fullThread: Thread,
@@ -46,7 +46,7 @@ type RenderedComponentSettings = {|
   +categoryDrawStyles: CategoryDrawStyles,
 };
 
-type SampleContributionToPixel = {|
+type SampleContributionToPixel = {
   +sample: IndexIntoSamplesTable,
   +contribution: number,
 };
@@ -56,7 +56,7 @@ type SampleContributionToPixel = {|
  * the categories to the canvas. During the computation step, this value is mutated
  * in place, but should be consumed immutably.
  */
-type CategoryFill = {|
+type CategoryFill = {
   +category: IndexIntoCategoryList,
   +fillStyle: string | CanvasPattern,
   // The Float32Arrays are mutated in place during the computation step.
@@ -64,7 +64,7 @@ type CategoryFill = {|
   +accumulatedUpperEdge: Float32Array,
 };
 
-export type CategoryDrawStyles = $ReadOnlyArray<{|
+export type CategoryDrawStyles = $ReadOnlyArray<{
   +category: number,
   +gravity: number,
   +selectedFillStyle: string,
@@ -73,7 +73,7 @@ export type CategoryDrawStyles = $ReadOnlyArray<{|
   +selectedTextColor: string,
 }>;
 
-type SelectedPercentageAtPixelBuffers = {|
+type SelectedPercentageAtPixelBuffers = {
   // These Float32Arrays are mutated in place during the computation step.
   +beforeSelectedPercentageAtPixel: Float32Array,
   +selectedPercentageAtPixel: Float32Array,

@@ -39,7 +39,7 @@ import type {
 
 import type { ConnectedProps } from 'firefox-profiler/utils/connect';
 
-type OwnProps = {|
+type OwnProps = {
   +pid: Pid,
   +localTrack: LocalTrack,
   +trackIndex: TrackIndex,
@@ -47,14 +47,14 @@ type OwnProps = {|
   +setIsInitialSelectedPane: (value: boolean) => void,
 };
 
-type StateProps = {|
+type StateProps = {
   +trackName: string,
   +isSelected: boolean,
   +isHidden: boolean,
   +titleText: string | null,
 };
 
-type DispatchProps = {|
+type DispatchProps = {
   +changeRightClickedTrack: typeof changeRightClickedTrack,
   +selectTrack: typeof selectTrack,
 };

@@ -607,7 +607,7 @@ function _convertPayloadStackToIndex(
  */
 function _processMarkers(
   geckoMarkers: GeckoMarkerStruct
-): {|
+): {
   markers: RawMarkerTable,
   jsAllocations: JsAllocationsTable | null,
   nativeAllocations: NativeAllocationsTable | null,

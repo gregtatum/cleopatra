@@ -39,17 +39,17 @@ import './index.css';
 
 const ROW_HEIGHT: CssPixels = 16;
 
-type OwnProps = {|
+type OwnProps = {
   +jsTracerTable: JsTracerTable,
   +showJsTracerSummary: boolean,
   +doFadeIn: boolean,
 };
 
-type DispatchProps = {|
+type DispatchProps = {
   +updatePreviewSelection: typeof updatePreviewSelection,
 };
 
-type StateProps = {|
+type StateProps = {
   +jsTracerTimingRows: JsTracerTiming[],
   +stringTable: UniqueStringArray,
   +timeRange: StartEndRange,
@@ -150,14 +150,14 @@ const JsTracerExpensiveChart = explicitConnect<
   component: JsTracerExpensiveChartImpl,
 });
 
-type ChartLoaderProps = {|
+type ChartLoaderProps = {
   +profile: Profile,
   +jsTracerTable: JsTracerTable,
   +showJsTracerSummary: boolean,
   +keyString: string,
 };
 
-type ChartLoaderState = {|
+type ChartLoaderState = {
   readyToRenderExpensiveChart: boolean,
 };
 
@@ -232,7 +232,7 @@ class JsTracerChartLoader extends React.PureComponent<
   }
 }
 
-type ChartProps = {|
+type ChartProps = {
   +profile: Profile,
   +jsTracerTable: JsTracerTable,
   +showJsTracerSummary: boolean,

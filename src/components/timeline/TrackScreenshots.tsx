@@ -32,11 +32,11 @@ import type { ConnectedProps } from 'firefox-profiler/utils/connect';
 import { ensureExists } from 'firefox-profiler/utils/flow';
 import './TrackScreenshots.css';
 
-type OwnProps = {|
+type OwnProps = {
   +threadIndex: ThreadIndex,
   +windowId: string,
 };
-type StateProps = {|
+type StateProps = {
   +thread: Thread,
   +rangeStart: Milliseconds,
   +rangeEnd: Milliseconds,
@@ -45,14 +45,14 @@ type StateProps = {|
   +isMakingPreviewSelection: boolean,
   +trackHeight: number,
 };
-type DispatchProps = {|
+type DispatchProps = {
   +updatePreviewSelection: typeof updatePreviewSelection,
 };
-type Props = {|
+type Props = {
   ...SizeProps,
   ...ConnectedProps<OwnProps, StateProps, DispatchProps>,
 };
-type State = {|
+type State = {
   offsetX: null | number,
   pageX: null | number,
   containerTop: null | number,
@@ -213,7 +213,7 @@ export default explicitConnect<OwnProps, StateProps, DispatchProps>({
   component: withSize<Props>(Screenshots),
 });
 
-type HoverPreviewProps = {|
+type HoverPreviewProps = {
   +thread: Thread,
   +rangeStart: Milliseconds,
   +rangeEnd: Milliseconds,
@@ -304,7 +304,7 @@ class HoverPreview extends PureComponent<HoverPreviewProps> {
   }
 }
 
-type ScreenshotStripProps = {|
+type ScreenshotStripProps = {
   +thread: Thread,
   +rangeStart: Milliseconds,
   +rangeEnd: Milliseconds,

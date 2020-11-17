@@ -11,7 +11,7 @@ import './Ruler.css';
 
 import type { Milliseconds, CssPixels } from 'firefox-profiler/types';
 
-type Props = {|
+type Props = {
   +zeroAt: Milliseconds,
   +rangeStart: Milliseconds,
   +rangeEnd: Milliseconds,

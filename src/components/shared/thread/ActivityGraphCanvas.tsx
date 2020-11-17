@@ -22,7 +22,7 @@ import type {
 
 import type { CategoryDrawStyles } from './ActivityGraphFills';
 
-type CanvasProps = {|
+type CanvasProps = {
   +className: string,
   +trackName: string,
   +fullThread: Thread,
@@ -40,7 +40,7 @@ type CanvasProps = {|
 };
 
 export class ActivityGraphCanvas extends React.PureComponent<CanvasProps> {
-  _canvas: {| current: null | HTMLCanvasElement } = React.createRef();
+  _canvas: { current: null | HTMLCanvasElement } = React.createRef();
   _categoryDrawStyles: null | CategoryDrawStyles = null;
 
   _renderCanvas() {

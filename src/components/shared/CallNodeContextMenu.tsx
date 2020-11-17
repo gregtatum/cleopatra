@@ -43,7 +43,7 @@ import type {
 import type { TabSlug } from 'firefox-profiler/app-logic/tabs-handling';
 import type { ConnectedProps } from 'firefox-profiler/utils/connect';
 
-type StateProps = {|
+type StateProps = {
   +thread: Thread | null,
   +threadsKey: ThreadsKey | null,
   +callNodeInfo: CallNodeInfo | null,
@@ -54,13 +54,13 @@ type StateProps = {|
   +selectedTab: TabSlug,
 };
 
-type DispatchProps = {|
+type DispatchProps = {
   +addTransformToStack: typeof addTransformToStack,
   +expandAllCallNodeDescendants: typeof expandAllCallNodeDescendants,
   +setContextMenuVisibility: typeof setContextMenuVisibility,
 };
 
-type Props = ConnectedProps<{|}, StateProps, DispatchProps>;
+type Props = ConnectedProps<{}, StateProps, DispatchProps>;
 
 import './CallNodeContextMenu.css';
 
@@ -388,7 +388,7 @@ class CallNodeContextMenuImpl extends React.PureComponent<Props> {
     return funcHasRecursiveCall(thread, implementation, funcIndex);
   }
 
-  getRightClickedCallNodeInfo(): null | {|
+  getRightClickedCallNodeInfo(): null | {
     +thread: Thread,
     +threadsKey: ThreadsKey,
     +callNodeInfo: CallNodeInfo,
@@ -617,7 +617,7 @@ class CallNodeContextMenuImpl extends React.PureComponent<Props> {
 }
 
 export const CallNodeContextMenu = explicitConnect<
-  {|},
+  {},
   StateProps,
   DispatchProps
 >({
@@ -661,7 +661,7 @@ export const CallNodeContextMenu = explicitConnect<
   component: CallNodeContextMenuImpl,
 });
 
-function TransformMenuItem(props: {|
+function TransformMenuItem(props: {
   +children: React.Node,
   +onClick: (event: SyntheticEvent<>, data: { type: string }) => void,
   +transform: string,

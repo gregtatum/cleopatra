@@ -7,7 +7,7 @@ import * as React from 'react';
 import { findDOMNode } from 'react-dom';
 import type { CssPixels } from 'firefox-profiler/types';
 
-type State = {|
+type State = {
   width: CssPixels,
   height: CssPixels,
 };

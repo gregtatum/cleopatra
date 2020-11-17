@@ -73,7 +73,7 @@ import type {
 export function mergeProfilesForDiffing(
   profiles: Profile[],
   profileStates: UrlState[]
-): {|
+): {
   profile: Profile,
   transformStacks: TransformStacksPerThread,
   implementationFilters: ImplementationFilter[],
@@ -287,7 +287,7 @@ type TranslationMapForSamples = Map<
  */
 function mergeCategories(
   categoriesPerThread: CategoryList[]
-): {|
+): {
   categories: CategoryList,
   translationMaps: TranslationMapForCategories[],
 } {
@@ -808,7 +808,7 @@ function combineSamplesDiffing(
   };
 }
 
-type ThreadAndInterval = {|
+type ThreadAndInterval = {
   thread: Thread,
   interval: Milliseconds,
 };

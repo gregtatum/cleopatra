@@ -23,7 +23,7 @@ import type {
 } from 'firefox-profiler/types';
 import type { ConnectedProps } from 'firefox-profiler/utils/connect';
 
-type OwnProps = {|
+type OwnProps = {
   +resourceTracks: ActiveTabResourceTrack[],
   +setInitialSelected: (
     el: InitialSelectedTrackReference,
@@ -31,16 +31,16 @@ type OwnProps = {|
   ) => void,
 };
 
-type StateProps = {|
+type StateProps = {
   isActiveTabResourcesPanelOpen: boolean,
   resourcesThreadsKey: ThreadsKey,
 };
 
-type DispatchProps = {|
+type DispatchProps = {
   +toggleResourcesPanel: typeof toggleResourcesPanel,
 };
 
-type Props = {|
+type Props = {
   ...SizeProps,
   ...ConnectedProps<OwnProps, StateProps, DispatchProps>,
 };

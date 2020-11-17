@@ -14,14 +14,14 @@ import classNames from 'classnames';
 
 import './ArrowPanel.css';
 
-type Props = {|
+type Props = {
   +onOpen: () => mixed,
   +onClose: () => mixed,
   +className?: string,
   +children: React.Node,
 };
 
-type State = {|
+type State = {
   +open: boolean,
   +isClosing: boolean,
   +openGeneration: number,

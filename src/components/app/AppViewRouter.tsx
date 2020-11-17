@@ -35,14 +35,14 @@ const ERROR_MESSAGES: { [string]: string } = Object.freeze({
   compare: 'Could not retrieve the profile',
 });
 
-type AppViewRouterStateProps = {|
+type AppViewRouterStateProps = {
   +view: AppViewState,
   +dataSource: DataSource,
   +profilesToCompare: string[] | null,
   +hasZipFile: boolean,
 };
 
-type AppViewRouterProps = ConnectedProps<{|}, AppViewRouterStateProps, {|}>;
+type AppViewRouterProps = ConnectedProps<{}, AppViewRouterStateProps, {}>;
 
 class AppViewRouterImpl extends PureComponent<AppViewRouterProps> {
   render() {
@@ -116,9 +116,9 @@ class AppViewRouterImpl extends PureComponent<AppViewRouterProps> {
 }
 
 export const AppViewRouter = explicitConnect<
-  {|},
+  {},
   AppViewRouterStateProps,
-  {|}
+  {}
 >({
   mapStateToProps: (state: State) => ({
     view: getView(state),

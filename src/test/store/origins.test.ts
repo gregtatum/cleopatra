@@ -8,7 +8,7 @@ import { viewProfile } from '../../actions/receive-profile';
 import { ensureExists } from '../../utils/flow';
 import createStore from '../../app-logic/create-store';
 
-type TestDefinedOriginThread = {|
+type TestDefinedOriginThread = {
   name?: string,
   origin?: string,
   parentOrigin?: string,

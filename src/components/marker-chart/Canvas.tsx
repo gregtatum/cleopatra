@@ -60,12 +60,12 @@ type MarkerDrawingInformation = {
 // instead when both of the states are null, because that's what our shared
 // canvas component require.
 type IndexIntoHoveredLabelRow = number;
-type HoveredMarkerChartItems = {|
+type HoveredMarkerChartItems = {
   markerIndex: MarkerIndex | null,
   rowIndexOfLabel: IndexIntoHoveredLabelRow | null,
 };
 
-type OwnProps = {|
+type OwnProps = {
   +rangeStart: Milliseconds,
   +rangeEnd: Milliseconds,
   +markerTimingAndBuckets: MarkerTimingAndBuckets,
@@ -81,13 +81,13 @@ type OwnProps = {|
   +timelineTrackOrganization: TimelineTrackOrganization,
 };
 
-type Props = {|
+type Props = {
   ...OwnProps,
   // Bring in the viewport props from the higher order Viewport component.
   +viewport: Viewport,
 };
 
-type State = {|
+type State = {
   hoveredItem: null | number,
 };
 

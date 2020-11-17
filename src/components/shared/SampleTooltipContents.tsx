@@ -13,7 +13,7 @@ import type {
 import { Backtrace } from './Backtrace';
 import { getCategoryPairLabel } from '../../profile-logic/profile-data';
 
-type Props = {|
+type Props = {
   +sampleIndex: IndexIntoSamplesTable,
   +categories: CategoryList,
   +fullThread: Thread,

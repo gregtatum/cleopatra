@@ -24,21 +24,21 @@ import { assertExhaustiveCheck } from 'firefox-profiler/utils/flow';
 import type { ConnectedProps } from 'firefox-profiler/utils/connect';
 import type { DataSource } from 'firefox-profiler/types';
 
-type StateProps = {|
+type StateProps = {
   +dataSource: DataSource,
   +hash: string,
   +profileUrl: string,
   +profilesToCompare: string[] | null,
 };
 
-type DispatchProps = {|
+type DispatchProps = {
   +retrieveProfileFromAddon: typeof retrieveProfileFromAddon,
   +retrieveProfileFromStore: typeof retrieveProfileFromStore,
   +retrieveProfileOrZipFromUrl: typeof retrieveProfileOrZipFromUrl,
   +retrieveProfilesToCompare: typeof retrieveProfilesToCompare,
 };
 
-type Props = ConnectedProps<{|}, StateProps, DispatchProps>;
+type Props = ConnectedProps<{}, StateProps, DispatchProps>;
 
 class ProfileLoaderImpl extends PureComponent<Props> {
   _retrieveProfileFromDataSource = () => {
@@ -98,7 +98,7 @@ class ProfileLoaderImpl extends PureComponent<Props> {
   }
 }
 
-export const ProfileLoader = explicitConnect<{|}, StateProps, DispatchProps>({
+export const ProfileLoader = explicitConnect<{}, StateProps, DispatchProps>({
   mapStateToProps: state => ({
     dataSource: getDataSource(state),
     hash: getHash(state),

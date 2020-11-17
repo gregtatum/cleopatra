@@ -38,7 +38,7 @@ import './TrackMemory.css';
 /**
  * When adding properties to these props, please consider the comment above the component.
  */
-type CanvasProps = {|
+type CanvasProps = {
   +rangeStart: Milliseconds,
   +rangeEnd: Milliseconds,
   +counter: Counter,
@@ -202,13 +202,13 @@ class TrackMemoryCanvas extends React.PureComponent<CanvasProps> {
   }
 }
 
-type OwnProps = {|
+type OwnProps = {
   +counterIndex: CounterIndex,
   +lineWidth: CssPixels,
   +graphHeight: CssPixels,
 };
 
-type StateProps = {|
+type StateProps = {
   +threadIndex: ThreadIndex,
   +rangeStart: Milliseconds,
   +rangeEnd: Milliseconds,
@@ -219,14 +219,14 @@ type StateProps = {|
   +unfilteredSamplesRange: StartEndRange | null,
 };
 
-type DispatchProps = {|};
+type DispatchProps = {};
 
-type Props = {|
+type Props = {
   ...SizeProps,
   ...ConnectedProps<OwnProps, StateProps, DispatchProps>,
 };
 
-type State = {|
+type State = {
   hoveredCounter: null | number,
   mouseX: CssPixels,
   mouseY: CssPixels,

@@ -18,7 +18,7 @@ import type { TransformType } from 'firefox-profiler/types';
 
 type KeyPressOptions = { key: string, ... };
 
-type TestSetup = {|
+type TestSetup = {
   getTransformType: () => null | TransformType,
   pressKey: (options: KeyPressOptions) => void,
 };

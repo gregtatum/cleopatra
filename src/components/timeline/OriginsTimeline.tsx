@@ -37,7 +37,7 @@ import type { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 import './OriginsTimeline.css';
 
-type StateProps = {|
+type StateProps = {
   +committedRange: StartEndRange,
   +panelLayoutGeneration: number,
   +originsTimeline: OriginsTimeline,
@@ -45,16 +45,16 @@ type StateProps = {|
   +threads: Thread[],
 };
 
-type DispatchProps = {|
+type DispatchProps = {
   +changeSelectedThreads: typeof changeSelectedThreads,
 };
 
-type Props = {|
+type Props = {
   ...SizeProps,
-  ...ConnectedProps<{|}, StateProps, DispatchProps>,
+  ...ConnectedProps<{}, StateProps, DispatchProps>,
 };
 
-type State = {|
+type State = {
   initialSelected: InitialSelectedTrackReference | null,
 };
 
@@ -169,7 +169,7 @@ class OriginsTimelineView extends React.PureComponent<Props, State> {
   }
 }
 
-export default explicitConnect<{|}, StateProps, DispatchProps>({
+export default explicitConnect<{}, StateProps, DispatchProps>({
   mapStateToProps: state => ({
     threads: getThreads(state),
     committedRange: getCommittedRange(state),

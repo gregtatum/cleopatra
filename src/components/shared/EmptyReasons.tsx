@@ -6,7 +6,7 @@ import React, { PureComponent } from 'react';
 
 import './EmptyReasons.css';
 
-type Props = {|
+type Props = {
   +viewName: string,
   +threadName: string,
   +reason: string,

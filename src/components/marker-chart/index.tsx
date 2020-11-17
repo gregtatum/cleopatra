@@ -44,12 +44,12 @@ import './index.css';
 
 const ROW_HEIGHT = 16;
 
-type DispatchProps = {|
+type DispatchProps = {
   +updatePreviewSelection: typeof updatePreviewSelection,
   +changeRightClickedMarker: typeof changeRightClickedMarker,
 };
 
-type StateProps = {|
+type StateProps = {
   +getMarker: MarkerIndex => Marker,
   +markerTimingAndBuckets: MarkerTimingAndBuckets,
   +maxMarkerRows: number,
@@ -61,7 +61,7 @@ type StateProps = {|
   +timelineTrackOrganization: TimelineTrackOrganization,
 };
 
-type Props = ConnectedProps<{|}, StateProps, DispatchProps>;
+type Props = ConnectedProps<{}, StateProps, DispatchProps>;
 
 class MarkerChartImpl extends React.PureComponent<Props> {
   _viewport: HTMLDivElement | null = null;
@@ -177,7 +177,7 @@ function viewportNeedsUpdate(
   return prevProps.markerTimingAndBuckets !== newProps.markerTimingAndBuckets;
 }
 
-export const MarkerChart = explicitConnect<{|}, StateProps, DispatchProps>({
+export const MarkerChart = explicitConnect<{}, StateProps, DispatchProps>({
   mapStateToProps: state => {
     const markerTimingAndBuckets = selectedThreadSelectors.getMarkerChartTimingAndBuckets(
       state

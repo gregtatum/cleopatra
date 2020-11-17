@@ -38,7 +38,7 @@ import type {
 
 import './ZipFileViewer.css';
 
-type StateProps = {|
+type StateProps = {
   +zipFileState: ZipFileState,
   +pathInZipFile: string | null,
   +zipFileTree: ZipFileTree,
@@ -51,7 +51,7 @@ type StateProps = {|
   +zipFileErrorMessage: null | string,
 };
 
-type DispatchProps = {|
+type DispatchProps = {
   +changeSelectedZipFile: typeof changeSelectedZipFile,
   +changeExpandedZipFile: typeof changeExpandedZipFile,
   +viewProfileFromZip: typeof viewProfileFromZip,
@@ -59,18 +59,18 @@ type DispatchProps = {|
   +showErrorForNoFileInZip: typeof showErrorForNoFileInZip,
 };
 
-type Props = ConnectedProps<{|}, StateProps, DispatchProps>;
+type Props = ConnectedProps<{}, StateProps, DispatchProps>;
 
-type ZipFileRowDispatchProps = {|
+type ZipFileRowDispatchProps = {
   +viewProfileFromZip: typeof viewProfileFromZip,
 };
-type ZipFileRowOwnProps = {|
+type ZipFileRowOwnProps = {
   +displayData: ZipDisplayData,
 };
 
 type ZipFileRowProps = ConnectedProps<
   ZipFileRowOwnProps,
-  {|},
+  {},
   ZipFileRowDispatchProps
 >;
 
@@ -104,7 +104,7 @@ class ZipFileRowImpl extends React.PureComponent<ZipFileRowProps> {
 
 const ZipFileRow = explicitConnect<
   ZipFileRowOwnProps,
-  {|},
+  {},
   ZipFileRowDispatchProps
 >({
   // ZipFileRow is implemented as a connected component, only to provide access to
@@ -335,7 +335,7 @@ class ZipFileViewerImpl extends React.PureComponent<Props> {
   }
 }
 
-export const ZipFileViewer = explicitConnect<{|}, StateProps, DispatchProps>({
+export const ZipFileViewer = explicitConnect<{}, StateProps, DispatchProps>({
   mapStateToProps: state => {
     const zipFileTree = getZipFileTree(state);
     if (zipFileTree === null) {

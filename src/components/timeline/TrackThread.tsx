@@ -64,14 +64,14 @@ import type {
 
 import type { ConnectedProps } from 'firefox-profiler/utils/connect';
 
-type OwnProps = {|
+type OwnProps = {
   +threadsKey: ThreadsKey,
   +trackType: 'expanded' | 'condensed',
   +showMemoryMarkers?: boolean,
   +trackName: string,
 };
 
-type StateProps = {|
+type StateProps = {
   +fullThread: Thread,
   +filteredThread: Thread,
   +tabFilteredThread: Thread,
@@ -94,7 +94,7 @@ type StateProps = {|
   +selectedThreadIndexes: Set<ThreadIndex>,
 };
 
-type DispatchProps = {|
+type DispatchProps = {
   +changeRightClickedTrack: typeof changeRightClickedTrack,
   +updatePreviewSelection: typeof updatePreviewSelection,
   +changeSelectedCallNode: typeof changeSelectedCallNode,
@@ -104,7 +104,7 @@ type DispatchProps = {|
   +reportTrackThreadHeight: typeof reportTrackThreadHeight,
 };
 
-type Props = {|
+type Props = {
   ...SizeProps,
   ...ConnectedProps<OwnProps, StateProps, DispatchProps>,
 };

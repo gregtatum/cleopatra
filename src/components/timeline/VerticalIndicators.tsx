@@ -19,7 +19,7 @@ import type {
 
 import './VerticalIndicators.css';
 
-type Props = {|
+type Props = {
   +getMarker: MarkerIndex => Marker,
   +verticalMarkerIndexes: MarkerIndex[],
   +pages: PageList | null,

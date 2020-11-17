@@ -8,7 +8,7 @@ import * as React from 'react';
 
 import './ProfileRootMessage.css';
 
-type Props = {|
+type Props = {
   +message: string,
   +additionalMessage: string | null,
   +showLoader: boolean,

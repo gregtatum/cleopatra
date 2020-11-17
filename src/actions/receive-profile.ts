@@ -107,7 +107,7 @@ export function loadProfile(
     implementationFilter: ImplementationFilter,
     transformStacks: TransformStacksPerThread,
     geckoProfiler?: $GeckoProfiler,
-  > = {},
+  }> = {},
   initialLoad: boolean = false
 ): ThunkAction<Promise<void>> {
   return async dispatch => {
@@ -630,7 +630,7 @@ export function resymbolicateProfile(): ThunkAction<Promise<void>> {
 // `loadProfile`) and wait until symbolication finishes.
 export function viewProfile(
   profile: Profile,
-  config: Partial<{|
+  config: Partial<{
     timelineTrackOrganization: TimelineTrackOrganization,
     pathInZipFile: string,
     implementationFilter: ImplementationFilter,
@@ -1397,7 +1397,7 @@ export function retrieveProfilesToCompare(
 export function getProfilesFromRawUrl(
   location: Location
 ): ThunkAction<
-  Promise<{| profile: Profile | null, shouldSetupInitialUrlState: boolean }>
+  Promise<{ profile: Profile | null, shouldSetupInitialUrlState: boolean }>
 > {
   return async (dispatch, getState) => {
     const pathParts = location.pathname.split('/').filter(d => d);

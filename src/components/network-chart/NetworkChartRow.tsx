@@ -80,7 +80,7 @@ const PHASE_OPACITIES = PROPERTIES_IN_ORDER.reduce(
   {}
 );
 
-type NetworkPhaseProps = {|
+type NetworkPhaseProps = {
   +name: string,
   +previousName: string,
   +value: number | string,
@@ -110,7 +110,7 @@ function NetworkPhase({
   );
 }
 
-export type NetworkChartRowBarProps = {|
+export type NetworkChartRowBarProps = {
   +marker: Marker,
   +width: CssPixels,
   +timeRange: StartEndRange,
@@ -311,7 +311,7 @@ class NetworkChartRowBar extends React.PureComponent<NetworkChartRowBarProps> {
   }
 }
 
-type NetworkChartRowProps = {|
+type NetworkChartRowProps = {
   +index: number,
   +marker: Marker,
   +markerIndex: MarkerIndex,
@@ -330,7 +330,7 @@ type NetworkChartRowProps = {|
   +shouldDisplayTooltips: () => boolean,
 };
 
-type State = {|
+type State = {
   pageX: CssPixels,
   pageY: CssPixels,
   hovered: ?boolean,

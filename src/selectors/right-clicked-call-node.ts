@@ -13,7 +13,7 @@ import type {
   Selector,
 } from 'firefox-profiler/types';
 
-export type RightClickedCallNodeInfo = {|
+export type RightClickedCallNodeInfo = {
   +threadsKey: ThreadsKey,
   +callNodePath: CallNodePath,
 };

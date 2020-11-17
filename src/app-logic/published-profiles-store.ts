@@ -13,14 +13,14 @@ import { ensureExists } from 'firefox-profiler/utils/flow';
 import type { DB as Database } from 'idb';
 import type { StartEndRange } from 'firefox-profiler/types';
 
-export type ProfileData = {|
+export type ProfileData = {
   +profileToken: string, // This is the primary key.
   +jwtToken: string | null,
   +publishedDate: Date, // This key is indexed as well, to provide automatic sorting.
   +name: string,
   +preset: string | null,
   +originHostname: string | null, // This key is indexed as well.
-  +meta: {|
+  +meta: {
     // We're using some of the properties of the profile meta, but we're not
     // reusing the type ProfileMeta completely because we don't want to be
     // impacted from future changes to ProfileMeta.

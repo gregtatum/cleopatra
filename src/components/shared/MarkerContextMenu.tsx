@@ -41,11 +41,11 @@ import {
 } from '../../profile-logic/profile-data';
 import { getThreadSelectorsFromThreadsKey } from 'firefox-profiler/selectors/per-thread';
 
-type OwnProps = {|
+type OwnProps = {
   +rightClickedMarkerInfo: RightClickedMarkerInfo,
 };
 
-type StateProps = {|
+type StateProps = {
   +marker: Marker,
   +markerIndex: MarkerIndex,
   +previewSelection: PreviewSelection,
@@ -55,7 +55,7 @@ type StateProps = {|
   +getMarkerLabelToCopy: MarkerIndex => string,
 };
 
-type DispatchProps = {|
+type DispatchProps = {
   +updatePreviewSelection: typeof updatePreviewSelection,
   +setContextMenuVisibility: typeof setContextMenuVisibility,
 };
@@ -337,7 +337,7 @@ const MarkerContextMenu = explicitConnect<OwnProps, StateProps, DispatchProps>({
   component: MarkerContextMenuImpl,
 });
 
-type MaybeProps = {|
+type MaybeProps = {
   +rightClickedMarkerInfo: RightClickedMarkerInfo | null,
 };
 
@@ -359,7 +359,7 @@ class MaybeMarkerContextMenuImpl extends PureComponent<MaybeProps> {
   }
 }
 
-export const MaybeMarkerContextMenu = explicitConnect<{|}, MaybeProps, {|}>({
+export const MaybeMarkerContextMenu = explicitConnect<{}, MaybeProps, {}>({
   mapStateToProps: state => ({
     rightClickedMarkerInfo: getRightClickedMarkerInfo(state),
   }),

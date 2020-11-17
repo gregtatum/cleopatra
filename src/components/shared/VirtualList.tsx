@@ -41,7 +41,7 @@ import type { CssPixels } from 'firefox-profiler/types';
 
 type RenderItem<Item> = (Item, number, number) => React.Node;
 
-type VirtualListRowProps<Item> = {|
+type VirtualListRowProps<Item> = {
   +renderItem: RenderItem<Item>,
   +item: Item,
   +index: number,
@@ -76,7 +76,7 @@ class VirtualListRow<Item> extends React.PureComponent<
   }
 }
 
-type VirtualListInnerChunkProps<Item> = {|
+type VirtualListInnerChunkProps<Item> = {
   +className: string,
   +renderItem: RenderItem<Item>,
   +items: $ReadOnlyArray<Item>,
@@ -138,7 +138,7 @@ class VirtualListInnerChunk<Item> extends React.PureComponent<
   }
 }
 
-type VirtualListInnerProps<Item> = {|
+type VirtualListInnerProps<Item> = {
   +itemHeight: CssPixels,
   +className: string,
   +renderItem: RenderItem<Item>,
@@ -227,7 +227,7 @@ class VirtualListInner<Item> extends React.PureComponent<
   }
 }
 
-type VirtualListProps<Item> = {|
+type VirtualListProps<Item> = {
   +itemHeight: CssPixels,
   +className: string,
   +renderItem: RenderItem<Item>,
@@ -267,8 +267,8 @@ type Geometry = {
 export class VirtualList<Item> extends React.PureComponent<
   VirtualListProps<Item>
 > {
-  _container: {| current: HTMLDivElement | null } = React.createRef();
-  _inner: {| current: VirtualListInner<Item> | null } = React.createRef();
+  _container: { current: HTMLDivElement | null } = React.createRef();
+  _inner: { current: VirtualListInner<Item> | null } = React.createRef();
   _geometry: ?Geometry;
 
   componentDidMount() {

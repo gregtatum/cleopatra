@@ -15,11 +15,11 @@ import { assertExhaustiveCheck } from 'firefox-profiler/utils/flow';
 import type { ConnectedProps } from 'firefox-profiler/utils/connect';
 import type { TimelineTrackOrganization } from 'firefox-profiler/types';
 
-type StateProps = {|
+type StateProps = {
   +timelineTrackOrganization: TimelineTrackOrganization,
 };
 
-type Props = ConnectedProps<{|}, StateProps, {|}>;
+type Props = ConnectedProps<{}, StateProps, {}>;
 
 class TimelineImpl extends React.PureComponent<Props> {
   render() {
@@ -40,7 +40,7 @@ class TimelineImpl extends React.PureComponent<Props> {
   }
 }
 
-export const Timeline = explicitConnect<{|}, StateProps, {|}>({
+export const Timeline = explicitConnect<{}, StateProps, {}>({
   mapStateToProps: state => ({
     timelineTrackOrganization: getTimelineTrackOrganization(state),
   }),

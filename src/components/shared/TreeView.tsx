@@ -33,16 +33,16 @@ const PAGE_KEYS_DELTA = 15;
 type RegExpResult = null | ({ index: number, input: string } & string[]);
 type NodeIndex = number;
 
-export type Column<DisplayData: Object> = {|
+export type Column<DisplayData: Object> = {
   +propName: string,
   +title: string,
   +tooltip?: string,
-  +component?: React.ComponentType<{|
+  +component?: React.ComponentType<{
     displayData: DisplayData,
   }>,
 };
 
-type TreeViewHeaderProps<DisplayData: Object> = {|
+type TreeViewHeaderProps<DisplayData: Object> = {
   +fixedColumns: Column<DisplayData>[],
   +mainColumn: Column<DisplayData>,
 };
@@ -107,7 +107,7 @@ function reactStringWithHighlightedSubstrings(
   return highlighted;
 }
 
-type TreeViewRowFixedColumnsProps<DisplayData: Object> = {|
+type TreeViewRowFixedColumnsProps<DisplayData: Object> = {
   +displayData: DisplayData,
   +nodeId: NodeIndex,
   +columns: Column<DisplayData>[],
@@ -175,7 +175,7 @@ class TreeViewRowFixedColumns<DisplayData: Object> extends React.PureComponent<
   }
 }
 
-type TreeViewRowScrolledColumnsProps<DisplayData: Object> = {|
+type TreeViewRowScrolledColumnsProps<DisplayData: Object> = {
   +displayData: DisplayData,
   +nodeId: NodeIndex,
   +depth: number,
@@ -333,7 +333,7 @@ interface Tree<DisplayData: Object> {
   getAllDescendants(NodeIndex): Set<NodeIndex>;
 }
 
-type TreeViewProps<DisplayData> = {|
+type TreeViewProps<DisplayData> = {
   +fixedColumns: Column<DisplayData>[],
   +mainColumn: Column<DisplayData>,
   +tree: Tree<DisplayData>,

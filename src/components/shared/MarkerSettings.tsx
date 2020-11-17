@@ -15,15 +15,15 @@ import type { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 import './MarkerSettings.css';
 
-type StateProps = {|
+type StateProps = {
   +searchString: string,
 };
 
-type DispatchProps = {|
+type DispatchProps = {
   +changeMarkersSearchString: typeof changeMarkersSearchString,
 };
 
-type Props = ConnectedProps<{|}, StateProps, DispatchProps>;
+type Props = ConnectedProps<{}, StateProps, DispatchProps>;
 
 class MarkerSettingsImpl extends PureComponent<Props> {
   _onSearch = (value: string) => {
@@ -47,7 +47,7 @@ class MarkerSettingsImpl extends PureComponent<Props> {
   }
 }
 
-export const MarkerSettings = explicitConnect<{|}, StateProps, DispatchProps>({
+export const MarkerSettings = explicitConnect<{}, StateProps, DispatchProps>({
   mapStateToProps: state => ({
     searchString: getMarkersSearchString(state),
   }),

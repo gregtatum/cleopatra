@@ -25,7 +25,7 @@ import * as React from 'react';
  * the typing using fragments, it should never render more than 1 child.
  */
 
-type DetailProps = {|
+type DetailProps = {
   +label: string,
   // Only one child is accepted.
   +children?: void | null | boolean | string | number | React.Element<any>,
@@ -51,7 +51,7 @@ export function TooltipDetailSeparator() {
 export type TooltipDetailComponent = React.Element<
   typeof TooltipDetail | typeof TooltipDetailSeparator
 > | null;
-type Props = {|
+type Props = {
   // This component accepts only TooltipDetail children.
   +children: React.ChildrenArray<TooltipDetailComponent>,
 };

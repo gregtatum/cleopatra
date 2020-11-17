@@ -7,14 +7,14 @@ import * as React from 'react';
 import { reportError } from 'firefox-profiler/utils/analytics';
 import './ErrorBoundary.css';
 
-type State = {|
+type State = {
   hasError: boolean,
   showDetails: boolean,
   errorString: string | null,
   componentStack?: string,
 };
 
-type Props = {|
+type Props = {
   +children: React.Node,
   +message: string,
 };

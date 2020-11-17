@@ -17,7 +17,7 @@ export class Response {
 
   constructor(
     body: string | null,
-    options: {|
+    options: {
       status: number,
       statusText?: string,
       headers?: MixedObject,

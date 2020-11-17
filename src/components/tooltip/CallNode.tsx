@@ -33,7 +33,7 @@ import './CallNode.css';
 const GRAPH_WIDTH = 150;
 const GRAPH_HEIGHT = 10;
 
-type Props = {|
+type Props = {
   +thread: Thread,
   +weightType: WeightType,
   +pages: PageList | null,

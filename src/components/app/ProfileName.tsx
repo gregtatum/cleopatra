@@ -13,17 +13,17 @@ import type { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 import './ProfileName.css';
 
-type StateProps = {|
+type StateProps = {
   +profileNameWithDefault: string,
 };
 
-type DispatchProps = {|
+type DispatchProps = {
   +changeProfileName: typeof changeProfileName,
 };
 
-type Props = ConnectedProps<{|}, StateProps, DispatchProps>;
+type Props = ConnectedProps<{}, StateProps, DispatchProps>;
 
-type State = {|
+type State = {
   focusedWithKey: null | string,
   // Every time the input is focused, it's recreated to consistently set the initial
   // value.
@@ -151,7 +151,7 @@ class ProfileNameImpl extends React.PureComponent<Props, State> {
   }
 }
 
-export const ProfileName = explicitConnect<{|}, StateProps, DispatchProps>({
+export const ProfileName = explicitConnect<{}, StateProps, DispatchProps>({
   mapStateToProps: state => ({
     profileNameWithDefault: getProfileNameWithDefault(state),
   }),

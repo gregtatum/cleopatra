@@ -34,11 +34,11 @@ import type { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 import './TrackNetwork.css';
 
-type OwnProps = {|
+type OwnProps = {
   +threadIndex: ThreadIndex,
 };
 
-type StateProps = {|
+type StateProps = {
   +pages: PageList | null,
   +rangeStart: Milliseconds,
   +rangeEnd: Milliseconds,
@@ -47,8 +47,8 @@ type StateProps = {|
   +networkTiming: MarkerTiming[],
   +verticalMarkerIndexes: MarkerIndex[],
 };
-type DispatchProps = {|};
-type Props = {|
+type DispatchProps = {};
+type Props = {
   ...ConnectedProps<OwnProps, StateProps, DispatchProps>,
   ...SizeProps,
 };

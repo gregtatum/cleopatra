@@ -14,7 +14,7 @@ import { InnerNavigationLink } from 'firefox-profiler/components/shared/InnerNav
 
 import './AppHeader.css';
 
-export class AppHeader extends React.PureComponent<{|}> {
+export class AppHeader extends React.PureComponent<{}> {
   render() {
     return (
       <header>

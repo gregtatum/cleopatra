@@ -10,7 +10,7 @@ import * as UrlUtils from 'firefox-profiler/utils/shorten-url';
 
 import './Permalink.css';
 
-type Props = {|
+type Props = {
   +isNewlyPublished: boolean,
   // This is for injecting a URL shortener for tests. Normally we would use a Jest mock
   // that would mock out a local module, but I was having trouble getting it working
@@ -19,7 +19,7 @@ type Props = {|
   +injectedUrlShortener?: typeof UrlUtils.shortenUrl | void,
 };
 
-type State = {|
+type State = {
   fullUrl: string,
   shortUrl: string,
 };

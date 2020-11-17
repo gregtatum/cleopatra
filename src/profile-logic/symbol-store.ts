@@ -16,7 +16,7 @@ export type LibSymbolicationRequest = {
   addresses: Set<number>,
 };
 
-export type AddressResult = {|
+export type AddressResult = {
   // The name of the function that this address belongs to.
   name: string,
   // The offset (in bytes) between the start of the function and the address.

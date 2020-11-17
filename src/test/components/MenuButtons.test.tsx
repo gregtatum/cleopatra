@@ -339,7 +339,7 @@ describe('<MetaInfoPanel>', function() {
   });
 
   describe('symbolication', function() {
-    type SymbolicationTestConfig = {|
+    type SymbolicationTestConfig = {
       symbolicated: boolean,
       symbolicationStatus: SymbolicationStatus,
     };

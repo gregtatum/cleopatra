@@ -46,7 +46,7 @@ import type { CallTree as CallTreeType } from 'firefox-profiler/profile-logic/ca
 import type { Column } from 'firefox-profiler/components/shared/TreeView';
 import type { ConnectedProps } from 'firefox-profiler/utils/connect';
 
-type StateProps = {|
+type StateProps = {
   +threadsKey: ThreadsKey,
   +scrollToSelectionGeneration: number,
   +focusCallTreeGeneration: number,
@@ -63,7 +63,7 @@ type StateProps = {|
   +weightType: WeightType,
 };
 
-type DispatchProps = {|
+type DispatchProps = {
   +changeSelectedCallNode: typeof changeSelectedCallNode,
   +changeRightClickedCallNode: typeof changeRightClickedCallNode,
   +changeExpandedCallNodes: typeof changeExpandedCallNodes,
@@ -71,7 +71,7 @@ type DispatchProps = {|
   +handleCallNodeTransformShortcut: typeof handleCallNodeTransformShortcut,
 };
 
-type Props = ConnectedProps<{|}, StateProps, DispatchProps>;
+type Props = ConnectedProps<{}, StateProps, DispatchProps>;
 
 class CallTreeImpl extends PureComponent<Props> {
   _mainColumn: Column<CallNodeDisplayData> = { propName: 'name', title: '' };
@@ -314,7 +314,7 @@ class CallTreeImpl extends PureComponent<Props> {
   }
 }
 
-export const CallTree = explicitConnect<{|}, StateProps, DispatchProps>({
+export const CallTree = explicitConnect<{}, StateProps, DispatchProps>({
   mapStateToProps: (state: State) => ({
     threadsKey: getSelectedThreadsKey(state),
     scrollToSelectionGeneration: getScrollToSelectionGeneration(state),

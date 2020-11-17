@@ -340,7 +340,7 @@ export function getGCSliceDetails(
   return details;
 }
 
-type PhaseTimeTuple = {| name: string, time: Microseconds };
+type PhaseTimeTuple = { name: string, time: Microseconds };
 
 function _markerDetailPhase(p: PhaseTimeTuple) {
   return (
@@ -390,7 +390,7 @@ function _makePhaseTimesArray(
  * reading its leaves.
  */
 
-type PhaseTreeNode = {|
+type PhaseTreeNode = {
   value?: PhaseTimeTuple,
   branches: Map<string, PhaseTreeNode>,
 };

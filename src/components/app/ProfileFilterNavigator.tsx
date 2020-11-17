@@ -24,12 +24,12 @@ import type {
   StartEndRange,
 } from 'firefox-profiler/types';
 
-type Props = {|
+type Props = {
   +filterPageData: ProfileFilterPageData | null,
   +rootRange: StartEndRange,
   ...ElementProps<typeof FilterNavigatorBar>,
 };
-type DispatchProps = {|
+type DispatchProps = {
   +onPop: $PropertyType<Props, 'onPop'>,
 };
 type StateProps = $ReadOnly<$Exact<$Diff<Props, DispatchProps>>>;
@@ -86,7 +86,7 @@ class ProfileFilterNavigatorBarImpl extends React.PureComponent<Props> {
 }
 
 export const ProfileFilterNavigator = explicitConnect<
-  {|},
+  {},
   StateProps,
   DispatchProps
 >({

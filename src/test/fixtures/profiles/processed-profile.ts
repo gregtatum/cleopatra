@@ -50,7 +50,7 @@ import { markerSchemaForTests } from './marker-schema';
 // Array<[MarkerName, Milliseconds, Data]>
 type MarkerName = string;
 type MarkerTime = Milliseconds;
-type MockPayload = {| startTime: Milliseconds, endTime: Milliseconds };
+type MockPayload = { startTime: Milliseconds, endTime: Milliseconds };
 
 // These markers can create an Instant or a complete Interval marker, depending
 // on if an end time is passed in. The definition uses a union, becaus as far
@@ -73,7 +73,7 @@ export type TestDefinedMarkers = Array<
 >;
 
 // This type is used when needing to create a specific RawMarkerTable.
-export type TestDefinedRawMarker = {|
+export type TestDefinedRawMarker = {
   +name?: string,
   +startTime: Milliseconds | null,
   +endTime: Milliseconds | null,
@@ -859,7 +859,7 @@ export function getMergedProfileFromTextSamples(
   };
 }
 
-type NetworkMarkersOptions = {|
+type NetworkMarkersOptions = {
   uri: string,
   id: number,
   startTime: number,
@@ -978,7 +978,7 @@ export function getNetworkTrackProfile() {
   return profile;
 }
 
-type IPCMarkersOptions = {|
+type IPCMarkersOptions = {
   startTime: number,
   endTime: number,
   otherPid: number,

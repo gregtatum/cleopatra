@@ -27,7 +27,7 @@ import type {
   DerivedMarkerInfo,
 } from 'firefox-profiler/types';
 
-export type SanitizeProfileResult = {|
+export type SanitizeProfileResult = {
   +profile: Profile,
   +oldThreadIndexToNew: Map<ThreadIndex, ThreadIndex> | null,
   +committedRanges: StartEndRange[] | null,

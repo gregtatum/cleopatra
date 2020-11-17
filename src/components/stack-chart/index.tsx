@@ -60,7 +60,7 @@ import './index.css';
 
 const STACK_FRAME_HEIGHT = 16;
 
-type StateProps = {|
+type StateProps = {
   +thread: Thread,
   +weightType: WeightType,
   +pages: PageList | null,
@@ -80,13 +80,13 @@ type StateProps = {|
   +timelineMarginLeft: CssPixels,
 };
 
-type DispatchProps = {|
+type DispatchProps = {
   +changeSelectedCallNode: typeof changeSelectedCallNode,
   +changeRightClickedCallNode: typeof changeRightClickedCallNode,
   +updatePreviewSelection: typeof updatePreviewSelection,
 };
 
-type Props = ConnectedProps<{|}, StateProps, DispatchProps>;
+type Props = ConnectedProps<{}, StateProps, DispatchProps>;
 
 class StackChartImpl extends React.PureComponent<Props> {
   _viewport: HTMLDivElement | null = null;
@@ -224,7 +224,7 @@ class StackChartImpl extends React.PureComponent<Props> {
   }
 }
 
-export const StackChart = explicitConnect<{|}, StateProps, DispatchProps>({
+export const StackChart = explicitConnect<{}, StateProps, DispatchProps>({
   mapStateToProps: state => {
     const showUserTimings = getShowUserTimings(state);
     const combinedTimingRows = showUserTimings

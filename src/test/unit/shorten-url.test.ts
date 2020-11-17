@@ -20,7 +20,7 @@ afterEach(() => {
 function mockFetchForBitly({
   endpointUrl,
   responseFromRequestPayload,
-}: {|
+}: {
   endpointUrl: string,
   responseFromRequestPayload: any => Response,
 }) {

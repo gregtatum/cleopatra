@@ -38,7 +38,7 @@ import type { ConnectedProps } from '../../utils/connect';
 
 import './ProfileViewer.css';
 
-type StateProps = {|
+type StateProps = {
   +hasZipFile: boolean,
   +timelineHeight: CssPixels | null,
   +uploadProgress: number,
@@ -48,12 +48,12 @@ type StateProps = {|
   +icons: IconWithClassName[],
 };
 
-type DispatchProps = {|
+type DispatchProps = {
   +returnToZipFileList: typeof returnToZipFileList,
   +invalidatePanelLayout: typeof invalidatePanelLayout,
 };
 
-type Props = ConnectedProps<{|}, StateProps, DispatchProps>;
+type Props = ConnectedProps<{}, StateProps, DispatchProps>;
 
 class ProfileViewerImpl extends PureComponent<Props> {
   render() {
@@ -146,7 +146,7 @@ class ProfileViewerImpl extends PureComponent<Props> {
   }
 }
 
-export const ProfileViewer = explicitConnect<{|}, StateProps, DispatchProps>({
+export const ProfileViewer = explicitConnect<{}, StateProps, DispatchProps>({
   mapStateToProps: state => ({
     hasZipFile: getHasZipFile(state),
     timelineHeight: getTimelineHeight(state),

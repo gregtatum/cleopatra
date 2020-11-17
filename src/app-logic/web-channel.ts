@@ -13,22 +13,22 @@
  * The messages are typed as an object so that the "type" field can be extracted
  * using the $Keys utility type.
  */
-type MessageToBrowserObject = {|
-  STATUS_QUERY: {| type: 'STATUS_QUERY', requestId: number },
-  ENABLE_MENU_BUTTON: {| type: 'ENABLE_MENU_BUTTON', requestId: number },
+type MessageToBrowserObject = {
+  STATUS_QUERY: { type: 'STATUS_QUERY', requestId: number },
+  ENABLE_MENU_BUTTON: { type: 'ENABLE_MENU_BUTTON', requestId: number },
 };
 
 /**
  * The messages are typed as an object so that the "type" field can be extracted
  * using the $Keys utility type.
  */
-type MessageFromBrowserObject = {|
-  STATUS_RESPONSE: {|
+type MessageFromBrowserObject = {
+  STATUS_RESPONSE: {
     type: 'STATUS_RESPONSE',
     menuButtonIsEnabled: boolean,
     requestId: number,
   },
-  ENABLE_MENU_BUTTON_DONE: {|
+  ENABLE_MENU_BUTTON_DONE: {
     type: 'ENABLE_MENU_BUTTON_DONE',
     requestId: number,
   },

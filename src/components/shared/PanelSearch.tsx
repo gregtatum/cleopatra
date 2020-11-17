@@ -9,7 +9,7 @@ import { IdleSearchField } from './IdleSearchField';
 
 import './PanelSearch.css';
 
-type Props = {|
+type Props = {
   +className: string,
   +label: string,
   +title: string,
@@ -17,7 +17,7 @@ type Props = {|
   +onSearch: string => void,
 };
 
-type State = {| searchFieldFocused: boolean };
+type State = { searchFieldFocused: boolean };
 
 export class PanelSearch extends React.PureComponent<Props, State> {
   state = { searchFieldFocused: false };

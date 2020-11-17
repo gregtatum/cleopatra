@@ -3348,7 +3348,7 @@ describe('pages and active tab selectors', function() {
 });
 
 describe('traced timing', function() {
-  function setup({ inverted }: {| inverted: boolean }, textSamples: string) {
+  function setup({ inverted }: { inverted: boolean }, textSamples: string) {
     const { profile, funcNamesDictPerThread } = getProfileFromTextSamples(
       textSamples
     );

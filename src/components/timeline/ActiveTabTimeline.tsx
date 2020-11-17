@@ -33,7 +33,7 @@ import type {
 
 import type { ConnectedProps } from 'firefox-profiler/utils/connect';
 
-type StateProps = {|
+type StateProps = {
   +committedRange: StartEndRange,
   +globalTracks: ActiveTabGlobalTrack[],
   +globalTrackReferences: GlobalTrackReference[],
@@ -41,12 +41,12 @@ type StateProps = {|
   +zeroAt: Milliseconds,
 };
 
-type Props = {|
+type Props = {
   ...SizeProps,
-  ...ConnectedProps<{|}, StateProps, {|}>,
+  ...ConnectedProps<{}, StateProps, {}>,
 };
 
-type State = {|
+type State = {
   initialSelected: InitialSelectedTrackReference | null,
   forceLayoutGeneration: number,
 };
@@ -119,7 +119,7 @@ class ActiveTabTimeline extends React.PureComponent<Props, State> {
   }
 }
 
-export default explicitConnect<{|}, StateProps, {|}>({
+export default explicitConnect<{}, StateProps, {}>({
   mapStateToProps: state => ({
     globalTracks: getActiveTabGlobalTracks(state),
     globalTrackReferences: getActiveTabGlobalTrackReferences(state),

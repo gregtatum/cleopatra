@@ -82,7 +82,7 @@ export type TransformDefinitions = {
    *                        ↓                               ↓
    *                      A:1,0                           X:1,1
    */
-  'focus-subtree': {|
+  'focus-subtree': {
     +type: 'focus-subtree',
     +callNodePath: CallNodePath,
     +implementation: ImplementationFilter,
@@ -113,7 +113,7 @@ export type TransformDefinitions = {
    *                   v
    *                 D:2,2
    */
-  'focus-function': {|
+  'focus-function': {
     +type: 'focus-function',
     +funcIndex: IndexIntoFuncTable,
   },
@@ -161,7 +161,7 @@ export type TransformDefinitions = {
    * This same operation is not applied to an inverted call stack as it has been deemed
    * not particularly useful, and prone to not give the expected results.
    */
-  'merge-call-node': {|
+  'merge-call-node': {
     +type: 'merge-call-node',
     +callNodePath: CallNodePath,
     +implementation: ImplementationFilter,
@@ -186,7 +186,7 @@ export type TransformDefinitions = {
    *        v           v
    *      E:1,1       G:1,1
    */
-  'merge-function': {|
+  'merge-function': {
     +type: 'merge-function',
     +funcIndex: IndexIntoFuncTable,
   },
@@ -206,7 +206,7 @@ export type TransformDefinitions = {
    *        v
    *      D:1,1
    */
-  'drop-function': {|
+  'drop-function': {
     +type: 'drop-function',
     +funcIndex: IndexIntoFuncTable,
   },
@@ -227,7 +227,7 @@ export type TransformDefinitions = {
    *        v
    *        D
    */
-  'collapse-resource': {|
+  'collapse-resource': {
     +type: 'collapse-resource',
     +resourceIndex: IndexIntoResourceTable,
     // This is the index of the newly created function that represents the collapsed stack.
@@ -251,7 +251,7 @@ export type TransformDefinitions = {
    *      ↓
    *      C
    */
-  'collapse-direction-recursion': {|
+  'collapse-direction-recursion': {
     +type: 'collapse-direct-recursion',
     +funcIndex: IndexIntoFuncTable,
     +implementation: ImplementationFilter,
@@ -274,7 +274,7 @@ export type TransformDefinitions = {
    *        v          v        v     v
    *      E:1,1     G:1,1    I:1,1    J:1,1
    */
-  'collapse-function-subtree': {|
+  'collapse-function-subtree': {
     +type: 'collapse-function-subtree',
     +funcIndex: IndexIntoFuncTable,
   },

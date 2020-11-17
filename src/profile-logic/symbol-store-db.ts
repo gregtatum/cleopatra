@@ -39,7 +39,7 @@ export type SymbolTableAsTuple = [
   Uint8Array // buffer
 ];
 
-type SymbolItem = {|
+type SymbolItem = {
   debugName: string,
   breakpadId: string,
   addrs: Uint32Array,

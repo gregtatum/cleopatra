@@ -428,7 +428,7 @@ function getHumanReadableJsTracerTiming({
   useSelfTime,
   events,
   profile,
-}: {|
+}: {
   useSelfTime: boolean,
   events?: TestDefinedJsTracerEvent[],
   profile?: Profile,

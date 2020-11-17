@@ -6,7 +6,7 @@
 import React, { PureComponent } from 'react';
 import './Warning.css';
 
-type Props = {|
+type Props = {
   +message: string,
   +actionText?: string,
   +actionTitle?: string,
@@ -14,7 +14,7 @@ type Props = {|
   +onClose?: () => mixed,
 };
 
-type State = {|
+type State = {
   +isNoticeDisplayed: boolean,
 };
 

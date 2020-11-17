@@ -81,7 +81,7 @@ describe('timeline/TrackThread', function() {
     const flushRafCalls = mockRaf();
     const ctx = mockCanvasContext();
 
-    type Coordinate = {| pageX: number, pageY: number };
+    type Coordinate = { pageX: number, pageY: number };
 
     // Look through the draw log and find the center of a specific fillRect
     // call. This is a good way to know where the canvas drew something.

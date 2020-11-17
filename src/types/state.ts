@@ -38,7 +38,7 @@ import type { PathSet } from '../utils/path.js';
 export type Reducer<T> = (T | void, Action) => T;
 
 export type SymbolicationStatus = 'DONE' | 'SYMBOLICATING';
-export type ThreadViewOptions = {|
+export type ThreadViewOptions = {
   +selectedCallNodePath: CallNodePath,
   +expandedCallNodePaths: PathSet,
   +selectedMarker: MarkerIndex | null,
@@ -47,12 +47,12 @@ export type ThreadViewOptions = {|
 
 export type ThreadViewOptionsPerThreads = { [ThreadsKey]: ThreadViewOptions };
 
-export type RightClickedCallNode = {|
+export type RightClickedCallNode = {
   +threadsKey: ThreadsKey,
   +callNodePath: CallNodePath,
 };
 
-export type RightClickedMarker = {|
+export type RightClickedMarker = {
   +threadsKey: ThreadsKey,
   +markerIndex: MarkerIndex,
 };
@@ -63,12 +63,12 @@ export type RightClickedMarker = {|
  * NOTE: This state is empty for now, but will be used later, do not remove.
  * globalTracks and localTracksByPid states will be here in the future.
  */
-export type FullProfileViewState = {|
+export type FullProfileViewState = {
   globalTracks: GlobalTrack[],
   localTracksByPid: Map<Pid, LocalTrack[]>,
 };
 
-export type OriginsViewState = {|
+export type OriginsViewState = {
   originsTimeline: OriginsTimeline,
 };
 
@@ -76,7 +76,7 @@ export type OriginsViewState = {|
  * Active tab profile view state
  * They should not be used from the full view.
  */
-export type ActiveTabProfileViewState = {|
+export type ActiveTabProfileViewState = {
   activeTabTimeline: ActiveTabTimeline,
 };
 
@@ -84,7 +84,7 @@ export type ActiveTabProfileViewState = {|
  * Profile view state
  */
 export type ProfileViewState = {
-  +viewOptions: {|
+  +viewOptions: {
     perThread: ThreadViewOptionsPerThreads,
     symbolicationStatus: SymbolicationStatus,
     waitingForLibs: Set<RequestedLib>,
@@ -104,15 +104,15 @@ export type ProfileViewState = {
 };
 
 export type AppViewState =
-  | {| +phase: 'ROUTE_NOT_FOUND' }
-  | {| +phase: 'TRANSITIONING_FROM_STALE_PROFILE' }
-  | {| +phase: 'PROFILE_LOADED' }
-  | {| +phase: 'DATA_LOADED' }
-  | {| +phase: 'DATA_RELOAD' }
-  | {| +phase: 'FATAL_ERROR', +error: Error }
-  | {|
+  | { +phase: 'ROUTE_NOT_FOUND' }
+  | { +phase: 'TRANSITIONING_FROM_STALE_PROFILE' }
+  | { +phase: 'PROFILE_LOADED' }
+  | { +phase: 'DATA_LOADED' }
+  | { +phase: 'DATA_RELOAD' }
+  | { +phase: 'FATAL_ERROR', +error: Error }
+  | {
       +phase: 'INITIALIZING',
-      +additionalData?: {| +attempt: Attempt | null, +message: string },
+      +additionalData?: { +attempt: Attempt | null, +message: string },
     };
 
 export type Phase = $PropertyType<AppViewState, 'phase'>;
@@ -122,32 +122,32 @@ export type Phase = $PropertyType<AppViewState, 'phase'>;
  * where the state is now.
  */
 export type ZipFileState =
-  | {|
+  | {
       +phase: 'NO_ZIP_FILE',
       +zip: null,
       +pathInZipFile: null,
     }
-  | {|
+  | {
       +phase: 'LIST_FILES_IN_ZIP_FILE',
       +zip: JSZip,
       +pathInZipFile: null,
     }
-  | {|
+  | {
       +phase: 'PROCESS_PROFILE_FROM_ZIP_FILE',
       +zip: JSZip,
       +pathInZipFile: string,
     }
-  | {|
+  | {
       +phase: 'FAILED_TO_PROCESS_PROFILE_FROM_ZIP_FILE',
       +zip: JSZip,
       +pathInZipFile: string,
     }
-  | {|
+  | {
       +phase: 'FILE_NOT_FOUND_IN_ZIP_FILE',
       +zip: JSZip,
       +pathInZipFile: string,
     }
-  | {|
+  | {
       +phase: 'VIEW_PROFILE_IN_ZIP_FILE',
       +zip: JSZip,
       +pathInZipFile: string,
@@ -162,11 +162,11 @@ export type UrlSetupPhase = 'initial-load' | 'loading-profile' | 'done';
  * them from the DevTools console with `experimental.enable<feature-camel-case>()`,
  * e.g. `experimental.enableEventDelayTracks()`.
  */
-export type ExperimentalFlags = {|
+export type ExperimentalFlags = {
   +eventDelayTracks: boolean,
 };
 
-export type AppState = {|
+export type AppState = {
   +view: AppViewState,
   +urlSetupPhase: UrlSetupPhase,
   +hasZoomedViaMousewheel: boolean,
@@ -189,7 +189,7 @@ export type UploadPhase =
   | 'uploaded'
   | 'error';
 
-export type UploadState = {|
+export type UploadState = {
   phase: UploadPhase,
   uploadProgress: number,
   error: Error | mixed,
@@ -197,7 +197,7 @@ export type UploadState = {|
   generation: number,
 };
 
-export type PublishState = {|
+export type PublishState = {
   +checkedSharingOptions: CheckedSharingOptions,
   +upload: UploadState,
   +isHidingStaleProfile: boolean,
@@ -218,7 +218,7 @@ export type ZippedProfilesState = {
  * Full profile specific url state
  * They should not be used from the active tab view.
  */
-export type FullProfileSpecificUrlState = {|
+export type FullProfileSpecificUrlState = {
   globalTrackOrder: TrackIndex[],
   hiddenGlobalTracks: Set<TrackIndex>,
   hiddenLocalTracksByPid: Map<Pid, Set<TrackIndex>>,
@@ -233,11 +233,11 @@ export type FullProfileSpecificUrlState = {|
  * Active tab profile specific url state
  * They should not be used from the full view.
  */
-export type ActiveTabSpecificProfileUrlState = {|
+export type ActiveTabSpecificProfileUrlState = {
   isResourcesPanelOpen: boolean,
 };
 
-export type ProfileSpecificUrlState = {|
+export type ProfileSpecificUrlState = {
   selectedThreads: Set<ThreadIndex> | null,
   implementation: ImplementationFilter,
   lastSelectedCallTreeSummaryStrategy: CallTreeSummaryStrategy,
@@ -256,11 +256,11 @@ export type ProfileSpecificUrlState = {|
  * Determines how the timeline's tracks are organized.
  */
 export type TimelineTrackOrganization =
-  | {| +type: 'full' }
-  | {| +type: 'active-tab', +browsingContextID: BrowsingContextID | null }
-  | {| +type: 'origins' };
+  | { +type: 'full' }
+  | { +type: 'active-tab', +browsingContextID: BrowsingContextID | null }
+  | { +type: 'origins' };
 
-export type UrlState = {|
+export type UrlState = {
   +dataSource: DataSource,
   // This is used for the "public" dataSource".
   +hash: string,
@@ -277,7 +277,7 @@ export type UrlState = {|
 
 export type IconState = Set<string>;
 
-export type State = {|
+export type State = {
   +app: AppState,
   +profileView: ProfileViewState,
   +urlState: UrlState,
@@ -286,7 +286,7 @@ export type State = {|
   +publish: PublishState,
 };
 
-export type IconWithClassName = {|
+export type IconWithClassName = {
   +icon: string,
   +className: string,
 };

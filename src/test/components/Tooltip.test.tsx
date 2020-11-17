@@ -93,9 +93,9 @@ describe('shared/Tooltip', () => {
   });
 });
 
-type Size = {| width: number, height: number };
-type Position = {| x: number, y: number };
-type Setup = {|
+type Size = { width: number, height: number };
+type Position = { x: number, y: number };
+type Setup = {
   box: Size,
   mouse: Position,
 };

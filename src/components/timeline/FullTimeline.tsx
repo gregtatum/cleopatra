@@ -58,7 +58,7 @@ import type {
 
 import type { ConnectedProps } from 'firefox-profiler/utils/connect';
 
-type StateProps = {|
+type StateProps = {
   +committedRange: StartEndRange,
   +globalTracks: GlobalTrack[],
   +globalTrackOrder: TrackIndex[],
@@ -71,23 +71,23 @@ type StateProps = {|
   +timelineTrackOrganization: TimelineTrackOrganization,
 };
 
-type DispatchProps = {|
+type DispatchProps = {
   +changeGlobalTrackOrder: typeof changeGlobalTrackOrder,
   +changeTimelineType: typeof changeTimelineType,
   +changeRightClickedTrack: typeof changeRightClickedTrack,
   +changeTimelineTrackOrganization: typeof changeTimelineTrackOrganization,
 };
 
-type Props = {|
+type Props = {
   ...SizeProps,
-  ...ConnectedProps<{|}, StateProps, DispatchProps>,
+  ...ConnectedProps<{}, StateProps, DispatchProps>,
 };
 
-type State = {|
+type State = {
   initialSelected: InitialSelectedTrackReference | null,
 };
 
-class TimelineSettingsGraphType extends React.PureComponent<{|
+class TimelineSettingsGraphType extends React.PureComponent<{
   +timelineType: TimelineType,
   +changeTimelineType: typeof changeTimelineType,
 }> {
@@ -127,7 +127,7 @@ class TimelineSettingsGraphType extends React.PureComponent<{|
   }
 }
 
-class TimelineSettingsHiddenTracks extends React.PureComponent<{|
+class TimelineSettingsHiddenTracks extends React.PureComponent<{
   +hiddenTrackCount: HiddenTrackCount,
   +changeRightClickedTrack: typeof changeRightClickedTrack,
 }> {
@@ -164,7 +164,7 @@ class TimelineSettingsHiddenTracks extends React.PureComponent<{|
   }
 }
 
-class TimelineSettingsActiveTabView extends React.PureComponent<{|
+class TimelineSettingsActiveTabView extends React.PureComponent<{
   +activeBrowsingContextID: BrowsingContextID | null,
   +timelineTrackOrganization: TimelineTrackOrganization,
   +changeTimelineTrackOrganization: typeof changeTimelineTrackOrganization,
@@ -312,7 +312,7 @@ class FullTimeline extends React.PureComponent<Props, State> {
   }
 }
 
-export default explicitConnect<{|}, StateProps, DispatchProps>({
+export default explicitConnect<{}, StateProps, DispatchProps>({
   mapStateToProps: state => ({
     globalTracks: getGlobalTracks(state),
     globalTrackOrder: getGlobalTrackOrder(state),

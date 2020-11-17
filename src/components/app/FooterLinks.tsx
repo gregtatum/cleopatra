@@ -6,9 +6,9 @@
 import React, { PureComponent } from 'react';
 import './FooterLinks.css';
 
-type State = {| hide: boolean };
+type State = { hide: boolean };
 
-export class FooterLinks extends PureComponent<{|}, State> {
+export class FooterLinks extends PureComponent<{}, State> {
   _onClick = () => {
     this.setState({ hide: true });
   };

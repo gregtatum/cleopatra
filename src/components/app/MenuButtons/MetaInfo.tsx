@@ -21,7 +21,7 @@ import { assertExhaustiveCheck } from 'firefox-profiler/utils/flow';
 
 import './MetaInfo.css';
 
-type Props = {|
+type Props = {
   +profile: Profile,
   +symbolicationStatus: SymbolicationStatus,
   +resymbolicateProfile: resymbolicateProfile,

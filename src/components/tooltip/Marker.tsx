@@ -65,7 +65,7 @@ function _maybeFormatDuration(
   return 'unknown';
 }
 
-type OwnProps = {|
+type OwnProps = {
   +markerIndex: MarkerIndex,
   +marker: Marker,
   +threadsKey: ThreadsKey,
@@ -76,7 +76,7 @@ type OwnProps = {|
   +restrictHeightWidth: boolean,
 };
 
-type StateProps = {|
+type StateProps = {
   +threadName?: string,
   +thread: Thread,
   +implementationFilter: ImplementationFilter,
@@ -87,7 +87,7 @@ type StateProps = {|
   +getMarkerLabel: MarkerIndex => string,
 };
 
-type Props = ConnectedProps<OwnProps, StateProps, {|}>;
+type Props = ConnectedProps<OwnProps, StateProps, {}>;
 
 /**
  * This component combines Marker Schema, and custom handling to generate tooltips
@@ -396,7 +396,7 @@ class MarkerTooltipContents extends React.PureComponent<Props> {
   }
 }
 
-export const TooltipMarker = explicitConnect<OwnProps, StateProps, {|}>({
+export const TooltipMarker = explicitConnect<OwnProps, StateProps, {}>({
   mapStateToProps: (state, props) => {
     const selectors = getThreadSelectorsFromThreadsKey(props.threadsKey);
     return {

@@ -315,7 +315,7 @@ export function createGeckoProfile(): GeckoProfile {
   return profile;
 }
 
-type TestDefinedGeckoMarker = {|
+type TestDefinedGeckoMarker = {
   +name?: string,
   +startTime: Milliseconds | null,
   +endTime: Milliseconds | null,

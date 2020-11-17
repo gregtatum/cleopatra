@@ -22,7 +22,7 @@ type SyntheticCssDeclarations = {
   [string]: string | number,
 };
 
-type Props = {|
+type Props = {
   +rangeStart: Milliseconds,
   +rangeEnd: Milliseconds,
   +thread: Thread,
@@ -87,7 +87,7 @@ class EmptyThreadIndicator extends PureComponent<Props> {
  */
 export function getIndicatorPositions(
   props: Props
-): {|
+): {
   startup: SyntheticCssDeclarations | null,
   shutdown: SyntheticCssDeclarations | null,
   emptyBufferStart: SyntheticCssDeclarations | null,

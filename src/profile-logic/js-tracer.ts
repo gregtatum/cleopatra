@@ -661,7 +661,7 @@ export function convertJsTracerToThreadWithoutSamples(
   return { thread, stackMap };
 }
 
-type JsTracerFixed = {|
+type JsTracerFixed = {
   events: Array<IndexIntoStringTable>,
   start: Array<Microseconds>,
   end: Array<Microseconds>,

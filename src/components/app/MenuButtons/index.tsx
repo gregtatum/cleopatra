@@ -45,7 +45,7 @@ import type {
 
 import type { ConnectedProps } from 'firefox-profiler/utils/connect';
 
-type OwnProps = {|
+type OwnProps = {
   // This is for injecting a URL shortener for tests. Normally we would use a Jest mock
   // that would mock out a local module, but I was having trouble getting it working
   // correctly (perhaps due to ES6 modules), so I just went with dependency injection
@@ -53,7 +53,7 @@ type OwnProps = {|
   injectedUrlShortener?: string => Promise<string>,
 };
 
-type StateProps = {|
+type StateProps = {
   +profile: Profile,
   +rootRange: StartEndRange,
   +dataSource: DataSource,
@@ -64,7 +64,7 @@ type StateProps = {|
   +abortFunction: () => mixed,
 };
 
-type DispatchProps = {|
+type DispatchProps = {
   +dismissNewlyPublished: typeof dismissNewlyPublished,
   +revertToPrePublishedState: typeof revertToPrePublishedState,
   +resymbolicateProfile: typeof resymbolicateProfile,

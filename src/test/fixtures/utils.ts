@@ -251,7 +251,7 @@ export function removeRootOverlayElement() {
  * changeSelect({ from: 'Timing Data', to: 'Deallocations' });
  */
 export function createSelectChanger(renderResult: RenderResult<>) {
-  return function changeSelect({ from, to }: {| from: string, to: string }) {
+  return function changeSelect({ from, to }: { from: string, to: string }) {
     // Look up the <option> with the text label.
     const option = renderResult.getByText(to);
     // Fire a change event to the select.
@@ -267,7 +267,7 @@ export function createSelectChanger(renderResult: RenderResult<>) {
 export function findFillTextPositionFromDrawLog(
   drawLog: any[],
   fillText: string
-): {| x: number, y: number } {
+): { x: number, y: number } {
   const positions = drawLog
     .filter(([cmd, text]) => cmd === 'fillText' && text === fillText)
     .map(([, , x, y]) => ({ x, y }));

@@ -64,7 +64,7 @@ class InstallButton extends React.PureComponent<InstallButtonProps> {
   }
 }
 
-type ActionButtonsProps = {|
+type ActionButtonsProps = {
   +retrieveProfileFromFile: WrapFunctionInDispatch<
     typeof retrieveProfileFromFile
   >,
@@ -218,16 +218,16 @@ window.geckoProfilerAddonInstalled = function() {
   }
 };
 
-type OwnHomeProps = {|
+type OwnHomeProps = {
   +specialMessage?: string,
 };
 
-type DispatchHomeProps = {|
+type DispatchHomeProps = {
   +retrieveProfileFromFile: typeof retrieveProfileFromFile,
   +triggerLoadingFromUrl: typeof triggerLoadingFromUrl,
 };
 
-type HomeProps = ConnectedProps<OwnHomeProps, {|}, DispatchHomeProps>;
+type HomeProps = ConnectedProps<OwnHomeProps, {}, DispatchHomeProps>;
 
 type HomeState = {
   popupAddonInstallPhase: PopupAddonInstallPhase,
@@ -542,7 +542,7 @@ function _isFirefox(): boolean {
   return Boolean(navigator.userAgent.match(/Firefox\/\d+\.\d+/));
 }
 
-export const Home = explicitConnect<OwnHomeProps, {|}, DispatchHomeProps>({
+export const Home = explicitConnect<OwnHomeProps, {}, DispatchHomeProps>({
   mapDispatchToProps: { retrieveProfileFromFile, triggerLoadingFromUrl },
   component: HomeImpl,
 });

@@ -43,7 +43,7 @@ import type {
 import type { CallTree } from 'firefox-profiler/profile-logic/call-tree';
 import type { Viewport } from 'firefox-profiler/components/shared/chart/Viewport';
 
-export type OwnProps = {|
+export type OwnProps = {
   +thread: Thread,
   +weightType: WeightType,
   +pages: PageList | null,
@@ -68,13 +68,13 @@ export type OwnProps = {|
   +tracedTiming: TracedTiming | null,
 };
 
-type Props = {|
+type Props = {
   ...OwnProps,
   // Bring in the viewport props from the higher order Viewport component.
   +viewport: Viewport,
 };
 
-type HoveredStackTiming = {|
+type HoveredStackTiming = {
   +depth: FlameGraphDepth,
   +flameGraphTimingIndex: IndexIntoFlameGraphTiming,
 };

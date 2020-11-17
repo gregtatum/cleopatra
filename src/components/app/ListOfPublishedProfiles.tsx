@@ -72,14 +72,14 @@ function _formatRange(range: StartEndRange): string {
   return formatSeconds(range.end - range.start, 3, 1);
 }
 
-type PublishedProfileProps = {|
+type PublishedProfileProps = {
   +onProfileDelete: () => void,
   +profileData: ProfileData,
   +nowTimestamp: Milliseconds,
   +withActionButtons: boolean,
 };
 
-type PublishedProfileState = {|
+type PublishedProfileState = {
   +confirmDialogIsOpen: boolean,
 };
 
@@ -174,12 +174,12 @@ class PublishedProfile extends React.PureComponent<
   }
 }
 
-type Props = {|
+type Props = {
   withActionButtons: boolean,
   limit?: number,
 };
 
-type State = {|
+type State = {
   profileDataList: null | ProfileData[],
 };
 

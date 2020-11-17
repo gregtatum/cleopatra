@@ -73,7 +73,7 @@ export type MarkerDisplayLocation =
   // TODO - This is not supported yet.
   | 'stack-chart';
 
-export type MarkerSchema = {|
+export type MarkerSchema = {
   // The unique identifier for this marker.
   name: string, // e.g. "CC"
 
@@ -94,14 +94,14 @@ export type MarkerSchema = {|
   display: MarkerDisplayLocation[],
 
   data: Array<
-    | {|
+    | {
         key: string,
         // If no label is provided, the key is displayed.
         label?: string,
         format: MarkerFormatType,
         searchable?: boolean,
       }
-    | {|
+    | {
         // This type is a static bit of text that will be displayed
         label: string,
         value: string,
@@ -117,7 +117,7 @@ export type MarkerSchemaByName = ObjectMap<MarkerSchema>;
  * the marker, or it can be synchronous, and the time is contained within the marker's
  * start and end time.
  */
-export type CauseBacktrace = {|
+export type CauseBacktrace = {
   // `tid` is optional because older processed profiles may not have it.
   // No upgrader was written for this change.
   tid?: Tid,
@@ -129,7 +129,7 @@ export type CauseBacktrace = {|
  * This type holds data that should be synchronized across the various phases
  * associated with an IPC message.
  */
-export type IPCSharedData = {|
+export type IPCSharedData = {
   // Each of these fields comes from a specific marker corresponding to each
   // phase of an IPC message; since we can't guarantee that any particular
   // marker was recorded, all of the fields are optional.
@@ -153,11 +153,11 @@ export type $ReplaceCauseWithStack<
   // False positive, generic type bounds are alright:
   // eslint-disable-next-line flowtype/no-weak-types
   T: Object
-> = {|
+> = {
   ...$Diff<
     T,
     // Remove the cause property.
-    {| cause: any }
+    { cause: any }
   >,
   // Add on the stack property:
   stack?: GeckoMarkerStack,
@@ -166,7 +166,7 @@ export type $ReplaceCauseWithStack<
 /**
  * Measurement for how long draw calls take for the compositor.
  */
-export type GPUMarkerPayload = {|
+export type GPUMarkerPayload = {
   type: 'gpu_timer_query',
   cpustart: Milliseconds,
   cpuend: Milliseconds,
@@ -180,19 +180,19 @@ export type GPUMarkerPayload = {|
  * marker.
  */
 
-export type PaintProfilerMarkerTracing = {|
+export type PaintProfilerMarkerTracing = {
   type: 'tracing',
   category: 'Paint',
   cause?: CauseBacktrace,
   interval: 'start' | 'end',
 };
 
-export type ArbitraryEventTracing = {|
+export type ArbitraryEventTracing = {
   +type: 'tracing',
   +category: string,
 };
 
-export type CcMarkerTracing = {|
+export type CcMarkerTracing = {
   type: 'tracing',
   category: 'CC',
   interval: 'start' | 'end',
@@ -200,7 +200,7 @@ export type CcMarkerTracing = {|
 
 export type PhaseTimes<Unit> = { [phase: string]: Unit };
 
-type GCSliceData_Shared = {|
+type GCSliceData_Shared = {
   // Slice number within the GCMajor collection.
   slice: number,
 
@@ -230,20 +230,20 @@ type GCSliceData_Shared = {|
 
   start_timestamp: Seconds,
 };
-export type GCSliceData_Gecko = {|
+export type GCSliceData_Gecko = {
   ...GCSliceData_Shared,
   times: PhaseTimes<Milliseconds>,
 };
-export type GCSliceData = {|
+export type GCSliceData = {
   ...GCSliceData_Shared,
   phase_times: PhaseTimes<Microseconds>,
 };
 
-export type GCMajorAborted = {|
+export type GCMajorAborted = {
   status: 'aborted',
 };
 
-type GCMajorCompleted_Shared = {|
+type GCMajorCompleted_Shared = {
   status: 'completed',
   max_pause: Milliseconds,
 
@@ -290,7 +290,7 @@ type GCMajorCompleted_Shared = {|
   slices_list?: GCSliceData[],
 };
 
-export type GCMajorCompleted = {|
+export type GCMajorCompleted = {
   ...GCMajorCompleted_Shared,
   // MMU (Minimum mutator utilisation) A measure of GC's affect on
   // responsiveness  See Statistics::computeMMU(), these percentages in the
@@ -304,7 +304,7 @@ export type GCMajorCompleted = {|
   phase_times: PhaseTimes<Microseconds>,
 };
 
-export type GCMajorCompleted_Gecko = {|
+export type GCMajorCompleted_Gecko = {
   ...GCMajorCompleted_Shared,
   // As above except in parts of 100.
   mmu_20ms: number,
@@ -312,17 +312,17 @@ export type GCMajorCompleted_Gecko = {|
   totals: PhaseTimes<Milliseconds>,
 };
 
-export type GCMajorMarkerPayload = {|
+export type GCMajorMarkerPayload = {
   type: 'GCMajor',
   timings: GCMajorAborted | GCMajorCompleted,
 };
 
-export type GCMajorMarkerPayload_Gecko = {|
+export type GCMajorMarkerPayload_Gecko = {
   type: 'GCMajor',
   timings: GCMajorAborted | GCMajorCompleted_Gecko,
 };
 
-export type GCMinorCompletedData = {|
+export type GCMinorCompletedData = {
   status: 'complete',
 
   // The reason for initiating the GC.
@@ -369,25 +369,25 @@ export type GCMinorCompletedData = {|
   phase_times: PhaseTimes<Microseconds>,
 };
 
-export type GCMinorDisabledData = {|
+export type GCMinorDisabledData = {
   status: 'nursery disabled',
 };
-export type GCMinorEmptyData = {|
+export type GCMinorEmptyData = {
   status: 'nursery empty',
 };
 
-export type GCMinorMarkerPayload = {|
+export type GCMinorMarkerPayload = {
   type: 'GCMinor',
   // nursery is only present in newer profile format.
   nursery?: GCMinorCompletedData | GCMinorDisabledData | GCMinorEmptyData,
 };
 
-export type GCSliceMarkerPayload = {|
+export type GCSliceMarkerPayload = {
   type: 'GCSlice',
   timings: GCSliceData,
 };
 
-export type GCSliceMarkerPayload_Gecko = {|
+export type GCSliceMarkerPayload_Gecko = {
   type: 'GCSlice',
   timings: GCSliceData_Gecko,
 };
@@ -407,7 +407,7 @@ export type GCSliceMarkerPayload_Gecko = {|
  * that redirects are logged as well.
  */
 
-export type NetworkPayload = {|
+export type NetworkPayload = {
   type: 'Network',
   URI: string,
   RedirectURI?: string,
@@ -465,7 +465,7 @@ export type NetworkPayload = {|
   responseEnd?: Milliseconds,
 };
 
-export type FileIoPayload = {|
+export type FileIoPayload = {
   type: 'FileIO',
   cause?: CauseBacktrace,
   source: string,
@@ -485,33 +485,33 @@ export type FileIoPayload = {|
  * The payload for the UserTimings API. These are added through performance.measure()
  * and performance.mark(). https://developer.mozilla.org/en-US/docs/Web/API/Performance
  */
-export type UserTimingMarkerPayload = {|
+export type UserTimingMarkerPayload = {
   type: 'UserTiming',
   name: string,
   entryType: 'measure' | 'mark',
 };
 
-export type TextMarkerPayload = {|
+export type TextMarkerPayload = {
   type: 'Text',
   name: string,
 };
 
 // ph: 'X' in the Trace Event Format
-export type ChromeCompleteTraceEventPayload = {|
+export type ChromeCompleteTraceEventPayload = {
   type: 'CompleteTraceEvent',
   category: string,
   data: MixedObject | null,
 };
 
 // ph: 'I' in the Trace Event Format
-export type ChromeInstantTraceEventPayload = {|
+export type ChromeInstantTraceEventPayload = {
   type: 'InstantTraceEvent',
   category: string,
   data: MixedObject | null,
 };
 
 // ph: 'B' | 'E' in the Trace Event Format
-export type ChromeDurationTraceEventPayload = {|
+export type ChromeDurationTraceEventPayload = {
   type: 'tracing',
   category: 'FromChrome',
   interval: 'start' | 'end',
@@ -523,20 +523,20 @@ export type ChromeDurationTraceEventPayload = {|
  * Gecko includes rich log information. This marker payload is used to mirror that
  * log information in the profile.
  */
-export type LogMarkerPayload = {|
+export type LogMarkerPayload = {
   type: 'Log',
   name: string,
   module: string,
 };
 
-export type DOMEventMarkerPayload = {|
+export type DOMEventMarkerPayload = {
   type: 'DOMEvent',
   latency?: Milliseconds,
   eventType: string,
   innerWindowID?: number,
 };
 
-export type PrefMarkerPayload = {|
+export type PrefMarkerPayload = {
   type: 'PreferenceRead',
   prefAccessTime: Milliseconds,
   prefName: string,
@@ -545,7 +545,7 @@ export type PrefMarkerPayload = {|
   prefValue: string,
 };
 
-export type NavigationMarkerPayload = {|
+export type NavigationMarkerPayload = {
   type: 'tracing',
   category: 'Navigation',
   interval: 'start' | 'end',
@@ -553,11 +553,11 @@ export type NavigationMarkerPayload = {|
   innerWindowID?: number,
 };
 
-type VsyncTimestampPayload = {|
+type VsyncTimestampPayload = {
   type: 'VsyncTimestamp',
 };
 
-export type ScreenshotPayload = {|
+export type ScreenshotPayload = {
   type: 'CompositorScreenshot',
   // This field represents the data url of the image. It is saved in the string table.
   url: IndexIntoStringTable,
@@ -570,7 +570,7 @@ export type ScreenshotPayload = {|
   windowHeight: number,
 };
 
-export type StyleMarkerPayload = {|
+export type StyleMarkerPayload = {
   type: 'Styles',
   category: 'Paint',
   cause?: CauseBacktrace,
@@ -583,20 +583,20 @@ export type StyleMarkerPayload = {|
   stylesReused: number,
 };
 
-export type BHRMarkerPayload = {|
+export type BHRMarkerPayload = {
   type: 'BHR-detected hang',
 };
 
-export type LongTaskMarkerPayload = {|
+export type LongTaskMarkerPayload = {
   type: 'MainThreadLongTask',
   category: 'LongTask',
 };
 
-export type DummyForTestsMarkerPayload = {|
+export type DummyForTestsMarkerPayload = {
   type: 'DummyForTests',
 };
 
-export type JsAllocationPayload_Gecko = {|
+export type JsAllocationPayload_Gecko = {
   type: 'JS allocation',
   className: string,
   typeName: string, // Currently only 'JSObject'
@@ -606,7 +606,7 @@ export type JsAllocationPayload_Gecko = {|
   stack: GeckoMarkerStack,
 };
 
-export type NativeAllocationPayload_Gecko = {|
+export type NativeAllocationPayload_Gecko = {
   type: 'Native allocation',
   size: Bytes,
   stack: GeckoMarkerStack,
@@ -615,7 +615,7 @@ export type NativeAllocationPayload_Gecko = {|
   threadId?: number,
 };
 
-export type IPCMarkerPayload_Gecko = {|
+export type IPCMarkerPayload_Gecko = {
   type: 'IPC',
   startTime: Milliseconds,
   endTime: Milliseconds,
@@ -629,7 +629,7 @@ export type IPCMarkerPayload_Gecko = {|
   sync: boolean,
 };
 
-export type IPCMarkerPayload = {|
+export type IPCMarkerPayload = {
   ...IPCMarkerPayload_Gecko,
 
   // These fields are added in the deriving process from `IPCSharedData`, and
@@ -649,7 +649,7 @@ export type IPCMarkerPayload = {|
   niceDirection: string,
 };
 
-export type MediaSampleMarkerPayload = {|
+export type MediaSampleMarkerPayload = {
   type: 'MediaSample',
   sampleStartTimeUs: Microseconds,
   sampleEndTimeUs: Microseconds,
@@ -658,7 +658,7 @@ export type MediaSampleMarkerPayload = {|
 /**
  * This type is generated on the Firefox Profiler side, and doesn't come from Gecko.
  */
-export type JankPayload = {| type: 'Jank' };
+export type JankPayload = { type: 'Jank' };
 
 /**
  * The union of all the different marker payloads that profiler.firefox.com knows about,

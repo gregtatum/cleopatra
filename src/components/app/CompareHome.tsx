@@ -13,13 +13,13 @@ import type { ConnectedProps } from 'firefox-profiler/utils/connect';
 
 import './CompareHome.css';
 
-type DispatchProps = {|
+type DispatchProps = {
   +changeProfilesToCompare: typeof changeProfilesToCompare,
 };
 
-type Props = ConnectedProps<{|}, {|}, DispatchProps>;
+type Props = ConnectedProps<{}, {}, DispatchProps>;
 
-type State = {|
+type State = {
   profile1: string,
   profile2: string,
 };
@@ -91,7 +91,7 @@ class CompareHomeImpl extends PureComponent<Props, State> {
   }
 }
 
-export const CompareHome = explicitConnect<{|}, {|}, DispatchProps>({
+export const CompareHome = explicitConnect<{}, {}, DispatchProps>({
   mapDispatchToProps: { changeProfilesToCompare },
   component: CompareHomeImpl,
 });

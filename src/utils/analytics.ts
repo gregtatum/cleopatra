@@ -9,7 +9,7 @@
  *
  * https://developers.google.com/analytics/devguides/collection/analyticsjs/pages
  */
-type GAEvent = {|
+type GAEvent = {
   hitType: 'event',
   // Specifies the event category. Must not be empty
   eventCategory: string,
@@ -18,12 +18,12 @@ type GAEvent = {|
   eventValue?: number,
 };
 
-type GAPageView = {|
+type GAPageView = {
   hitType: 'pageview',
   page: string,
 };
 
-type GATiming = {|
+type GATiming = {
   hitType: 'timing',
   timingCategory: string,
   timingVar: string,
@@ -33,7 +33,7 @@ type GATiming = {|
 
 export type GAPayload = GAEvent | GAPageView | GATiming;
 
-export type GAErrorPayload = {|
+export type GAErrorPayload = {
   +exDescription: string,
   +exFatal: boolean,
 };
