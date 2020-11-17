@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 import React, { PureComponent } from 'react';
 
@@ -16,9 +16,9 @@ type StateProps = {|
   threadName: string,
   rangeFilteredThread: Thread,
   thread: Thread,
-|};
+};
 
-type Props = ConnectedProps<{||}, StateProps, {||}>;
+type Props = ConnectedProps<{|}, StateProps, {|}>;
 
 /**
  * This component attempts to tell why exactly a stack chart is empty with no samples
@@ -50,7 +50,7 @@ class StackChartEmptyReasonsImpl extends PureComponent<Props> {
   }
 }
 
-export const StackChartEmptyReasons = explicitConnect<{||}, StateProps, {||}>({
+export const StackChartEmptyReasons = explicitConnect<{|}, StateProps, {|}>({
   mapStateToProps: (state: State) => ({
     threadName: selectedThreadSelectors.getFriendlyThreadName(state),
     thread: selectedThreadSelectors.getThread(state),

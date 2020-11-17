@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import * as React from 'react';
 import memoize from 'memoize-immutable';
@@ -53,7 +53,7 @@ type SidebarDetailProps = {|
   +indent?: boolean,
   +value: React.Node,
   +percentage?: string | number,
-|};
+};
 
 function SidebarDetail({
   label,
@@ -80,7 +80,7 @@ function SidebarDetail({
 type ImplementationBreakdownProps = {|
   +breakdown: BreakdownByImplementation,
   +number: number => string,
-|};
+};
 
 // This component is responsible for displaying the breakdown data specific to
 // the JavaScript engine and native code implementation.
@@ -97,7 +97,7 @@ class ImplementationBreakdown extends React.PureComponent<ImplementationBreakdow
   render() {
     const { breakdown, number } = this.props;
 
-    const data: Array<{| +group: string, +value: Milliseconds | number |}> = [];
+    const data: Array<{| +group: string, +value: Milliseconds | number }> = [];
 
     for (const implementation of this._orderedImplementations) {
       const value = breakdown[implementation];
@@ -146,11 +146,11 @@ type CategoryBreakdownProps = {|
   +breakdown: BreakdownByCategory,
   +categoryList: CategoryList,
   +number: number => string,
-|};
+};
 
 type CategoryBreakdownState = {|
   +openCategories: Set<string>,
-|};
+};
 
 class CategoryBreakdown extends React.PureComponent<
   CategoryBreakdownProps,
@@ -278,15 +278,15 @@ type StateProps = {|
   +categoryList: CategoryList,
   +weightType: WeightType,
   +tracedTiming: TracedTiming | null,
-|};
+};
 
-type Props = ConnectedProps<{||}, StateProps, {||}>;
+type Props = ConnectedProps<{|}, StateProps, {|}>;
 
 type WeightDetails = {|
   +running: string,
   +self: string,
   +number: (n: number) => string,
-|};
+};
 
 function getWeightTypeLabel(weightType: WeightType): string {
   switch (weightType) {
@@ -464,7 +464,7 @@ class CallTreeSidebarImpl extends React.PureComponent<Props> {
   }
 }
 
-export const CallTreeSidebar = explicitConnect<{||}, StateProps, {||}>({
+export const CallTreeSidebar = explicitConnect<{|}, StateProps, {|}>({
   mapStateToProps: state => ({
     selectedNodeIndex: selectedThreadSelectors.getSelectedCallNodeIndex(state),
     callNodeTable: selectedThreadSelectors.getCallNodeInfo(state).callNodeTable,

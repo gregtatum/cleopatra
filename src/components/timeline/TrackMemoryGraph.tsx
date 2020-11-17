@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import * as React from 'react';
 import { withSize } from 'firefox-profiler/components/shared/WithSize';
@@ -47,7 +47,7 @@ type CanvasProps = {|
   +width: CssPixels,
   +height: CssPixels,
   +lineWidth: CssPixels,
-|};
+};
 
 /**
  * This component controls the rendering of the canvas. Every render call through
@@ -206,7 +206,7 @@ type OwnProps = {|
   +counterIndex: CounterIndex,
   +lineWidth: CssPixels,
   +graphHeight: CssPixels,
-|};
+};
 
 type StateProps = {|
   +threadIndex: ThreadIndex,
@@ -217,20 +217,20 @@ type StateProps = {|
   +interval: Milliseconds,
   +filteredThread: Thread,
   +unfilteredSamplesRange: StartEndRange | null,
-|};
+};
 
-type DispatchProps = {||};
+type DispatchProps = {|};
 
 type Props = {|
   ...SizeProps,
   ...ConnectedProps<OwnProps, StateProps, DispatchProps>,
-|};
+};
 
 type State = {|
   hoveredCounter: null | number,
   mouseX: CssPixels,
   mouseY: CssPixels,
-|};
+};
 
 /**
  * The memory track graph takes memory information from counters, and renders it as a

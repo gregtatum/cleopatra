@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 import { queryIsMenuButtonEnabled } from '../../app-logic/web-channel';
 
@@ -51,7 +51,7 @@ describe('event handlers for Firefox WebChannel events', function() {
 
     // The triggerResponse doesn't allow unknown message types, so coerce it
     // into a Function to test the error path.
-    (triggerResponse: any)({
+    (triggerResponse as any)({
       errno: 2,
       error: 'No Such Channel',
     });
@@ -73,7 +73,7 @@ describe('event handlers for Firefox WebChannel events', function() {
 
     // The triggerResponse doesn't allow unknown message types, so coerce it
     // into a Function to test the error path.
-    (triggerResponse: any)('Invalid message');
+    (triggerResponse as any)('Invalid message');
 
     await expect(response).rejects.toEqual(
       new Error('A malformed WebChannel event was received.')

@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import * as React from 'react';
 import { coerce } from '../../utils/flow';
@@ -13,14 +13,14 @@ import './KeyboardShortcut.css';
 type Props = {|
   +wrapperClassName: string,
   +children: React.Node,
-|};
+};
 
 type State = {|
   +isOpen: boolean,
   // The modal steals the focus of the screen. This is the element that was focused
   // before showing the modal. The focus will be restored once the modal is dismissed.
   +focusAfterClosed: HTMLElement | null,
-|};
+};
 
 /**
  * Display a list of shortcuts that overlays the screen.
@@ -254,7 +254,7 @@ type ShortcutProps = $ReadOnly<{|
   label: string,
   shortcut: string,
   macShortcut?: string,
-|}>;
+}>;
 
 function Shortcut(props: ShortcutProps) {
   let shortcut = props.shortcut;

@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 // This file uses extensive use of Object generic trait bounds, which is a false
 // positive for this rule.
@@ -39,13 +39,13 @@ export type Column<DisplayData: Object> = {|
   +tooltip?: string,
   +component?: React.ComponentType<{|
     displayData: DisplayData,
-  |}>,
-|};
+  }>,
+};
 
 type TreeViewHeaderProps<DisplayData: Object> = {|
   +fixedColumns: Column<DisplayData>[],
   +mainColumn: Column<DisplayData>,
-|};
+};
 
 const TreeViewHeader = <DisplayData: Object>({
   fixedColumns,
@@ -117,7 +117,7 @@ type TreeViewRowFixedColumnsProps<DisplayData: Object> = {|
   +onClick: (NodeIndex, SyntheticMouseEvent<>) => mixed,
   +highlightRegExp: RegExp | null,
   +rowHeightStyle: { height: CssPixels, lineHeight: string },
-|};
+};
 
 class TreeViewRowFixedColumns<DisplayData: Object> extends React.PureComponent<
   TreeViewRowFixedColumnsProps<DisplayData>
@@ -193,7 +193,7 @@ type TreeViewRowScrolledColumnsProps<DisplayData: Object> = {|
   // non-'px' units.
   +rowHeightStyle: { height: CssPixels, lineHeight: string },
   +indentWidth: CssPixels,
-|};
+};
 
 // This is a false-positive, as it's used as a generic trait bounds.
 class TreeViewRowScrolledColumns<
@@ -353,7 +353,7 @@ type TreeViewProps<DisplayData> = {|
   +rowHeight: CssPixels,
   +indentWidth: CssPixels,
   +onKeyDown?: (SyntheticKeyboardEvent<>, null | NodeIndex) => void,
-|};
+};
 
 export class TreeView<DisplayData: Object> extends React.PureComponent<
   TreeViewProps<DisplayData>
@@ -563,7 +563,7 @@ export class TreeView<DisplayData: Object> extends React.PureComponent<
     const { tree, selectedNodeId, mainColumn } = this.props;
     if (selectedNodeId) {
       const displayData = tree.getDisplayData(selectedNodeId);
-      const clipboardData: DataTransfer = (event: any).clipboardData;
+      const clipboardData: DataTransfer = (event as any).clipboardData;
       clipboardData.setData('text/plain', displayData[mainColumn.propName]);
     }
   };

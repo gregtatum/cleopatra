@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import {
   getEmptyProfile,
   getEmptyThread,
@@ -50,7 +50,7 @@ import { markerSchemaForTests } from './marker-schema';
 // Array<[MarkerName, Milliseconds, Data]>
 type MarkerName = string;
 type MarkerTime = Milliseconds;
-type MockPayload = {| startTime: Milliseconds, endTime: Milliseconds |};
+type MockPayload = {| startTime: Milliseconds, endTime: Milliseconds };
 
 // These markers can create an Instant or a complete Interval marker, depending
 // on if an end time is passed in. The definition uses a union, becaus as far
@@ -80,7 +80,7 @@ export type TestDefinedRawMarker = {|
   +phase: MarkerPhase,
   +category?: IndexIntoCategoryList,
   +data?: MarkerPayload,
-|};
+};
 
 export type TestDefinedJsTracerEvent = [
   // Event name:
@@ -114,7 +114,7 @@ function _refineMockPayload(
   // There is no way to refine the payload type to just the { startTime, endTime }
   // mock marker. So check for those conditions above, and coerce the final result
   // into a MarkerPayload using the function signature.
-  return (payload: any);
+  return (payload as any);
 }
 
 export function addRawMarkersToThread(
@@ -148,8 +148,8 @@ export function addMarkersToThreadWithCorrespondingSamples(
     const name = tuple[0];
     const startTime = tuple[1];
     // Flow doesn't support variadic tuple types.
-    const maybeEndTime = (tuple: any)[2] || null;
-    const maybeData = (tuple: any)[3] || null;
+    const maybeEndTime = (tuple as any)[2] || null;
+    const maybeData = (tuple as any)[3] || null;
 
     markersTable.name.push(stringTable.indexForString(name));
     const payload = _refineMockPayload(maybeData);
@@ -866,7 +866,7 @@ type NetworkMarkersOptions = {|
   fetchStart: number,
   endTime: number,
   payload: $Shape<NetworkPayload>,
-|};
+};
 
 export function getNetworkMarkers(options: $Shape<NetworkMarkersOptions> = {}) {
   // Default values
@@ -988,7 +988,7 @@ type IPCMarkersOptions = {|
   direction: 'sending' | 'receiving',
   phase: 'endpoint' | 'transferStart' | 'transferEnd',
   sync: boolean,
-|};
+};
 
 function _getIPCMarkers(
   options: $Shape<IPCMarkersOptions> = {}

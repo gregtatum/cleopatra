@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import React, { PureComponent } from 'react';
 import { ContextMenu, MenuItem } from 'react-contextmenu';
 import './TrackContextMenu.css';
@@ -60,7 +60,7 @@ type StateProps = {|
   +globalTrackNames: string[],
   +localTracksByPid: Map<Pid, LocalTrack[]>,
   +localTrackNamesByPid: Map<Pid, string[]>,
-|};
+};
 
 type DispatchProps = {|
   +hideGlobalTrack: typeof hideGlobalTrack,
@@ -71,9 +71,9 @@ type DispatchProps = {|
   +isolateLocalTrack: typeof isolateLocalTrack,
   +isolateProcessMainThread: typeof isolateProcessMainThread,
   +isolateScreenshot: typeof isolateScreenshot,
-|};
+};
 
-type Props = ConnectedProps<{||}, StateProps, DispatchProps>;
+type Props = ConnectedProps<{|}, StateProps, DispatchProps>;
 
 class TimelineTrackContextMenu extends PureComponent<Props> {
   _toggleGlobalTrackVisibility = (
@@ -591,7 +591,7 @@ class TimelineTrackContextMenu extends PureComponent<Props> {
   }
 }
 
-export default explicitConnect<{||}, StateProps, DispatchProps>({
+export default explicitConnect<{|}, StateProps, DispatchProps>({
   mapStateToProps: (state: State) => ({
     threads: getThreads(state),
     globalTrackOrder: getGlobalTrackOrder(state),

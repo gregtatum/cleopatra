@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 /**
  * This file is in charge of handling the message managing between profiler.firefox.com
@@ -14,9 +14,9 @@
  * using the $Keys utility type.
  */
 type MessageToBrowserObject = {|
-  STATUS_QUERY: {| type: 'STATUS_QUERY', requestId: number |},
-  ENABLE_MENU_BUTTON: {| type: 'ENABLE_MENU_BUTTON', requestId: number |},
-|};
+  STATUS_QUERY: {| type: 'STATUS_QUERY', requestId: number },
+  ENABLE_MENU_BUTTON: {| type: 'ENABLE_MENU_BUTTON', requestId: number },
+};
 
 /**
  * The messages are typed as an object so that the "type" field can be extracted
@@ -27,12 +27,12 @@ type MessageFromBrowserObject = {|
     type: 'STATUS_RESPONSE',
     menuButtonIsEnabled: boolean,
     requestId: number,
-  |},
+  },
   ENABLE_MENU_BUTTON_DONE: {|
     type: 'ENABLE_MENU_BUTTON_DONE',
     requestId: number,
-  |},
-|};
+  },
+};
 
 // Extract out the different values. Exported for tests.
 export type MessageToBrowser = $Values<MessageToBrowserObject>;
@@ -148,7 +148,7 @@ function _sendMessageWithResponse<Returns: MessageFromBrowser>(
 
           resolve(
             // Make the type system assume that we have the right message.
-            (messageFromBrowser: any)
+            (messageFromBrowser as any)
           );
         }
       } else {

@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import React, { PureComponent } from 'react';
 
@@ -15,14 +15,14 @@ import './CompareHome.css';
 
 type DispatchProps = {|
   +changeProfilesToCompare: typeof changeProfilesToCompare,
-|};
+};
 
-type Props = ConnectedProps<{||}, {||}, DispatchProps>;
+type Props = ConnectedProps<{|}, {|}, DispatchProps>;
 
 type State = {|
   profile1: string,
   profile2: string,
-|};
+};
 
 class CompareHomeImpl extends PureComponent<Props, State> {
   state = { profile1: '', profile2: '' };
@@ -91,7 +91,7 @@ class CompareHomeImpl extends PureComponent<Props, State> {
   }
 }
 
-export const CompareHome = explicitConnect<{||}, {||}, DispatchProps>({
+export const CompareHome = explicitConnect<{|}, {|}, DispatchProps>({
   mapDispatchToProps: { changeProfilesToCompare },
   component: CompareHomeImpl,
 });

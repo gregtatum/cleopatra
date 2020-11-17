@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import * as React from 'react';
 import TimelineRuler from './Ruler';
@@ -39,17 +39,17 @@ type StateProps = {|
   +globalTrackReferences: GlobalTrackReference[],
   +panelLayoutGeneration: number,
   +zeroAt: Milliseconds,
-|};
+};
 
 type Props = {|
   ...SizeProps,
-  ...ConnectedProps<{||}, StateProps, {||}>,
-|};
+  ...ConnectedProps<{|}, StateProps, {|}>,
+};
 
 type State = {|
   initialSelected: InitialSelectedTrackReference | null,
   forceLayoutGeneration: number,
-|};
+};
 
 class ActiveTabTimeline extends React.PureComponent<Props, State> {
   state = {
@@ -119,7 +119,7 @@ class ActiveTabTimeline extends React.PureComponent<Props, State> {
   }
 }
 
-export default explicitConnect<{||}, StateProps, {||}>({
+export default explicitConnect<{|}, StateProps, {|}>({
   mapStateToProps: state => ({
     globalTracks: getActiveTabGlobalTracks(state),
     globalTrackReferences: getActiveTabGlobalTrackReferences(state),

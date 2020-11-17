@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 import {
   getThreadSelectors,
@@ -679,13 +679,13 @@ describe('filterRawMarkerTableToRange', () => {
     start: Milliseconds,
     end: Milliseconds,
     markers: Array<TestDefinedRawMarker>,
-  |};
+  };
 
   function setup({ start, end, markers }: TestConfig) {
     const thread = getThreadWithRawMarkers(
       markers.map(({ data, ...rest }) => ({
         ...rest,
-        data: data ? ({ type: 'DummyForTests', ...data }: any) : null,
+        data: data ? ({ type: 'DummyForTests', ...data } as any) : null,
       }))
     );
 
@@ -918,8 +918,8 @@ describe('filterRawMarkerTableToRange', () => {
     expect(
       processedMarkers.map(marker => [
         marker.name,
-        marker.data && (marker.data: any).id,
-        marker.data && (marker.data: any).status,
+        marker.data && (marker.data as any).id,
+        marker.data && (marker.data as any).status,
         marker.start,
         marker.end,
       ])
@@ -990,7 +990,7 @@ describe('filterRawMarkerTableToRange', () => {
 
     const result = processedMarkers.map(marker => [
       marker.name,
-      marker.data && (marker.data: any).id,
+      marker.data && (marker.data as any).id,
     ]);
 
     expect(result).toEqual([
@@ -1063,7 +1063,7 @@ describe('filterRawMarkerTableToRange', () => {
     expect(
       processedMarkers.map(marker => [
         marker.name,
-        marker.data && (marker.data: any).id,
+        marker.data && (marker.data as any).id,
       ])
     ).toEqual([
       ['Load 2', 2],
@@ -1152,7 +1152,7 @@ describe('filterRawMarkerTableToRange', () => {
     expect(
       processedMarkers.map(marker => [
         marker.name,
-        marker.data && (marker.data: any).id,
+        marker.data && (marker.data as any).id,
       ])
     ).toEqual([
       ['Load 1', 0x0000000100000001],
@@ -1167,10 +1167,10 @@ describe('filterRawMarkerTableToRange', () => {
 // tested in `filterRawMarkerTableToRange` tests.
 describe('filterRawMarkerTableToRangeWithMarkersToDelete', () => {
   type TestConfig = {|
-    timeRange: {| start: Milliseconds, end: Milliseconds |} | null,
+    timeRange: {| start: Milliseconds, end: Milliseconds } | null,
     markersToDelete: Set<IndexIntoRawMarkerTable>,
     markers: Array<TestDefinedRawMarker>,
-  |};
+  };
 
   function setup({ timeRange, markersToDelete, markers }: TestConfig) {
     const thread = getThreadWithRawMarkers(markers);

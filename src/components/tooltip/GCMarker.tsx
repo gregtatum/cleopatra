@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import * as React from 'react';
 import {
@@ -340,7 +340,7 @@ export function getGCSliceDetails(
   return details;
 }
 
-type PhaseTimeTuple = {| name: string, time: Microseconds |};
+type PhaseTimeTuple = {| name: string, time: Microseconds };
 
 function _markerDetailPhase(p: PhaseTimeTuple) {
   return (
@@ -393,7 +393,7 @@ function _makePhaseTimesArray(
 type PhaseTreeNode = {|
   value?: PhaseTimeTuple,
   branches: Map<string, PhaseTreeNode>,
-|};
+};
 
 function _treeInsert(
   tree: Map<string, PhaseTreeNode>,

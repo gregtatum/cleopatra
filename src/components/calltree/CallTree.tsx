@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 import React, { PureComponent } from 'react';
 import memoize from 'memoize-immutable';
@@ -61,7 +61,7 @@ type StateProps = {|
   +implementationFilter: ImplementationFilter,
   +callNodeMaxDepth: number,
   +weightType: WeightType,
-|};
+};
 
 type DispatchProps = {|
   +changeSelectedCallNode: typeof changeSelectedCallNode,
@@ -69,9 +69,9 @@ type DispatchProps = {|
   +changeExpandedCallNodes: typeof changeExpandedCallNodes,
   +addTransformToStack: typeof addTransformToStack,
   +handleCallNodeTransformShortcut: typeof handleCallNodeTransformShortcut,
-|};
+};
 
-type Props = ConnectedProps<{||}, StateProps, DispatchProps>;
+type Props = ConnectedProps<{|}, StateProps, DispatchProps>;
 
 class CallTreeImpl extends PureComponent<Props> {
   _mainColumn: Column<CallNodeDisplayData> = { propName: 'name', title: '' };
@@ -314,7 +314,7 @@ class CallTreeImpl extends PureComponent<Props> {
   }
 }
 
-export const CallTree = explicitConnect<{||}, StateProps, DispatchProps>({
+export const CallTree = explicitConnect<{|}, StateProps, DispatchProps>({
   mapStateToProps: (state: State) => ({
     threadsKey: getSelectedThreadsKey(state),
     scrollToSelectionGeneration: getScrollToSelectionGeneration(state),

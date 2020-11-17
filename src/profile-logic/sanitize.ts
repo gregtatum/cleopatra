@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import { UniqueStringArray } from '../utils/unique-string-array';
 import {
@@ -32,7 +32,7 @@ export type SanitizeProfileResult = {|
   +oldThreadIndexToNew: Map<ThreadIndex, ThreadIndex> | null,
   +committedRanges: StartEndRange[] | null,
   +isSanitized: boolean,
-|};
+};
 
 /**
  * Take a processed profile with PII that user wants to be removed and remove the

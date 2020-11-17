@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 import clamp from 'clamp';
 
@@ -44,12 +44,12 @@ type RenderedComponentSettings = {|
   +greyCategoryIndex: IndexIntoCategoryList,
   +samplesSelectedStates: null | Array<SelectedState>,
   +categoryDrawStyles: CategoryDrawStyles,
-|};
+};
 
 type SampleContributionToPixel = {|
   +sample: IndexIntoSamplesTable,
   +contribution: number,
-|};
+};
 
 /**
  * The category fills are the computation that is ultimately returned for drawing
@@ -62,7 +62,7 @@ type CategoryFill = {|
   // The Float32Arrays are mutated in place during the computation step.
   +perPixelContribution: Float32Array,
   +accumulatedUpperEdge: Float32Array,
-|};
+};
 
 export type CategoryDrawStyles = $ReadOnlyArray<{|
   +category: number,
@@ -71,7 +71,7 @@ export type CategoryDrawStyles = $ReadOnlyArray<{|
   +unselectedFillStyle: string,
   +filteredOutByTransformFillStyle: CanvasPattern,
   +selectedTextColor: string,
-|}>;
+}>;
 
 type SelectedPercentageAtPixelBuffers = {|
   // These Float32Arrays are mutated in place during the computation step.
@@ -80,7 +80,7 @@ type SelectedPercentageAtPixelBuffers = {|
   +afterSelectedPercentageAtPixel: Float32Array,
   +filteredOutByTransformPercentageAtPixel: Float32Array,
   +filteredOutByTabPercentageAtPixel: Float32Array,
-|};
+};
 
 const BOX_BLUR_RADII = [3, 2, 2];
 const SMOOTHING_RADIUS = 3 + 2 + 2;

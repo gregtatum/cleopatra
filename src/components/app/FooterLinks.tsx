@@ -1,14 +1,14 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 import React, { PureComponent } from 'react';
 import './FooterLinks.css';
 
-type State = {| hide: boolean |};
+type State = {| hide: boolean };
 
-export class FooterLinks extends PureComponent<{||}, State> {
+export class FooterLinks extends PureComponent<{|}, State> {
   _onClick = () => {
     this.setState({ hide: true });
   };

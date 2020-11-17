@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 // This implements a Button that triggers a panel. The panel will have a small
 // arrow pointing towards the button, which is implemented in ArrowPanel.
@@ -44,11 +44,11 @@ type Props = {|
   +onPanelOpen?: () => mixed,
   +onPanelClose?: () => mixed,
   +title?: string,
-|};
+};
 
 type State = {|
   +open: boolean,
-|};
+};
 
 export class ButtonWithPanel extends React.PureComponent<Props, State> {
   _panel: ArrowPanel | null = null;

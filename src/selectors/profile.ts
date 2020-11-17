@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import { createSelector } from 'reselect';
 import * as Tracks from '../profile-logic/tracks';
 import * as UrlState from './url-state';
@@ -332,7 +332,7 @@ export const getGlobalTrackFromReference: DangerousSelectorWithArguments<
  * properly work with a PureComponent.
  */
 export const getGlobalTrackAndIndexByPid: DangerousSelectorWithArguments<
-  {| +globalTrackIndex: TrackIndex, +globalTrack: GlobalTrack |},
+  {| +globalTrackIndex: TrackIndex, +globalTrack: GlobalTrack },
   Pid
 > = (state, pid) => {
   const globalTracks = getGlobalTracks(state);

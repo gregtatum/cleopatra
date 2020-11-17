@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import React, { PureComponent } from 'react';
 
@@ -17,13 +17,13 @@ import './MarkerSettings.css';
 
 type StateProps = {|
   +searchString: string,
-|};
+};
 
 type DispatchProps = {|
   +changeMarkersSearchString: typeof changeMarkersSearchString,
-|};
+};
 
-type Props = ConnectedProps<{||}, StateProps, DispatchProps>;
+type Props = ConnectedProps<{|}, StateProps, DispatchProps>;
 
 class MarkerSettingsImpl extends PureComponent<Props> {
   _onSearch = (value: string) => {
@@ -47,7 +47,7 @@ class MarkerSettingsImpl extends PureComponent<Props> {
   }
 }
 
-export const MarkerSettings = explicitConnect<{||}, StateProps, DispatchProps>({
+export const MarkerSettings = explicitConnect<{|}, StateProps, DispatchProps>({
   mapStateToProps: state => ({
     searchString: getMarkersSearchString(state),
   }),

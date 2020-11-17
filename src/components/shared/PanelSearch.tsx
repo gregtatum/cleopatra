@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import * as React from 'react';
 import classNames from 'classnames';
 import { IdleSearchField } from './IdleSearchField';
@@ -15,9 +15,9 @@ type Props = {|
   +title: string,
   +currentSearchString: string,
   +onSearch: string => void,
-|};
+};
 
-type State = {| searchFieldFocused: boolean |};
+type State = {| searchFieldFocused: boolean };
 
 export class PanelSearch extends React.PureComponent<Props, State> {
   state = { searchFieldFocused: false };

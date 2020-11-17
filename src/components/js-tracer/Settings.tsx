@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import React, { PureComponent } from 'react';
 import { changeShowJsTracerSummary } from 'firefox-profiler/actions/profile-view';
@@ -15,13 +15,13 @@ import './Settings.css';
 
 type StateProps = {|
   +showJsTracerSummary: boolean,
-|};
+};
 
 type DispatchProps = {|
   +changeShowJsTracerSummary: typeof changeShowJsTracerSummary,
-|};
+};
 
-type Props = ConnectedProps<{||}, StateProps, DispatchProps>;
+type Props = ConnectedProps<{|}, StateProps, DispatchProps>;
 
 class JsTracerSettingsImpl extends PureComponent<Props> {
   _onCheckboxChange = () => {
@@ -51,7 +51,7 @@ class JsTracerSettingsImpl extends PureComponent<Props> {
 }
 
 export const JsTracerSettings = explicitConnect<
-  {||},
+  {|},
   StateProps,
   DispatchProps
 >({

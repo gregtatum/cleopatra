@@ -2,21 +2,21 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import { compress, decompress } from '../../utils/gz';
 
 import { TextEncoder, TextDecoder } from 'util';
 
 beforeAll(function() {
-  if ((window: any).TextEncoder) {
+  if ((window as any).TextEncoder) {
     throw new Error('A TextEncoder was already on the window object.');
   }
-  (window: any).TextEncoder = TextEncoder;
+  (window as any).TextEncoder = TextEncoder;
 });
 
 afterAll(async function() {
-  delete (window: any).TextEncoder;
+  delete (window as any).TextEncoder;
 });
 
 describe('utils/gz', function() {

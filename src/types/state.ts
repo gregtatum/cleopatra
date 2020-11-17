@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import type {
   Action,
@@ -43,19 +43,19 @@ export type ThreadViewOptions = {|
   +expandedCallNodePaths: PathSet,
   +selectedMarker: MarkerIndex | null,
   +selectedNetworkMarker: MarkerIndex | null,
-|};
+};
 
 export type ThreadViewOptionsPerThreads = { [ThreadsKey]: ThreadViewOptions };
 
 export type RightClickedCallNode = {|
   +threadsKey: ThreadsKey,
   +callNodePath: CallNodePath,
-|};
+};
 
 export type RightClickedMarker = {|
   +threadsKey: ThreadsKey,
   +markerIndex: MarkerIndex,
-|};
+};
 
 /**
  * Full profile view state
@@ -66,11 +66,11 @@ export type RightClickedMarker = {|
 export type FullProfileViewState = {|
   globalTracks: GlobalTrack[],
   localTracksByPid: Map<Pid, LocalTrack[]>,
-|};
+};
 
 export type OriginsViewState = {|
   originsTimeline: OriginsTimeline,
-|};
+};
 
 /**
  * Active tab profile view state
@@ -78,7 +78,7 @@ export type OriginsViewState = {|
  */
 export type ActiveTabProfileViewState = {|
   activeTabTimeline: ActiveTabTimeline,
-|};
+};
 
 /**
  * Profile view state
@@ -96,7 +96,7 @@ export type ProfileViewState = {
     rightClickedCallNode: RightClickedCallNode | null,
     rightClickedMarker: RightClickedMarker | null,
     mouseTimePosition: Milliseconds | null,
-  |},
+  },
   +profile: Profile | null,
   +full: FullProfileViewState,
   +activeTab: ActiveTabProfileViewState,
@@ -104,16 +104,16 @@ export type ProfileViewState = {
 };
 
 export type AppViewState =
-  | {| +phase: 'ROUTE_NOT_FOUND' |}
-  | {| +phase: 'TRANSITIONING_FROM_STALE_PROFILE' |}
-  | {| +phase: 'PROFILE_LOADED' |}
-  | {| +phase: 'DATA_LOADED' |}
-  | {| +phase: 'DATA_RELOAD' |}
-  | {| +phase: 'FATAL_ERROR', +error: Error |}
+  | {| +phase: 'ROUTE_NOT_FOUND' }
+  | {| +phase: 'TRANSITIONING_FROM_STALE_PROFILE' }
+  | {| +phase: 'PROFILE_LOADED' }
+  | {| +phase: 'DATA_LOADED' }
+  | {| +phase: 'DATA_RELOAD' }
+  | {| +phase: 'FATAL_ERROR', +error: Error }
   | {|
       +phase: 'INITIALIZING',
-      +additionalData?: {| +attempt: Attempt | null, +message: string |},
-    |};
+      +additionalData?: {| +attempt: Attempt | null, +message: string },
+    };
 
 export type Phase = $PropertyType<AppViewState, 'phase'>;
 
@@ -126,32 +126,32 @@ export type ZipFileState =
       +phase: 'NO_ZIP_FILE',
       +zip: null,
       +pathInZipFile: null,
-    |}
+    }
   | {|
       +phase: 'LIST_FILES_IN_ZIP_FILE',
       +zip: JSZip,
       +pathInZipFile: null,
-    |}
+    }
   | {|
       +phase: 'PROCESS_PROFILE_FROM_ZIP_FILE',
       +zip: JSZip,
       +pathInZipFile: string,
-    |}
+    }
   | {|
       +phase: 'FAILED_TO_PROCESS_PROFILE_FROM_ZIP_FILE',
       +zip: JSZip,
       +pathInZipFile: string,
-    |}
+    }
   | {|
       +phase: 'FILE_NOT_FOUND_IN_ZIP_FILE',
       +zip: JSZip,
       +pathInZipFile: string,
-    |}
+    }
   | {|
       +phase: 'VIEW_PROFILE_IN_ZIP_FILE',
       +zip: JSZip,
       +pathInZipFile: string,
-    |};
+    };
 
 export type IsSidebarOpenPerPanelState = { [TabSlug]: boolean };
 
@@ -164,7 +164,7 @@ export type UrlSetupPhase = 'initial-load' | 'loading-profile' | 'done';
  */
 export type ExperimentalFlags = {|
   +eventDelayTracks: boolean,
-|};
+};
 
 export type AppState = {|
   +view: AppViewState,
@@ -180,7 +180,7 @@ export type AppState = {|
   +isDragAndDropDragging: boolean,
   +isDragAndDropOverlayRegistered: boolean,
   +experimental: ExperimentalFlags,
-|};
+};
 
 export type UploadPhase =
   | 'local'
@@ -195,7 +195,7 @@ export type UploadState = {|
   error: Error | mixed,
   abortFunction: () => void,
   generation: number,
-|};
+};
 
 export type PublishState = {|
   +checkedSharingOptions: CheckedSharingOptions,
@@ -203,7 +203,7 @@ export type PublishState = {|
   +isHidingStaleProfile: boolean,
   +hasSanitizedProfile: boolean,
   +prePublishedState: State | null,
-|};
+};
 
 export type ZippedProfilesState = {
   zipFile: ZipFileState,
@@ -227,7 +227,7 @@ export type FullProfileSpecificUrlState = {|
   timelineType: TimelineType,
   legacyThreadOrder: ThreadIndex[] | null,
   legacyHiddenThreads: ThreadIndex[] | null,
-|};
+};
 
 /**
  * Active tab profile specific url state
@@ -235,7 +235,7 @@ export type FullProfileSpecificUrlState = {|
  */
 export type ActiveTabSpecificProfileUrlState = {|
   isResourcesPanelOpen: boolean,
-|};
+};
 
 export type ProfileSpecificUrlState = {|
   selectedThreads: Set<ThreadIndex> | null,
@@ -250,15 +250,15 @@ export type ProfileSpecificUrlState = {|
   transforms: TransformStacksPerThread,
   full: FullProfileSpecificUrlState,
   activeTab: ActiveTabSpecificProfileUrlState,
-|};
+};
 
 /**
  * Determines how the timeline's tracks are organized.
  */
 export type TimelineTrackOrganization =
-  | {| +type: 'full' |}
-  | {| +type: 'active-tab', +browsingContextID: BrowsingContextID | null |}
-  | {| +type: 'origins' |};
+  | {| +type: 'full' }
+  | {| +type: 'active-tab', +browsingContextID: BrowsingContextID | null }
+  | {| +type: 'origins' };
 
 export type UrlState = {|
   +dataSource: DataSource,
@@ -273,7 +273,7 @@ export type UrlState = {|
   +profileName: string | null,
   +timelineTrackOrganization: TimelineTrackOrganization,
   +profileSpecific: ProfileSpecificUrlState,
-|};
+};
 
 export type IconState = Set<string>;
 
@@ -284,9 +284,9 @@ export type State = {|
   +icons: IconState,
   +zippedProfiles: ZippedProfilesState,
   +publish: PublishState,
-|};
+};
 
 export type IconWithClassName = {|
   +icon: string,
   +className: string,
-|};
+};

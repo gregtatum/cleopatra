@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 import { getHumanReadableOriginTracks } from '../fixtures/profiles/tracks';
 import { getProfileFromTextSamples } from '../fixtures/profiles/processed-profile';
 import { viewProfile } from '../../actions/receive-profile';
@@ -13,7 +13,7 @@ type TestDefinedOriginThread = {|
   origin?: string,
   parentOrigin?: string,
   pid?: number,
-|};
+};
 
 function getProfileWithOrigins(...originThreads: TestDefinedOriginThread[]) {
   let uniqueId = 1;

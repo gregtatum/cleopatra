@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import type { TabSlug } from '../../app-logic/tabs-handling';
 
 import {
@@ -3348,7 +3348,7 @@ describe('pages and active tab selectors', function() {
 });
 
 describe('traced timing', function() {
-  function setup({ inverted }: {| inverted: boolean |}, textSamples: string) {
+  function setup({ inverted }: {| inverted: boolean }, textSamples: string) {
     const { profile, funcNamesDictPerThread } = getProfileFromTextSamples(
       textSamples
     );

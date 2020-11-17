@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import { SymbolsNotFoundError } from './errors';
 
@@ -46,7 +46,7 @@ type SymbolItem = {|
   index: Uint32Array,
   buffer: Uint8Array,
   lastUsedDate: Date,
-|};
+};
 
 type SymbolPrimaryKey = [string, string];
 type SymbolDateKey = $PropertyType<SymbolItem, 'lastUsedDate'>;

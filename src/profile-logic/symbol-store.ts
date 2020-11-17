@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import SymbolStoreDB from './symbol-store-db';
 import { SymbolsNotFoundError } from './errors';
 
@@ -21,7 +21,7 @@ export type AddressResult = {|
   name: string,
   // The offset (in bytes) between the start of the function and the address.
   functionOffset: number,
-|};
+};
 
 interface SymbolProvider {
   // Cheap, should be called first.

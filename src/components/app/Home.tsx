@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import * as React from 'react';
 
@@ -69,7 +69,7 @@ type ActionButtonsProps = {|
     typeof retrieveProfileFromFile
   >,
   +triggerLoadingFromUrl: typeof triggerLoadingFromUrl,
-|};
+};
 
 type ActionButtonsState = {
   isLoadFromUrlPressed: boolean,
@@ -220,14 +220,14 @@ window.geckoProfilerAddonInstalled = function() {
 
 type OwnHomeProps = {|
   +specialMessage?: string,
-|};
+};
 
 type DispatchHomeProps = {|
   +retrieveProfileFromFile: typeof retrieveProfileFromFile,
   +triggerLoadingFromUrl: typeof triggerLoadingFromUrl,
-|};
+};
 
-type HomeProps = ConnectedProps<OwnHomeProps, {||}, DispatchHomeProps>;
+type HomeProps = ConnectedProps<OwnHomeProps, {|}, DispatchHomeProps>;
 
 type HomeState = {
   popupAddonInstallPhase: PopupAddonInstallPhase,
@@ -542,7 +542,7 @@ function _isFirefox(): boolean {
   return Boolean(navigator.userAgent.match(/Firefox\/\d+\.\d+/));
 }
 
-export const Home = explicitConnect<OwnHomeProps, {||}, DispatchHomeProps>({
+export const Home = explicitConnect<OwnHomeProps, {|}, DispatchHomeProps>({
   mapDispatchToProps: { retrieveProfileFromFile, triggerLoadingFromUrl },
   component: HomeImpl,
 });

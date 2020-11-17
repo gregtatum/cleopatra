@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 /**
  * These are the colors from Photon. They are inlined to provide easy access. If updating
@@ -79,7 +79,7 @@ type ColorStyles = {|
   +unselectedFillStyle: string,
   +selectedTextColor: string,
   +gravity: number,
-|};
+};
 
 /**
  * Map a color name, which comes from Gecko, into a CSS style color. These colors cannot

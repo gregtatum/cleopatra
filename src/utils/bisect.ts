@@ -17,15 +17,15 @@
     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-    THE SOFTWARE. 
+    THE SOFTWARE.
 */
 
 /*
     The two functions here, bisectionLeft and bisectionRight, return the index where a new element
-    would be inserted, respectively at the left or at the right of elements with the same value. 
+    would be inserted, respectively at the left or at the right of elements with the same value.
 */
 
-// @flow
+
 
 export function bisectionRight(
   array: number[] | $TypedArray,

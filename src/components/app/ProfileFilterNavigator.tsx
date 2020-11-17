@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import React from 'react';
 import memoize from 'memoize-immutable';
@@ -28,10 +28,10 @@ type Props = {|
   +filterPageData: ProfileFilterPageData | null,
   +rootRange: StartEndRange,
   ...ElementProps<typeof FilterNavigatorBar>,
-|};
+};
 type DispatchProps = {|
   +onPop: $PropertyType<Props, 'onPop'>,
-|};
+};
 type StateProps = $ReadOnly<$Exact<$Diff<Props, DispatchProps>>>;
 
 class ProfileFilterNavigatorBarImpl extends React.PureComponent<Props> {
@@ -86,7 +86,7 @@ class ProfileFilterNavigatorBarImpl extends React.PureComponent<Props> {
 }
 
 export const ProfileFilterNavigator = explicitConnect<
-  {||},
+  {|},
   StateProps,
   DispatchProps
 >({

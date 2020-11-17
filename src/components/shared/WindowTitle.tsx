@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import { PureComponent } from 'react';
 import explicitConnect from 'firefox-profiler/utils/connect';
@@ -24,9 +24,9 @@ type StateProps = {|
   +fileNameInZipFilePath: string | null,
   +formattedMetaInfoString: string,
   +dataSource: string,
-|};
+};
 
-type Props = ConnectedProps<{||}, StateProps, {||}>;
+type Props = ConnectedProps<{|}, StateProps, {|}>;
 
 const SEPARATOR = ' – ';
 const PRODUCT = 'Firefox Profiler';
@@ -86,7 +86,7 @@ function _formatDateTime(timestamp: number): string {
   return dateTimeLabel;
 }
 
-export const WindowTitle = explicitConnect<{||}, StateProps, {||}>({
+export const WindowTitle = explicitConnect<{|}, StateProps, {|}>({
   mapStateToProps: state => ({
     profileNameFromUrl: getProfileNameFromUrl(state),
     fileNameInZipFilePath: getFileNameInZipFilePath(state),

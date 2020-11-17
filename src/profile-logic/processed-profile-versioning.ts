@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 /**
  * This file deals with old versions of the "processed" profile format,
  * i.e. the format that profiler.firefox.com uses internally. Profiles in this format

@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import * as React from 'react';
 import { Timeline } from '../../components/timeline';
 import { render } from '@testing-library/react';
@@ -156,7 +156,7 @@ describe('Timeline multiple thread selection', function() {
     const activityGraph: HTMLElement = (ensureExists(
       getByText('Activity Graph for DOM Worker').closest('canvas'),
       'Could not find the canvas.'
-    ): any);
+    ) as any);
 
     expect(selectedThreadSelectors.getSelectedCallNodeIndex(getState())).toBe(
       null
@@ -189,7 +189,7 @@ describe('Timeline multiple thread selection', function() {
     const activityGraphForStyle: HTMLElement = (ensureExists(
       getByText('Activity Graph for Style').closest('canvas'),
       'Could not find the canvas.'
-    ): any);
+    ) as any);
 
     expect(selectedThreadSelectors.getSelectedCallNodeIndex(getState())).toBe(
       null
@@ -404,7 +404,7 @@ describe('Timeline', function() {
       // opt out of the type checker for this mock by returning `any`.
       const mockEl = ({
         getBoundingClientRect: () => getBoundingBox(300, 300),
-      }: any);
+      } as any);
       return mockEl;
     });
 

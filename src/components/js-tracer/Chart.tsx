@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import * as React from 'react';
 import {
   TIMELINE_MARGIN_LEFT,
@@ -43,11 +43,11 @@ type OwnProps = {|
   +jsTracerTable: JsTracerTable,
   +showJsTracerSummary: boolean,
   +doFadeIn: boolean,
-|};
+};
 
 type DispatchProps = {|
   +updatePreviewSelection: typeof updatePreviewSelection,
-|};
+};
 
 type StateProps = {|
   +jsTracerTimingRows: JsTracerTiming[],
@@ -55,7 +55,7 @@ type StateProps = {|
   +timeRange: StartEndRange,
   +threadsKey: ThreadsKey,
   +previewSelection: PreviewSelection,
-|};
+};
 
 type Props = ConnectedProps<OwnProps, StateProps, DispatchProps>;
 
@@ -155,11 +155,11 @@ type ChartLoaderProps = {|
   +jsTracerTable: JsTracerTable,
   +showJsTracerSummary: boolean,
   +keyString: string,
-|};
+};
 
 type ChartLoaderState = {|
   readyToRenderExpensiveChart: boolean,
-|};
+};
 
 // Keep track of all the React keys seen for a component. If everything is correctly
 // memoized, then it should only be slow and expensive to compute the timing information
@@ -237,7 +237,7 @@ type ChartProps = {|
   +jsTracerTable: JsTracerTable,
   +showJsTracerSummary: boolean,
   +threadsKey: ThreadsKey,
-|};
+};
 
 /**
  * This component enforces that the JsTracerChartLoader has a correct key in order

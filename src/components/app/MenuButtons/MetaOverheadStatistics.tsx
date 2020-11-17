@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import * as React from 'react';
 import {
   formatMicroseconds,
@@ -18,7 +18,7 @@ type StatKeys = 'Overhead' | 'Cleaning' | 'Counter' | 'Interval' | 'Lockings';
 
 type Props = {|
   +profilerOverhead: ProfilerOverhead[],
-|};
+};
 
 /**
  * This component formats the profile's meta information into a dropdown panel.

@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 import type { Profile } from 'firefox-profiler/types';
 
@@ -71,7 +71,7 @@ import { TextEncoder, TextDecoder } from 'util';
 function simulateSymbolStoreHasNoCache() {
   // SymbolStoreDB is a mock, but Flow doesn't know this. That's why we use
   // `any` so that we can use `mockImplementation`.
-  (SymbolStoreDB: any).mockImplementation(() => ({
+  (SymbolStoreDB as any).mockImplementation(() => ({
     getSymbolTable: jest
       .fn()
       .mockImplementation((debugName, breakpadId) =>
@@ -390,7 +390,7 @@ describe('actions/receive-profile', function() {
 
       const idleThread: Array<string> = (Array.from({
         length: 100,
-      }): any).fill('idle[cat:Idle]');
+      }) as any).fill('idle[cat:Idle]');
       const idleThreadString = idleThread.join('  ');
 
       // We want 1 work sample in 100 samples for each thread.
@@ -672,8 +672,8 @@ describe('actions/receive-profile', function() {
 
   describe('retrieveProfileFromStore', function() {
     // Force type-casting to Response to allow to be used as return value for fetch
-    const fetch403Response = (({ ok: false, status: 403 }: any): Response);
-    const fetch500Response = (({ ok: false, status: 500 }: any): Response);
+    const fetch403Response = (({ ok: false, status: 403 } as any): Response);
+    const fetch500Response = (({ ok: false, status: 500 } as any): Response);
     const fetch200Response = (({
       ok: true,
       status: 200,
@@ -681,7 +681,7 @@ describe('actions/receive-profile', function() {
         get: () => 'application/json',
       },
       json: () => Promise.resolve(makeProfileSerializable(_getSimpleProfile())),
-    }: any): Response);
+    } as any): Response);
 
     beforeEach(function() {
       window.fetch = jest.fn().mockResolvedValue(fetch403Response);
@@ -730,7 +730,7 @@ describe('actions/receive-profile', function() {
           ...fetch200Response,
           json: () =>
             Promise.resolve(makeProfileSerializable(unsymbolicatedProfile)),
-        }: any): Response)
+        } as any): Response)
       );
 
       simulateSymbolStoreHasNoCache();
@@ -839,8 +839,8 @@ describe('actions/receive-profile', function() {
 
   describe('retrieveProfileOrZipFromUrl', function() {
     // Force type-casting to Response to allow to be used as return value for fetch
-    const fetch403Response = (({ ok: false, status: 403 }: any): Response);
-    const fetch500Response = (({ ok: false, status: 500 }: any): Response);
+    const fetch403Response = (({ ok: false, status: 403 } as any): Response);
+    const fetch500Response = (({ ok: false, status: 500 } as any): Response);
     const fetch200Response = (({
       ok: true,
       status: 200,
@@ -848,7 +848,7 @@ describe('actions/receive-profile', function() {
         get: () => 'application/json',
       },
       json: () => Promise.resolve(makeProfileSerializable(_getSimpleProfile())),
-    }: any): Response);
+    } as any): Response);
 
     beforeEach(function() {
       window.fetch = jest.fn().mockResolvedValue(fetch403Response);
@@ -1025,8 +1025,8 @@ describe('actions/receive-profile', function() {
             }
           },
         },
-      }: any): Response);
-      const fetch403Response = (({ ok: false, status: 403 }: any): Response);
+      } as any): Response);
+      const fetch403Response = (({ ok: false, status: 403 } as any): Response);
 
       window.fetch = jest.fn(actualUrl =>
         Promise.resolve(
@@ -1181,14 +1181,14 @@ describe('actions/receive-profile', function() {
         type,
         _payload: payload,
       };
-      return (file: any);
+      return (file as any);
     }
 
     /**
      * Bypass all of Flow's checks, and mock out the file reader.
      */
     function mockFileReader(mockFile: File) {
-      const payload = (mockFile: any)._payload;
+      const payload = (mockFile as any)._payload;
       return {
         asText: () => Promise.resolve((payload: string)),
         asArrayBuffer: () => Promise.resolve((payload: ArrayBuffer)),
@@ -1267,7 +1267,7 @@ describe('actions/receive-profile', function() {
 
       expect(
         // Coerce into an any to access the error property.
-        (view: any).error
+        (view as any).error
       ).toMatchSnapshot();
     });
 
@@ -1373,7 +1373,7 @@ describe('actions/receive-profile', function() {
       expect(view.phase).toBe('FATAL_ERROR');
       expect(
         // Coerce into an any to access the error property.
-        (view: any).error
+        (view as any).error
       ).toMatchSnapshot();
     });
   });
@@ -1406,12 +1406,12 @@ describe('actions/receive-profile', function() {
     type SetupProfileParams = {|
       profile1: Profile,
       profile2: Profile,
-    |};
+    };
 
     type SetupUrlSearchParams = {|
       urlSearch1: string,
       urlSearch2: string,
-    |};
+    };
 
     function setupWithLongUrl(
       profiles: SetupProfileParams,
@@ -1435,7 +1435,7 @@ describe('actions/receive-profile', function() {
       const shortUrl1 = 'https://perfht.ml/FAKEBITLYHASH1';
       const shortUrl2 = 'https://bit.ly/FAKEBITLYHASH2';
 
-      (expandUrl: any).mockImplementation(shortUrl => {
+      (expandUrl as any).mockImplementation(shortUrl => {
         switch (shortUrl) {
           case shortUrl1:
             return longUrl1;
@@ -1461,11 +1461,11 @@ describe('actions/receive-profile', function() {
     type SetupUrlParams = {|
       url1: string,
       url2: string,
-    |};
+    };
 
     type SetupOptionsParams = $Shape<{|
       +skipMarkers: boolean,
-    |}>;
+    }>;
 
     async function setup(
       { profile1, profile2 }: SetupProfileParams,

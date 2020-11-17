@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import { GREY_30 } from 'photon-colors';
 import * as React from 'react';
 import memoize from 'memoize-immutable';
@@ -67,17 +67,17 @@ type OwnProps = {|
   +shouldDisplayTooltips: () => boolean,
   +scrollToSelectionGeneration: number,
   +marginLeft: CssPixels,
-|};
+};
 
 type Props = $ReadOnly<{|
   ...OwnProps,
   +viewport: Viewport,
-|}>;
+}>;
 
 type HoveredStackTiming = {|
   +depth: StackTimingDepth,
   +stackTimingIndex: IndexIntoStackTiming,
-|};
+};
 
 import './Canvas.css';
 
@@ -316,7 +316,7 @@ class StackChartCanvasImpl extends React.PureComponent<Props> {
           } else {
             const markerIndex = stackTiming.index[i];
             const markerPayload = ((getMarker(markerIndex)
-              .data: any): UserTimingMarkerPayload);
+              .data as any: UserTimingMarkerPayload);
             text = markerPayload.name;
             const categoryIndex = 0;
             category = categories[categoryIndex];
@@ -473,7 +473,7 @@ class StackChartCanvasImpl extends React.PureComponent<Props> {
 
   _getCallNodeIndexOrMarkerIndexFromHoveredItem(
     hoveredItem: HoveredStackTiming | null
-  ): {| index: number, type: 'marker' | 'call-node' |} | null {
+  ): {| index: number, type: 'marker' | 'call-node' } | null {
     if (hoveredItem === null) {
       return null;
     }

@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -369,7 +369,7 @@ describe('ListOfPublishedProfiles', () => {
       expect(await retrieveProfileData(profileToken)).toBe(undefined);
 
       // Clicking elsewhere should make the successful message disappear.
-      fireFullClick((window: any));
+      fireFullClick((window as any));
       await waitForElementToBeRemoved(queryByText(/successfully/i));
     });
 
@@ -435,7 +435,7 @@ describe('ListOfPublishedProfiles', () => {
       await findByText(/successfully/i);
 
       // Clicking elsewhere should make the successful message disappear and a generic message appear.
-      fireFullClick((window: any));
+      fireFullClick((window as any));
       await findByText(/no profile/i);
       expect(getByText(/no profile/i)).toBeTruthy();
     });

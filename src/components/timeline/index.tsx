@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import * as React from 'react';
 import explicitConnect from 'firefox-profiler/utils/connect';
@@ -17,9 +17,9 @@ import type { TimelineTrackOrganization } from 'firefox-profiler/types';
 
 type StateProps = {|
   +timelineTrackOrganization: TimelineTrackOrganization,
-|};
+};
 
-type Props = ConnectedProps<{||}, StateProps, {||}>;
+type Props = ConnectedProps<{|}, StateProps, {|}>;
 
 class TimelineImpl extends React.PureComponent<Props> {
   render() {
@@ -40,7 +40,7 @@ class TimelineImpl extends React.PureComponent<Props> {
   }
 }
 
-export const Timeline = explicitConnect<{||}, StateProps, {||}>({
+export const Timeline = explicitConnect<{|}, StateProps, {|}>({
   mapStateToProps: state => ({
     timelineTrackOrganization: getTimelineTrackOrganization(state),
   }),

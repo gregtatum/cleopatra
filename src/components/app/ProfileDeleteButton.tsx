@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import React, { PureComponent } from 'react';
 import classNames from 'classnames';
@@ -33,7 +33,7 @@ type ButtonProps = {|
   +onOpenConfirmDialog: () => mixed,
   +onCloseConfirmDialog: () => mixed,
   +onCloseSuccessMessage: () => mixed,
-|};
+};
 
 export class ProfileDeleteButton extends PureComponent<ButtonProps> {
   _hasBeenDeleted = false;
@@ -107,12 +107,12 @@ type PanelProps = {|
   +jwtToken: string,
   +onProfileDeleted: () => mixed,
   +onProfileDeleteCanceled: () => mixed,
-|};
+};
 
 type PanelState = {|
   +status: 'idle' | 'working' | 'deleted',
   +error: Error | null,
-|};
+};
 
 class ProfileDeletePanel extends PureComponent<PanelProps, PanelState> {
   state = { error: null, status: 'idle' };

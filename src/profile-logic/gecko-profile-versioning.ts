@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 /**
  * This file deals with old versions of the Gecko profile format, i.e. the
  * format that the Gecko profiler platform outputs. We want to be able to
@@ -943,7 +943,7 @@ const _upgraders = {
     //
     // It also removes the startTime and endTime from payloads, except for IPC and
     // Network markers.
-    type OldSchema = {| name: 0, time: 1, category: 2, data: 3 |};
+    type OldSchema = {| name: 0, time: 1, category: 2, data: 3 };
     type Payload = $Shape<{
       startTime: number,
       endTime: number,
@@ -1061,7 +1061,7 @@ const _upgraders = {
         markers: {|
           data: UnknownArityTuple[],
           schema: { name: number, startTime: number, data: number },
-        |},
+        },
         ...
       }>,
       processes: ProfileV20[],

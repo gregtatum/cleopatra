@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import * as React from 'react';
 import { MenuItem } from 'react-contextmenu';
 import { ContextMenu } from './ContextMenu';
@@ -52,15 +52,15 @@ type StateProps = {|
   +implementation: ImplementationFilter,
   +inverted: boolean,
   +selectedTab: TabSlug,
-|};
+};
 
 type DispatchProps = {|
   +addTransformToStack: typeof addTransformToStack,
   +expandAllCallNodeDescendants: typeof expandAllCallNodeDescendants,
   +setContextMenuVisibility: typeof setContextMenuVisibility,
-|};
+};
 
-type Props = ConnectedProps<{||}, StateProps, DispatchProps>;
+type Props = ConnectedProps<{|}, StateProps, DispatchProps>;
 
 import './CallNodeContextMenu.css';
 
@@ -394,7 +394,7 @@ class CallNodeContextMenuImpl extends React.PureComponent<Props> {
     +callNodeInfo: CallNodeInfo,
     +callNodePath: CallNodePath,
     +callNodeIndex: IndexIntoCallNodeTable,
-  |} {
+  } {
     const {
       thread,
       threadsKey,
@@ -617,7 +617,7 @@ class CallNodeContextMenuImpl extends React.PureComponent<Props> {
 }
 
 export const CallNodeContextMenu = explicitConnect<
-  {||},
+  {|},
   StateProps,
   DispatchProps
 >({
@@ -668,7 +668,7 @@ function TransformMenuItem(props: {|
   +shortcut: string,
   +icon: string,
   +title: string,
-|}) {
+}) {
   return (
     <MenuItem onClick={props.onClick} data={{ type: props.transform }}>
       <div className="callNodeContextMenuWithKey" title={props.title}>

@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 /*
  * This file implements a header to be used on top of our content pages. It
@@ -14,7 +14,7 @@ import { InnerNavigationLink } from 'firefox-profiler/components/shared/InnerNav
 
 import './AppHeader.css';
 
-export class AppHeader extends React.PureComponent<{||}> {
+export class AppHeader extends React.PureComponent<{|}> {
   render() {
     return (
       <header>

@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import React, { PureComponent } from 'react';
 
@@ -17,13 +17,13 @@ import './NetworkSettings.css';
 
 type StateProps = {|
   +searchString: string,
-|};
+};
 
 type DispatchProps = {|
   +changeNetworkSearchString: typeof changeNetworkSearchString,
-|};
+};
 
-type Props = ConnectedProps<{||}, StateProps, DispatchProps>;
+type Props = ConnectedProps<{|}, StateProps, DispatchProps>;
 
 class NetworkSettingsImpl extends PureComponent<Props> {
   _onSearch = (value: string) => {
@@ -47,7 +47,7 @@ class NetworkSettingsImpl extends PureComponent<Props> {
   }
 }
 
-export const NetworkSettings = explicitConnect<{||}, StateProps, DispatchProps>(
+export const NetworkSettings = explicitConnect<{|}, StateProps, DispatchProps>(
   {
     mapStateToProps: state => ({
       searchString: getNetworkSearchString(state),

@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import * as React from 'react';
 import { Tooltip } from './Tooltip';
 import type { CssPixels } from 'firefox-profiler/types';
@@ -16,7 +16,7 @@ type State = {|
   isMouseOver: boolean,
   mouseX: CssPixels,
   mouseY: CssPixels,
-|};
+};
 
 /**
  * This component provides a way to automatically insert a tooltip when mousing over

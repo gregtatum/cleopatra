@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import React, { PureComponent } from 'react';
 import { withSize } from 'firefox-profiler/components/shared/WithSize';
@@ -36,7 +36,7 @@ import './TrackNetwork.css';
 
 type OwnProps = {|
   +threadIndex: ThreadIndex,
-|};
+};
 
 type StateProps = {|
   +pages: PageList | null,
@@ -46,12 +46,12 @@ type StateProps = {|
   +getMarker: MarkerIndex => Marker,
   +networkTiming: MarkerTiming[],
   +verticalMarkerIndexes: MarkerIndex[],
-|};
-type DispatchProps = {||};
+};
+type DispatchProps = {|};
 type Props = {|
   ...ConnectedProps<OwnProps, StateProps, DispatchProps>,
   ...SizeProps,
-|};
+};
 type State = void;
 
 class Network extends PureComponent<Props, State> {

@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
-// @flow
+
 
 import * as React from 'react';
 import explicitConnect from '../../utils/connect';
@@ -24,7 +24,7 @@ import type {
 // `declare var myVariables: MyType;` instead. However, it can sometimes be clearer to
 // create values inline, or from pre-existing type definitions. In addition,
 // `declare var` is not correctly lexically scoped.
-const ANY_VALUE = (0: any);
+const ANY_VALUE = (0 as any);
 
 /**
  * These type tests create various values that should all type check correctly to show
@@ -34,12 +34,12 @@ const ANY_VALUE = (0: any);
 type OwnProps = {|
   +ownPropString: string,
   +ownPropNumber: number,
-|};
+};
 
 type StateProps = {|
   +statePropString: string,
   +statePropNumber: number,
-|};
+};
 
 type ExampleActionCreator = string => Action;
 type ExampleThunkActionCreator = string => ThunkAction<number>;
@@ -47,7 +47,7 @@ type ExampleThunkActionCreator = string => ThunkAction<number>;
 type DispatchProps = {|
   +dispatchString: ExampleActionCreator,
   +dispatchThunk: ExampleThunkActionCreator,
-|};
+};
 
 type Props = ConnectedProps<OwnProps, StateProps, DispatchProps>;
 
@@ -83,7 +83,7 @@ const validMapStateToProps = (state, ownProps) => {
 declare var validDispatchToProps: {|
   +dispatchString: string => Action,
   +dispatchThunk: string => ThunkAction<number>,
-|};
+};
 
 // This value also serves as a test for the common case of creating a component
 // with valid values.
@@ -102,7 +102,7 @@ const ConnectedExampleComponent = explicitConnect<
   const wrapped: WrapDispatchProps<DispatchProps> = (ANY_VALUE: {|
     +dispatchString: string => Action,
     +dispatchThunk: string => number,
-  |});
+  });
 }
 
 {
@@ -111,7 +111,7 @@ const ConnectedExampleComponent = explicitConnect<
     +dispatchString: string => Action,
     // $FlowExpectError
     +dispatchThunk: string => ThunkAction<number>,
-  |});
+  });
 }
 
 {
@@ -163,7 +163,7 @@ const ConnectedExampleComponent = explicitConnect<
     // $FlowExpectError
     mapDispatchToProps: (ANY_VALUE: {|
       +dispatchThunk: string => ThunkAction<number>,
-    |}),
+    }),
     component: ExampleComponent,
   });
 }
@@ -176,7 +176,7 @@ const ConnectedExampleComponent = explicitConnect<
       // $FlowExpectError
       +dispatchString: string => string,
       +dispatchThunk: string => ThunkAction<number>,
-    |}),
+    }),
     component: ExampleComponent,
   });
 }
@@ -189,7 +189,7 @@ const ConnectedExampleComponent = explicitConnect<
     mapDispatchToProps: (ANY_VALUE: {|
       ...typeof validDispatchToProps,
       +extraProperty: string => string,
-    |}),
+    }),
     component: ExampleComponent,
   });
 }

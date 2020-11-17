@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import * as React from 'react';
 import classNames from 'classnames';
@@ -46,7 +46,7 @@ import './Publish.css';
 
 type OwnProps = {|
   +isRepublish?: boolean,
-|};
+};
 
 type StateProps = {|
   +profile: Profile,
@@ -62,13 +62,13 @@ type StateProps = {|
   +shouldSanitizeByDefault: boolean,
   +error: mixed,
   +abortFunction: () => mixed,
-|};
+};
 
 type DispatchProps = {|
   +toggleCheckedSharingOptions: typeof toggleCheckedSharingOptions,
   +attemptToPublish: typeof attemptToPublish,
   +resetUploadState: typeof resetUploadState,
-|};
+};
 
 type PublishProps = ConnectedProps<OwnProps, StateProps, DispatchProps>;
 
@@ -320,11 +320,11 @@ export const MenuButtonsPublish = explicitConnect<
 
 type DownloadSizeProps = {|
   +downloadSizePromise: Promise<string>,
-|};
+};
 
 type DownloadSizeState = {|
   downloadSize: string | null,
-|};
+};
 
 /**
  * The DownloadSize handles unpacking the downloadSizePromise.
@@ -376,12 +376,12 @@ type DownloadButtonProps = {|
   +compressedProfileBlobPromise: Promise<Blob>,
   +downloadSizePromise: Promise<string>,
   +downloadFileName: string,
-|};
+};
 
 type DownloadButtonState = {|
   compressedProfileBlob: Blob | null,
   prevPromise: Promise<Blob> | null,
-|};
+};
 
 /**
  * The DownloadButton handles unpacking the compressed profile promise.

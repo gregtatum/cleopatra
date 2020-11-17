@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 import { createImageMock } from '../fixtures/mocks/image';
 import { blankStore } from '../fixtures/stores';
@@ -25,11 +25,11 @@ describe('actions/icons', function() {
   beforeEach(() => {
     const mock = createImageMock();
     imageInstances = mock.instances;
-    (window: any).Image = mock.Image;
+    (window as any).Image = mock.Image;
   });
 
   afterEach(() => {
-    delete (window: any).Image;
+    delete (window as any).Image;
     imageInstances = [];
   });
 
@@ -93,7 +93,7 @@ describe('actions/icons', function() {
         expect(instance.src).toEqual(validIcons[i]);
         expect(instance.referrerPolicy).toEqual('no-referrer');
       });
-      imageInstances.forEach(instance => (instance: any).onload());
+      imageInstances.forEach(instance => (instance as any).onload());
       await Promise.all(promises);
 
       const state = getState();
@@ -122,7 +122,7 @@ describe('actions/icons', function() {
         iconsActions.iconStartLoading(invalidIcon)
       );
       expect(imageInstances.length).toBe(1);
-      (imageInstances[0]: any).onerror();
+      (imageInstances[0] as any).onerror();
 
       await actionPromise;
 

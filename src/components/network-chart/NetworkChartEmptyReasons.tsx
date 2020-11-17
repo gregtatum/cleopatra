@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 import React, { PureComponent } from 'react';
 
@@ -15,9 +15,9 @@ import type { State } from 'firefox-profiler/types';
 
 type StateProps = {|
   +threadName: string,
-|};
+};
 
-type Props = ConnectedProps<{||}, StateProps, {||}>;
+type Props = ConnectedProps<{|}, StateProps, {|}>;
 
 class NetworkChartEmptyReasonsImpl extends PureComponent<Props> {
   render() {
@@ -40,7 +40,7 @@ class NetworkChartEmptyReasonsImpl extends PureComponent<Props> {
   }
 }
 
-export const NetworkChartEmptyReasons = explicitConnect<{||}, StateProps, {||}>(
+export const NetworkChartEmptyReasons = explicitConnect<{|}, StateProps, {|}>(
   {
     mapStateToProps: (state: State) => ({
       threadName: selectedThreadSelectors.getFriendlyThreadName(state),

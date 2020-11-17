@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import * as React from 'react';
 import { timeCode } from 'firefox-profiler/utils/time-code';
 import classNames from 'classnames';
@@ -28,7 +28,7 @@ type Props<HoveredItem> = {|
   // Applies ctx.scale() to the canvas to draw using CssPixels rather than DevicePixels.
   +scaleCtxToCssPixels: boolean,
   +hitTest: (x: CssPixels, y: CssPixels) => HoveredItem | null,
-|};
+};
 
 // The naming of the X and Y coordinates here correspond to the ones
 // found on the MouseEvent interface.
@@ -329,7 +329,7 @@ export class ChartCanvas<HoveredItem> extends React.Component<
 /**
  * Check for shallow equality for objects, and strict equality for everything else.
  */
-function hoveredItemsAreEqual(a: any, b: any) {
+function hoveredItemsAreEqual(a: any, b as any {
   if (a && b && typeof a === 'object' && typeof b === 'object') {
     if (a.length !== b.length) {
       return false;

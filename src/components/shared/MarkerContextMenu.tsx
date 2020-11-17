@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import React, { PureComponent } from 'react';
 import { MenuItem, SubMenu } from 'react-contextmenu';
 
@@ -43,7 +43,7 @@ import { getThreadSelectorsFromThreadsKey } from 'firefox-profiler/selectors/per
 
 type OwnProps = {|
   +rightClickedMarkerInfo: RightClickedMarkerInfo,
-|};
+};
 
 type StateProps = {|
   +marker: Marker,
@@ -53,12 +53,12 @@ type StateProps = {|
   +thread: Thread | null,
   +implementationFilter: ImplementationFilter,
   +getMarkerLabelToCopy: MarkerIndex => string,
-|};
+};
 
 type DispatchProps = {|
   +updatePreviewSelection: typeof updatePreviewSelection,
   +setContextMenuVisibility: typeof setContextMenuVisibility,
-|};
+};
 
 type Props = ConnectedProps<OwnProps, StateProps, DispatchProps>;
 
@@ -339,7 +339,7 @@ const MarkerContextMenu = explicitConnect<OwnProps, StateProps, DispatchProps>({
 
 type MaybeProps = {|
   +rightClickedMarkerInfo: RightClickedMarkerInfo | null,
-|};
+};
 
 /**
  * This component only renders the context menu if there is a right clicked marker.
@@ -359,7 +359,7 @@ class MaybeMarkerContextMenuImpl extends PureComponent<MaybeProps> {
   }
 }
 
-export const MaybeMarkerContextMenu = explicitConnect<{||}, MaybeProps, {||}>({
+export const MaybeMarkerContextMenu = explicitConnect<{|}, MaybeProps, {|}>({
   mapStateToProps: state => ({
     rightClickedMarkerInfo: getRightClickedMarkerInfo(state),
   }),

@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 import React, { PureComponent } from 'react';
 import explicitConnect from '../../utils/connect';
@@ -24,15 +24,15 @@ type StateProps = {|
   +dataSource: DataSource,
   +phase: Phase,
   +symbolicationStatus: SymbolicationStatus,
-|};
-type Props = ConnectedProps<{||}, StateProps, {||}>;
+};
+type Props = ConnectedProps<{|}, StateProps, {|}>;
 
 type InstallStatus = 'pending' | 'installing' | 'installed' | 'idle';
 type State = {|
   installStatus: InstallStatus,
   isNoticeDisplayed: boolean,
   updatedWhileNotReady: boolean,
-|};
+};
 
 /**
  * This component is responsible for installing and updating the service worker,
@@ -344,7 +344,7 @@ class ServiceWorkerManagerImpl extends PureComponent<Props, State> {
   }
 }
 
-export const ServiceWorkerManager = explicitConnect<{||}, StateProps, {||}>({
+export const ServiceWorkerManager = explicitConnect<{|}, StateProps, {|}>({
   mapStateToProps: state => ({
     phase: getView(state).phase,
     dataSource: getDataSource(state),

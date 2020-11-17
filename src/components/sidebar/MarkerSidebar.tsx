@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import * as React from 'react';
 
@@ -18,9 +18,9 @@ type StateProps = {|
   +selectedThreadsKey: ThreadsKey,
   +marker: Marker | null,
   +markerIndex: MarkerIndex | null,
-|};
+};
 
-type Props = ConnectedProps<{||}, StateProps, {||}>;
+type Props = ConnectedProps<{|}, StateProps, {|}>;
 
 class MarkerSidebarImpl extends React.PureComponent<Props> {
   render() {
@@ -51,7 +51,7 @@ class MarkerSidebarImpl extends React.PureComponent<Props> {
   }
 }
 
-export const MarkerSidebar = explicitConnect<{||}, StateProps, {||}>({
+export const MarkerSidebar = explicitConnect<{|}, StateProps, {|}>({
   mapStateToProps: state => ({
     marker: selectedThreadSelectors.getSelectedMarker(state),
     markerIndex: selectedThreadSelectors.getSelectedMarkerIndex(state),

@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import * as React from 'react';
 
 import explicitConnect from '../../utils/connect';
@@ -19,14 +19,14 @@ import './MaybeFlameGraph.css';
 type StateProps = {|
   +maxStackDepth: number,
   +invertCallstack: boolean,
-|};
+};
 type DispatchProps = {|
   +changeInvertCallstack: typeof changeInvertCallstack,
-|};
-type Props = ConnectedProps<{||}, StateProps, DispatchProps>;
+};
+type Props = ConnectedProps<{|}, StateProps, DispatchProps>;
 
 class MaybeFlameGraphImpl extends React.PureComponent<Props> {
-  _flameGraph: {| current: HTMLDivElement | null |} = React.createRef();
+  _flameGraph: {| current: HTMLDivElement | null } = React.createRef();
 
   _onSwitchToNormalCallstackClick = () => {
     this.props.changeInvertCallstack(false);
@@ -66,7 +66,7 @@ class MaybeFlameGraphImpl extends React.PureComponent<Props> {
   }
 }
 
-export const MaybeFlameGraph = explicitConnect<{||}, StateProps, DispatchProps>(
+export const MaybeFlameGraph = explicitConnect<{|}, StateProps, DispatchProps>(
   {
     mapStateToProps: state => {
       return {

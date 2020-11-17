@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import * as React from 'react';
 import clamp from 'clamp';
@@ -27,7 +27,7 @@ type Props = {|
   // See https://flow.org/en/docs/react/children/ for more information.
   // Be careful: children need to handle a `style` property.
   children: React.ChildrenArray<React.Element<any>>,
-|};
+};
 
 type State = {|
   phase: 'RESTING' | 'FINISHING' | 'MANIPULATING',
@@ -37,19 +37,19 @@ type State = {|
   adjustPrecedingBy: number,
   adjustSucceedingBy: number,
   finalOffset: number,
-|};
+};
 
 type XY = {|
   pageXY: 'pageX' | 'pageY',
   translateXY: 'translateX' | 'translateY',
   lefttop: 'left' | 'top',
   rightbottom: 'right' | 'bottom',
-|};
+};
 
 type EventWithPageProperties = { pageX: number, pageY: number };
 
 export class Reorderable extends React.PureComponent<Props, State> {
-  _xy: {| horizontal: XY, vertical: XY |} = {
+  _xy: {| horizontal: XY, vertical: XY } = {
     horizontal: {
       pageXY: 'pageX',
       translateXY: 'translateX',

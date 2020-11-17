@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 // It's important to import the base CSS file first, so that CSS in the
 // subcomponents can more easily override the rules.
@@ -51,7 +51,7 @@ type OwnProps = {|
   // correctly (perhaps due to ES6 modules), so I just went with dependency injection
   // instead.
   injectedUrlShortener?: string => Promise<string>,
-|};
+};
 
 type StateProps = {|
   +profile: Profile,
@@ -62,13 +62,13 @@ type StateProps = {|
   +hasPrePublishedState: boolean,
   +symbolicationStatus: SymbolicationStatus,
   +abortFunction: () => mixed,
-|};
+};
 
 type DispatchProps = {|
   +dismissNewlyPublished: typeof dismissNewlyPublished,
   +revertToPrePublishedState: typeof revertToPrePublishedState,
   +resymbolicateProfile: typeof resymbolicateProfile,
-|};
+};
 
 type Props = ConnectedProps<OwnProps, StateProps, DispatchProps>;
 

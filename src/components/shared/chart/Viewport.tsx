@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 // This is using the existential types in the generics, which would be harder to
 // remove. It might be possible to switch this took use hooks.
@@ -109,17 +109,17 @@ export type Viewport = {|
   +isDragging: boolean,
   +moveViewport: (CssPixels, CssPixels) => void,
   +isSizeSet: boolean,
-|};
+};
 
 type ViewportStateProps = {|
   +panelLayoutGeneration: number,
   +hasZoomedViaMousewheel?: boolean,
-|};
+};
 
 type ViewportDispatchProps = {|
   +updatePreviewSelection: typeof updatePreviewSelection,
   +setHasZoomedViaMousewheel?: typeof setHasZoomedViaMousewheel,
-|};
+};
 
 // These are the props consumed by this Higher-Order Component (HOC), but can be
 // optionally used by the wrapped component.
@@ -146,14 +146,14 @@ type ViewportOwnProps<ChartProps> = {|
       prevProps: ChartProps,
       nextProps: ChartProps
     ) => boolean,
-  |},
+  },
   +chartProps: ChartProps,
-|};
+};
 
 type HorizontalViewport = {|
   viewportLeft: UnitIntervalOfProfileRange,
   viewportRight: UnitIntervalOfProfileRange,
-|};
+};
 
 type State = {|
   containerWidth: CssPixels,
@@ -167,7 +167,7 @@ type State = {|
   isDragging: boolean,
   isScrollHintVisible: boolean,
   isSizeSet: boolean,
-|};
+};
 
 import './Viewport.css';
 
@@ -189,7 +189,7 @@ export type WithChartViewport<
   ChartProps: $ReadOnly<{|
     ...ChartOwnProps,
     viewport: Viewport,
-  |}>
+  }>
 > = (
   // Take as input a React component whose props accept the { +viewport: Viewport }.
   ChartComponent: React.ComponentType<ChartProps>

@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 import React, { PureComponent } from 'react';
 
@@ -17,9 +17,9 @@ import type { State } from 'firefox-profiler/types';
 type StateProps = {|
   +threadName: string,
   +isMarkerChartEmptyInFullRange: boolean,
-|};
+};
 
-type Props = ConnectedProps<{||}, StateProps, {||}>;
+type Props = ConnectedProps<{|}, StateProps, {|}>;
 class MarkerChartEmptyReasonsImpl extends PureComponent<Props> {
   render() {
     const { isMarkerChartEmptyInFullRange, threadName } = this.props;
@@ -38,7 +38,7 @@ class MarkerChartEmptyReasonsImpl extends PureComponent<Props> {
   }
 }
 
-export const MarkerChartEmptyReasons = explicitConnect<{||}, StateProps, {||}>({
+export const MarkerChartEmptyReasons = explicitConnect<{|}, StateProps, {|}>({
   mapStateToProps: (state: State) => ({
     threadName: selectedThreadSelectors.getFriendlyThreadName(state),
     isMarkerChartEmptyInFullRange: selectedThreadSelectors.getAreMarkerPanelsEmptyInFullRange(

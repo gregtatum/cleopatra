@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 // This worker is imported as WebWorker since it's conflicting with the Worker
 // global type.
@@ -17,7 +17,7 @@ type ZeeWorkerData = {
 
 function workerOnMessage(zeeWorker: Worker) {
   zeeWorker.onmessage = function(msg: MessageEvent) {
-    const data = ((msg.data: any): ZeeWorkerData);
+    const data = ((msg.data as any): ZeeWorkerData);
     const callbacks = zeeCallbacks[data.callbackID];
     if (callbacks) {
       callbacks[data.type](data.data);

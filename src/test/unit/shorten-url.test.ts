@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import { shortenUrl, expandUrl } from 'firefox-profiler/utils/shorten-url';
 import { Response } from 'firefox-profiler/test/fixtures/mocks/response';
@@ -23,7 +23,7 @@ function mockFetchForBitly({
 }: {|
   endpointUrl: string,
   responseFromRequestPayload: any => Response,
-|}) {
+}) {
   window.fetch.mockImplementation(async (urlString, options) => {
     const { method, headers, body } = options;
 

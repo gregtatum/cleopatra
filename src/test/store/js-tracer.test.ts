@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 import { storeWithProfile } from '../fixtures/stores';
 import { selectedThreadSelectors } from '../../selectors/per-thread';
 import { ensureExists } from '../../utils/flow';
@@ -432,7 +432,7 @@ function getHumanReadableJsTracerTiming({
   useSelfTime: boolean,
   events?: TestDefinedJsTracerEvent[],
   profile?: Profile,
-|}): string[] {
+}): string[] {
   if (!profile) {
     profile = getProfileWithJsTracerEvents(
       ensureExists(

@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 import { resourceTypes, shallowCloneFuncTable } from './data-structures';
 import { SymbolsNotFoundError } from './errors';
@@ -188,14 +188,14 @@ type ThreadLibSymbolicationInfo = {|
   allFramesForThisLib: Array<IndexIntoFrameTable>,
   // All addresses for frames for this lib in this thread, as lib-relative offsets.
   frameAddresses: Array<Address>,
-|};
+};
 
 // This type exists because we symbolicate the profile in steps in order to
 // provide a profile to the user faster. This type represents a single step.
 export type SymbolicationStepInfo = {|
   threadLibSymbolicationInfo: ThreadLibSymbolicationInfo,
   resultsForLib: Map<Address, AddressResult>,
-|};
+};
 
 export type FuncToFuncMap = Map<IndexIntoFuncTable, IndexIntoFuncTable>;
 

@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import * as React from 'react';
 import clamp from 'clamp';
@@ -38,24 +38,24 @@ type OwnProps = {|
   +width: number,
   +children: React.Node,
   +className?: string,
-|};
+};
 
 type StateProps = {|
   +previewSelection: PreviewSelection,
   +committedRange: StartEndRange,
   +zeroAt: Milliseconds,
-|};
+};
 
 type DispatchProps = {|
   +commitRange: typeof commitRange,
   +updatePreviewSelection: typeof updatePreviewSelection,
-|};
+};
 
 type Props = ConnectedProps<OwnProps, StateProps, DispatchProps>;
 
 type State = {|
   hoverLocation: null | CssPixels,
-|};
+};
 
 class TimelineRulerAndSelection extends React.PureComponent<Props, State> {
   _handlers: ?{

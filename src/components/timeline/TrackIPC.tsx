@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import * as React from 'react';
 import explicitConnect from 'firefox-profiler/utils/connect';
@@ -19,20 +19,20 @@ import './TrackIPC.css';
 
 type OwnProps = {|
   +threadIndex: ThreadIndex,
-|};
+};
 
 type StateProps = {|
   +rangeStart: Milliseconds,
   +rangeEnd: Milliseconds,
-|};
+};
 
 type DispatchProps = {|
   updatePreviewSelection: typeof updatePreviewSelection,
-|};
+};
 
 type Props = ConnectedProps<OwnProps, StateProps, DispatchProps>;
 
-type State = {||};
+type State = {|};
 
 /**
  * A component for showing IPC messages for a particular thread.

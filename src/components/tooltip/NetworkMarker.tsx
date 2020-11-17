@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import * as React from 'react';
 import classNames from 'classnames';
@@ -127,7 +127,7 @@ type NetworkPhaseProps = {|
   +dur: Milliseconds,
   +startPosition: Milliseconds,
   +phaseDuration: Milliseconds,
-|};
+};
 
 class NetworkPhase extends React.PureComponent<NetworkPhaseProps> {
   render() {
@@ -169,7 +169,7 @@ class NetworkPhase extends React.PureComponent<NetworkPhaseProps> {
 type Props = {|
   +payload: NetworkPayload,
   +zeroAt: Milliseconds,
-|};
+};
 
 export class TooltipNetworkMarkerPhases extends React.PureComponent<Props> {
   _getPhasesForProperties(

@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import React, { PureComponent } from 'react';
 import explicitConnect from 'firefox-profiler/utils/connect';
@@ -18,20 +18,20 @@ type OwnProps =
   | {|
       // This prop is used by call tree.
       +displayData: CallNodeDisplayData,
-    |}
+    }
   | {|
       // This prop is for other parts of the profiler.
       +iconUrl: string | null,
-    |};
+    };
 
 type StateProps = {|
   +className: string,
   +icon: string | null,
-|};
+};
 
 type DispatchProps = {|
   +iconStartLoading: typeof iconStartLoading,
-|};
+};
 
 type Props = ConnectedProps<OwnProps, StateProps, DispatchProps>;
 

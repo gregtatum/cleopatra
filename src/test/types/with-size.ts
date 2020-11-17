@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
-// @flow
+
 
 import * as React from 'react';
 import { withSize, type SizeProps } from '../../components/shared/WithSize';
@@ -16,7 +16,7 @@ type Props = {|
   +ownPropA: 'a',
   +ownPropB: 'b',
   ...SizeProps,
-|};
+};
 
 class ExampleComponent extends React.PureComponent<Props> {
   render() {
@@ -71,7 +71,7 @@ type NoSizingProps = {|
   +ownPropA: 'a',
   +ownPropB: 'b',
   // The size props are omitted.
-|};
+};
 
 class NoSizing extends React.PureComponent<NoSizingProps> {
   render() {

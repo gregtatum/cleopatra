@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import * as React from 'react';
 import ReactDOM from 'react-dom';
@@ -33,7 +33,7 @@ describe('ActiveTabTimeline', function() {
       // opt out of the type checker for this mock by returning `any`.
       const mockEl = ({
         getBoundingClientRect: () => getBoundingBox(300, 300),
-      }: any);
+      } as any);
       return mockEl;
     });
 

@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import * as React from 'react';
 
 /*
@@ -29,7 +29,7 @@ type DetailProps = {|
   +label: string,
   // Only one child is accepted.
   +children?: void | null | boolean | string | number | React.Element<any>,
-|};
+};
 
 export function TooltipDetail({ label, children }: DetailProps) {
   if (children === null || children === undefined || children === '') {
@@ -54,7 +54,7 @@ export type TooltipDetailComponent = React.Element<
 type Props = {|
   // This component accepts only TooltipDetail children.
   +children: React.ChildrenArray<TooltipDetailComponent>,
-|};
+};
 
 export function TooltipDetails({ children }: Props) {
   return <div className="tooltipDetails">{children}</div>;

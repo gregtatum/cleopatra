@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 // Main use cases of storing profiles are tested in the publish flow
 // (test/store/publish.test.js). In this file we'll test more specific cases.

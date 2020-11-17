@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import * as React from 'react';
 import { showMenu } from 'react-contextmenu';
@@ -69,28 +69,28 @@ type StateProps = {|
   +hiddenTrackCount: HiddenTrackCount,
   +activeBrowsingContextID: BrowsingContextID | null,
   +timelineTrackOrganization: TimelineTrackOrganization,
-|};
+};
 
 type DispatchProps = {|
   +changeGlobalTrackOrder: typeof changeGlobalTrackOrder,
   +changeTimelineType: typeof changeTimelineType,
   +changeRightClickedTrack: typeof changeRightClickedTrack,
   +changeTimelineTrackOrganization: typeof changeTimelineTrackOrganization,
-|};
+};
 
 type Props = {|
   ...SizeProps,
-  ...ConnectedProps<{||}, StateProps, DispatchProps>,
-|};
+  ...ConnectedProps<{|}, StateProps, DispatchProps>,
+};
 
 type State = {|
   initialSelected: InitialSelectedTrackReference | null,
-|};
+};
 
 class TimelineSettingsGraphType extends React.PureComponent<{|
   +timelineType: TimelineType,
   +changeTimelineType: typeof changeTimelineType,
-|}> {
+}> {
   _changeToCategories = () => this.props.changeTimelineType('category');
   _changeToStacks = () => this.props.changeTimelineType('stack');
 
@@ -130,7 +130,7 @@ class TimelineSettingsGraphType extends React.PureComponent<{|
 class TimelineSettingsHiddenTracks extends React.PureComponent<{|
   +hiddenTrackCount: HiddenTrackCount,
   +changeRightClickedTrack: typeof changeRightClickedTrack,
-|}> {
+}> {
   _showMenu = (event: SyntheticMouseEvent<HTMLElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
     this.props.changeRightClickedTrack(null);
@@ -168,7 +168,7 @@ class TimelineSettingsActiveTabView extends React.PureComponent<{|
   +activeBrowsingContextID: BrowsingContextID | null,
   +timelineTrackOrganization: TimelineTrackOrganization,
   +changeTimelineTrackOrganization: typeof changeTimelineTrackOrganization,
-|}> {
+}> {
   _toggleActiveTabView = () => {
     const {
       timelineTrackOrganization,
@@ -312,7 +312,7 @@ class FullTimeline extends React.PureComponent<Props, State> {
   }
 }
 
-export default explicitConnect<{||}, StateProps, DispatchProps>({
+export default explicitConnect<{|}, StateProps, DispatchProps>({
   mapStateToProps: state => ({
     globalTracks: getGlobalTracks(state),
     globalTrackOrder: getGlobalTrackOrder(state),

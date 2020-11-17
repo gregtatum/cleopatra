@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 // We want to test these components in isolation and tightly control the actions
 // dispatched and avoid any side-effects.  That's why we mock this module and
@@ -174,9 +174,9 @@ function setup() {
   // Let's silence the error output to the console
   jest.spyOn(console, 'error').mockImplementation(() => {});
   // Flow doesn't know these actions are jest mocks.
-  (retrieveProfileFromAddon: any).mockImplementation(() => async () => {});
-  (retrieveProfileFromStore: any).mockImplementation(() => async () => {});
-  (retrieveProfilesToCompare: any).mockImplementation(() => async () => {});
+  (retrieveProfileFromAddon as any).mockImplementation(() => async () => {});
+  (retrieveProfileFromStore as any).mockImplementation(() => async () => {});
+  (retrieveProfilesToCompare as any).mockImplementation(() => async () => {});
 
   const store = blankStore();
   const renderResult = render(

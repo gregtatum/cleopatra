@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import type {
   Milliseconds,
@@ -88,7 +88,7 @@ export type StackTable = {|
   subcategory: IndexIntoSubcategoryListForCategory[],
   prefix: Array<IndexIntoStackTable | null>,
   length: number,
-|};
+};
 
 /**
  * Profile samples can come in a variety of forms and represent different information.
@@ -166,7 +166,7 @@ export type SamplesTable = {|
   weight: null | number[],
   weightType: WeightType,
   length: number,
-|};
+};
 
 /**
  * JS allocations are recorded as a marker payload, but in profile processing they
@@ -184,7 +184,7 @@ export type JsAllocationsTable = {|
   inNursery: boolean[],
   stack: Array<IndexIntoStackTable | null>,
   length: number,
-|};
+};
 
 /**
  * This variant is the original version of the table, before the memory address
@@ -198,7 +198,7 @@ export type UnbalancedNativeAllocationsTable = {|
   weightType: 'bytes',
   stack: Array<IndexIntoStackTable | null>,
   length: number,
-|};
+};
 
 /**
  * The memory address and thread ID were added later.
@@ -207,7 +207,7 @@ export type BalancedNativeAllocationsTable = {|
   ...UnbalancedNativeAllocationsTable,
   memoryAddress: number[],
   threadId: number[],
-|};
+};
 
 /**
  * Native allocations are recorded as a marker payload, but in profile processing they
@@ -251,7 +251,7 @@ export type RawMarkerTable = {|
   phase: number[],
   category: IndexIntoCategoryList[],
   length: number,
-|};
+};
 
 /**
  * Frames contain the context information about the function execution at the moment in
@@ -279,7 +279,7 @@ export type FrameTable = {|
   column: (number | null)[],
   optimizations: ({} | null)[],
   length: number,
-|};
+};
 
 /**
  * The funcTable stores the functions that were called in the profile.
@@ -335,7 +335,7 @@ export type FuncTable = {|
   address: Array<Address | -1>,
 
   length: number,
-|};
+};
 
 /**
  * The ResourceTable holds additional information about functions. It tends to contain
@@ -350,7 +350,7 @@ export type ResourceTable = {|
   name: Array<IndexIntoStringTable | -1>,
   host: Array<IndexIntoStringTable | void | null>,
   type: resourceTypeEnum[],
-|};
+};
 
 /**
  * Information about libraries, for instance the Firefox executables, and its memory
@@ -380,13 +380,13 @@ export type Lib = {|
   debugName: string, // e.g. "firefox", or "firefox.pdb" on Windows
   debugPath: string, // e.g. "/Applications/FirefoxNightly.app/Contents/MacOS/firefox"
   breakpadId: string, // e.g. "E54D3AF274383256B9F6144F83F3F7510"
-|};
+};
 
 export type Category = {|
   name: string,
   color: string,
   subcategories: string[],
-|};
+};
 
 export type CategoryList = Array<Category>;
 
@@ -407,7 +407,7 @@ export type Page = {|
   url: string,
   // 0 means no embedder
   embedderInnerWindowID: number,
-|};
+};
 
 export type PageList = Array<Page>;
 
@@ -421,7 +421,7 @@ export type PausedRange = {|
   // null if the profiler was still paused when the profile was captured
   endTime: Milliseconds | null,
   reason: 'profiler-paused' | 'collecting',
-|};
+};
 
 export type JsTracerTable = {|
   events: Array<IndexIntoStringTable>,
@@ -430,7 +430,7 @@ export type JsTracerTable = {|
   line: Array<number | null>, // Line number.
   column: Array<number | null>, // Column number.
   length: number,
-|};
+};
 
 export type CounterSamplesTable = {|
   time: Milliseconds[],
@@ -439,7 +439,7 @@ export type CounterSamplesTable = {|
   // The count of the data, for instance for memory this would be bytes.
   count: number[],
   length: number,
-|};
+};
 
 export type Counter = {|
   name: string,
@@ -450,8 +450,8 @@ export type Counter = {|
   sampleGroups: $ReadOnlyArray<{|
     id: number,
     samples: CounterSamplesTable,
-  |}>,
-|};
+  }>,
+};
 
 /**
  * The statistics about profiler overhead. It includes max/min/mean values of
@@ -480,7 +480,7 @@ export type ProfilerOverheadStats = {|
   overheadPercentage: Microseconds,
   profiledDuration: Microseconds,
   samplingCount: Microseconds,
-|};
+};
 
 /**
  * This object represents the configuration of the profiler when the profile was recorded.
@@ -494,7 +494,7 @@ export type ProfilerConfiguration = {|
   // Active BrowsingContext ID indicates a Firefox tab. That field allows us to
   // create an "active tab view".
   activeBrowsingContextID?: BrowsingContextID,
-|};
+};
 
 /**
  * Gecko Profiler records profiler overhead samples of specific tasks that take time.
@@ -510,7 +510,7 @@ export type ProfilerOverheadSamplesTable = {|
   threads: Array<Microseconds>,
   time: Array<Milliseconds>,
   length: number,
-|};
+};
 
 /**
  * Information about profiler overhead. It includes overhead timings for
@@ -523,7 +523,7 @@ export type ProfilerOverhead = {|
   statistics?: ProfilerOverheadStats,
   pid: Pid,
   mainThreadIndex: ThreadIndex,
-|};
+};
 
 /**
  * Gecko has one or more processes. There can be multiple threads per processes. Each
@@ -568,14 +568,14 @@ export type Thread = {|
   funcTable: FuncTable,
   resourceTable: ResourceTable,
   jsTracer?: JsTracerTable,
-|};
+};
 
 export type ExtensionTable = {|
   baseURL: string[],
   id: string[],
   name: string[],
   length: number,
-|};
+};
 
 /**
  * Visual progress describes the visual progression during page load. A sample is generated
@@ -586,7 +586,7 @@ export type ProgressGraphData = {|
   percent: number,
   // The time in milliseconds which the sample was taken.
   timestamp: Milliseconds,
-|};
+};
 
 /**
  * Visual metrics are performance metrics that measure above-the-fold webpage visual performance,
@@ -623,7 +623,7 @@ export type VisualMetrics = {|
   VisualComplete85: number,
   VisualComplete95: number,
   VisualComplete99: number,
-|};
+};
 
 /**
  * Meta information associated for the entire profile.
@@ -728,7 +728,7 @@ export type ProfileMeta = {|
   // Markers are displayed in the UI according to a schema definition. See the
   // MarkerSchema type for more information.
   markerSchema: MarkerSchema[],
-|};
+};
 
 /**
  * All of the data for a processed profile.
@@ -744,12 +744,12 @@ export type Profile = {|
   // This is list because there is a profiler overhead per process.
   profilerOverhead?: ProfilerOverhead[],
   threads: Thread[],
-|};
+};
 
 type SerializableThread = {|
   ...$Diff<Thread, { stringTable: UniqueStringArray }>,
   stringArray: string[],
-|};
+};
 
 /**
  * The UniqueStringArray is a class, and is not serializable to JSON. This profile
@@ -758,4 +758,4 @@ type SerializableThread = {|
 export type SerializableProfile = {|
   ...Profile,
   threads: SerializableThread[],
-|};
+};

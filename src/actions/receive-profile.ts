@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import { oneLine } from 'common-tags';
 import queryString from 'query-string';
 import {
@@ -107,7 +107,7 @@ export function loadProfile(
     implementationFilter: ImplementationFilter,
     transformStacks: TransformStacksPerThread,
     geckoProfiler?: $GeckoProfiler,
-  |}> = {},
+  }> = {},
   initialLoad: boolean = false
 ): ThunkAction<Promise<void>> {
   return async dispatch => {
@@ -636,7 +636,7 @@ export function viewProfile(
     implementationFilter: ImplementationFilter,
     transformStacks: TransformStacksPerThread,
     geckoProfiler: $GeckoProfiler,
-  |}> = {}
+  }> = {}
 ): ThunkAction<Promise<void>> {
   return async dispatch => {
     await dispatch(loadProfile(profile, config, false));
@@ -1220,7 +1220,7 @@ function _fileReader(input: File) {
     // reader.result very well, as its definition is <string | ArrayBuffer>.
     // Here we ensure type safety by returning the proper Promise type from the
     // methods below.
-    reader.onload = () => resolve((reader.result: any));
+    reader.onload = () => resolve((reader.result as any));
     reader.onerror = () => reject(reader.error);
   });
 
@@ -1397,7 +1397,7 @@ export function retrieveProfilesToCompare(
 export function getProfilesFromRawUrl(
   location: Location
 ): ThunkAction<
-  Promise<{| profile: Profile | null, shouldSetupInitialUrlState: boolean |}>
+  Promise<{| profile: Profile | null, shouldSetupInitialUrlState: boolean }>
 > {
   return async (dispatch, getState) => {
     const pathParts = location.pathname.split('/').filter(d => d);

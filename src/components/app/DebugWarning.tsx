@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import React, { PureComponent } from 'react';
 import { Warning } from '../shared/Warning';
@@ -14,9 +14,9 @@ import type { ConnectedProps } from '../../utils/connect';
 
 type StateProps = {|
   +meta: ProfileMeta,
-|};
+};
 
-type Props = ConnectedProps<{||}, StateProps, {||}>;
+type Props = ConnectedProps<{|}, StateProps, {|}>;
 class DebugWarningImp extends PureComponent<Props> {
   render() {
     const { meta } = this.props;
@@ -31,7 +31,7 @@ class DebugWarningImp extends PureComponent<Props> {
   }
 }
 
-export const DebugWarning = explicitConnect<{||}, StateProps, {||}>({
+export const DebugWarning = explicitConnect<{|}, StateProps, {|}>({
   mapStateToProps: state => ({
     meta: getMeta(state),
   }),

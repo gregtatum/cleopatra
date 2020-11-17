@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 //
 import { STATUS_CODES } from 'http';
 import type { MixedObject } from 'firefox-profiler/types';
@@ -21,7 +21,7 @@ export class Response {
       status: number,
       statusText?: string,
       headers?: MixedObject,
-    |}
+    }
   ) {
     this.status = options.status || 200;
     this.statusText = options.statusText || STATUS_CODES[this.status];

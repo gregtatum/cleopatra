@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import type { Milliseconds, StartEndRange } from './units';
 import type { MarkerPayload } from './markers';
 import type {
@@ -89,7 +89,7 @@ export type DerivedMarkerInfo = {|
     MarkerIndex,
     IndexIntoRawMarkerTable[]
   >,
-|};
+};
 
 export type Marker = {|
   start: Milliseconds,
@@ -98,7 +98,7 @@ export type Marker = {|
   category: IndexIntoCategoryList,
   data: MarkerPayload,
   incomplete?: boolean,
-|};
+};
 
 /**
  * A value with this type uniquely identifies a marker. This is the index of a
@@ -151,7 +151,7 @@ export type MarkerTiming = {|
   name: string,
   bucket: string,
   length: number,
-|};
+};
 
 export type MarkerTimingRows = Array<MarkerTiming>;
 
@@ -198,23 +198,23 @@ export type AccumulatedCounterSamples = {|
   // For a memory counter, this gives the relative offset of bytes in that range
   // selection. The array will share the indexes of the range filtered counter samples.
   +accumulatedCounts: number[],
-|};
+};
 
 export type StackType = 'js' | 'native' | 'unsymbolicated';
 
 export type GlobalTrack =
-  | {| +type: 'process', +pid: Pid, +mainThreadIndex: ThreadIndex | null |}
-  | {| +type: 'screenshots', +id: string, +threadIndex: ThreadIndex |}
-  | {| +type: 'visual-progress' |}
-  | {| +type: 'perceptual-visual-progress' |}
-  | {| +type: 'contentful-visual-progress' |};
+  | {| +type: 'process', +pid: Pid, +mainThreadIndex: ThreadIndex | null }
+  | {| +type: 'screenshots', +id: string, +threadIndex: ThreadIndex }
+  | {| +type: 'visual-progress' }
+  | {| +type: 'perceptual-visual-progress' }
+  | {| +type: 'contentful-visual-progress' };
 
 export type LocalTrack =
-  | {| +type: 'thread', +threadIndex: ThreadIndex |}
-  | {| +type: 'network', +threadIndex: ThreadIndex |}
-  | {| +type: 'memory', +counterIndex: CounterIndex |}
-  | {| +type: 'ipc', +threadIndex: ThreadIndex |}
-  | {| +type: 'event-delay', +threadIndex: ThreadIndex |};
+  | {| +type: 'thread', +threadIndex: ThreadIndex }
+  | {| +type: 'network', +threadIndex: ThreadIndex }
+  | {| +type: 'memory', +counterIndex: CounterIndex }
+  | {| +type: 'ipc', +threadIndex: ThreadIndex }
+  | {| +type: 'event-delay', +threadIndex: ThreadIndex };
 
 export type Track = GlobalTrack | LocalTrack;
 export type TrackIndex = number;
@@ -233,7 +233,7 @@ export type OriginsTimelineEntry = {|
   threadIndex: ThreadIndex,
   page: Page,
   origin: string,
-|};
+};
 
 /**
  * This is a "root" origin, which is viewed at the top level in a tab.
@@ -245,7 +245,7 @@ export type OriginsTimelineRoot = {|
   page: Page,
   origin: string,
   children: Array<OriginsTimelineEntry | OriginsTimelineNoOrigin>,
-|};
+};
 
 /**
  * This thread does not have any origin information associated with it. However
@@ -255,7 +255,7 @@ export type OriginsTimelineRoot = {|
 export type OriginsTimelineNoOrigin = {|
   type: 'no-origin',
   threadIndex: ThreadIndex,
-|};
+};
 
 export type OriginsTimelineTrack =
   | OriginsTimelineEntry
@@ -281,25 +281,25 @@ export type ActiveTabMainTrack = {|
   mainThreadIndex: ThreadIndex,
   threadIndexes: Set<ThreadIndex>,
   threadsKey: ThreadsKey,
-|};
+};
 
 export type ActiveTabScreenshotTrack = {|
   +type: 'screenshots',
   +id: string,
   +threadIndex: ThreadIndex,
-|};
+};
 
 export type ActiveTabResourceTrack =
   | {|
       +type: 'sub-frame',
       +threadIndex: ThreadIndex,
       +name: string,
-    |}
+    }
   | {|
       +type: 'thread',
       +threadIndex: ThreadIndex,
       +name: string,
-    |};
+    };
 
 /**
  * Timeline for active tab view.
@@ -373,7 +373,7 @@ export type ProfileFilterPageData = {|
   origin: string,
   hostname: string,
   favicon: string,
-|};
+};
 
 /**
  * This struct contains the traced timing for each call node. The arrays are indexed
@@ -384,7 +384,7 @@ export type ProfileFilterPageData = {|
 export type TracedTiming = {|
   +self: Float32Array,
   +running: Float32Array,
-|};
+};
 
 /*
  * Event delay table that holds the pre-processed event delay values and other
@@ -398,7 +398,7 @@ export type EventDelayInfo = {|
   +minDelay: Milliseconds,
   +maxDelay: Milliseconds,
   +delayRange: Milliseconds,
-|};
+};
 
 /**
  * This is a unique key that can be used in an object cache that represents either

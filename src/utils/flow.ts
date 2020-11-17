@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 import type { TabSlug } from '../app-logic/tabs-handling';
 import type { TransformType } from 'firefox-profiler/types';
@@ -39,7 +39,7 @@ export function immutableUpdate<T>(object: T, ...rest: any[]): T {
  * This function takes a string and returns either a valid TabSlug or null, this doesn't
  * throw an error so that any arbitrary string can be converted, e.g. from a URL.
  */
-export function toValidTabSlug(tabSlug: any): TabSlug | null {
+export function toValidTabSlug(tabSlug as any): TabSlug | null {
   const coercedTabSlug = (tabSlug: TabSlug);
   switch (coercedTabSlug) {
     case 'calltree':
@@ -79,7 +79,7 @@ export function ensureIsValidTabSlug(type: string): TabSlug {
  */
 export function convertToTransformType(type: string): TransformType | null {
   // Coerce this into a TransformType even if it's not one.
-  const coercedType = ((type: any): TransformType);
+  const coercedType = ((type as any): TransformType);
   switch (coercedType) {
     // Exhaustively check each TransformType. The default arm will assert that
     // we have been exhaustive.
@@ -103,27 +103,27 @@ export function convertToTransformType(type: string): TransformType | null {
 
 /**
  * This function coerces one type into another type.
- * This is equivalent to: (((value: A): any): B)
+ * This is equivalent to: (((value: A) as any) as B)
  */
 export function coerce<A, B>(item: A): B {
-  return (item: any);
+  return (item as any);
 }
 
 /**
  * It can be helpful to coerce one type that matches the shape of another.
  */
 export function coerceMatchingShape<T>(item: $Shape<T>): T {
-  return (item: any);
+  return (item as any);
 }
 
 /**
  * This is a type-friendly version of Object.values that assumes the object has
  * a Map-like structure.
  */
-export function objectValues<Value, Obj: {| [string]: Value |}>(
+export function objectValues<Value, Obj: {| [string]: Value }>(
   object: Obj
 ): Value[] {
-  return (Object.values: any)(object);
+  return (Object.values as any)(object);
 }
 
 /**
@@ -133,7 +133,7 @@ export function objectValues<Value, Obj: {| [string]: Value |}>(
 export function objectEntries<Key, Value>(object: {
   [Key]: Value,
 }): Array<[Key, Value]> {
-  return (Object.entries: any)(object);
+  return (Object.entries as any)(object);
 }
 
 /**

@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import * as React from 'react';
 import { TIMELINE_MARGIN_RIGHT } from 'firefox-profiler/app-logic/constants';
 import explicitConnect from 'firefox-profiler/utils/connect';
@@ -47,7 +47,7 @@ const ROW_HEIGHT = 16;
 type DispatchProps = {|
   +updatePreviewSelection: typeof updatePreviewSelection,
   +changeRightClickedMarker: typeof changeRightClickedMarker,
-|};
+};
 
 type StateProps = {|
   +getMarker: MarkerIndex => Marker,
@@ -59,9 +59,9 @@ type StateProps = {|
   +rightClickedMarkerIndex: MarkerIndex | null,
   +timelineMarginLeft: CssPixels,
   +timelineTrackOrganization: TimelineTrackOrganization,
-|};
+};
 
-type Props = ConnectedProps<{||}, StateProps, DispatchProps>;
+type Props = ConnectedProps<{|}, StateProps, DispatchProps>;
 
 class MarkerChartImpl extends React.PureComponent<Props> {
   _viewport: HTMLDivElement | null = null;
@@ -177,7 +177,7 @@ function viewportNeedsUpdate(
   return prevProps.markerTimingAndBuckets !== newProps.markerTimingAndBuckets;
 }
 
-export const MarkerChart = explicitConnect<{||}, StateProps, DispatchProps>({
+export const MarkerChart = explicitConnect<{|}, StateProps, DispatchProps>({
   mapStateToProps: state => {
     const markerTimingAndBuckets = selectedThreadSelectors.getMarkerChartTimingAndBuckets(
       state

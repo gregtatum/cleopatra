@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 // Ignore for this file, which uses extensive use of generic type bounds, which
 // triggers a false positive with this rule.
@@ -113,7 +113,7 @@ type ExplicitConnectOptions<
   component: React.ComponentType<
     ConnectedProps<OwnProps, StateProps, DispatchProps>
   >,
-|};
+};
 
 export type ConnectedProps<
   OwnProps: Object,
@@ -123,7 +123,7 @@ export type ConnectedProps<
   ...OwnProps,
   ...StateProps,
   ...DispatchProps,
-|}>;
+}>;
 
 export type ConnectedComponent<
   OwnProps: Object,
@@ -156,7 +156,7 @@ export default function explicitConnect<
   } = connectOptions;
 
   // Opt out of the flow-typed definition of react-redux's connect, and use our own.
-  return (connect: any)(
+  return (connect as any)(
     mapStateToProps,
     mapDispatchToProps,
     mergeProps,

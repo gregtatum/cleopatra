@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import * as React from 'react';
 import { MenuButtons } from '../../components/app/MenuButtons';
 import { MetaInfoPanel } from '../../components/app/MenuButtons/MetaInfo';
@@ -59,7 +59,7 @@ describe('app/MenuButtons', function() {
     });
 
     // Flow doesn't know uploadBinaryProfileData is a jest mock.
-    (uploadBinaryProfileData: any).mockImplementation(
+    (uploadBinaryProfileData as any).mockImplementation(
       (() => ({
         abortUpload: () => {
           // In the real implementation, we call xhr.abort, which in turn
@@ -164,31 +164,31 @@ describe('app/MenuButtons', function() {
 
   describe('<Publish>', function() {
     beforeAll(function() {
-      if ((window: any).TextEncoder) {
+      if ((window as any).TextEncoder) {
         throw new Error('A TextEncoder was already on the window object.');
       }
-      (window: any).TextEncoder = TextEncoder;
+      (window as any).TextEncoder = TextEncoder;
     });
 
     afterAll(async function() {
       delete URL.createObjectURL;
       delete URL.revokeObjectURL;
-      delete (window: any).TextEncoder;
+      delete (window as any).TextEncoder;
     });
 
     beforeEach(function() {
       // Flow doesn't know sha1 is a jest mock.
-      (sha1: any).mockImplementation((_data: Uint8Array) =>
+      (sha1 as any).mockImplementation((_data: Uint8Array) =>
         Promise.resolve(hash)
       );
       // Flow doesn't know shortenUrl is a jest mock.
-      (shortenUrl: any).mockImplementation(() =>
+      (shortenUrl as any).mockImplementation(() =>
         Promise.resolve('https://profiler.firefox.com/')
       );
       // jsdom does not have URL.createObjectURL.
       // See https://github.com/jsdom/jsdom/issues/1721
-      (URL: any).createObjectURL = () => 'mockCreateObjectUrl';
-      (URL: any).revokeObjectURL = () => {};
+      (URL as any).createObjectURL = () => 'mockCreateObjectUrl';
+      (URL as any).revokeObjectURL = () => {};
     });
 
     it('matches the snapshot for the closed state', () => {
@@ -342,7 +342,7 @@ describe('<MetaInfoPanel>', function() {
     type SymbolicationTestConfig = {|
       symbolicated: boolean,
       symbolicationStatus: SymbolicationStatus,
-    |};
+    };
 
     function setupSymbolicationTest(config: SymbolicationTestConfig) {
       const { profile } = getProfileFromTextSamples('A');

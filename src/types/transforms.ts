@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 /**
  * Transforms are the minimal representation some kind of transformation to the data
@@ -87,7 +87,7 @@ export type TransformDefinitions = {
     +callNodePath: CallNodePath,
     +implementation: ImplementationFilter,
     +inverted: boolean,
-  |},
+  },
 
   /**
    * This is the same operation as the FocusSubtree, but it is performed on each usage
@@ -116,7 +116,7 @@ export type TransformDefinitions = {
   'focus-function': {|
     +type: 'focus-function',
     +funcIndex: IndexIntoFuncTable,
-  |},
+  },
 
   /**
    * The MergeCallNode transform represents merging a CallNode into the parent CallNode. The
@@ -165,7 +165,7 @@ export type TransformDefinitions = {
     +type: 'merge-call-node',
     +callNodePath: CallNodePath,
     +implementation: ImplementationFilter,
-  |},
+  },
 
   /**
    * The MergeFunctions transform is similar to the MergeCallNode, except it merges a single
@@ -189,7 +189,7 @@ export type TransformDefinitions = {
   'merge-function': {|
     +type: 'merge-function',
     +funcIndex: IndexIntoFuncTable,
-  |},
+  },
 
   /**
    * The DropFunction transform removes samples from the thread that have a function
@@ -209,7 +209,7 @@ export type TransformDefinitions = {
   'drop-function': {|
     +type: 'drop-function',
     +funcIndex: IndexIntoFuncTable,
-  |},
+  },
 
   /**
    * Collapse resource takes CallNodes that are of a consecutive library, and collapses
@@ -233,7 +233,7 @@ export type TransformDefinitions = {
     // This is the index of the newly created function that represents the collapsed stack.
     +collapsedFuncIndex: IndexIntoFuncTable,
     +implementation: ImplementationFilter,
-  |},
+  },
 
   /**
    * Collapse direct recursion takes a function that calls itself recursively and collapses
@@ -255,7 +255,7 @@ export type TransformDefinitions = {
     +type: 'collapse-direct-recursion',
     +funcIndex: IndexIntoFuncTable,
     +implementation: ImplementationFilter,
-  |},
+  },
 
   /**
    * Collapse the subtree of a function into that function across the entire tree.
@@ -277,7 +277,7 @@ export type TransformDefinitions = {
   'collapse-function-subtree': {|
     +type: 'collapse-function-subtree',
     +funcIndex: IndexIntoFuncTable,
-  |},
+  },
 };
 
 // Extract the transforms into a union.

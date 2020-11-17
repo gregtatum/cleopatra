@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import * as React from 'react';
 import { withSize } from 'firefox-profiler/components/shared/WithSize';
@@ -38,7 +38,7 @@ type CanvasProps = {|
   +width: CssPixels,
   +height: CssPixels,
   +lineWidth: CssPixels,
-|};
+};
 
 /**
  * This component controls the rendering of the canvas. Every render call through
@@ -176,26 +176,26 @@ type OwnProps = {|
   +lineWidth: CssPixels,
   +graphHeight: CssPixels,
   +graphDotTooltipText: string,
-|};
+};
 
 type StateProps = {|
   +rangeStart: Milliseconds,
   +rangeEnd: Milliseconds,
   +interval: Milliseconds,
-|};
+};
 
-type DispatchProps = {||};
+type DispatchProps = {|};
 
 type Props = {|
   ...SizeProps,
   ...ConnectedProps<OwnProps, StateProps, DispatchProps>,
-|};
+};
 
 type State = {|
   hoveredVisualProgress: null | number,
   mouseX: CssPixels,
   mouseY: CssPixels,
-|};
+};
 
 /**
  * The visual progress track graph takes visual progress information from visual metrics, and renders it as a

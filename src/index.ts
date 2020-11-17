@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 // Import all global css. Ensure that this is these CSS imports happen before any
 // JS imports happen, as this determines the rule order. Global CSS should be easy

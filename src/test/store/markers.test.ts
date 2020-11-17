@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 import { storeWithProfile } from '../fixtures/stores';
 import { selectedThreadSelectors } from '../../selectors/per-thread';
 import {
@@ -146,7 +146,7 @@ describe('memory markers', function() {
   function setup() {
     // GC markers have some complicated data structures that are just mocked here with
     // this "any".
-    const any = (null: any);
+    const any = (null as any);
 
     return storeWithProfile(
       getProfileWithMarkers([

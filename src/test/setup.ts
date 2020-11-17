@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 // Importing this here makes it work everywhere.
 import '@testing-library/jest-dom';
@@ -12,7 +12,7 @@ import * as WorkerFactory from '../utils/worker-factory';
 afterEach(function() {
   // This `__shutdownWorkers` function only exists in the mocked test environment,
   // do not use flow typing on it.
-  const { __shutdownWorkers } = (WorkerFactory: any);
+  const { __shutdownWorkers } = (WorkerFactory as any);
   __shutdownWorkers();
 });
 

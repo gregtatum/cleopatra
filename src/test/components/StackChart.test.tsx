@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import * as React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
@@ -313,7 +313,7 @@ function setupCombinedTimings() {
   return results;
 }
 
-function setupUserTimings(config: {| isShowUserTimingsClicked: boolean |}) {
+function setupUserTimings(config: {| isShowUserTimingsClicked: boolean }) {
   // Approximately generate this type of graph with the following user timings.
   //
   // [renderFunction---------------------]
@@ -427,7 +427,7 @@ function setup(profile: Profile, funcNames: string[] = []) {
     return document.querySelector('#root-overlay .tooltip');
   }
 
-  type Position = {| x: CssPixels, y: CssPixels |};
+  type Position = {| x: CssPixels, y: CssPixels };
 
   // Use findFillTextPosition to determin the position.
   function leftClick(where: Position) {
@@ -486,5 +486,5 @@ function setup(profile: Profile, funcNames: string[] = []) {
  * Get around the type constraints of refining an HTMLElement into a radio input.
  */
 function getCheckedState(element: HTMLElement): mixed {
-  return (element: any).checked;
+  return (element as any).checked;
 }

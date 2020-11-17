@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import {
   attemptToPublish,
@@ -154,14 +154,14 @@ describe('attemptToPublish', function() {
   const BARE_PROFILE_TOKEN = 'FAKEHASH';
 
   beforeEach(function() {
-    if ((window: any).TextEncoder) {
+    if ((window as any).TextEncoder) {
       throw new Error('A TextEncoder was already on the window object.');
     }
-    (window: any).TextEncoder = TextEncoder;
+    (window as any).TextEncoder = TextEncoder;
   });
 
   afterEach(async function() {
-    delete (window: any).TextEncoder;
+    delete (window as any).TextEncoder;
   });
 
   function setupFakeUpload() {
@@ -198,7 +198,7 @@ describe('attemptToPublish', function() {
         return promise;
       },
     });
-    (uploadBinaryProfileData: any).mockImplementationOnce(initUploadProcess);
+    (uploadBinaryProfileData as any).mockImplementationOnce(initUploadProcess);
 
     function getUpdateUploadProgress() {
       return ensureExists(

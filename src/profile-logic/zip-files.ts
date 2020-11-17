@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 import { ensureIsValidTabSlug, objectEntries } from '../utils/flow';
 import type JSZip, { JSZipFile } from 'jszip';
@@ -19,13 +19,13 @@ export type ZipFileTable = {|
   file: Array<JSZipFile | null>,
   depth: number[],
   length: number,
-|};
+};
 
 export type ZipDisplayData = {|
   +name: string,
   +url: null | string,
   +zipTableIndex: IndexIntoZipFileTable,
-|};
+};
 
 export function createZipTable(zipEntries: JSZip): ZipFileTable {
   const fullPaths = objectEntries(zipEntries.files)

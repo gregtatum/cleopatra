@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import * as React from 'react';
 import { bisectionRight } from 'firefox-profiler/utils/bisect';
@@ -38,7 +38,7 @@ type CanvasProps = {|
   +height: CssPixels,
   +lineWidth: CssPixels,
   +eventDelays: EventDelayInfo,
-|};
+};
 
 /**
  * This component controls the rendering of the canvas. Every render call through
@@ -171,7 +171,7 @@ type OwnProps = {|
   +threadIndex: ThreadIndex,
   +lineWidth: CssPixels,
   +graphHeight: CssPixels,
-|};
+};
 
 type StateProps = {|
   +threadIndex: ThreadIndex,
@@ -182,20 +182,20 @@ type StateProps = {|
   +filteredThread: Thread,
   +unfilteredSamplesRange: StartEndRange | null,
   +eventDelays: EventDelayInfo,
-|};
+};
 
-type DispatchProps = {||};
+type DispatchProps = {|};
 
 type Props = {|
   ...SizeProps,
   ...ConnectedProps<OwnProps, StateProps, DispatchProps>,
-|};
+};
 
 type State = {|
   hoveredDelay: null | number,
   mouseX: CssPixels,
   mouseY: CssPixels,
-|};
+};
 
 /**
  *

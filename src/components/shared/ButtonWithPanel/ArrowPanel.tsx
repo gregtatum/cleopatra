@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 // This implements a panel with a "arrow" triangle graphic that points to the
 // button that triggers it.
@@ -19,13 +19,13 @@ type Props = {|
   +onClose: () => mixed,
   +className?: string,
   +children: React.Node,
-|};
+};
 
 type State = {|
   +open: boolean,
   +isClosing: boolean,
   +openGeneration: number,
-|};
+};
 
 export class ArrowPanel extends React.PureComponent<Props, State> {
   state = {

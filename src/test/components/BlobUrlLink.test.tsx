@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import * as React from 'react';
 import { render } from '@testing-library/react';
 import { BlobUrlLink } from '../../components/shared/BlobUrlLink';
@@ -13,8 +13,8 @@ describe('shared/BlobUrlLink', () => {
     // jsdom does not have URL.createObjectURL.
     // See https://github.com/jsdom/jsdom/issues/1721
     let i = 1;
-    (URL: any).createObjectURL = jest.fn(() => `mockCreateObjectUrl${i++}`);
-    (URL: any).revokeObjectURL = jest.fn(() => {});
+    (URL as any).createObjectURL = jest.fn(() => `mockCreateObjectUrl${i++}`);
+    (URL as any).revokeObjectURL = jest.fn(() => {});
   });
 
   afterAll(async () => {

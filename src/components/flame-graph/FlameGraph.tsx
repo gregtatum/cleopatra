@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import * as React from 'react';
 
 import explicitConnect from '../../utils/connect';
@@ -85,13 +85,13 @@ type StateProps = {|
   +samples: SamplesLikeTable,
   +unfilteredSamples: SamplesLikeTable,
   +tracedTiming: TracedTiming | null,
-|};
+};
 type DispatchProps = {|
   +changeSelectedCallNode: typeof changeSelectedCallNode,
   +changeRightClickedCallNode: typeof changeRightClickedCallNode,
   +handleCallNodeTransformShortcut: typeof handleCallNodeTransformShortcut,
-|};
-type Props = ConnectedProps<{||}, StateProps, DispatchProps>;
+};
+type Props = ConnectedProps<{|}, StateProps, DispatchProps>;
 
 class FlameGraphImpl extends React.PureComponent<Props> {
   _viewport: HTMLDivElement | null = null;
@@ -348,7 +348,7 @@ function viewportNeedsUpdate() {
   return false;
 }
 
-export const FlameGraph = explicitConnect<{||}, StateProps, DispatchProps>({
+export const FlameGraph = explicitConnect<{|}, StateProps, DispatchProps>({
   mapStateToProps: state => ({
     thread: selectedThreadSelectors.getFilteredThread(state),
     unfilteredThread: selectedThreadSelectors.getThread(state),

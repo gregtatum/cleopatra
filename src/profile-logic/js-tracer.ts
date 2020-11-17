@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 import {
   getEmptyFrameTable,
@@ -668,7 +668,7 @@ type JsTracerFixed = {|
   line: Array<number | null>, // Line number.
   column: Array<number | null>, // Column number.
   length: number,
-|};
+};
 
 /**
  * JS Tracer information has a start and duration, but due to precision issues, this

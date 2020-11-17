@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import * as React from 'react';
 import memoize from 'memoize-immutable';
 import {
@@ -66,18 +66,18 @@ export type OwnProps = {|
   +samples: SamplesLikeTable,
   +unfilteredSamples: SamplesLikeTable,
   +tracedTiming: TracedTiming | null,
-|};
+};
 
 type Props = {|
   ...OwnProps,
   // Bring in the viewport props from the higher order Viewport component.
   +viewport: Viewport,
-|};
+};
 
 type HoveredStackTiming = {|
   +depth: FlameGraphDepth,
   +flameGraphTimingIndex: IndexIntoFlameGraphTiming,
-|};
+};
 
 import './Canvas.css';
 

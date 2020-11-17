@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import * as React from 'react';
 import { TrackEventDelayGraph } from './TrackEventDelayGraph';
@@ -17,9 +17,9 @@ import './TrackEventDelay.css';
 
 type Props = {|
   +threadIndex: ThreadIndex,
-|};
+};
 
-export class TrackEventDelay extends React.PureComponent<Props, {||}> {
+export class TrackEventDelay extends React.PureComponent<Props, {|}> {
   render() {
     const { threadIndex } = this.props;
     const graphHeight = TRACK_EVENT_DELAY_HEIGHT;

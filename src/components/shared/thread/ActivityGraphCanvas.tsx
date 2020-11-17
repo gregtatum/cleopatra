@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * */
-// @flow
+
 
 import * as React from 'react';
 import {
@@ -37,10 +37,10 @@ type CanvasProps = {|
   +categories: CategoryList,
   +passFillsQuerier: ActivityFillGraphQuerier => void,
   +onMouseUp: (SyntheticMouseEvent<HTMLCanvasElement>) => void,
-|};
+};
 
 export class ActivityGraphCanvas extends React.PureComponent<CanvasProps> {
-  _canvas: {| current: null | HTMLCanvasElement |} = React.createRef();
+  _canvas: {| current: null | HTMLCanvasElement } = React.createRef();
   _categoryDrawStyles: null | CategoryDrawStyles = null;
 
   _renderCanvas() {

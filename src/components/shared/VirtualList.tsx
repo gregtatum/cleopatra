@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 /**
  * VirtualList implements a virtualized component. This means it doesn't
@@ -65,7 +65,7 @@ type VirtualListRowProps<Item> = {|
   //   panels where we'd want to redraw if some source value necessary to the
   //   computation changes.
   +forceRender?: number | string,
-|};
+};
 
 class VirtualListRow<Item> extends React.PureComponent<
   VirtualListRowProps<Item>
@@ -85,7 +85,7 @@ type VirtualListInnerChunkProps<Item> = {|
   +visibleRangeEnd: number,
   +columnIndex: number,
   +forceRender?: number | string,
-|};
+};
 
 class VirtualListInnerChunk<Item> extends React.PureComponent<
   VirtualListInnerChunkProps<Item>
@@ -149,7 +149,7 @@ type VirtualListInnerProps<Item> = {|
   +columnIndex: number,
   +containerWidth: CssPixels,
   +forceRender?: number | string,
-|};
+};
 
 class VirtualListInner<Item> extends React.PureComponent<
   VirtualListInnerProps<Item>
@@ -253,7 +253,7 @@ type VirtualListProps<Item> = {|
   +ariaRole?: string,
   // Aria-activedescendant specifies the children's "virtual" focus.
   +ariaActiveDescendant?: null | string,
-|};
+};
 
 type Geometry = {
   // getBoundingClientRect in the Flow definitions is wrong, and labels the return values
@@ -267,8 +267,8 @@ type Geometry = {
 export class VirtualList<Item> extends React.PureComponent<
   VirtualListProps<Item>
 > {
-  _container: {| current: HTMLDivElement | null |} = React.createRef();
-  _inner: {| current: VirtualListInner<Item> | null |} = React.createRef();
+  _container: {| current: HTMLDivElement | null } = React.createRef();
+  _inner: {| current: VirtualListInner<Item> | null } = React.createRef();
   _geometry: ?Geometry;
 
   componentDidMount() {

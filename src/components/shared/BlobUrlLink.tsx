@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import * as React from 'react';
 
@@ -15,7 +15,7 @@ type Props = {
 type State = {|
   url: string,
   prevBlob: Blob | null,
-|};
+};
 
 /**
  * This component is responsible for converting a Blob into an

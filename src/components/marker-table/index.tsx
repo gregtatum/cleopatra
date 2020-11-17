@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import React, { PureComponent } from 'react';
 import memoize from 'memoize-immutable';
@@ -45,7 +45,7 @@ type MarkerDisplayData = {|
   duration: string | null,
   name: string,
   type: string,
-|};
+};
 
 class MarkerTree {
   _getMarker: MarkerIndex => Marker;
@@ -145,14 +145,14 @@ type StateProps = {|
   +scrollToSelectionGeneration: number,
   +markerSchemaByName: MarkerSchemaByName,
   +getMarkerLabel: MarkerIndex => string,
-|};
+};
 
 type DispatchProps = {|
   +changeSelectedMarker: typeof changeSelectedMarker,
   +changeRightClickedMarker: typeof changeRightClickedMarker,
-|};
+};
 
-type Props = ConnectedProps<{||}, StateProps, DispatchProps>;
+type Props = ConnectedProps<{|}, StateProps, DispatchProps>;
 
 class MarkerTableImpl extends PureComponent<Props> {
   _fixedColumns = [
@@ -250,7 +250,7 @@ class MarkerTableImpl extends PureComponent<Props> {
   }
 }
 
-export const MarkerTable = explicitConnect<{||}, StateProps, DispatchProps>({
+export const MarkerTable = explicitConnect<{|}, StateProps, DispatchProps>({
   mapStateToProps: state => ({
     threadsKey: getSelectedThreadsKey(state),
     scrollToSelectionGeneration: getScrollToSelectionGeneration(state),

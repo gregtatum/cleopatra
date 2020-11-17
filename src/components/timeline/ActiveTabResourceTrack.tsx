@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import React, { PureComponent } from 'react';
 import classNames from 'classnames';
@@ -31,22 +31,22 @@ type OwnProps = {|
     el: InitialSelectedTrackReference,
     forceScroll?: boolean
   ) => void,
-|};
+};
 
 type StateProps = {|
   +isSelected: boolean,
-|};
+};
 
 type DispatchProps = {|
   +selectActiveTabTrack: typeof selectActiveTabTrack,
-|};
+};
 
 type Props = ConnectedProps<OwnProps, StateProps, DispatchProps>;
 
 type State = {|
   isOpen: boolean,
   prevIsSelected?: boolean,
-|};
+};
 
 class ActiveTabResourceTrackComponent extends PureComponent<Props, State> {
   _container: HTMLElement | null = null;

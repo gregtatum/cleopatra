@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import memoize from 'memoize-immutable';
 import * as React from 'react';
@@ -43,20 +43,20 @@ type StateProps = {|
   +originsTimeline: OriginsTimeline,
   +zeroAt: Milliseconds,
   +threads: Thread[],
-|};
+};
 
 type DispatchProps = {|
   +changeSelectedThreads: typeof changeSelectedThreads,
-|};
+};
 
 type Props = {|
   ...SizeProps,
-  ...ConnectedProps<{||}, StateProps, DispatchProps>,
-|};
+  ...ConnectedProps<{|}, StateProps, DispatchProps>,
+};
 
 type State = {|
   initialSelected: InitialSelectedTrackReference | null,
-|};
+};
 
 /**
  * This view is an experimental view, not meant for real usage at this time. It
@@ -169,7 +169,7 @@ class OriginsTimelineView extends React.PureComponent<Props, State> {
   }
 }
 
-export default explicitConnect<{||}, StateProps, DispatchProps>({
+export default explicitConnect<{|}, StateProps, DispatchProps>({
   mapStateToProps: state => ({
     threads: getThreads(state),
     committedRange: getCommittedRange(state),

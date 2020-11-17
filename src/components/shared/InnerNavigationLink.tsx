@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import * as React from 'react';
 
@@ -18,13 +18,13 @@ type OwnProps = {|
   +className?: string,
   +dataSource: DataSource,
   +children: React.Node,
-|};
+};
 
 type DispatchProps = {|
   +setDataSource: typeof setDataSource,
-|};
+};
 
-type Props = ConnectedProps<OwnProps, {||}, DispatchProps>;
+type Props = ConnectedProps<OwnProps, {|}, DispatchProps>;
 
 class InnerNavigationLinkImpl extends React.PureComponent<Props> {
   onClick = (e: SyntheticMouseEvent<>) => {
@@ -53,7 +53,7 @@ class InnerNavigationLinkImpl extends React.PureComponent<Props> {
 
 export const InnerNavigationLink = explicitConnect<
   OwnProps,
-  {||},
+  {|},
   DispatchProps
 >({
   mapDispatchToProps: { setDataSource },

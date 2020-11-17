@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 /*
  * --- TL;DR ---
@@ -63,7 +63,7 @@ export function mockDate(dateOrTimestamp: string | number): () => void {
 
 // This restores the real Date object. This is automatically called after a test.
 export function restoreDate() {
-  if (typeof (Date: any).mockRestore === 'function') {
-    (Date: any).mockRestore();
+  if (typeof (Date as any).mockRestore === 'function') {
+    (Date as any).mockRestore();
   }
 }

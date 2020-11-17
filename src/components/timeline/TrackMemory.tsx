@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import * as React from 'react';
 import explicitConnect from 'firefox-profiler/utils/connect';
@@ -31,21 +31,21 @@ import './TrackMemory.css';
 
 type OwnProps = {|
   +counterIndex: CounterIndex,
-|};
+};
 
 type StateProps = {|
   +threadIndex: ThreadIndex,
   +rangeStart: Milliseconds,
   +rangeEnd: Milliseconds,
-|};
+};
 
 type DispatchProps = {|
   updatePreviewSelection: typeof updatePreviewSelection,
-|};
+};
 
 type Props = ConnectedProps<OwnProps, StateProps, DispatchProps>;
 
-type State = {||};
+type State = {|};
 
 export class TrackMemoryImpl extends React.PureComponent<Props, State> {
   _onMarkerSelect = (start: Milliseconds, end: Milliseconds) => {

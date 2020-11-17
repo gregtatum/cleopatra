@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import {
   addDataToWindowObject,
   logFriendlyPreamble,
@@ -14,9 +14,9 @@ describe('console-accessible values on the window object', function() {
   // in the flow type definition.
 
   it('does not have the values initially', function() {
-    expect((window: any).profile).toBeUndefined();
-    expect((window: any).filteredProfile).toBeUndefined();
-    expect((window: any).callTree).toBeUndefined();
+    expect((window as any).profile).toBeUndefined();
+    expect((window as any).filteredProfile).toBeUndefined();
+    expect((window as any).callTree).toBeUndefined();
   });
 
   it('adds values to the console', function() {
@@ -30,10 +30,10 @@ describe('console-accessible values on the window object', function() {
 
   it('logs a friendly message', function() {
     const log = console.log;
-    (console: any).log = jest.fn();
+    (console as any).log = jest.fn();
     logFriendlyPreamble();
     expect(console.log.mock.calls.length).toEqual(2);
     expect(console.log.mock.calls).toMatchSnapshot();
-    (console: any).log = log;
+    (console as any).log = log;
   });
 });

@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 import * as React from 'react';
 import classNames from 'classnames';
@@ -86,7 +86,7 @@ type NetworkPhaseProps = {|
   +value: number | string,
   +duration: Milliseconds,
   +style: MixedObject,
-|};
+};
 
 function NetworkPhase({
   name,
@@ -117,7 +117,7 @@ export type NetworkChartRowBarProps = {|
   // Pass the payload in as well, since our types can't express a Marker with
   // a specific payload.
   +networkPayload: NetworkPayload,
-|};
+};
 
 // This component splits a network marker duration in different phases,
 // and renders each phase as a differently colored bar.
@@ -328,13 +328,13 @@ type NetworkChartRowProps = {|
   +onLeftClick?: MarkerIndex => mixed,
   +onRightClick?: MarkerIndex => mixed,
   +shouldDisplayTooltips: () => boolean,
-|};
+};
 
 type State = {|
   pageX: CssPixels,
   pageY: CssPixels,
   hovered: ?boolean,
-|};
+};
 
 export class NetworkChartRow extends React.PureComponent<
   NetworkChartRowProps,

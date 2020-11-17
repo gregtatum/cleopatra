@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import React from 'react';
 import { render } from '@testing-library/react';
@@ -93,12 +93,12 @@ describe('shared/Tooltip', () => {
   });
 });
 
-type Size = {| width: number, height: number |};
-type Position = {| x: number, y: number |};
+type Size = {| width: number, height: number };
+type Position = {| x: number, y: number };
 type Setup = {|
   box: Size,
   mouse: Position,
-|};
+};
 
 function setup({ box, mouse }: Setup) {
   // Note we don't mock the window size and rely on the default in JSDom that is

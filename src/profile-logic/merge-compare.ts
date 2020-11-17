@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 /*
  * This file contains all functions that are needed to achieve profiles
@@ -77,7 +77,7 @@ export function mergeProfilesForDiffing(
   profile: Profile,
   transformStacks: TransformStacksPerThread,
   implementationFilters: ImplementationFilter[],
-|} {
+} {
   if (profiles.length !== profileStates.length) {
     throw new Error(
       'Passed arrays do not have the same length. This should not happen.'
@@ -290,7 +290,7 @@ function mergeCategories(
 ): {|
   categories: CategoryList,
   translationMaps: TranslationMapForCategories[],
-|} {
+} {
   const newCategories = [];
   const translationMaps = [];
   const newCategoryIndexByName: Map<string, IndexIntoCategoryList> = new Map();
@@ -811,7 +811,7 @@ function combineSamplesDiffing(
 type ThreadAndInterval = {|
   thread: Thread,
   interval: Milliseconds,
-|};
+};
 
 /**
  * This function will compute a diffing thread from 2 different threads, using

@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 // This file contains the code responsible for storing informations about
 // published profiles.
@@ -50,11 +50,11 @@ export type ProfileData = {|
       | 'esr' // Extended Support Release channel
       | string,
     +appBuildID?: string,
-  |},
+  },
   // Storing the state as the path makes it easy to reuse our URL upgrade mechanism.
   +urlPath: string,
   +publishedRange: StartEndRange,
-|};
+};
 
 // Exported for tests.
 export const DATABASE_NAME = 'published-profiles-store';
@@ -110,7 +110,7 @@ async function open(): Promise<Database> {
       // changes.
       // Let's explain that in an error, that will be output to the console by
       // the caller.
-      (window: any).deleteDB = () => deleteDB(DATABASE_NAME);
+      (window as any).deleteDB = () => deleteDB(DATABASE_NAME);
       throw new Error(stripIndent`
         We tried to open an existing published profiles store database with a
         smaller version than the current one. We can't do that with IndexedDB.

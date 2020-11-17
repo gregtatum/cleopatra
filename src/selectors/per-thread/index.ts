@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 import { createSelector } from 'reselect';
 import memoize from 'memoize-immutable';
 import * as UrlState from '../url-state';
@@ -41,7 +41,7 @@ export type ThreadSelectors = {|
   ...MarkerSelectorsPerThread,
   ...StackAndSampleSelectorsPerThread,
   ...ComposedSelectorsPerThread,
-|};
+};
 
 /**
  * This is the static object store that holds the selector functions.
@@ -167,7 +167,7 @@ export const selectedThreadSelectors: ThreadSelectors = (() => {
     result[key] = state =>
       getThreadSelectors(UrlState.getSelectedThreadIndexes(state))[key](state);
   }
-  const result2: ThreadSelectors = (result: any);
+  const result2: ThreadSelectors = (result as any);
   return result2;
 })();
 
@@ -176,7 +176,7 @@ export type NodeSelectors = {|
   +getIsJS: Selector<boolean>,
   +getLib: Selector<string>,
   +getTimingsForSidebar: Selector<TimingsForPath>,
-|};
+};
 
 export const selectedNodeSelectors: NodeSelectors = (() => {
   const getName: Selector<string> = createSelector(

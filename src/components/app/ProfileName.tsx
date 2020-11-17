@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import * as React from 'react';
 
 import explicitConnect from 'firefox-profiler/utils/connect';
@@ -15,20 +15,20 @@ import './ProfileName.css';
 
 type StateProps = {|
   +profileNameWithDefault: string,
-|};
+};
 
 type DispatchProps = {|
   +changeProfileName: typeof changeProfileName,
-|};
+};
 
-type Props = ConnectedProps<{||}, StateProps, DispatchProps>;
+type Props = ConnectedProps<{|}, StateProps, DispatchProps>;
 
 type State = {|
   focusedWithKey: null | string,
   // Every time the input is focused, it's recreated to consistently set the initial
   // value.
   focusGeneration: number,
-|};
+};
 
 /**
  * Allow the user to rename profiles. These get persisted to the URL, and the document
@@ -151,7 +151,7 @@ class ProfileNameImpl extends React.PureComponent<Props, State> {
   }
 }
 
-export const ProfileName = explicitConnect<{||}, StateProps, DispatchProps>({
+export const ProfileName = explicitConnect<{|}, StateProps, DispatchProps>({
   mapStateToProps: state => ({
     profileNameWithDefault: getProfileNameWithDefault(state),
   }),

@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import React, { PureComponent } from 'react';
 import explicitConnect from 'firefox-profiler/utils/connect';
@@ -35,7 +35,7 @@ import './TrackScreenshots.css';
 type OwnProps = {|
   +threadIndex: ThreadIndex,
   +windowId: string,
-|};
+};
 type StateProps = {|
   +thread: Thread,
   +rangeStart: Milliseconds,
@@ -44,19 +44,19 @@ type StateProps = {|
   +threadName: string,
   +isMakingPreviewSelection: boolean,
   +trackHeight: number,
-|};
+};
 type DispatchProps = {|
   +updatePreviewSelection: typeof updatePreviewSelection,
-|};
+};
 type Props = {|
   ...SizeProps,
   ...ConnectedProps<OwnProps, StateProps, DispatchProps>,
-|};
+};
 type State = {|
   offsetX: null | number,
   pageX: null | number,
   containerTop: null | number,
-|};
+};
 
 class Screenshots extends PureComponent<Props, State> {
   state = {
@@ -147,7 +147,7 @@ class Screenshots extends PureComponent<Props, State> {
     if (offsetX !== null) {
       const screenshotIndex = this.findScreenshotAtMouse(offsetX);
       if (screenshotIndex !== null) {
-        payload = (screenshots[screenshotIndex].data: any);
+        payload = (screenshots[screenshotIndex].data as any;
       }
     }
 
@@ -224,7 +224,7 @@ type HoverPreviewProps = {|
   +width: number,
   +trackHeight: number,
   +payload: ScreenshotPayload,
-|};
+};
 
 const MAXIMUM_HOVER_SIZE = 350;
 
@@ -311,7 +311,7 @@ type ScreenshotStripProps = {|
   +screenshots: Marker[],
   +width: number,
   +trackHeight: number,
-|};
+};
 
 class ScreenshotStrip extends PureComponent<ScreenshotStripProps> {
   render() {
@@ -351,7 +351,7 @@ class ScreenshotStrip extends PureComponent<ScreenshotStripProps> {
       }
       // Coerce the payload into a screenshot one.
       const payload: ScreenshotPayload = (screenshots[screenshotIndex]
-        .data: any);
+        .data as any;
       const { url: urlStringIndex, windowWidth, windowHeight } = payload;
       const scaledImageWidth = (trackHeight * windowWidth) / windowHeight;
       images.push(

@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 import type {
   Profile,
   StackTable,
@@ -51,7 +51,7 @@ type TracingEvent<Event> = {|
   tdur?: number, // Time duration
   dur?: number, // Time duration
   ...Event,
-|};
+};
 
 type ProfileEvent = TracingEvent<{|
   name: 'Profile',
@@ -62,7 +62,7 @@ type ProfileEvent = TracingEvent<{|
   },
   ph: 'P',
   id: string,
-|}>;
+}>;
 
 type ProfileChunkEvent = TracingEvent<{|
   name: 'ProfileChunk',
@@ -87,7 +87,7 @@ type ProfileChunkEvent = TracingEvent<{|
   },
   ph: 'P',
   id: string,
-|}>;
+}>;
 
 // The CpuProfileEvent format is similar to the ProfileChunkEvent format.
 // Presumably, one of them is the newer format the other is the older format.
@@ -104,7 +104,7 @@ export type CpuProfileEvent = TracingEvent<{|
     },
   },
   ph: 'I',
-|}>;
+}>;
 
 // A node performance profile only outputs this.
 type CpuProfileData = {
@@ -129,37 +129,37 @@ type ThreadNameEvent = TracingEvent<{|
   name: 'thread_name',
   ph: 'm' | 'M',
   args: { name: string },
-|}>;
+}>;
 
 type ProcessNameEvent = TracingEvent<{|
   name: 'process_name',
   ph: 'm' | 'M',
   args: { name: string },
-|}>;
+}>;
 
 type ProcessLabelsEvent = TracingEvent<{|
   name: 'process_labels',
   ph: 'm' | 'M',
   args: { labels: string },
-|}>;
+}>;
 
 type ProcessSortIndexEvent = TracingEvent<{|
   name: 'process_sort_index',
   ph: 'm' | 'M',
   args: { sort_index: number },
-|}>;
+}>;
 
 type ThreadSortIndexEvent = TracingEvent<{|
   name: 'thread_sort_index',
   ph: 'm' | 'M',
   args: { sort_index: number },
-|}>;
+}>;
 
 type ScreenshotEvent = TracingEvent<{|
   name: 'Screenshot',
   ph: 'O',
   args: { snapshot: string },
-|}>;
+}>;
 
 function wrapCpuProfileInEvent(cpuProfile: CpuProfileData): CpuProfileEvent {
   return {
@@ -234,7 +234,7 @@ export function attemptToConvertChromeProfile(
       list = [];
       eventsByName.set(name, list);
     }
-    list.push((tracingEvent: any));
+    list.push((tracingEvent as any));
   }
 
   return processTracingEvents(eventsByName);
@@ -258,7 +258,7 @@ function findEvent<T: TracingEventUnion>(
   name: string,
   f: T => boolean
 ): T | void {
-  const events: T[] | void = (eventsByName.get(name): any);
+  const events: T[] | void = (eventsByName.get(name) as any);
   return events ? events.find(f) : undefined;
 }
 
@@ -271,7 +271,7 @@ function findEvents<
   name: string,
   f: T => boolean
 ): T[] {
-  const events: T[] | void = (eventsByName.get(name): any);
+  const events: T[] | void = (eventsByName.get(name) as any);
   if (!events) {
     return [];
   }
@@ -474,12 +474,12 @@ async function processTracingEvents(
   profile.meta.interval = 0.5;
 
   let profileEvents: (ProfileEvent | CpuProfileEvent)[] =
-    (eventsByName.get('Profile'): any) || [];
+    (eventsByName.get('Profile') as any) || [];
 
   if (eventsByName.has('CpuProfile')) {
     const cpuProfiles: CpuProfileEvent[] = (eventsByName.get(
       'CpuProfile'
-    ): any);
+    ) as any);
     profileEvents = profileEvents.concat(cpuProfiles);
   }
 
@@ -506,7 +506,7 @@ async function processTracingEvents(
 
     let profileChunks = [];
     if (profileEvent.name === 'Profile') {
-      threadInfo.lastSeenTime = (profileEvent.args.data.startTime: any) / 1000;
+      threadInfo.lastSeenTime = (profileEvent.args.data.startTime as any) / 1000;
       const id = profileEvent.id;
       profileChunks = findEvents<ProfileChunkEvent>(
         eventsByName,
@@ -515,7 +515,7 @@ async function processTracingEvents(
       );
     } else if (profileEvent.name === 'CpuProfile') {
       threadInfo.lastSeenTime =
-        (profileEvent.args.data.cpuProfile.startTime: any) / 1000;
+        (profileEvent.args.data.cpuProfile.startTime as any) / 1000;
       profileChunks = [profileEvent];
     }
 
@@ -542,12 +542,12 @@ async function processTracingEvents(
           const { callFrame, id: nodeIndex } = node;
           let parent: number | void = undefined;
           if (node.parent !== undefined) {
-            parent = (node.parent: any);
+            parent = (node.parent as any);
           } else {
             parent = parentMap.get(nodeIndex);
           }
           if (node.children !== undefined) {
-            const children: number[] = (node.children: any);
+            const children: number[] = (node.children as any);
             for (let i = 0; i < children.length; i++) {
               parentMap.set(children[i], nodeIndex);
             }
@@ -675,7 +675,7 @@ async function processTracingEvents(
     threadInfoByThread,
     eventsByName,
     profile,
-    (eventsByName.get('Screenshot'): any)
+    (eventsByName.get('Screenshot') as any)
   );
 
   extractMarkers(
@@ -771,7 +771,7 @@ async function extractScreenshots(
  */
 function getImageSize(
   url: string
-): Promise<null | {| width: number, height: number |}> {
+): Promise<null | {| width: number, height: number }> {
   return new Promise(resolve => {
     const image = new Image();
     image.src = url;
@@ -847,7 +847,7 @@ function extractMarkers(
         event.ph === 'E' ||
         event.ph === 'I'
       ) {
-        const time: number = (event.ts: any) / 1000;
+        const time: number = (event.ts as any) / 1000;
         const threadInfo = getThreadInfo(
           threadInfoByPidAndTid,
           threadInfoByThread,
@@ -859,14 +859,14 @@ function extractMarkers(
         const { markers, stringTable } = thread;
         let argData: MixedObject | null = null;
         if (event.args && typeof event.args === 'object') {
-          argData = (event.args: any).data || null;
+          argData = (event.args as any).data || null;
         }
         markers.name.push(stringTable.indexForString(name));
         markers.category.push(otherCategoryIndex);
         if (event.ph === 'X') {
           // Complete Event
           // https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/preview#heading=h.lpfof2aylapb
-          const duration: number = (event.dur: any) / 1000;
+          const duration: number = (event.dur as any) / 1000;
           markers.phase.push(INTERVAL);
           markers.startTime.push(time);
           markers.endTime.push(time + duration);

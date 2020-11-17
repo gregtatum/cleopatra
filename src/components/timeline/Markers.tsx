@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import * as React from 'react';
 import classNames from 'classnames';
 import memoize from 'memoize-immutable';
@@ -63,7 +63,7 @@ type CanvasProps = {|
   +onMouseUp: MouseEventHandler,
   +onMouseMove: MouseEventHandler,
   +onMouseOut: MouseEventHandler,
-|};
+};
 
 function _drawRoundedRect(
   ctx: CanvasRenderingContext2D,
@@ -87,7 +87,7 @@ function _drawRoundedRect(
  * in the props that are needed for the canvas draw call.
  */
 class TimelineMarkersCanvas extends React.PureComponent<CanvasProps> {
-  _canvas: {| current: HTMLCanvasElement | null |} = React.createRef();
+  _canvas: {| current: HTMLCanvasElement | null } = React.createRef();
   _requestedAnimationFrame: boolean = false;
 
   _getMarkerState(marker: Marker): MarkerState {
@@ -265,7 +265,7 @@ export type OwnProps = {|
   +rangeEnd: Milliseconds,
   +threadsKey: ThreadsKey,
   +onSelect: (Milliseconds, Milliseconds) => mixed,
-|};
+};
 
 export type StateProps = {|
   +additionalClassName?: ?string,
@@ -275,16 +275,16 @@ export type StateProps = {|
   +isModifyingSelection: boolean,
   +testId: string,
   +rightClickedMarker: Marker | null,
-|};
+};
 
 export type DispatchProps = {|
   +changeRightClickedMarker: typeof changeRightClickedMarker,
-|};
+};
 
 type Props = {|
   ...ConnectedProps<OwnProps, StateProps, DispatchProps>,
   ...SizeProps,
-|};
+};
 
 type State = {
   hoveredMarkerIndex: MarkerIndex | null,
@@ -379,7 +379,7 @@ class TimelineMarkersImplementation extends React.PureComponent<Props, State> {
 
       if (mouseDownMarker !== null) {
         // Disabling Flow type checking because Flow doesn't know about setCapture.
-        const canvas = (e.currentTarget: any);
+        const canvas = (e.currentTarget as any;
         if (canvas.setCapture) {
           // This retargets all mouse events to this element. This is useful
           // when for example the user releases the mouse button outside of the

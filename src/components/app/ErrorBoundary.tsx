@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 import * as React from 'react';
 import { reportError } from 'firefox-profiler/utils/analytics';
@@ -12,12 +12,12 @@ type State = {|
   showDetails: boolean,
   errorString: string | null,
   componentStack?: string,
-|};
+};
 
 type Props = {|
   +children: React.Node,
   +message: string,
-|};
+};
 
 /**
  * This component will catch errors in components, and display a more friendly error

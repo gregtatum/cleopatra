@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 import { CallTree } from '../../profile-logic/call-tree';
 import type {
   IndexIntoCallNodeTable,
@@ -66,7 +66,7 @@ class FakeMouseEvent extends MouseEvent {
 
   constructor(type: string, values: FakeMouseEventInit) {
     const { pageX, pageY, offsetX, offsetY, x, y, ...mouseValues } = values;
-    super(type, (mouseValues: any));
+    super(type, (mouseValues as any));
 
     Object.assign(this, {
       offsetX: offsetX || 0,
@@ -251,7 +251,7 @@ export function removeRootOverlayElement() {
  * changeSelect({ from: 'Timing Data', to: 'Deallocations' });
  */
 export function createSelectChanger(renderResult: RenderResult<>) {
-  return function changeSelect({ from, to }: {| from: string, to: string |}) {
+  return function changeSelect({ from, to }: {| from: string, to: string }) {
     // Look up the <option> with the text label.
     const option = renderResult.getByText(to);
     // Fire a change event to the select.
@@ -267,7 +267,7 @@ export function createSelectChanger(renderResult: RenderResult<>) {
 export function findFillTextPositionFromDrawLog(
   drawLog: any[],
   fillText: string
-): {| x: number, y: number |} {
+): {| x: number, y: number } {
   const positions = drawLog
     .filter(([cmd, text]) => cmd === 'fillText' && text === fillText)
     .map(([, , x, y]) => ({ x, y }));

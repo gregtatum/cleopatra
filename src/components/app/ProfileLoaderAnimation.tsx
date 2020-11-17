@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import React, { PureComponent } from 'react';
 import explicitConnect from 'firefox-profiler/utils/connect';
@@ -39,12 +39,12 @@ function fewTimes(count: number) {
 type ProfileLoaderAnimationStateProps = {|
   +view: AppViewState,
   +dataSource: DataSource,
-|};
+};
 
 type ProfileLoaderAnimationProps = ConnectedProps<
-  {||},
+  {|},
   ProfileLoaderAnimationStateProps,
-  {||}
+  {|}
 >;
 
 class ProfileLoaderAnimationImpl extends PureComponent<ProfileLoaderAnimationProps> {
@@ -79,9 +79,9 @@ class ProfileLoaderAnimationImpl extends PureComponent<ProfileLoaderAnimationPro
 }
 
 export const ProfileLoaderAnimation = explicitConnect<
-  {||},
+  {|},
   ProfileLoaderAnimationStateProps,
-  {||}
+  {|}
 >({
   mapStateToProps: (state: State) => ({
     view: getView(state),

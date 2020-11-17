@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import React, { PureComponent } from 'react';
 import memoize from 'memoize-immutable';
@@ -77,11 +77,11 @@ type PublishedProfileProps = {|
   +profileData: ProfileData,
   +nowTimestamp: Milliseconds,
   +withActionButtons: boolean,
-|};
+};
 
 type PublishedProfileState = {|
   +confirmDialogIsOpen: boolean,
-|};
+};
 
 /**
  * This implements one line in the list of published profiles.
@@ -177,11 +177,11 @@ class PublishedProfile extends React.PureComponent<
 type Props = {|
   withActionButtons: boolean,
   limit?: number,
-|};
+};
 
 type State = {|
   profileDataList: null | ProfileData[],
-|};
+};
 
 export class ListOfPublishedProfiles extends PureComponent<Props, State> {
   _isMounted = false;

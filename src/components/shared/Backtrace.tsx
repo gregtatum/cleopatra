@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import React from 'react';
 import classNames from 'classnames';
@@ -27,7 +27,7 @@ type Props = {|
   +maxStacks: number,
   +stackIndex: IndexIntoStackTable,
   +implementationFilter: ImplementationFilter,
-|};
+};
 
 export function Backtrace(props: Props) {
   const { stackIndex, thread, implementationFilter, maxStacks } = props;

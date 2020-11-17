@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import React, { PureComponent } from 'react';
 import classNames from 'classnames';
 
@@ -16,7 +16,7 @@ type Props = {|
   +defaultValue: ?string,
   +className: ?string,
   +title: ?string,
-|};
+};
 
 type State = {
   value: string,

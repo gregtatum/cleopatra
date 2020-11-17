@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import type {
   Thread,
   Milliseconds,
@@ -53,7 +53,7 @@ export type StackTiming = {|
   end: Milliseconds[],
   callNode: IndexIntoCallNodeTable[],
   length: number,
-|};
+};
 
 export type StackTimingByDepth = Array<StackTiming>;
 

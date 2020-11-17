@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import * as React from 'react';
 import { ButtonWithPanel } from 'firefox-profiler/components/shared/ButtonWithPanel';
@@ -17,12 +17,12 @@ type Props = {|
   // correctly (perhaps due to ES6 modules), so I just went with dependency injection
   // instead.
   +injectedUrlShortener?: typeof UrlUtils.shortenUrl | void,
-|};
+};
 
 type State = {|
   fullUrl: string,
   shortUrl: string,
-|};
+};
 
 export class MenuButtonsPermalink extends React.PureComponent<Props, State> {
   _permalinkButton: ButtonWithPanel | null;

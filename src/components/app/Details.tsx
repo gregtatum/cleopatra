@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import React, { PureComponent } from 'react';
 import classNames from 'classnames';
@@ -39,14 +39,14 @@ type StateProps = {|
   +visibleTabs: $ReadOnlyArray<TabSlug>,
   +selectedTab: TabSlug,
   +isSidebarOpen: boolean,
-|};
+};
 
 type DispatchProps = {|
   +changeSelectedTab: typeof changeSelectedTab,
   +changeSidebarOpenState: typeof changeSidebarOpenState,
-|};
+};
 
-type Props = ConnectedProps<{||}, StateProps, DispatchProps>;
+type Props = ConnectedProps<{|}, StateProps, DispatchProps>;
 
 class ProfileViewerImpl extends PureComponent<Props> {
   _onSelectTab = (selectedTab: string) => {
@@ -114,7 +114,7 @@ class ProfileViewerImpl extends PureComponent<Props> {
   }
 }
 
-export const Details = explicitConnect<{||}, StateProps, DispatchProps>({
+export const Details = explicitConnect<{|}, StateProps, DispatchProps>({
   mapStateToProps: state => ({
     visibleTabs: selectedThreadSelectors.getUsefulTabs(state),
     selectedTab: getSelectedTab(state),

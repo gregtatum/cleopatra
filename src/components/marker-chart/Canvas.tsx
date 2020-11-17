@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import { GREY_20, GREY_30 } from 'photon-colors';
 import * as React from 'react';
 import {
@@ -63,7 +63,7 @@ type IndexIntoHoveredLabelRow = number;
 type HoveredMarkerChartItems = {|
   markerIndex: MarkerIndex | null,
   rowIndexOfLabel: IndexIntoHoveredLabelRow | null,
-|};
+};
 
 type OwnProps = {|
   +rangeStart: Milliseconds,
@@ -79,17 +79,17 @@ type OwnProps = {|
   +rightClickedMarkerIndex: MarkerIndex | null,
   +shouldDisplayTooltips: () => boolean,
   +timelineTrackOrganization: TimelineTrackOrganization,
-|};
+};
 
 type Props = {|
   ...OwnProps,
   // Bring in the viewport props from the higher order Viewport component.
   +viewport: Viewport,
-|};
+};
 
 type State = {|
   hoveredItem: null | number,
-|};
+};
 
 const TEXT_OFFSET_TOP = 11;
 const TWO_PI = Math.PI * 2;

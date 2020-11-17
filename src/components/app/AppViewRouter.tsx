@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import React, { PureComponent } from 'react';
 import explicitConnect from 'firefox-profiler/utils/connect';
@@ -40,9 +40,9 @@ type AppViewRouterStateProps = {|
   +dataSource: DataSource,
   +profilesToCompare: string[] | null,
   +hasZipFile: boolean,
-|};
+};
 
-type AppViewRouterProps = ConnectedProps<{||}, AppViewRouterStateProps, {||}>;
+type AppViewRouterProps = ConnectedProps<{|}, AppViewRouterStateProps, {|}>;
 
 class AppViewRouterImpl extends PureComponent<AppViewRouterProps> {
   render() {
@@ -116,9 +116,9 @@ class AppViewRouterImpl extends PureComponent<AppViewRouterProps> {
 }
 
 export const AppViewRouter = explicitConnect<
-  {||},
+  {|},
   AppViewRouterStateProps,
-  {||}
+  {|}
 >({
   mapStateToProps: (state: State) => ({
     view: getView(state),

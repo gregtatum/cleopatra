@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 /**
  * Document Google Analytics API that is used in the project. These definitions
@@ -16,12 +16,12 @@ type GAEvent = {|
   eventAction: string,
   eventLabel?: string,
   eventValue?: number,
-|};
+};
 
 type GAPageView = {|
   hitType: 'pageview',
   page: string,
-|};
+};
 
 type GATiming = {|
   hitType: 'timing',
@@ -29,14 +29,14 @@ type GATiming = {|
   timingVar: string,
   timingValue: number,
   timingLabel?: string,
-|};
+};
 
 export type GAPayload = GAEvent | GAPageView | GATiming;
 
 export type GAErrorPayload = {|
   +exDescription: string,
   +exFatal: boolean,
-|};
+};
 
 // Prettier breaks with multiple arrow functions and intersections, so name the arrow
 // functions.

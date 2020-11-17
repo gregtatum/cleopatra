@@ -3,7 +3,7 @@
 // Copied here because we needed it in ES2015 module form. Also flow-typed.
 // Otherwise not modified.
 
-// @flow
+
 
 const UNITS = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 

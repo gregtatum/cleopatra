@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import * as React from 'react';
 import { render } from '@testing-library/react';
@@ -28,7 +28,7 @@ jest.mock('../../components/app/ListOfPublishedProfiles', () => ({
 describe('Root with history', function() {
   type TestConfig = {|
     profileHash?: string,
-  |};
+  };
 
   autoMockFullNavigation();
 
@@ -71,7 +71,7 @@ describe('Root with history', function() {
     }: {|
       +name: string,
       +selected: boolean,
-    |}): Promise<HTMLElement> {
+    }): Promise<HTMLElement> {
       // This uses `findByText` instead of `findbyRole` because this is a lot
       // faster in our use case where there's a lot of DOM nodes.
       return findByText(name, {
@@ -100,7 +100,7 @@ describe('Root with history', function() {
     expect(getByText('Downloading and processing the profile...')).toBeTruthy();
     expect(queryByText('Call Tree')).toBeFalsy();
 
-    await Promise.all((window: any).fetch.mock.results.map(n => n.value));
+    await Promise.all((window as any).fetch.mock.results.map(n => n.value));
 
     // Wait until the call tree is visible.
     await waitForTab({ name: 'Call Tree', selected: true });
@@ -170,5 +170,5 @@ function mockFetchProfileAtUrl(
     );
   });
 
-  (window: any).fetch = fetch;
+  (window as any).fetch = fetch;
 }

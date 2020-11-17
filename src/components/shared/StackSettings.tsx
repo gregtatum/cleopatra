@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import React, { PureComponent } from 'react';
 import {
@@ -40,7 +40,7 @@ import type {
 type OwnProps = {|
   +hideInvertCallstack?: true,
   +disableCallTreeSummaryButtons?: true,
-|};
+};
 
 type StateProps = {|
   +implementationFilter: ImplementationFilter,
@@ -52,7 +52,7 @@ type StateProps = {|
   +hasJsAllocations: boolean,
   +hasNativeAllocations: boolean,
   +canShowRetainedMemory: boolean,
-|};
+};
 
 type DispatchProps = {|
   +changeImplementationFilter: typeof changeImplementationFilter,
@@ -60,7 +60,7 @@ type DispatchProps = {|
   +changeShowUserTimings: typeof changeShowUserTimings,
   +changeCallTreeSearchString: typeof changeCallTreeSearchString,
   +changeCallTreeSummaryStrategy: typeof changeCallTreeSummaryStrategy,
-|};
+};
 
 type Props = ConnectedProps<OwnProps, StateProps, DispatchProps>;
 

@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import { GREY_20 } from 'photon-colors';
 import * as React from 'react';
 import classNames from 'classnames';
@@ -45,18 +45,18 @@ type OwnProps = {|
   +updatePreviewSelection: WrapFunctionInDispatch<
     typeof updatePreviewSelection
   >,
-|};
+};
 
 type Props = {|
   ...OwnProps,
   // Bring in the viewport props from the higher order Viewport component.
   +viewport: Viewport,
-|};
+};
 
 type State = {|
   // hoveredItem: null | number,
   hasFirstDraw: boolean,
-|};
+};
 
 /**
  * Collect all of values that are dependent on the current rendering pass.
@@ -80,8 +80,8 @@ type RenderPass = {|
     +timelineMarginRight: DevicePixels,
     +oneCssPixel: DevicePixels,
     +rowLabelOffsetLeft: DevicePixels,
-  |},
-|};
+  },
+};
 
 const TEXT_OFFSET_TOP: CssPixels = 11;
 const TEXT_OFFSET_START: CssPixels = 3;

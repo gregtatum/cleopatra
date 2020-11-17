@@ -1,13 +1,13 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
-// @flow
+
 /* eslint-disable no-unused-vars */
 
 import { coerce, coerceMatchingShape } from 'firefox-profiler/utils/flow';
 
-type CoerceA = {| startTime: number |};
-type CoerceB = {| startTime: number, endTime: number |};
+type CoerceA = {| startTime: number };
+type CoerceB = {| startTime: number, endTime: number };
 type CoerceC = number;
 
 const coerceA: CoerceA = { startTime: 0 };

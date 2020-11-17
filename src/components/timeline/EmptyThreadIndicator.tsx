@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import React, { PureComponent } from 'react';
 import { withSize } from 'firefox-profiler/components/shared/WithSize';
 import { DivWithTooltip } from 'firefox-profiler/components/tooltip/DivWithTooltip';
@@ -29,7 +29,7 @@ type Props = {|
   +interval: Milliseconds,
   +unfilteredSamplesRange: StartEndRange | null,
   ...SizeProps,
-|};
+};
 
 /**
  * This component displays the reasons why a thread may be empty. The supported indicators
@@ -91,7 +91,7 @@ export function getIndicatorPositions(
   startup: SyntheticCssDeclarations | null,
   shutdown: SyntheticCssDeclarations | null,
   emptyBufferStart: SyntheticCssDeclarations | null,
-|} {
+} {
   const {
     rangeStart,
     rangeEnd,

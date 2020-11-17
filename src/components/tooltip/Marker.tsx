@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import * as React from 'react';
 import classNames from 'classnames';
@@ -74,7 +74,7 @@ type OwnProps = {|
   // the layout to be huge. This option when set to true will restrict the
   // height of things like stacks, and the width of long things like URLs.
   +restrictHeightWidth: boolean,
-|};
+};
 
 type StateProps = {|
   +threadName?: string,
@@ -85,9 +85,9 @@ type StateProps = {|
   +threadIdToNameMap: Map<number, string>,
   +markerSchemaByName: MarkerSchemaByName,
   +getMarkerLabel: MarkerIndex => string,
-|};
+};
 
-type Props = ConnectedProps<OwnProps, StateProps, {||}>;
+type Props = ConnectedProps<OwnProps, StateProps, {|}>;
 
 /**
  * This component combines Marker Schema, and custom handling to generate tooltips
@@ -396,7 +396,7 @@ class MarkerTooltipContents extends React.PureComponent<Props> {
   }
 }
 
-export const TooltipMarker = explicitConnect<OwnProps, StateProps, {||}>({
+export const TooltipMarker = explicitConnect<OwnProps, StateProps, {|}>({
   mapStateToProps: (state, props) => {
     const selectors = getThreadSelectorsFromThreadsKey(props.threadsKey);
     return {

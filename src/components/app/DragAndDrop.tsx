@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import * as React from 'react';
 import classNames from 'classnames';
@@ -31,18 +31,18 @@ function _dragPreventDefault(event: DragEvent) {
 type OwnProps = {|
   +className?: string,
   +children?: React.Node,
-|};
+};
 
 type StateProps = {|
   +isNewProfileLoadAllowed: boolean,
   +useDefaultOverlay: boolean,
-|};
+};
 
 type DispatchProps = {|
   +retrieveProfileFromFile: typeof retrieveProfileFromFile,
   +startDragging: typeof startDragging,
   +stopDragging: typeof stopDragging,
-|};
+};
 
 type Props = ConnectedProps<OwnProps, StateProps, DispatchProps>;
 
@@ -156,15 +156,15 @@ export const DragAndDrop = explicitConnect<OwnProps, StateProps, DispatchProps>(
 
 type OverlayOwnProps = {|
   +isDefault?: boolean,
-|};
+};
 type OverlayStateProps = {|
   +isDragging: boolean,
   +isNewProfileLoadAllowed: boolean,
-|};
+};
 type OverlayDispatchProps = {|
   +registerDragAndDropOverlay: typeof registerDragAndDropOverlay,
   +unregisterDragAndDropOverlay: typeof unregisterDragAndDropOverlay,
-|};
+};
 type OverlayProps = ConnectedProps<
   OverlayOwnProps,
   OverlayStateProps,

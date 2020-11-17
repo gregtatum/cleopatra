@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import * as React from 'react';
 import { Home } from '../../components/app/Home';
 import { render } from '@testing-library/react';
@@ -26,7 +26,7 @@ const SAFARI =
 let userAgent;
 
 // Flow doesn't understand Object.defineProperty. Use the "any" type to use it anyway.
-(Object.defineProperty: any)(window.navigator, 'userAgent', {
+(Object.defineProperty as any)(window.navigator, 'userAgent', {
   get: () => userAgent,
 });
 

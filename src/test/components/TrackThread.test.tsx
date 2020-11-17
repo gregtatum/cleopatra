@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import type { Profile, FileIoPayload } from 'firefox-profiler/types';
 
@@ -81,7 +81,7 @@ describe('timeline/TrackThread', function() {
     const flushRafCalls = mockRaf();
     const ctx = mockCanvasContext();
 
-    type Coordinate = {| pageX: number, pageY: number |};
+    type Coordinate = {| pageX: number, pageY: number };
 
     // Look through the draw log and find the center of a specific fillRect
     // call. This is a good way to know where the canvas drew something.

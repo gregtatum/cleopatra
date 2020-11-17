@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import { PureComponent } from 'react';
 import explicitConnect from 'firefox-profiler/utils/connect';
@@ -29,16 +29,16 @@ type StateProps = {|
   +hash: string,
   +profileUrl: string,
   +profilesToCompare: string[] | null,
-|};
+};
 
 type DispatchProps = {|
   +retrieveProfileFromAddon: typeof retrieveProfileFromAddon,
   +retrieveProfileFromStore: typeof retrieveProfileFromStore,
   +retrieveProfileOrZipFromUrl: typeof retrieveProfileOrZipFromUrl,
   +retrieveProfilesToCompare: typeof retrieveProfilesToCompare,
-|};
+};
 
-type Props = ConnectedProps<{||}, StateProps, DispatchProps>;
+type Props = ConnectedProps<{|}, StateProps, DispatchProps>;
 
 class ProfileLoaderImpl extends PureComponent<Props> {
   _retrieveProfileFromDataSource = () => {
@@ -98,7 +98,7 @@ class ProfileLoaderImpl extends PureComponent<Props> {
   }
 }
 
-export const ProfileLoader = explicitConnect<{||}, StateProps, DispatchProps>({
+export const ProfileLoader = explicitConnect<{|}, StateProps, DispatchProps>({
   mapStateToProps: state => ({
     dataSource: getDataSource(state),
     hash: getHash(state),

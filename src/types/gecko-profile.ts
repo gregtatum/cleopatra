@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-// @flow
+
 
 import type {
   Lib,
@@ -73,7 +73,7 @@ export type GeckoMarkerStruct = {|
   data: MarkerPayload_Gecko[],
   category: IndexIntoCategoryList[],
   length: number,
-|};
+};
 
 export type GeckoMarkerStack = {|
   name: 'SyncProfile',
@@ -84,7 +84,7 @@ export type GeckoMarkerStack = {|
   pid: number,
   markers: GeckoMarkers,
   samples: GeckoSamples,
-|};
+};
 
 export type GeckoSamples = {|
   schema:
@@ -92,12 +92,12 @@ export type GeckoSamples = {|
         stack: 0,
         time: 1,
         responsiveness: 2,
-      |}
+      }
     | {|
         stack: 0,
         time: 1,
         eventDelay: 2,
-      |},
+      },
   data: Array<
     [
       null | IndexIntoGeckoStackTable,
@@ -107,7 +107,7 @@ export type GeckoSamples = {|
       Milliseconds
     ]
   >,
-|};
+};
 
 // Older profiles have samples with `responsiveness` values.
 export type GeckoSampleStructWithResponsiveness = {|
@@ -115,7 +115,7 @@ export type GeckoSampleStructWithResponsiveness = {|
   time: Milliseconds[],
   responsiveness: Array<?Milliseconds>,
   length: number,
-|};
+};
 
 // Newer profiles have the improved version of `responsiveness`, `eventDelay`.
 export type GeckoSampleStructWithEventDelay = {|
@@ -123,7 +123,7 @@ export type GeckoSampleStructWithEventDelay = {|
   time: Milliseconds[],
   eventDelay: Array<?Milliseconds>,
   length: number,
-|};
+};
 
 export type GeckoSampleStruct =
   | GeckoSampleStructWithResponsiveness
@@ -140,7 +140,7 @@ export type GeckoFrameTable = {|
     column: 6,
     category: 7,
     subcategory: 8,
-  |},
+  },
   data: Array<
     [
       // index into stringTable, points to strings like:
@@ -166,7 +166,7 @@ export type GeckoFrameTable = {|
       null | number
     ]
   >,
-|};
+};
 
 export type GeckoFrameStruct = {|
   location: IndexIntoStringTable[],
@@ -179,21 +179,21 @@ export type GeckoFrameStruct = {|
   subcategory: Array<null | number>,
   innerWindowID: Array<null | number>,
   length: number,
-|};
+};
 
 export type GeckoStackTable = {|
   schema: {|
     prefix: 0,
     frame: 1,
-  |},
+  },
   data: Array<[IndexIntoGeckoStackTable | null, IndexIntoGeckoFrameTable]>,
-|};
+};
 
 export type GeckoStackStruct = {|
   frame: IndexIntoGeckoFrameTable[],
   prefix: Array<IndexIntoGeckoStackTable | null>,
   length: number,
-|};
+};
 
 export type GeckoThread = {|
   name: string,
@@ -209,16 +209,16 @@ export type GeckoThread = {|
   stackTable: GeckoStackTable,
   stringTable: string[],
   jsTracerEvents?: JsTracerTable,
-|};
+};
 
 export type GeckoExtensionMeta = {|
   schema: {|
     id: 0,
     name: 1,
     baseURL: 2,
-  |},
+  },
   data: Array<[string, string, string]>,
-|};
+};
 
 export type GeckoCounter = {|
   name: string,
@@ -231,11 +231,11 @@ export type GeckoCounter = {|
         time: 0,
         number: 1,
         count: 2,
-      |},
+      },
       data: $ReadOnlyArray<[number, number, number]>,
-    |},
-  |}>,
-|};
+    },
+  }>,
+};
 
 export type GeckoProfilerOverhead = {|
   samples: {|
@@ -245,14 +245,14 @@ export type GeckoProfilerOverhead = {|
       expiredMarkerCleaning: 2,
       counters: 3,
       threads: 4,
-    |},
+    },
     data: Array<
       [Nanoseconds, Nanoseconds, Nanoseconds, Nanoseconds, Nanoseconds]
     >,
-  |},
+  },
   // There is no statistics object if there is no sample.
   statistics?: ProfilerOverheadStats,
-|};
+};
 
 /* This meta object is used in subprocesses profiles.
  * Using https://searchfox.org/mozilla-central/rev/7556a400affa9eb99e522d2d17c40689fa23a729/tools/profiler/core/platform.cpp#1829
@@ -264,7 +264,7 @@ export type GeckoProfileShortMeta = {|
   shutdownTime: Milliseconds | null,
   categories: CategoryList,
   markerSchema: MarkerSchema[],
-|};
+};
 
 /* This meta object is used on the top level profile object.
  * Using https://searchfox.org/mozilla-central/rev/7556a400affa9eb99e522d2d17c40689fa23a729/tools/profiler/core/platform.cpp#1829
@@ -329,7 +329,7 @@ export type GeckoProfileFullMeta = {|
   visualMetrics?: VisualMetrics,
   // Optional because older Firefox versions may not have the data.
   configuration?: ProfilerConfiguration,
-|};
+};
 
 export type GeckoProfileWithMeta<Meta> = {|
   counters?: GeckoCounter[],
@@ -344,7 +344,7 @@ export type GeckoProfileWithMeta<Meta> = {|
   tasktracer?: MixedObject,
   processes: GeckoSubprocessProfile[],
   jsTracerDictionary?: string[],
-|};
+};
 
 export type GeckoSubprocessProfile = GeckoProfileWithMeta<GeckoProfileShortMeta>;
 export type GeckoProfile = GeckoProfileWithMeta<GeckoProfileFullMeta>;

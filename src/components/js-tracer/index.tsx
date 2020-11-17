@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import * as React from 'react';
 import explicitConnect from 'firefox-profiler/utils/connect';
 import { JsTracerChart } from './Chart';
@@ -28,16 +28,16 @@ import './index.css';
 
 type DispatchProps = {|
   +updatePreviewSelection: typeof updatePreviewSelection,
-|};
+};
 
 type StateProps = {|
   +profile: Profile,
   +threadsKey: ThreadsKey,
   +jsTracerTable: JsTracerTable | null,
   +showJsTracerSummary: boolean,
-|};
+};
 
-type Props = ConnectedProps<{||}, StateProps, DispatchProps>;
+type Props = ConnectedProps<{|}, StateProps, DispatchProps>;
 
 class JsTracerImpl extends React.PureComponent<Props> {
   _rafGeneration: number = 0;
@@ -69,7 +69,7 @@ class JsTracerImpl extends React.PureComponent<Props> {
   }
 }
 
-export const JsTracer = explicitConnect<{||}, StateProps, DispatchProps>({
+export const JsTracer = explicitConnect<{|}, StateProps, DispatchProps>({
   mapStateToProps: state => {
     return {
       profile: getProfile(state),

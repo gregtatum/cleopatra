@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import * as React from 'react';
 import {
   TIMELINE_MARGIN_RIGHT,
@@ -78,15 +78,15 @@ type StateProps = {|
   +getMarker: MarkerIndex => Marker,
   +userTimings: MarkerIndex[],
   +timelineMarginLeft: CssPixels,
-|};
+};
 
 type DispatchProps = {|
   +changeSelectedCallNode: typeof changeSelectedCallNode,
   +changeRightClickedCallNode: typeof changeRightClickedCallNode,
   +updatePreviewSelection: typeof updatePreviewSelection,
-|};
+};
 
-type Props = ConnectedProps<{||}, StateProps, DispatchProps>;
+type Props = ConnectedProps<{|}, StateProps, DispatchProps>;
 
 class StackChartImpl extends React.PureComponent<Props> {
   _viewport: HTMLDivElement | null = null;
@@ -224,7 +224,7 @@ class StackChartImpl extends React.PureComponent<Props> {
   }
 }
 
-export const StackChart = explicitConnect<{||}, StateProps, DispatchProps>({
+export const StackChart = explicitConnect<{|}, StateProps, DispatchProps>({
   mapStateToProps: state => {
     const showUserTimings = getShowUserTimings(state);
     const combinedTimingRows = showUserTimings

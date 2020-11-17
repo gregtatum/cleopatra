@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import React, { PureComponent } from 'react';
 import {
@@ -36,9 +36,9 @@ function englishListJoin(list) {
 type StateProps = {|
   +symbolicationStatus: string,
   +waitingForLibs: Set<RequestedLib>,
-|};
+};
 
-type Props = ConnectedProps<{||}, StateProps, {||}>;
+type Props = ConnectedProps<{|}, StateProps, {|}>;
 
 class SymbolicationStatusOverlayImpl extends PureComponent<Props> {
   render() {
@@ -69,9 +69,9 @@ class SymbolicationStatusOverlayImpl extends PureComponent<Props> {
 }
 
 export const SymbolicationStatusOverlay = explicitConnect<
-  {||},
+  {|},
   StateProps,
-  {||}
+  {|}
 >({
   mapStateToProps: state => ({
     symbolicationStatus: getSymbolicationStatus(state),

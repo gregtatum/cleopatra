@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import React, { PureComponent } from 'react';
 import classNames from 'classnames';
@@ -57,7 +57,7 @@ type OwnProps = {|
   +trackIndex: TrackIndex,
   +style?: MixedObject /* This is used by Reorderable */,
   +setInitialSelected: (el: InitialSelectedTrackReference) => void,
-|};
+};
 
 type StateProps = {|
   +trackName: string,
@@ -71,13 +71,13 @@ type StateProps = {|
   +selectedTab: TabSlug,
   +processesWithMemoryTrack: Set<Pid>,
   +progressGraphData: ProgressGraphData[] | null,
-|};
+};
 
 type DispatchProps = {|
   +changeRightClickedTrack: typeof changeRightClickedTrack,
   +changeLocalTrackOrder: typeof changeLocalTrackOrder,
   +selectTrack: typeof selectTrack,
-|};
+};
 
 type Props = ConnectedProps<OwnProps, StateProps, DispatchProps>;
 

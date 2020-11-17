@@ -2,7 +2,7 @@
  * license, v. 2.0. if a copy of the mpl was not distributed with this
  * file, you can obtain one at http://mozilla.org/mpl/2.0/. */
 
-// @flow
+
 
 import * as React from 'react';
 import explicitConnect from 'firefox-profiler/utils/connect';
@@ -12,9 +12,9 @@ import { getUploadPhase } from 'firefox-profiler/selectors/publish';
 
 type StateProps = {|
   +isUploading: boolean,
-|};
+};
 
-type Props = ConnectedProps<{||}, StateProps, {||}>;
+type Props = ConnectedProps<{|}, StateProps, {|}>;
 
 class BeforeUnloadManagerImpl extends React.PureComponent<Props> {
   manageBeforeUnloadListener() {
@@ -51,7 +51,7 @@ class BeforeUnloadManagerImpl extends React.PureComponent<Props> {
   }
 }
 
-export const BeforeUnloadManager = explicitConnect<{||}, StateProps, {||}>({
+export const BeforeUnloadManager = explicitConnect<{|}, StateProps, {|}>({
   mapStateToProps: state => ({
     isUploading: getUploadPhase(state) === 'uploading',
   }),

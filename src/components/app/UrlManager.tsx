@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import * as React from 'react';
 import explicitConnect from '../../utils/connect';
@@ -36,7 +36,7 @@ type StateProps = {|
   +phase: Phase,
   +urlState: UrlState,
   +urlSetupPhase: UrlSetupPhase,
-|};
+};
 
 type DispatchProps = {|
   +updateUrlState: typeof updateUrlState,
@@ -45,11 +45,11 @@ type DispatchProps = {|
   +show404: typeof show404,
   +getProfilesFromRawUrl: typeof getProfilesFromRawUrl,
   +setupInitialUrlState: typeof setupInitialUrlState,
-|};
+};
 
 type OwnProps = {|
   +children: React.Node,
-|};
+};
 
 type Props = ConnectedProps<OwnProps, StateProps, DispatchProps>;
 
@@ -91,7 +91,7 @@ class UrlManagerImpl extends React.PureComponent<Props> {
     } = this.props;
     // We have to wrap this because of the error introduced by upgrading to v0.96.0. See issue #1936.
     const getProfilesFromRawUrl: WrapFunctionInDispatch<GetProfilesFromRawUrl> = (this
-      .props.getProfilesFromRawUrl: any);
+      .props.getProfilesFromRawUrl as any;
 
     // Notify the UI that we are starting to fetch profiles.
     startFetchingProfiles();

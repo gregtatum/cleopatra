@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import queryString from 'query-string';
 import {
   stringifyCommittedRanges,
@@ -141,16 +141,16 @@ type FullProfileSpecificBaseQuery = {|
   // must be fetched to compute the tracks.
   threadOrder: string, // "3-2-0-1"
   hiddenThreads: string, // "0-1"
-|};
+};
 
 // Base query that only applies to active tab profile view.
 type ActiveTabProfileSpecificBaseQuery = {|
   resources: null | void,
   ctxId: BrowsingContextID | void,
-|};
+};
 
 // Base query that only applies to origins profile view.
-type OriginsProfileSpecificBaseQuery = {||};
+type OriginsProfileSpecificBaseQuery = {|};
 
 // "null | void" in the query objects are flags which map to true for null, and false
 // for void. False flags do not show up the URL.
@@ -166,7 +166,7 @@ type BaseQuery = {|
   ...FullProfileSpecificBaseQuery,
   ...ActiveTabProfileSpecificBaseQuery,
   ...OriginsProfileSpecificBaseQuery,
-|};
+};
 
 type CallTreeQuery = {|
   ...BaseQuery,
@@ -174,17 +174,17 @@ type CallTreeQuery = {|
   invertCallstack: null | void,
   implementation: string,
   ctSummary: string,
-|};
+};
 
 type MarkersQuery = {|
   ...BaseQuery,
   markerSearch: string, // "DOMEvent"
-|};
+};
 
 type NetworkQuery = {|
   ...BaseQuery,
   networkSearch?: string, // "DOMEvent"
-|};
+};
 
 type StackChartQuery = {|
   ...BaseQuery,
@@ -193,12 +193,12 @@ type StackChartQuery = {|
   showUserTimings: null | void,
   implementation: string,
   ctSummary: string,
-|};
+};
 
 type JsTracerQuery = {|
   ...BaseQuery,
   summary: null | void,
-|};
+};
 
 type Query =
   | CallTreeQuery
@@ -651,12 +651,12 @@ type ProcessedLocation = {|
   pathname: string,
   hash: string,
   query: Query,
-|};
+};
 
 type ProcessedLocationBeforeUpgrade = {|
   ...ProcessedLocation,
   query: any,
-|};
+};
 
 export function upgradeLocationToCurrentVersion(
   processedLocation: ProcessedLocationBeforeUpgrade,
@@ -818,7 +818,7 @@ const _upgraders = {
         continue;
       }
       // This property is not writable, make it an "any"
-      (transform: any).callNodePath = getVersion4JSCallNodePathFromStackIndex(
+      (transform as any.callNodePath = getVersion4JSCallNodePathFromStackIndex(
         thread,
         callNodeStackIndex
       );
@@ -950,7 +950,7 @@ function validateTimelineTrackOrganization(
 ): TimelineTrackOrganization {
   // Pretend this is a TimelineTrackOrganization so that we can exhaustively
   // go through each option.
-  const timelineTrackOrganization: TimelineTrackOrganization = ({ type }: any);
+  const timelineTrackOrganization: TimelineTrackOrganization = ({ type } as any;
   switch (timelineTrackOrganization.type) {
     case 'full':
       return { type: 'full' };

@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 type MaybeFn = (any => any) | void;
 const identity = () => {};
 
@@ -15,7 +15,7 @@ export default function mockCanvasContext() {
    */
   function spyLog(name: string, fn: MaybeFn = identity) {
     // This function is extremely polymorphic and defies typing.
-    return (jest.fn: any)((...args) => {
+    return (jest.fn as any)((...args) => {
       log.push([name, ...args]);
       if (fn) {
         return fn(...args);

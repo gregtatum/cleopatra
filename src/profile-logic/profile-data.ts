@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import memoize from 'memoize-immutable';
 import MixedTupleMap from 'mixedtuplemap';
@@ -332,7 +332,7 @@ export type BreakdownByImplementation = { [StackImplementation]: Milliseconds };
 export type OneCategoryBreakdown = {|
   entireCategoryValue: Milliseconds,
   subcategoryBreakdown: Milliseconds[], // { [IndexIntoSubcategoryList]: Milliseconds }
-|};
+};
 export type BreakdownByCategory = OneCategoryBreakdown[]; // { [IndexIntoCategoryList]: OneCategoryBreakdown }
 type ItemTimings = {|
   selfTime: {|
@@ -340,14 +340,14 @@ type ItemTimings = {|
     value: Milliseconds,
     breakdownByImplementation: BreakdownByImplementation | null,
     breakdownByCategory: BreakdownByCategory | null,
-  |},
+  },
   totalTime: {|
     // time spent including children
     value: Milliseconds,
     breakdownByImplementation: BreakdownByImplementation | null,
     breakdownByCategory: BreakdownByCategory | null,
-  |},
-|};
+  },
+};
 
 export type TimingsForPath = {|
   // timings for this path
@@ -355,7 +355,7 @@ export type TimingsForPath = {|
   // timings for this func across the tree
   forFunc: ItemTimings,
   rootTime: Milliseconds, // time for all the samples in the current tree
-|};
+};
 
 /**
  * This function is the same as getTimingsForPath, but accepts an IndexIntoCallNodeTable
@@ -2670,7 +2670,7 @@ export function getThreadsKey(threadIndexes: Set<ThreadIndex>): ThreadsKey {
   if (threadIndexes.size === 1) {
     // Return the ThreadIndex directly if there is only one thread.
     // We know this value exists because of the size check, even if Flow doesn't.
-    return (threadIndexes.values().next().value: any);
+    return (threadIndexes.values().next().value as any);
   }
 
   return [...threadIndexes].sort((a, b) => b - a).join(',');

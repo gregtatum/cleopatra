@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import { oneLine } from 'common-tags';
 import * as React from 'react';
 import memoize from 'memoize-immutable';
@@ -45,7 +45,7 @@ const ROW_HEIGHT = 16;
 type DispatchProps = {|
   +changeSelectedNetworkMarker: typeof changeSelectedNetworkMarker,
   +changeRightClickedMarker: typeof changeRightClickedMarker,
-|};
+};
 
 type StateProps = {|
   +selectedNetworkMarkerIndex: MarkerIndex | null,
@@ -56,9 +56,9 @@ type StateProps = {|
   +timeRange: StartEndRange,
   +threadsKey: ThreadsKey,
   +scrollToSelectionGeneration: number,
-|};
+};
 
-type OwnProps = {| ...SizeProps |};
+type OwnProps = {| ...SizeProps };
 
 type Props = ConnectedProps<OwnProps, StateProps, DispatchProps>;
 

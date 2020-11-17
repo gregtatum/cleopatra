@@ -2,7 +2,7 @@
  * license, v. 2.0. if a copy of the mpl was not distributed with this
  * file, you can obtain one at http://mozilla.org/mpl/2.0/. */
 
-// @flow
+
 
 import React, { PureComponent } from 'react';
 import explicitConnect from '../../utils/connect';
@@ -46,14 +46,14 @@ type StateProps = {|
   +isHidingStaleProfile: boolean,
   +hasSanitizedProfile: boolean,
   +icons: IconWithClassName[],
-|};
+};
 
 type DispatchProps = {|
   +returnToZipFileList: typeof returnToZipFileList,
   +invalidatePanelLayout: typeof invalidatePanelLayout,
-|};
+};
 
-type Props = ConnectedProps<{||}, StateProps, DispatchProps>;
+type Props = ConnectedProps<{|}, StateProps, DispatchProps>;
 
 class ProfileViewerImpl extends PureComponent<Props> {
   render() {
@@ -146,7 +146,7 @@ class ProfileViewerImpl extends PureComponent<Props> {
   }
 }
 
-export const ProfileViewer = explicitConnect<{||}, StateProps, DispatchProps>({
+export const ProfileViewer = explicitConnect<{|}, StateProps, DispatchProps>({
   mapStateToProps: state => ({
     hasZipFile: getHasZipFile(state),
     timelineHeight: getTimelineHeight(state),

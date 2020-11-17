@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 import type { RequestedLib } from 'firefox-profiler/types';
 
@@ -17,7 +17,7 @@ export class SymbolsNotFoundError extends Error {
       [message, ...errors.map(e => ` - ${e.name}: ${e.message}`)].join('\n')
     );
     // Workaround for a babel issue when extending Errors
-    (this: any).__proto__ = SymbolsNotFoundError.prototype;
+    (this as any).__proto__ = SymbolsNotFoundError.prototype;
     this.name = 'SymbolsNotFoundError';
     this.library = library;
     this.errors = errors;

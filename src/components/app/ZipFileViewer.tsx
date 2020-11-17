@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 import * as React from 'react';
 import explicitConnect from '../../utils/connect';
 import { DragAndDropOverlay } from './DragAndDrop';
@@ -49,7 +49,7 @@ type StateProps = {|
   // TreeView interface.
   +expandedZipFileIndexes: Array<IndexIntoZipFileTable | null>,
   +zipFileErrorMessage: null | string,
-|};
+};
 
 type DispatchProps = {|
   +changeSelectedZipFile: typeof changeSelectedZipFile,
@@ -57,20 +57,20 @@ type DispatchProps = {|
   +viewProfileFromZip: typeof viewProfileFromZip,
   +returnToZipFileList: typeof returnToZipFileList,
   +showErrorForNoFileInZip: typeof showErrorForNoFileInZip,
-|};
+};
 
-type Props = ConnectedProps<{||}, StateProps, DispatchProps>;
+type Props = ConnectedProps<{|}, StateProps, DispatchProps>;
 
 type ZipFileRowDispatchProps = {|
   +viewProfileFromZip: typeof viewProfileFromZip,
-|};
+};
 type ZipFileRowOwnProps = {|
   +displayData: ZipDisplayData,
-|};
+};
 
 type ZipFileRowProps = ConnectedProps<
   ZipFileRowOwnProps,
-  {||},
+  {|},
   ZipFileRowDispatchProps
 >;
 
@@ -104,7 +104,7 @@ class ZipFileRowImpl extends React.PureComponent<ZipFileRowProps> {
 
 const ZipFileRow = explicitConnect<
   ZipFileRowOwnProps,
-  {||},
+  {|},
   ZipFileRowDispatchProps
 >({
   // ZipFileRow is implemented as a connected component, only to provide access to
@@ -335,7 +335,7 @@ class ZipFileViewerImpl extends React.PureComponent<Props> {
   }
 }
 
-export const ZipFileViewer = explicitConnect<{||}, StateProps, DispatchProps>({
+export const ZipFileViewer = explicitConnect<{|}, StateProps, DispatchProps>({
   mapStateToProps: state => {
     const zipFileTree = getZipFileTree(state);
     if (zipFileTree === null) {

@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// @flow
+
 
 /**
  * This object contains all our tab slugs with their associated title. This is
@@ -20,7 +20,7 @@ export const tabsWithTitle = {
 };
 
 export type TabSlug = $Keys<typeof tabsWithTitle>;
-export type TabWithTitle = {| name: TabSlug, title: string |};
+export type TabWithTitle = {| name: TabSlug, title: string };
 
 /**
  * This array contains the list of all tab slugs that we use as codes throughout
