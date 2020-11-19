@@ -20,7 +20,7 @@ import { TransformType } from 'firefox-profiler/types';
  * more readable.
  */
 export function assertExhaustiveCheck(
-  notValid: empty,
+  notValid: never,
   errorMessage: string = `There was an unhandled case for the value: "${notValid}"`
 ): void {
   throw new Error(errorMessage);
@@ -39,7 +39,7 @@ export function immutableUpdate<T>(object: T, ...rest: any[]): T {
  * This function takes a string and returns either a valid TabSlug or null, this doesn't
  * throw an error so that any arbitrary string can be converted, e.g. from a URL.
  */
-export function toValidTabSlug(tabSlug as any): TabSlug | null {
+export function toValidTabSlug(tabSlug: any): TabSlug | null {
   const coercedTabSlug = (tabSlug: TabSlug);
   switch (coercedTabSlug) {
     case 'calltree':
@@ -120,7 +120,7 @@ export function coerceMatchingShape<T>(item: Partial<T>): T {
  * This is a type-friendly version of Object.values that assumes the object has
  * a Map-like structure.
  */
-export function objectValues<Value, Obj: { [string]: Value }>(
+export function objectValues<Value, Obj extends { [key: string]: Value }>(
   object: Obj
 ): Value[] {
   return (Object.values as any)(object);
@@ -131,7 +131,7 @@ export function objectValues<Value, Obj: { [string]: Value }>(
  * a Map-like structure.
  */
 export function objectEntries<Key, Value>(object: {
-  [Key]: Value,
+  [Key: string]: Value,
 }): Array<[Key, Value]> {
   return (Object.entries as any)(object);
 }

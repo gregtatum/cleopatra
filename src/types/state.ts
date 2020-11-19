@@ -35,26 +35,26 @@ import type JSZip from 'jszip';
 import { IndexIntoZipFileTable } from '../profile-logic/zip-files';
 import { PathSet } from '../utils/path.js';
 
-export type Reducer<T> = (T | void, Action) => T;
+export type Reducer<T> = (state: T | void, action: Action) => T;
 
 export type SymbolicationStatus = 'DONE' | 'SYMBOLICATING';
 export type ThreadViewOptions = {
-  +selectedCallNodePath: CallNodePath,
-  +expandedCallNodePaths: PathSet,
-  +selectedMarker: MarkerIndex | null,
-  +selectedNetworkMarker: MarkerIndex | null,
+  selectedCallNodePath: CallNodePath,
+  expandedCallNodePaths: PathSet,
+  selectedMarker: MarkerIndex | null,
+  selectedNetworkMarker: MarkerIndex | null,
 };
 
-export type ThreadViewOptionsPerThreads = { [ThreadsKey]: ThreadViewOptions };
+export type ThreadViewOptionsPerThreads = { [key: string]: ThreadViewOptions };
 
 export type RightClickedCallNode = {
-  +threadsKey: ThreadsKey,
-  +callNodePath: CallNodePath,
+  threadsKey: ThreadsKey,
+  callNodePath: CallNodePath,
 };
 
 export type RightClickedMarker = {
-  +threadsKey: ThreadsKey,
-  +markerIndex: MarkerIndex,
+  threadsKey: ThreadsKey,
+  markerIndex: MarkerIndex,
 };
 
 /**
@@ -84,7 +84,7 @@ export type ActiveTabProfileViewState = {
  * Profile view state
  */
 export type ProfileViewState = {
-  +viewOptions: {
+  viewOptions: {
     perThread: ThreadViewOptionsPerThreads,
     symbolicationStatus: SymbolicationStatus,
     waitingForLibs: Set<RequestedLib>,
@@ -97,25 +97,25 @@ export type ProfileViewState = {
     rightClickedMarker: RightClickedMarker | null,
     mouseTimePosition: Milliseconds | null,
   },
-  +profile: Profile | null,
-  +full: FullProfileViewState,
-  +activeTab: ActiveTabProfileViewState,
-  +origins: OriginsViewState,
+  profile: Profile | null,
+  full: FullProfileViewState,
+  activeTab: ActiveTabProfileViewState,
+  origins: OriginsViewState,
 };
 
 export type AppViewState =
-  | { +phase: 'ROUTE_NOT_FOUND' }
-  | { +phase: 'TRANSITIONING_FROM_STALE_PROFILE' }
-  | { +phase: 'PROFILE_LOADED' }
-  | { +phase: 'DATA_LOADED' }
-  | { +phase: 'DATA_RELOAD' }
-  | { +phase: 'FATAL_ERROR', +error: Error }
+  | { phase: 'ROUTE_NOT_FOUND' }
+  | { phase: 'TRANSITIONING_FROM_STALE_PROFILE' }
+  | { phase: 'PROFILE_LOADED' }
+  | { phase: 'DATA_LOADED' }
+  | { phase: 'DATA_RELOAD' }
+  | { phase: 'FATAL_ERROR', error: Error }
   | {
-      +phase: 'INITIALIZING',
-      +additionalData?: { +attempt: Attempt | null, +message: string },
+      phase: 'INITIALIZING',
+      additionalData?: { attempt: Attempt | null, message: string },
     };
 
-export type Phase = $PropertyType<AppViewState, 'phase'>;
+export type Phase = AppViewState['phase'];
 
 /**
  * This represents the finite state machine for loading zip files. The phase represents
@@ -123,37 +123,37 @@ export type Phase = $PropertyType<AppViewState, 'phase'>;
  */
 export type ZipFileState =
   | {
-      +phase: 'NO_ZIP_FILE',
-      +zip: null,
-      +pathInZipFile: null,
+      phase: 'NO_ZIP_FILE',
+      zip: null,
+      pathInZipFile: null,
     }
   | {
-      +phase: 'LIST_FILES_IN_ZIP_FILE',
-      +zip: JSZip,
-      +pathInZipFile: null,
+      phase: 'LIST_FILES_IN_ZIP_FILE',
+      zip: JSZip,
+      pathInZipFile: null,
     }
   | {
-      +phase: 'PROCESS_PROFILE_FROM_ZIP_FILE',
-      +zip: JSZip,
-      +pathInZipFile: string,
+      phase: 'PROCESS_PROFILE_FROM_ZIP_FILE',
+      zip: JSZip,
+      pathInZipFile: string,
     }
   | {
-      +phase: 'FAILED_TO_PROCESS_PROFILE_FROM_ZIP_FILE',
-      +zip: JSZip,
-      +pathInZipFile: string,
+      phase: 'FAILED_TO_PROCESS_PROFILE_FROM_ZIP_FILE',
+      zip: JSZip,
+      pathInZipFile: string,
     }
   | {
-      +phase: 'FILE_NOT_FOUND_IN_ZIP_FILE',
-      +zip: JSZip,
-      +pathInZipFile: string,
+      phase: 'FILE_NOT_FOUND_IN_ZIP_FILE',
+      zip: JSZip,
+      pathInZipFile: string,
     }
   | {
-      +phase: 'VIEW_PROFILE_IN_ZIP_FILE',
-      +zip: JSZip,
-      +pathInZipFile: string,
+      phase: 'VIEW_PROFILE_IN_ZIP_FILE',
+      zip: JSZip,
+      pathInZipFile: string,
     };
 
-export type IsSidebarOpenPerPanelState = { [TabSlug]: boolean };
+export type IsSidebarOpenPerPanelState = { [key: string]: boolean };
 
 export type UrlSetupPhase = 'initial-load' | 'loading-profile' | 'done';
 
@@ -163,23 +163,23 @@ export type UrlSetupPhase = 'initial-load' | 'loading-profile' | 'done';
  * e.g. `experimental.enableEventDelayTracks()`.
  */
 export type ExperimentalFlags = {
-  +eventDelayTracks: boolean,
+  eventDelayTracks: boolean,
 };
 
 export type AppState = {
-  +view: AppViewState,
-  +urlSetupPhase: UrlSetupPhase,
-  +hasZoomedViaMousewheel: boolean,
-  +isSidebarOpenPerPanel: IsSidebarOpenPerPanelState,
-  +panelLayoutGeneration: number,
-  +lastVisibleThreadTabSlug: TabSlug,
-  +trackThreadHeights: {
-    [key: ThreadsKey]: CssPixels,
+  view: AppViewState,
+  urlSetupPhase: UrlSetupPhase,
+  hasZoomedViaMousewheel: boolean,
+  isSidebarOpenPerPanel: IsSidebarOpenPerPanelState,
+  panelLayoutGeneration: number,
+  lastVisibleThreadTabSlug: TabSlug,
+  trackThreadHeights: {
+    [key: string]: CssPixels,
   },
-  +isNewlyPublished: boolean,
-  +isDragAndDropDragging: boolean,
-  +isDragAndDropOverlayRegistered: boolean,
-  +experimental: ExperimentalFlags,
+  isNewlyPublished: boolean,
+  isDragAndDropDragging: boolean,
+  isDragAndDropOverlayRegistered: boolean,
+  experimental: ExperimentalFlags,
 };
 
 export type UploadPhase =
@@ -192,17 +192,17 @@ export type UploadPhase =
 export type UploadState = {
   phase: UploadPhase,
   uploadProgress: number,
-  error: Error | mixed,
+  error: Error | unknown,
   abortFunction: () => void,
   generation: number,
 };
 
 export type PublishState = {
-  +checkedSharingOptions: CheckedSharingOptions,
-  +upload: UploadState,
-  +isHidingStaleProfile: boolean,
-  +hasSanitizedProfile: boolean,
-  +prePublishedState: State | null,
+  checkedSharingOptions: CheckedSharingOptions,
+  upload: UploadState,
+  isHidingStaleProfile: boolean,
+  hasSanitizedProfile: boolean,
+  prePublishedState: State | null,
 };
 
 export type ZippedProfilesState = {
@@ -256,37 +256,37 @@ export type ProfileSpecificUrlState = {
  * Determines how the timeline's tracks are organized.
  */
 export type TimelineTrackOrganization =
-  | { +type: 'full' }
-  | { +type: 'active-tab', +browsingContextID: BrowsingContextID | null }
-  | { +type: 'origins' };
+  | { type: 'full' }
+  | { type: 'active-tab', browsingContextID: BrowsingContextID | null }
+  | { type: 'origins' };
 
 export type UrlState = {
-  +dataSource: DataSource,
+  dataSource: DataSource,
   // This is used for the "public" dataSource".
-  +hash: string,
+  hash: string,
   // This is used for the "from-url" dataSource.
-  +profileUrl: string,
+  profileUrl: string,
   // This is used for the "compare" dataSource, to compare 2 profiles.
-  +profilesToCompare: string[] | null,
-  +selectedTab: TabSlug,
-  +pathInZipFile: string | null,
-  +profileName: string | null,
-  +timelineTrackOrganization: TimelineTrackOrganization,
-  +profileSpecific: ProfileSpecificUrlState,
+  profilesToCompare: string[] | null,
+  selectedTab: TabSlug,
+  pathInZipFile: string | null,
+  profileName: string | null,
+  timelineTrackOrganization: TimelineTrackOrganization,
+  profileSpecific: ProfileSpecificUrlState,
 };
 
 export type IconState = Set<string>;
 
 export type State = {
-  +app: AppState,
-  +profileView: ProfileViewState,
-  +urlState: UrlState,
-  +icons: IconState,
-  +zippedProfiles: ZippedProfilesState,
-  +publish: PublishState,
+  app: AppState,
+  profileView: ProfileViewState,
+  urlState: UrlState,
+  icons: IconState,
+  zippedProfiles: ZippedProfilesState,
+  publish: PublishState,
 };
 
 export type IconWithClassName = {
-  +icon: string,
-  +className: string,
+  icon: string,
+  className: string,
 };

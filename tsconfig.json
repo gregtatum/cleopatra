@@ -12,10 +12,10 @@
     "jsx": "preserve",
     "noEmit": true,
     // Paths are relative to this:
-    "baseUrl": ".",
+    "baseUrl": "./src",
     "paths": {
       // Map paths like "firefox-profiler/path/to/file.s" to "src/path/to/file.js"
-      "firefox-profiler": ["src"]
+      "firefox-profiler/*": ["./*"]
     }
   },
   "include": ["./src/actions/**/*.ts","./src/actions/**/*.tsx"],
